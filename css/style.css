@@ -171,12 +171,38 @@ html::before {
 }
 
 @media (max-width: 700px), (pointer: coarse) {
-  /* FASE 14: ook op brede touch-apparaten (tablets/landscape) knoppen tonen */
+  /* FASE 14: ook op brede touch-apparaten (tablets/landscape) knoppen tonen.
+     FASE 15: GBA-indeling — d-pad links, B/A rechts onder je duim,
+     SEL/START klein rechtsonder (was: B/A zweefden midden in beeld) */
   #touch-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px calc(20px + env(safe-area-inset-bottom, 0px));
+    display: block;
+    height: 0;            /* puur anker; knoppen staan absoluut t.o.v. het scherm */
+    padding: 0;
+  }
+  #touch-controls .dpad {
+    position: fixed;
+    left: calc(14px + env(safe-area-inset-left, 0px));
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+  /* B/A — rechtsonder, met GBA-stagger (B iets lager dan A) */
+  #touch-controls div.action-btns:nth-of-type(2) {
+    position: fixed;
+    right: calc(14px + env(safe-area-inset-right, 0px));
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    align-items: flex-start;
+  }
+  #touch-controls div.action-btns:nth-of-type(2) .action-btn-b { margin-top: 22px; }
+  /* SEL/START — klein, rechtsonder ónder B/A */
+  #touch-controls div.action-btns:nth-of-type(3) {
+    position: fixed;
+    right: calc(14px + env(safe-area-inset-right, 0px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+  #touch-controls div.action-btns:nth-of-type(3) .action-btn {
+    width: 44px;
+    height: 30px;
+    border-radius: 15px;
+    font-size: 9px;
   }
   #game-canvas {
     width: 100vw;
