@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <!-- FASE 14: mobiel — volwaardige web-app + statusbalk-kleur -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d1530">
+  <title>DinoMon: Fossil Frontier</title>
+  <link rel="stylesheet" href="css/style.css?v=3">
+</head>
+<body>
+
+  <div id="game-wrapper">
+    <canvas id="game-canvas" width="480" height="320"></canvas>
+  </div>
+
+  <!-- FASE 14: verborgen invoerveld — opent het virtuele toetsenbord op mobiel
+       tijdens naam-invoerschermen (tik op het scherm om te typen) -->
+  <input id="mobile-text-input" type="text" autocomplete="off" autocapitalize="words" maxlength="12">
+
+
+  <!-- Mobile touch controls -->
+  <div id="touch-controls">
+    <div class="dpad">
+      <button id="btn-up"    class="dpad-btn dpad-up">&#9650;</button>
+      <button id="btn-left"  class="dpad-btn dpad-left">&#9668;</button>
+      <div class="dpad-btn dpad-center"></div>
+      <button id="btn-right" class="dpad-btn dpad-right">&#9658;</button>
+      <button id="btn-down"  class="dpad-btn dpad-down">&#9660;</button>
+    </div>
+    <div class="action-btns">
+      <button id="btn-b"      class="action-btn action-btn-b">B</button>
+      <button id="btn-a"      class="action-btn action-btn-a">A</button>
+    </div>
+    <div class="action-btns">
+      <button id="btn-select" class="action-btn action-btn-start">SEL</button>
+      <button id="btn-start"  class="action-btn action-btn-start">START</button>
+    </div>
+  </div>
+
+  <!-- == Data (pure data, no logic) == -->
+  <script src="js/constants.js?v=80"></script>
+  <!-- UI-Kit: pixelfont-hook + design tokens (moet voor alle tekenende modules) -->
+  <script src="js/ui/uiKit.js?v=4"></script>
+  <script src="js/data/moves.js?v=82"></script>
+  <script src="js/data/dinomons.js?v=80"></script>
+  <script src="js/data/natures.js?v=80"></script>
+  <script src="js/data/tmData.js?v=80"></script>
+  <script src="js/data/story.js?v=86"></script>
+  <script src="js/data/trainers.js?v=86"></script>
+  <script src="js/data/maps.js?v=89"></script>
+
+  <!-- == Engine core == -->
+  <script src="js/engine/input.js?v=81"></script>
+  <script src="js/engine/saveload.js?v=80"></script>
+  <script src="js/engine/audio.js?v=86"></script>
+
+  <!-- == Battle system == -->
+  <script src="js/battle/typeChart.js?v=80"></script>
+  <script src="js/battle/statusEffects.js?v=80"></script>
+  <script src="js/battle/battleAI.js?v=80"></script>
+  <script src="js/battle/battleAnim.js?v=94"></script>
+  <script src="js/battle/battle.js?v=88"></script>
+  <script src="js/battle/evoAnim.js?v=81"></script>
+
+  <!-- == World systems == -->
+  <script src="js/world/fieldMoves.js?v=80"></script>
+  <script src="js/world/encounter.js?v=80"></script>
+  <script src="js/world/events.js?v=80"></script>
+  <script src="js/world/overworld.js?v=81"></script>
+
+  <!-- == UI == -->
+  <script src="js/ui/dialogueBox.js?v=81"></script>
+  <script src="js/ui/partyMenu.js?v=80"></script>
+  <script src="js/ui/bagMenu.js?v=80"></script>
+  <script src="js/ui/boxUI.js?v=80"></script>
+  <script src="js/ui/dexMenu.js?v=80"></script>
+  <script src="js/ui/menu.js?v=80"></script>
+
+  <!-- == Rendering == -->
+  <script src="js/sprites/spriteRenderer.js?v=94"></script>
+  <script src="js/engine/renderer.js?v=89"></script>
+
+  <!-- == Objective HUD patch: draws goal indicator in overworld == -->
+  <script>
+  (function() {
+    var _origDraw = null;
+    function _patchRenderer() {
+      if (!window.DG || !DG.Renderer || !DG.Renderer.draw) {
+        setTimeout(_patchRenderer, 50); return;
+      }
+      _origDraw = DG.Renderer.draw.bind(DG.Renderer);
+      DG.Renderer.draw = function(gs, stateEnum) {
+        _origDraw(gs, stateEnum);
+        // Draw objective HUD only in OVERWORLD state, not in menus/battles
+        if (stateEnum === DG.STATE.OVERWORLD && gs &&
+            typeof DG.Overworld !== 'undefined' && DG.Overworld.drawObjectiveHint) {
+          var canvas = document.getElementById('game-canvas');
+          if (canvas) {
+            var ctx = canvas.getContext('2d');
+            DG.Overworld.drawObjectiveHint(ctx, gs);
+          }
+        }
+      };
+    }
+    _patchRenderer();
+  })();
+  </script>
+
+  <!-- == Dev-testharnas (alleen actief met ?devloop=1 in de URL) ==
+       In een hidden preview-tab vuurt requestAnimationFrame nooit; deze shim
+       maakt de game-loop handmatig aanstuurbaar via window.__PUMP(n). -->
+  <script>
+  (function(){
+    if (location.search.indexOf('devloop') === -1) return;
+    window.__T = performance.now();
+    window.__RAF_CB = null;
+    window.requestAnimationFrame = function(cb){ window.__RAF_CB = cb; return 0; };
+    window.__PUMP = function(n){
+      n = n || 1;
+      for (var i = 0; i < n; i++) {
+        var cb = window.__RAF_CB;
+        if (!cb) break;
+        window.__RAF_CB = null;
+        cb(window.__T += 16.7);
+      }
+      return window.__T;
+    };
+  })();
+  </script>
+
+  <!-- == Game entry point == -->
+  <script src="js/main.js?v=85"></script>
+
+</body>
+</html>

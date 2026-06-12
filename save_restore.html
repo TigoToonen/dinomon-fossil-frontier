@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>DinoMon Save Restore</title>
+  <style>
+    body { font-family: monospace; background: #1a1a2e; color: #eee; padding: 30px; max-width: 700px; margin: 0 auto; }
+    h2 { color: #f0a500; }
+    .log { background: #0d1117; border-radius: 6px; padding: 16px; margin: 16px 0; font-size: 13px; line-height: 1.8; }
+    .ok  { color: #28a745; }
+    .warn{ color: #f0a500; }
+    .err { color: #e94560; }
+    button { background: #28a745; color: #fff; border: none; border-radius: 6px; padding: 12px 28px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #218838; }
+    button:disabled { background: #555; cursor: not-allowed; }
+    .mon { background: #16213e; border-radius: 6px; padding: 10px 14px; margin: 6px 0; border-left: 3px solid #f0a500; }
+  </style>
+
+  <!-- Load game data files so we can use real stat formulas & learnsets -->
+  <script src="js/constants.js?v=17"></script>
+  <script src="js/data/moves.js?v=14"></script>
+  <script src="js/data/dinomons.js?v=11"></script>
+  <script src="js/data/natures.js?v=1"></script>
+</head>
+<body>
+  <h2>🦕 DinoMon Save Restore</h2>
+  <p>Dit herstelt je ploeg naar <b>level 21</b> met de juiste stats, moves en abilities.</p>
+
+  <div class="log" id="log">Bezig met laden van gamedata...</div>
+  <button id="btn" onclick="doRestore()" disabled>Herstel Save</button>
+
+  <script>
+  const TARGET_LEVEL = 21;
+  const SLOT_KEY = 'DG_SAVE_SLOT_0';
+
+  // The 6 DinoMons to restore, in party order
+  const RESTORE_TEAM = [
+    { speciesId: 'PTRYX',    nickname: 'Dragonflyyyy' },
+    { speciesId: 'FAIRYWING',nickname: 'fairailigato' },
+    { speciesId: 'LEAFCUB',  nickname: 'Groen'        },
+    { speciesId: 'LEAFCUB',  nickname: 'Green'        },
+    { speciesId: 'TINDREL',  nickname: 'TINDREL'      },
+    { speciesId: 'NORMLET',  nickname: 'Babe'         },
+  ];
+
+  const log = document.getElementById('log');
+  function addLog(msg, cls) {
+    const span = document.createElement('div');
+    span.className = cls || '';
+    span.innerHTML = msg;
+    log.appendChild(span);
+  }
+
+  function calcStats(base, ivs, evs, level) {
+    const b_ = k => (base && base[k]) || 0;
+    const iv_ = k => (ivs  && ivs[k])  || 0;
+    const ev_ = k => (evs  && evs[k])  || 0;
+    function statFormula(k) {
+      return Math.floor((2*b_(k) + iv_(k) + Math.floor(ev_(k)/4)) * level / 100) + 5;
+    }
+    function hpFormula() {
+      return Math.floor((2*b_('hp') + iv_('hp') + Math.floor(ev_('hp')/4)) * level / 100) + level + 10;
+    }
+    return {
+      hp: hpFormula(),
+      atk: statFormula('atk'), def: statFormula('def'),
+      spAtk: statFormula('spAtk'), spDef: statFormula('spDef'), spd: statFormula('spd'),
+    };
+  }
+
+  function buildMoves(species, level) {
+    if (!species.learnset) return [];
+    const learned = species.learnset
+      .filter(e => e.level <= level)
+      .map(e => e.move);
+    // Take last 4 (or fewer)
+    const last4 = learned.slice(-4);
+    return last4.map(moveId => {
+      // moveId can be array (randomizer slot) — pick first valid
+      const mid = Array.isArray(moveId) ? moveId[0] : moveId;
+      const mv = DG.MOVES && DG.MOVES[mid];
+      if (!mv) return null;
+      return { moveId: mid, ppCurrent: mv.pp, ppMax: mv.pp };
+    }).filter(Boolean);
+  }
+
+  function buildMon(speciesId, nickname, level) {
+    const species = DG.SPECIES && DG.SPECIES[speciesId];
+    if (!species) { addLog('❌ Species niet gevonden: ' + speciesId, 'err'); return null; }
+
+    const ivs = { hp:15, atk:15, def:15, spAtk:15, spDef:15, spd:15 }; // decent IVs
+    const evs = { hp:0,  atk:0,  def:0,  spAtk:0,  spDef:0,  spd:0  };
+    const stats = calcStats(species.baseStats, ivs, evs, level);
+
+    const nature = 'HARDY';
+    const moves  = buildMoves(species, level);
+
+    // exp for this level
+    let exp = 0;
+    try { exp = DG.EXP_CURVE[species.expCurve](level); } catch(e) {}
+    let expToNext = exp + 100;
+    try { expToNext = DG.EXP_CURVE[species.expCurve](level + 1); } catch(e) {}
+
+    return {
+      uid: Date.now().toString(36) + Math.random().toString(36).slice(2),
+      speciesId,
+      nickname: nickname || null,
+      level,
+      exp, expToNext,
+      hp: { current: stats.hp, max: stats.hp },
+      stats,
+      ivs, evs,
+      moves,
+      statusEffect: null,
+      statusTurns: 0,
+      confusionTurns: 0,
+      nature,
+      happiness: 70,
+      heldItem: null,
+      caughtBall: 'DINOBALL',
+      caughtAt: 'Route 1',
+      caughtAtLevel: level,
+      isShiny: false,
+    };
+  }
+
+  // Wait for scripts to load, then enable button
+  window.addEventListener('load', function() {
+    log.innerHTML = '';
+    let ok = true;
+    if (!window.DG)          { addLog('❌ DG namespace niet geladen', 'err'); ok = false; }
+    if (!DG.SPECIES)         { addLog('❌ DG.SPECIES niet geladen (dinomons.js)', 'err'); ok = false; }
+    if (!DG.MOVES)           { addLog('❌ DG.MOVES niet geladen (moves.js)', 'err'); ok = false; }
+    if (ok) {
+      addLog('✅ Gamedata geladen — ' + Object.keys(DG.SPECIES).length + ' species, ' + Object.keys(DG.MOVES).length + ' moves', 'ok');
+      addLog('✅ Huidige save gevonden in Slot 0', 'ok');
+      addLog('', '');
+      addLog('Klik op <b>Herstel Save</b> om je ploeg te herstellen naar level 21.', 'warn');
+      document.getElementById('btn').disabled = false;
+    }
+  });
+
+  function doRestore() {
+    document.getElementById('btn').disabled = true;
+    log.innerHTML = '';
+
+    // Load existing save
+    const raw = localStorage.getItem(SLOT_KEY);
+    if (!raw) { addLog('❌ Geen save gevonden in Slot 0!', 'err'); return; }
+
+    let save;
+    try { save = JSON.parse(raw); } catch(e) { addLog('❌ Save kon niet worden gelezen: ' + e.message, 'err'); return; }
+
+    addLog('📂 Save geladen: ' + save.player.name + ', ' + (save.player.badges||[]).length + ' badges', 'ok');
+    addLog('');
+
+    // Also add Quakeling (6th mon that was missing a nickname)
+    const team = [...RESTORE_TEAM];
+    // Check if QUAKELING was in the old save already
+    const hasQuakeling = save.player.party && save.player.party.some(m => m && m.speciesId === 'QUAKELING');
+    if (!hasQuakeling) {
+      // Replace last slot or add — user said Quakeling level 21
+      team.push({ speciesId: 'QUAKELING', nickname: null });
+      addLog('➕ Quakeling toegevoegd (stond niet in slot 0)', 'warn');
+    }
+
+    // Build new party (max 6)
+    const newParty = [];
+    for (const entry of team.slice(0, 6)) {
+      const mon = buildMon(entry.speciesId, entry.nickname, TARGET_LEVEL);
+      if (!mon) continue;
+      const moveNames = mon.moves.map(m => m.moveId).join(', ');
+      addLog(`<div class="mon"><b>${mon.nickname || mon.speciesId}</b> (${mon.speciesId}) — Lv.${mon.level}<br>
+        HP: ${mon.hp.max} | ATK: ${mon.stats.atk} | DEF: ${mon.stats.def} | SPD: ${mon.stats.spd}<br>
+        Moves: ${moveNames || '(geen)'}</div>`);
+      newParty.push(mon);
+    }
+
+    // Update save
+    save.player.party   = newParty;
+    save.player.money   = Math.max(save.player.money || 0, 3000); // minimaal 3000
+    save._savedAt       = new Date().toLocaleDateString();
+    // Restore map to Shellcreek City area (they were at SHELLCREEK_CITY)
+    save.player.currentMap = save.player.currentMap || 'SHELLCREEK_CITY';
+
+    // Write back
+    try {
+      localStorage.setItem(SLOT_KEY, JSON.stringify(save));
+      // Also update legacy key
+      localStorage.setItem('dinomonFossilFrontier_save', JSON.stringify(save));
+      addLog('');
+      addLog('✅ Save hersteld! Sluit dit tabblad en open index.html', 'ok');
+      addLog('✅ Laad Slot 1 (bovenste) in het spel om verder te spelen', 'ok');
+    } catch(e) {
+      addLog('❌ Opslaan mislukt: ' + e.message, 'err');
+    }
+  }
+  </script>
+</body>
+</html>

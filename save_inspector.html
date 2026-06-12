@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>DinoMon Save Inspector</title>
+  <style>
+    body { font-family: monospace; background: #1a1a2e; color: #eee; padding: 20px; }
+    h2 { color: #f0a500; }
+    .slot { background: #16213e; border: 1px solid #0f3460; border-radius: 8px; padding: 16px; margin: 12px 0; }
+    .slot h3 { color: #e94560; margin: 0 0 8px; }
+    .party { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+    .mon { background: #0f3460; border-radius: 6px; padding: 8px 12px; font-size: 13px; }
+    .mon b { color: #f0a500; }
+    button { background: #e94560; color: #fff; border: none; border-radius: 4px; padding: 8px 16px; cursor: pointer; margin: 4px; font-size: 14px; }
+    button:hover { background: #c73652; }
+    .btn-restore { background: #28a745; }
+    .btn-restore:hover { background: #218838; }
+    .btn-del { background: #6c757d; }
+    pre { background: #0d1117; border-radius: 4px; padding: 12px; overflow-x: auto; font-size: 11px; max-height: 200px; overflow-y: auto; white-space: pre-wrap; }
+    .empty { color: #888; font-style: italic; }
+    .badges { color: #ffd700; }
+    .warn { color: #ff6b6b; }
+    #status { margin: 10px 0; padding: 10px; background: #28a745; border-radius: 4px; display: none; }
+  </style>
+</head>
+<body>
+  <h2>🦕 DinoMon Save Inspector</h2>
+  <p>Dit hulpprogramma toont alle saves die in je browser zijn opgeslagen. Sluit dit tabblad daarna gewoon.</p>
+  <div id="status"></div>
+  <div id="slots"></div>
+
+  <script>
+    const SLOT_PREFIX = 'DG_SAVE_SLOT_';
+    const LEGACY_KEY  = 'dinomonFossilFrontier_save';
+    const NUM_SLOTS   = 3;
+
+    function showStatus(msg, color) {
+      const el = document.getElementById('status');
+      el.style.background = color || '#28a745';
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => { el.style.display = 'none'; }, 4000);
+    }
+
+    function formatTime(s) {
+      if (!s) return '0:00';
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      return h + ':' + String(m).padStart(2, '0');
+    }
+
+    function renderSlot(id, data, keyName) {
+      const div = document.createElement('div');
+      div.className = 'slot';
+
+      if (!data) {
+        div.innerHTML = `<h3>Slot ${id} (${keyName})</h3><p class="empty">Leeg</p>`;
+        return div;
+      }
+
+      const p = data.player;
+      const party = (p && p.party) || [];
+      const badges = (p && p.badges && p.badges.length) || 0;
+      const playtime = formatTime(p && p.playtime);
+
+      let partyHtml = party.map(mon => {
+        if (!mon) return '';
+        return `<div class="mon"><b>${mon.nickname || mon.speciesId}</b><br>Lv.${mon.level} ${mon.speciesId}<br>HP: ${mon.hp ? mon.hp.current + '/' + mon.hp.max : '?'}</div>`;
+      }).join('');
+
+      div.innerHTML = `
+        <h3>Slot ${id} (${keyName})</h3>
+        <p>
+          <b>Naam:</b> ${p && p.name || '?'} &nbsp;|&nbsp;
+          <span class="badges">🏅 ${badges} badges</span> &nbsp;|&nbsp;
+          <b>Tijd:</b> ${playtime} &nbsp;|&nbsp;
+          <b>Map:</b> ${p && p.currentMap || '?'} &nbsp;|&nbsp;
+          <b>Opgeslagen:</b> ${data._savedAt || '?'}
+        </p>
+        <p><b>Partij (${party.length} DinoMons):</b></p>
+        <div class="party">${partyHtml || '<span class="empty">Leeg</span>'}</div>
+        <details>
+          <summary style="cursor:pointer;color:#aaa">Ruwe JSON data (klik om uit te klappen)</summary>
+          <pre>${JSON.stringify(data, null, 2)}</pre>
+        </details>
+        <div style="margin-top:10px">
+          <button class="btn-restore" onclick="restoreSlot(${id}, '${keyName}')">↑ Zet dit als actieve save (slot 0)</button>
+          <button onclick="downloadSlot(${id}, '${keyName}')">💾 Download als backup</button>
+          <button class="btn-del" onclick="deleteSlotConfirm(${id}, '${keyName}')">🗑 Verwijder</button>
+        </div>
+      `;
+      return div;
+    }
+
+    function render() {
+      const container = document.getElementById('slots');
+      container.innerHTML = '';
+
+      // Check all 3 slots
+      for (let i = 0; i < NUM_SLOTS; i++) {
+        const key = SLOT_PREFIX + i;
+        const raw = localStorage.getItem(key);
+        let data = null;
+        try { data = raw ? JSON.parse(raw) : null; } catch(e) {}
+        container.appendChild(renderSlot(i, data, key));
+      }
+
+      // Check legacy key
+      const legRaw = localStorage.getItem(LEGACY_KEY);
+      let legData = null;
+      try { legData = legRaw ? JSON.parse(legRaw) : null; } catch(e) {}
+      if (legData) {
+        const legDiv = renderSlot('Legacy', legData, LEGACY_KEY);
+        legDiv.style.borderColor = '#f0a500';
+        container.appendChild(legDiv);
+      } else {
+        const legDiv = document.createElement('div');
+        legDiv.className = 'slot';
+        legDiv.innerHTML = `<h3>Legacy save (${LEGACY_KEY})</h3><p class="empty">Niet aanwezig</p>`;
+        container.appendChild(legDiv);
+      }
+
+      // Show all localStorage keys for DinoMon
+      const allKeys = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (k.includes('DG_') || k.includes('dinomon'))) allKeys.push(k);
+      }
+      const keysDiv = document.createElement('div');
+      keysDiv.innerHTML = `<p style="color:#888">Alle DinoMon localStorage keys: <code>${allKeys.join(', ') || 'geen'}</code></p>`;
+      container.appendChild(keysDiv);
+    }
+
+    function restoreSlot(id, keyName) {
+      const key = SLOT_PREFIX + id === keyName ? keyName : keyName;
+      const raw = localStorage.getItem(keyName);
+      if (!raw) { showStatus('Geen data gevonden!', '#e94560'); return; }
+      // Copy to slot 0
+      localStorage.setItem(SLOT_PREFIX + '0', raw);
+      showStatus('✅ Gekopieerd naar Slot 0! Open nu index.html en laad Slot 1 (bovenste).', '#28a745');
+      render();
+    }
+
+    function downloadSlot(id, keyName) {
+      const raw = localStorage.getItem(keyName);
+      if (!raw) { showStatus('Geen data!', '#e94560'); return; }
+      const blob = new Blob([raw], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'dinomon_save_slot' + id + '_backup.json';
+      a.click();
+    }
+
+    function deleteSlotConfirm(id, keyName) {
+      if (!confirm('Weet je zeker dat je dit slot wilt verwijderen? Dit kan NIET ongedaan worden gemaakt!')) return;
+      localStorage.removeItem(keyName);
+      showStatus('Slot verwijderd.', '#6c757d');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

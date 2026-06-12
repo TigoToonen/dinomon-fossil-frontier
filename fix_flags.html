@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>DinoMon Flag Fix</title>
+  <style>
+    body { font-family: monospace; background: #1a1a2e; color: #eee; padding: 30px; max-width: 600px; margin: 0 auto; }
+    h2 { color: #f0a500; }
+    .log { background: #0d1117; border-radius: 6px; padding: 16px; margin: 16px 0; font-size: 14px; line-height: 2; }
+    .ok  { color: #28a745; }
+    .err { color: #e94560; }
+    button { background: #28a745; color: #fff; border: none; border-radius: 6px; padding: 12px 28px; font-size: 16px; cursor: pointer; }
+    button:hover { background: #218838; }
+  </style>
+</head>
+<body>
+  <h2>🏅 DinoMon Badge Fix</h2>
+  <p>Zet badge 1 en badge 2 correct in je save zodat de blokkades verdwijnen.</p>
+  <div class="log" id="log"></div>
+  <button onclick="fix()">Fix Badges & Flags</button>
+
+  <script>
+    const SLOT_KEY = 'DG_SAVE_SLOT_0';
+
+    function log(msg, cls) {
+      const d = document.createElement('div');
+      d.className = cls || '';
+      d.innerHTML = msg;
+      document.getElementById('log').appendChild(d);
+    }
+
+    function fix() {
+      document.getElementById('log').innerHTML = '';
+      const raw = localStorage.getItem(SLOT_KEY);
+      if (!raw) { log('❌ Geen save gevonden!', 'err'); return; }
+
+      let save;
+      try { save = JSON.parse(raw); } catch(e) { log('❌ ' + e.message, 'err'); return; }
+
+      const p = save.player;
+
+      // ── Badges array ──────────────────────────────────────
+      if (!Array.isArray(p.badges)) p.badges = [];
+      if (!p.badges.includes('BADGE_1')) p.badges.push('BADGE_1');
+      if (!p.badges.includes('BADGE_2')) p.badges.push('BADGE_2');
+      p.badgeCount = p.badges.length;
+      log('🏅 Badges gezet: ' + p.badges.join(', '), 'ok');
+
+      // ── Story flags ───────────────────────────────────────
+      if (!p.flags) p.flags = {};
+
+      const needed = [
+        'BADGE_1',
+        'BADGE_2',
+        'TRAINER_GYM_REX_DEFEATED',
+        'TRAINER_GYM_RIDLEY_DEFEATED',
+        'EVENT_STARTER_CHOSEN',
+        'EVENT_PROF_INTRO_DONE',
+        'EVENT_ROUTE1_UNLOCKED',
+        'EVENT_ROUTE2_UNLOCKED',
+      ];
+
+      for (const flag of needed) {
+        p.flags[flag] = true;
+        log('✅ Flag gezet: ' + flag, 'ok');
+      }
+
+      // ── Save terug schrijven ──────────────────────────────
+      save._savedAt = new Date().toLocaleDateString();
+      localStorage.setItem(SLOT_KEY, JSON.stringify(save));
+      localStorage.setItem('dinomonFossilFrontier_save', JSON.stringify(save));
+
+      log('', '');
+      log('✅ Klaar! Sluit dit tabblad en open index.html', 'ok');
+      log('✅ De blokkades bij Gym 1 en Gym 2 zijn nu weg', 'ok');
+    }
+  </script>
+</body>
+</html>
