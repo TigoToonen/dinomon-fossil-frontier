@@ -465,29 +465,6 @@ DG.TRAINERS.DIRECTOR_CLADE = {
 // ROUTE TRAINERS (20)
 // ============================================================
 
-DG.TRAINERS.RIVAL_ROUTE1 = {
-  id:                 'RIVAL_ROUTE1',
-  name:               'Rex',
-  class:              'Rival',
-  isGymLeader:        false,
-  isStoryBoss:        true,
-  badge:              null,
-  preBattleDialogue:  'RIVAL_INTRO',
-  postBattleDialogue: null,
-  winDialogue:        "Ha! Knew I'd win. You need way more training!",
-  loseDialogue:       "What?! You beat me already?! Don't think it'll happen again!",
-  reward:             280,
-  party: [
-    {
-      speciesId: 'TINDREL',
-      level:     7,
-      moves:     ['EMBER', 'TACKLE', 'GROWL', 'TAIL_WHIP'],
-    },
-  ],
-  aiTier:   1,
-  location: 'ROUTE_1',
-};
-
 DG.TRAINERS.YOUNGSTER_JAKE = {
   id:                 'YOUNGSTER_JAKE',
   name:               'Jake',
@@ -546,33 +523,6 @@ DG.TRAINERS.LASS_MINA = {
   location: 'ROUTE_1',
 };
 
-DG.TRAINERS.CAMPER_BURT = {
-  id:                 'CAMPER_BURT',
-  name:               'Burt',
-  class:              'Camper',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "I've been camping on Route 2 for three days. I've battled everyone!",
-  loseDialogue:       "Dang. You're the first one to beat me out here.",
-  reward:             160,
-  party: [
-    {
-      speciesId: 'PTRYX',
-      level:     8,
-      moves:     ['WING_ATTACK', 'GROWL', 'PECK', 'AERIAL_ACE'],
-    },
-    {
-      speciesId: 'SANDCLAW',
-      level:     8,
-      moves:     ['SCRATCH', 'SAND_ATTACK', 'SLASH', 'MUD_SLAP'],
-    },
-  ],
-  aiTier:   1,
-  location: 'ROUTE_2',
-};
 
 DG.TRAINERS.HIKER_STONE = {
   id:                 'HIKER_STONE',
@@ -602,333 +552,16 @@ DG.TRAINERS.HIKER_STONE = {
   location: 'ROUTE_2',
 };
 
-DG.TRAINERS.RANGER_FERN = {
-  id:                 'RANGER_FERN',
-  name:               'Fern',
-  class:              'Ranger',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "Protecting these wild DinoMons is my calling. Don't mess with the ecosystem.",
-  loseDialogue:       "Impressive bonds. You clearly care for your DinoMons as much as I care for the wilds.",
-  reward:             420,
-  party: [
-    {
-      speciesId: 'FRONDLET',
-      level:     14,
-      moves:     ['VINE_WHIP', 'RAZOR_LEAF', 'STUN_SPORE', 'SYNTHESIS'],
-    },
-    {
-      speciesId: 'BUGLING',
-      level:     14,
-      moves:     ['BUG_BITE', 'AGILITY', 'FURY_CUTTER', 'STRING_SHOT'],
-    },
-    {
-      speciesId: 'VIPERFANG',
-      level:     15,
-      moves:     ['POISON_STING', 'BITE', 'GLARE', 'WRAP'],
-    },
-  ],
-  aiTier:   2,
-  location: 'ROUTE_3',
-};
 
-DG.TRAINERS.SCIENTIST_LARS = {
-  id:                 'SCIENTIST_LARS',
-  name:               'Lars',
-  class:              'Scientist',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "My data clearly shows your DinoMons are inferior. The numbers never lie.",
-  loseDialogue:       "Anomalous result. I must recalibrate my entire battle model.",
-  reward:             480,
-  party: [
-    {
-      speciesId: 'CRYOPHIN',
-      level:     14,
-      moves:     ['ICY_WIND', 'WATER_GUN', 'AURORA_BEAM', 'GROWL'],
-    },
-    {
-      speciesId: 'SPARKHORN',
-      level:     15,
-      moves:     ['THUNDER_SHOCK', 'CHARGE', 'SPARK', 'QUICK_ATTACK'],
-    },
-  ],
-  aiTier:   2,
-  location: 'ROUTE_3',
-};
 
-DG.TRAINERS.SWIMMER_CORAL = {
-  id:                 'SWIMMER_CORAL',
-  name:               'Coral',
-  class:              'Swimmer',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "The ocean belongs to the fastest swimmer. That's me and my DinoMons!",
-  loseDialogue:       "You're quick on land AND on water? Respect.",
-  reward:             600,
-  party: [
-    {
-      speciesId: 'AQUAFLIP',
-      level:     20,
-      moves:     ['WATER_GUN', 'AQUA_JET', 'BUBBLE_BEAM', 'AGILITY'],
-    },
-    {
-      speciesId: 'MARSHFIN',
-      level:     21,
-      moves:     ['WATER_PULSE', 'MUDDY_WATER', 'BUBBLE_BEAM', 'WATER_GUN'],
-    },
-  ],
-  aiTier:   2,
-  location: 'ROUTE_4',
-};
 
-DG.TRAINERS.BIKER_DANTE = {
-  id:                 'BIKER_DANTE',
-  name:               'Dante',
-  class:              'Biker',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "Speed is everything! My DinoMons are born to run!",
-  loseDialogue:       "You took us out before we even hit top gear. Unbelievable.",
-  reward:             580,
-  party: [
-    {
-      speciesId: 'DARKSCALE',
-      level:     19,
-      moves:     ['BITE', 'NIGHT_SLASH', 'AGILITY', 'SCARY_FACE'],
-    },
-    {
-      speciesId: 'FIGHTCLAW',
-      level:     20,
-      moves:     ['KARATE_CHOP', 'LOW_KICK', 'FOCUS_ENERGY', 'MACH_PUNCH'],
-    },
-    {
-      speciesId: 'QUICKFEET',
-      level:     20,
-      moves:     ['QUICK_ATTACK', 'DOUBLE_KICK', 'AGILITY', 'TAIL_WHIP'],
-    },
-  ],
-  aiTier:   2,
-  location: 'ROUTE_4',
-};
 
-DG.TRAINERS.BREEDER_NAMI = {
-  id:                 'BREEDER_NAMI',
-  name:               'Nami',
-  class:              'Breeder',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "I raised all of these from eggs! Aren't they wonderful?",
-  loseDialogue:       "Oh my... you're very skilled. What's your secret with DinoMons?",
-  reward:             720,
-  party: [
-    {
-      speciesId: 'BUGLING',
-      level:     24,
-      moves:     ['BUG_BITE', 'FURY_CUTTER', 'AGILITY', 'LUNGE'],
-    },
-    {
-      speciesId: 'BLOOMSAUR',
-      level:     24,
-      moves:     ['PETAL_BLIZZARD', 'SYNTHESIS', 'RAZOR_LEAF', 'AROMATHERAPY'],
-    },
-    {
-      speciesId: 'LEAFCUB',
-      level:     25,
-      moves:     ['RAZOR_LEAF', 'VINE_WHIP', 'GROWTH', 'STUN_SPORE'],
-    },
-  ],
-  aiTier:   2,
-  location: 'ROUTE_5',
-};
 
-DG.TRAINERS.PSYCHIC_ZEN = {
-  id:                 'PSYCHIC_ZEN',
-  name:               'Zen',
-  class:              'Psychic',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "I foresaw this outcome. Your mind is clouded with hesitation.",
-  loseDialogue:       "I... did not foresee that. You are a disruption in the patterns.",
-  reward:             840,
-  party: [
-    {
-      speciesId: 'GHOSTBONE',
-      level:     28,
-      moves:     ['SHADOW_BALL', 'HEX', 'CONFUSE_RAY', 'WILL_O_WISP'],
-    },
-    {
-      speciesId: 'VENOMJAW',
-      level:     29,
-      moves:     ['PSYCHIC', 'POISON_JAB', 'TOXIC', 'PSYBEAM'],
-    },
-  ],
-  aiTier:   2,
-  location: 'ROUTE_6',
-};
 
-DG.TRAINERS.COOLTRAINER_ARIA = {
-  id:                 'COOLTRAINER_ARIA',
-  name:               'Aria',
-  class:              'Cool Trainer',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "Strategy, style, and strength — that's what it takes to win.",
-  loseDialogue:       "You've got all three. Consider me impressed.",
-  reward:             960,
-  party: [
-    {
-      speciesId: 'VOLTSCALE',
-      level:     30,
-      moves:     ['THUNDER_SHOCK', 'DRAGON_RAGE', 'SPARK', 'AGILITY'],
-    },
-    {
-      speciesId: 'SWOOPTER',
-      level:     30,
-      moves:     ['DRAGON_CLAW', 'AIR_SLASH', 'ROOST', 'DRAGON_DANCE'],
-    },
-  ],
-  aiTier:   3,
-  location: 'ROUTE_6',
-};
 
-DG.TRAINERS.GEOLOGIST_HANK = {
-  id:                 'GEOLOGIST_HANK',
-  name:               'Hank',
-  class:              'Geologist',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "Every rock layer tells a story — and my DinoMons are the climax!",
-  loseDialogue:       "You eroded my defenses. Good geological pressure.",
-  reward:             1050,
-  party: [
-    {
-      speciesId: 'STONESKULL',
-      level:     34,
-      moves:     ['ROCK_SLIDE', 'HEADBUTT', 'IRON_DEFENSE', 'STEALTH_ROCK'],
-    },
-    {
-      speciesId: 'DIGCLAW',
-      level:     34,
-      moves:     ['DIG', 'SLASH', 'MUD_SLAP', 'EARTHQUAKE'],
-    },
-    {
-      speciesId: 'ROCKFLIP',
-      level:     35,
-      moves:     ['ROCK_SLIDE', 'ROLLOUT', 'SMACK_DOWN', 'HARDEN'],
-    },
-  ],
-  aiTier:   2,
-  location: 'ROUTE_7',
-};
 
-DG.TRAINERS.FISHERMAN_ROD = {
-  id:                 'FISHERMAN_ROD',
-  name:               'Rod',
-  class:              'Fisherman',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "I've pulled stranger things than you out of these waters, kid.",
-  loseDialogue:       "Didn't catch a win today. Story of my life.",
-  reward:             990,
-  party: [
-    {
-      speciesId: 'MUDFIN',
-      level:     33,
-      moves:     ['MUDDY_WATER', 'WATER_GUN', 'BUBBLE_BEAM', 'MUD_SHOT'],
-    },
-    {
-      speciesId: 'SEAFANG',
-      level:     35,
-      moves:     ['SURF', 'BITE', 'AQUA_JET', 'WATER_PULSE'],
-    },
-  ],
-  aiTier:   2,
-  location: 'ROUTE_7',
-};
 
-DG.TRAINERS.BATTLEGIRL_KIRA = {
-  id:                 'BATTLEGIRL_KIRA',
-  name:               'Kira',
-  class:              'Battle Girl',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "Power! Speed! Precision! My DinoMons have it all!",
-  loseDialogue:       "A real fight at last. I've been waiting for this!",
-  reward:             1280,
-  party: [
-    {
-      speciesId: 'POWERDON',
-      level:     40,
-      moves:     ['SUPERPOWER', 'EARTHQUAKE', 'ROCK_SLIDE', 'BULK_UP'],
-    },
-    {
-      speciesId: 'RAMPASAUR',
-      level:     42,
-      moves:     ['BODY_SLAM', 'THRASH', 'STOMP', 'OUTRAGE'],
-    },
-  ],
-  aiTier:   3,
-  location: 'ROUTE_8',
-};
 
-DG.TRAINERS.VETERAN_GRAM = {
-  id:                 'VETERAN_GRAM',
-  name:               'Gram',
-  class:              'Veteran',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "I've been battling for forty years. Experience beats everything.",
-  loseDialogue:       "Forty years... and you still taught me something. That's rare.",
-  reward:             1500,
-  party: [
-    {
-      speciesId: 'THUNDERSAUR',
-      level:     42,
-      moves:     ['THUNDER', 'DISCHARGE', 'DRAGON_TAIL', 'CHARGE'],
-    },
-    {
-      speciesId: 'SKYMASTER',
-      level:     43,
-      moves:     ['HURRICANE', 'BRAVE_BIRD', 'AERIAL_ACE', 'ROOST'],
-    },
-  ],
-  aiTier:   3,
-  location: 'ROUTE_8',
-};
 
 DG.TRAINERS.RANGER_DEX = {
   id:                 'RANGER_DEX',
@@ -1360,237 +993,22 @@ DG.TRAINERS.EXPLORER_VANCE = {
 // GYM TRAINERS (generated gyms 3-8)
 // ============================================================
 
-DG.TRAINERS.GYM_TRAINER_PY1 = {
-  id:'GYM_TRAINER_PY1', name:'Blaze', class:'Ace Trainer', isGymLeader:false, badge:null,
-  gymId:'GYM_PYRESIDE',
-  loseDialogue:"The Magma Badge burns bright — but not for you yet!", reward:600,
-  party:[
-    { speciesId:'EMBRIX',   level:24, moves:['EMBER','FLAME_CHARGE','SCRATCH','GROWL'] },
-    { speciesId:'FIRECOAL', level:25, moves:['EMBER','FLAME_CHARGE','SCRATCH','GROWL'] },
-  ], aiTier:2,
-};
-DG.TRAINERS.GYM_TRAINER_FN1 = {
-  id:'GYM_TRAINER_FN1', name:'Fern', class:'Ranger', isGymLeader:false, badge:null,
-  gymId:'GYM_FERNGROVE',
-  loseDialogue:"The forest wasn't on my side today.", reward:680,
-  party:[
-    { speciesId:'FRONDLET',  level:26, moves:['VINE_WHIP','LEAFAGE','TACKLE','GROWL'] },
-    { speciesId:'LEAFCUB',   level:27, moves:['VINE_WHIP','LEAFAGE','TACKLE','GROWL'] },
-  ], aiTier:2,
-};
-DG.TRAINERS.GYM_TRAINER_SH1 = {
-  id:'GYM_TRAINER_SH1', name:'Dustin', class:'Hiker', isGymLeader:false, badge:null,
-  gymId:'GYM_STONEHAVEN',
-  loseDialogue:"The ground shook, but not enough to stop you!", reward:800,
-  party:[
-    { speciesId:'QUAKELING', level:32, moves:['BULLDOZE','ROCK_THROW','MUD_SHOT','GROWL'] },
-    { speciesId:'DIGCLAW',   level:33, moves:['DIG','SAND_ATTACK','SCRATCH','GROWL'] },
-  ], aiTier:2,
-};
-DG.TRAINERS.GYM_TRAINER_SH2 = {
-  id:'GYM_TRAINER_SH2', name:'Gravel', class:'Hiker', isGymLeader:false, badge:null,
-  gymId:'GYM_STONEHAVEN',
-  loseDialogue:"Solid as rock, you are!", reward:760,
-  party:[
-    { speciesId:'BONEBACK', level:32, moves:['ROCK_THROW','TACKLE','DEFENSE_CURL','GROWL'] },
-  ], aiTier:1,
-};
-DG.TRAINERS.GYM_TRAINER_CF1 = {
-  id:'GYM_TRAINER_CF1', name:'Zap', class:'Ace Trainer', isGymLeader:false, badge:null,
-  gymId:'GYM_CRESTFALL',
-  loseDialogue:"Static in the air... that was you!", reward:900,
-  party:[
-    { speciesId:'SPARKLET',  level:36, moves:['THUNDER_WAVE','SPARK','QUICK_ATTACK','GROWL'] },
-    { speciesId:'SPARKHORN', level:37, moves:['THUNDERBOLT','THUNDER_WAVE','BODY_SLAM','AGILITY'] },
-  ], aiTier:2,
-};
-DG.TRAINERS.GYM_TRAINER_BG1 = {
-  id:'GYM_TRAINER_BG1', name:'Coral', class:'Swimmer', isGymLeader:false, badge:null,
-  gymId:'GYM_BOGMIRE',
-  loseDialogue:"The bog's currents favoured you today!", reward:960,
-  party:[
-    { speciesId:'MUDFIN',   level:42, moves:['SURF','MUD_SHOT','WATER_GUN','GROWL'] },
-    { speciesId:'MARSHFIN', level:43, moves:['HYDRO_PUMP','SLUDGE_BOMB','SURF','GROWL'] },
-  ], aiTier:2,
-};
-DG.TRAINERS.GYM_TRAINER_AP1 = {
-  id:'GYM_TRAINER_AP1', name:'Peak', class:'Dragon Tamer', isGymLeader:false, badge:null,
-  gymId:'GYM_APEXSUMMIT',
-  loseDialogue:"Only the strongest reach the Summit!", reward:1100,
-  party:[
-    { speciesId:'SWOOPTER', level:50, moves:['DRAGON_CLAW','AIR_SLASH','BITE','AGILITY'] },
-    { speciesId:'GLIDEREX', level:51, moves:['DRAGON_CLAW','AERIAL_ACE','WING_ATTACK','DRAGON_BREATH'] },
-  ], aiTier:2,
-};
-DG.TRAINERS.GYM_TRAINER_AP2 = {
-  id:'GYM_TRAINER_AP2', name:'Storm', class:'Dragon Tamer', isGymLeader:false, badge:null,
-  gymId:'GYM_APEXSUMMIT',
-  loseDialogue:"The storm at the peak never stops — and neither will I!", reward:1100,
-  party:[
-    { speciesId:'PTRYX',    level:50, moves:['DRAGON_RAGE','DRAGON_BREATH','WING_ATTACK','BITE'] },
-    { speciesId:'SWOOPTER', level:51, moves:['DRAGON_CLAW','AIR_SLASH','CRUNCH','AGILITY'] },
-  ], aiTier:2,
-};
 
 // ============================================================
 // GYM TRAINERS (Shellcreek & Dustwall hand-coded gyms)
 // ============================================================
 
-DG.TRAINERS.SC_TRAINER_1 = {
-  id:                 'SC_TRAINER_1',
-  name:               'Herder Cal',
-  class:              'Rancher',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  gymId:              'GYM_SHELLCREEK',
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  loseDialogue:       'My herd scattered — but they will regroup!',
-  reward:             300,
-  party: [
-    { speciesId: 'NORMLET',  level: 10, moves: ['TACKLE', 'GROWL', 'QUICK_ATTACK', 'TAIL_WHIP'] },
-    { speciesId: 'PACKDINO', level: 11, moves: ['TACKLE', 'HEADBUTT', 'LEER', 'QUICK_ATTACK'] },
-  ],
-  aiTier: 1,
-  location: 'SHELLCREEK_GYM',
-};
 
-DG.TRAINERS.SC_TRAINER_2 = {
-  id: 'SC_TRAINER_2', name: 'Rancher Tess', class: 'Rancher',
-  isGymLeader: false, isStoryBoss: false, badge: null,
-  gymId: 'GYM_SHELLCREEK',
-  preBattleDialogue: null, postBattleDialogue: null,
-  loseDialogue: 'Even on the plains I couldn\'t stop you!',
-  reward: 330,
-  party: [
-    { speciesId: 'NORMLET',    level: 12, moves: ['TACKLE', 'HEADBUTT', 'QUICK_ATTACK', 'GROWL'] },
-    { speciesId: 'QUICKFEET',  level: 13, moves: ['QUICK_ATTACK', 'SCRATCH', 'LEER', 'AGILITY'] },
-  ],
-  aiTier: 1, location: 'SHELLCREEK_GYM',
-};
 
-DG.TRAINERS.DW_TRAINER_1 = {
-  id:                 'DW_TRAINER_1',
-  name:               'Hiker Burl',
-  class:              'Hiker',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  gymId:              'GYM_DUSTWALL',
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  loseDialogue:       'This desert heat must be getting to me!',
-  reward:             400,
-  party: [
-    { speciesId: 'BONEBACK', level: 16, moves: ['ROCK_THROW', 'TACKLE', 'DEFENSE_CURL', 'GROWL'] },
-    { speciesId: 'SANDCLAW', level: 17, moves: ['SAND_ATTACK', 'SCRATCH', 'ROCK_THROW', 'GROWL'] },
-  ],
-  aiTier: 1,
-  location: 'DUSTWALL_GYM',
-};
 
-DG.TRAINERS.DW_TRAINER_2 = {
-  id: 'DW_TRAINER_2', name: 'Granite Gal', class: 'Hiker',
-  isGymLeader: false, isStoryBoss: false, badge: null,
-  gymId: 'GYM_DUSTWALL',
-  preBattleDialogue: null, postBattleDialogue: null,
-  loseDialogue: 'Crumbling like sandstone out here!',
-  reward: 440,
-  party: [
-    { speciesId: 'ROCKLETT',  level: 19, moves: ['ROCK_THROW', 'HARDEN', 'SMACK_DOWN', 'ROLLOUT'] },
-    { speciesId: 'BONEBACK',  level: 20, moves: ['ROCK_SLIDE', 'TACKLE', 'DEFENSE_CURL', 'BONE_RUSH'] },
-  ],
-  aiTier: 1, location: 'DUSTWALL_GYM',
-};
 
-DG.TRAINERS.GYM_TRAINER_PY2 = {
-  id: 'GYM_TRAINER_PY2', name: 'Cinder', class: 'Ace Trainer',
-  isGymLeader: false, badge: null, gymId: 'GYM_PYRESIDE',
-  loseDialogue: 'You really burned through my strategy!', reward: 640,
-  party: [
-    { speciesId: 'FIRECOAL', level: 25, moves: ['EMBER', 'FLAME_CHARGE', 'SMOKESCREEN', 'FIRE_SPIN'] },
-    { speciesId: 'EMBRIX',   level: 27, moves: ['EMBER', 'FLAME_CHARGE', 'FIRE_SPIN', 'SMOKESCREEN'] },
-  ],
-  aiTier: 2, location: 'PYRESIDE_GYM',
-};
 
-DG.TRAINERS.GYM_TRAINER_FN2 = {
-  id: 'GYM_TRAINER_FN2', name: 'Bramble', class: 'Ranger',
-  isGymLeader: false, badge: null, gymId: 'GYM_FERNGROVE',
-  loseDialogue: 'The vines couldn\'t hold you!', reward: 720,
-  party: [
-    { speciesId: 'VINOSAUR', level: 29, moves: ['VINE_WHIP', 'RAZOR_LEAF', 'GROWTH', 'STUN_SPORE'] },
-    { speciesId: 'LEAFAWN',  level: 30, moves: ['RAZOR_LEAF', 'SYNTHESIS', 'VINE_WHIP', 'GROWL'] },
-  ],
-  aiTier: 2, location: 'FERNGROVE_GYM',
-};
 
-DG.TRAINERS.GYM_TRAINER_SH3 = {
-  id: 'GYM_TRAINER_SH3', name: 'Digger Drake', class: 'Geologist',
-  isGymLeader: false, badge: null, gymId: 'GYM_STONEHAVEN',
-  loseDialogue: 'The ground split beneath my feet!', reward: 860,
-  party: [
-    { speciesId: 'QUAKELING', level: 35, moves: ['BULLDOZE', 'MUD_SHOT', 'SAND_ATTACK', 'BODY_SLAM'] },
-    { speciesId: 'DIGCLAW',   level: 36, moves: ['DIG', 'SCRATCH', 'MUD_SHOT', 'SAND_ATTACK'] },
-  ],
-  aiTier: 2, location: 'STONEHAVEN_GYM',
-};
 
-DG.TRAINERS.GYM_TRAINER_CF2 = {
-  id: 'GYM_TRAINER_CF2', name: 'Sparky', class: 'Ace Trainer',
-  isGymLeader: false, badge: null, gymId: 'GYM_CRESTFALL',
-  loseDialogue: 'My voltage just wasn\'t high enough!', reward: 960,
-  party: [
-    { speciesId: 'SPARKHORN', level: 39, moves: ['THUNDERBOLT', 'THUNDER_WAVE', 'SPARK', 'HEADBUTT'] },
-    { speciesId: 'SPARKLET',  level: 40, moves: ['THUNDER_WAVE', 'SPARK', 'QUICK_ATTACK', 'GROWL'] },
-  ],
-  aiTier: 2, location: 'CRESTFALL_GYM',
-};
 
-DG.TRAINERS.GYM_TRAINER_CF3 = {
-  id: 'GYM_TRAINER_CF3', name: 'Amp', class: 'Ace Trainer',
-  isGymLeader: false, badge: null, gymId: 'GYM_CRESTFALL',
-  loseDialogue: 'Short-circuited by your skill!', reward: 980,
-  party: [
-    { speciesId: 'VOLTSCALE',  level: 41, moves: ['THUNDERBOLT', 'SPARK', 'DRAGON_BREATH', 'AGILITY'] },
-    { speciesId: 'STORMWING',  level: 42, moves: ['THUNDERBOLT', 'WING_ATTACK', 'THUNDER_WAVE', 'AERIAL_ACE'] },
-  ],
-  aiTier: 2, location: 'CRESTFALL_GYM',
-};
 
-DG.TRAINERS.GYM_TRAINER_BG2 = {
-  id: 'GYM_TRAINER_BG2', name: 'Diver Coral', class: 'Swimmer',
-  isGymLeader: false, badge: null, gymId: 'GYM_BOGMIRE',
-  loseDialogue: 'Washed out by your power!', reward: 1020,
-  party: [
-    { speciesId: 'MUDFIN',   level: 45, moves: ['SURF', 'MUD_SHOT', 'WATER_GUN', 'BULLDOZE'] },
-    { speciesId: 'AQUAFLIP', level: 45, moves: ['SURF', 'WATER_GUN', 'QUICK_ATTACK', 'ICE_BEAM'] },
-  ],
-  aiTier: 2, location: 'BOGMIRE_GYM',
-};
 
-DG.TRAINERS.GYM_TRAINER_BG3 = {
-  id: 'GYM_TRAINER_BG3', name: 'Tide Marsh', class: 'Swimmer',
-  isGymLeader: false, badge: null, gymId: 'GYM_BOGMIRE',
-  loseDialogue: 'The bog has never seen a trainer like you!', reward: 1040,
-  party: [
-    { speciesId: 'MARSHFIN',  level: 46, moves: ['SURF', 'MUD_SHOT', 'SLUDGE_BOMB', 'WATER_GUN'] },
-    { speciesId: 'SWAMPJAW',  level: 47, moves: ['HYDRO_PUMP', 'EARTHQUAKE', 'SURF', 'CRUNCH'] },
-  ],
-  aiTier: 2, location: 'BOGMIRE_GYM',
-};
 
-DG.TRAINERS.GYM_TRAINER_AP3 = {
-  id: 'GYM_TRAINER_AP3', name: 'Drake', class: 'Dragon Tamer',
-  isGymLeader: false, badge: null, gymId: 'GYM_APEXSUMMIT',
-  loseDialogue: 'Even at the summit, dragons can fall!', reward: 1200,
-  party: [
-    { speciesId: 'SWOOPTER',  level: 50, moves: ['DRAGON_CLAW', 'WING_ATTACK', 'AGILITY', 'CRUNCH'] },
-    { speciesId: 'GLIDEREX',  level: 51, moves: ['DRAGON_CLAW', 'AERIAL_ACE', 'DIVE_BOMB', 'DRAGON_BREATH'] },
-  ],
-  aiTier: 2, location: 'APEXSUMMIT_GYM',
-};
 
 // ============================================================
 // ELITE FOUR (4 trainers before Champion)
@@ -1716,177 +1134,25 @@ DG.TRAINERS.GRAND_ARCHON_CORVUS = {
 // ROUTE 1A TRAINERS (Normal/Ground, lv 5–8)
 // ============================================================
 
-DG.TRAINERS.YOUNGSTER_DAX = {
-  id:                 'YOUNGSTER_DAX',
-  name:               'Dax',
-  class:              'Youngster',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "My DinoMons are the toughest on Route 1A — I swear it!",
-  loseDialogue:       "Whoa, you're really good. I need way more training.",
-  reward:             80,
-  party: [
-    { speciesId: 'NORMLET',   level: 5, moves: ['TACKLE', 'GROWL', 'QUICK_ATTACK', 'TAIL_WHIP'] },
-    { speciesId: 'QUAKELING', level: 6, moves: ['TACKLE', 'SAND_ATTACK', 'BULLDOZE', 'GROWL'] },
-  ],
-  aiTier:   1,
-  location: 'ROUTE_1A',
-};
 
-DG.TRAINERS.LASS_MIRA = {
-  id:                 'LASS_MIRA',
-  name:               'Mira',
-  class:              'Lass',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "Don't underestimate cute DinoMons — they bite!",
-  loseDialogue:       "Oh, you're good! My DinoMons need more love, I think.",
-  reward:             90,
-  party: [
-    { speciesId: 'BUGLING',  level: 6, moves: ['BUG_BITE', 'STRING_SHOT', 'QUICK_ATTACK', 'GROWL'] },
-    { speciesId: 'LEAFCUB',  level: 7, moves: ['VINE_WHIP', 'GROWL', 'RAZOR_LEAF', 'LEECH_SEED'] },
-  ],
-  aiTier:   1,
-  location: 'ROUTE_1A',
-};
 
 // ============================================================
 // ROUTE 1B TRAINERS (lv 7–10)
 // ============================================================
 
-DG.TRAINERS.HIKER_TOM = {
-  id:                 'HIKER_TOM',
-  name:               'Tom',
-  class:              'Hiker',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "These trails are my home. My DinoMons are as tough as the rock!",
-  loseDialogue:       "Solid battling, kid. Solid as granite.",
-  reward:             120,
-  party: [
-    { speciesId: 'SANDCLAW', level: 8, moves: ['SCRATCH', 'SAND_ATTACK', 'DIG', 'BULLDOZE'] },
-    { speciesId: 'BONEBACK', level: 9, moves: ['HEADBUTT', 'ROCK_THROW', 'HARDEN', 'TACKLE'] },
-  ],
-  aiTier:   1,
-  location: 'ROUTE_1B',
-};
 
-DG.TRAINERS.CAMPER_ZOE = {
-  id:                 'CAMPER_ZOE',
-  name:               'Zoe',
-  class:              'Camper',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "I've been camping out here all week — my DinoMons are ready!",
-  loseDialogue:       "Aw, first loss of the trip. Still worth it!",
-  reward:             140,
-  party: [
-    { speciesId: 'PTRYX',     level:  9, moves: ['GUST', 'LEER', 'WING_ATTACK', 'DRAGON_BREATH'] },
-    { speciesId: 'FAIRYWING', level: 10, moves: ['FAIRY_WIND', 'CHARM', 'DAZZLING_GLEAM', 'GROWL'] },
-  ],
-  aiTier:   1,
-  location: 'ROUTE_1B',
-};
 
 // ============================================================
 // ROUTE 2A TRAINERS (lv 11–14)
 // ============================================================
 
-DG.TRAINERS.BUG_CATCHER_ROUTE2A = {
-  id:                 'BUG_CATCHER_ROUTE2A',
-  name:               'Barry',
-  class:              'Bug Catcher',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "Bug-types are underrated! You'll see!",
-  loseDialogue:       "Ok ok, maybe I need a stronger net.",
-  reward:             180,
-  party: [
-    { speciesId: 'BUGLING',    level: 11, moves: ['BUG_BITE', 'QUICK_ATTACK', 'STRING_SHOT', 'SIGNAL_BEAM'] },
-    { speciesId: 'INSECTADON', level: 13, moves: ['X_SCISSOR', 'ENERGY_BALL', 'BUG_BITE', 'LEECH_SEED'] },
-  ],
-  aiTier:   1,
-  location: 'ROUTE_2A',
-};
 
-DG.TRAINERS.YOUNGSTER_ROUTE2A = {
-  id:                 'YOUNGSTER_ROUTE2A',
-  name:               'Cal',
-  class:              'Youngster',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "I've been training every day. You can't beat me!",
-  loseDialogue:       "Ugh! Back to the drawing board.",
-  reward:             200,
-  party: [
-    { speciesId: 'NORMLET',  level: 12, moves: ['TACKLE', 'HEADBUTT', 'QUICK_ATTACK', 'GROWL'] },
-    { speciesId: 'PACKDINO', level: 14, moves: ['HEADBUTT', 'BODY_SLAM', 'QUICK_ATTACK', 'LEER'] },
-  ],
-  aiTier:   1,
-  location: 'ROUTE_2A',
-};
 
 // ============================================================
 // ROUTE 2B TRAINERS (lv 13–17)
 // ============================================================
 
-DG.TRAINERS.HIKER_ROUTE2B = {
-  id:                 'HIKER_ROUTE2B',
-  name:               'Rudd',
-  class:              'Hiker',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "The rocks speak to me — and right now they say you're losing!",
-  loseDialogue:       "Crumbled like sandstone. I'll rebuild.",
-  reward:             240,
-  party: [
-    { speciesId: 'SANDCLAW', level: 14, moves: ['SCRATCH', 'SAND_ATTACK', 'DIG', 'BULLDOZE'] },
-    { speciesId: 'ROCKLETT', level: 16, moves: ['ROCK_THROW', 'HEADBUTT', 'ROCK_BLAST', 'SANDSTORM'] },
-  ],
-  aiTier:   1,
-  location: 'ROUTE_2B',
-};
 
-DG.TRAINERS.LASS_ROUTE2B = {
-  id:                 'LASS_ROUTE2B',
-  name:               'Dana',
-  class:              'Lass',
-  isGymLeader:        false,
-  isStoryBoss:        false,
-  badge:              null,
-  preBattleDialogue:  null,
-  postBattleDialogue: null,
-  winDialogue:        "Fire and fairy — the best combination there is!",
-  loseDialogue:       "Well... can't argue with results. Good battle!",
-  reward:             260,
-  party: [
-    { speciesId: 'EMBRIX',    level: 15, moves: ['EMBER', 'SCRATCH', 'FLAME_CHARGE', 'SMOKESCREEN'] },
-    { speciesId: 'FAIRYWING', level: 17, moves: ['FAIRY_WIND', 'CHARM', 'DAZZLING_GLEAM', 'MOONBLAST'] },
-  ],
-  aiTier:   1,
-  location: 'ROUTE_2B',
-};
 
 // ============================================================
 // TEAM EXTINCTION COMMANDERS (cutscene bosses)
@@ -1942,7 +1208,7 @@ DG.TRAINERS.RIVAL_1_FIRE = {
   winDialogue:  "FLINT: 'See? That\\'s the difference between us. Remember that.'",
   loseDialogue: "FLINT: '...Beginner\\'s luck. Enjoy it while it lasts.'",
   reward: 200, aiTier: 1,
-  party: [{ speciesId:'AQUEEL', level:5 }],
+  party: [{ speciesId:'LEAFAWN', level:5 }],
 };
 
 DG.TRAINERS.RIVAL_1_GRASS = {
@@ -1954,7 +1220,7 @@ DG.TRAINERS.RIVAL_1_GRASS = {
   winDialogue:  "FLINT: 'See? That\\'s the difference between us. Remember that.'",
   loseDialogue: "FLINT: '...Beginner\\'s luck. Enjoy it while it lasts.'",
   reward: 200, aiTier: 1,
-  party: [{ speciesId:'TINDREL', level:5 }],
+  party: [{ speciesId:'AQUEEL', level:5 }],
 };
 
 DG.TRAINERS.RIVAL_1_WATER = {
@@ -1966,7 +1232,7 @@ DG.TRAINERS.RIVAL_1_WATER = {
   winDialogue:  "FLINT: 'See? That\\'s the difference between us. Remember that.'",
   loseDialogue: "FLINT: '...Beginner\\'s luck. Enjoy it while it lasts.'",
   reward: 200, aiTier: 1,
-  party: [{ speciesId:'LEAFAWN', level:5 }],
+  party: [{ speciesId:'TINDREL', level:5 }],
 };
 
 // ── Encounter 2 (Lv 22 — 3 DinoMons) ────────────────────────
@@ -1981,7 +1247,7 @@ DG.TRAINERS.RIVAL_2_FIRE = {
   loseDialogue: "FLINT: '...You\\'ve gotten stronger. I\\'ll admit that much. Don\\'t let it go to your head.'",
   reward: 800, aiTier: 2,
   party: [
-    { speciesId:'AQUEEL',   level:22 },
+    { speciesId:'LEAFAWN',  level:22 },
     { speciesId:'SANDCLAW', level:19 },
     { speciesId:'PTRYX',    level:18 },
   ],
@@ -1997,7 +1263,7 @@ DG.TRAINERS.RIVAL_2_GRASS = {
   loseDialogue: "FLINT: '...You\\'ve gotten stronger. I\\'ll admit that much. Don\\'t let it go to your head.'",
   reward: 800, aiTier: 2,
   party: [
-    { speciesId:'TINDREL',  level:22 },
+    { speciesId:'AQUEEL',   level:22 },
     { speciesId:'SANDCLAW', level:19 },
     { speciesId:'PTRYX',    level:18 },
   ],
@@ -2013,7 +1279,7 @@ DG.TRAINERS.RIVAL_2_WATER = {
   loseDialogue: "FLINT: '...You\\'ve gotten stronger. I\\'ll admit that much. Don\\'t let it go to your head.'",
   reward: 800, aiTier: 2,
   party: [
-    { speciesId:'LEAFAWN',  level:22 },
+    { speciesId:'TINDREL',  level:22 },
     { speciesId:'SANDCLAW', level:19 },
     { speciesId:'PTRYX',    level:18 },
   ],
@@ -2031,7 +1297,7 @@ DG.TRAINERS.RIVAL_3_FIRE = {
   loseDialogue: "FLINT: 'Fine. You win. But I\\'m not done — not by a long shot.'",
   reward: 1400, aiTier: 2,
   party: [
-    { speciesId:'PLESIWAVE', level:30 },
+    { speciesId:'FERNASAUR', level:30 },
     { speciesId:'BONEBACK',  level:27 },
     { speciesId:'PTRYX',     level:26 },
     { speciesId:'NORMLET',   level:25 },
@@ -2048,10 +1314,10 @@ DG.TRAINERS.RIVAL_3_GRASS = {
   loseDialogue: "FLINT: 'Fine. You win. But I\\'m not done — not by a long shot.'",
   reward: 1400, aiTier: 2,
   party: [
-    { speciesId:'TINDRAK',  level:30 },
-    { speciesId:'BONEBACK', level:27 },
-    { speciesId:'PTRYX',    level:26 },
-    { speciesId:'NORMLET',  level:25 },
+    { speciesId:'PLESIWAVE', level:30 },
+    { speciesId:'BONEBACK',  level:27 },
+    { speciesId:'PTRYX',     level:26 },
+    { speciesId:'NORMLET',   level:25 },
   ],
 };
 
@@ -2065,7 +1331,7 @@ DG.TRAINERS.RIVAL_3_WATER = {
   loseDialogue: "FLINT: 'Fine. You win. But I\\'m not done — not by a long shot.'",
   reward: 1400, aiTier: 2,
   party: [
-    { speciesId:'FERNASAUR', level:30 },
+    { speciesId:'TINDRAK',   level:30 },
     { speciesId:'BONEBACK',  level:27 },
     { speciesId:'PTRYX',     level:26 },
     { speciesId:'NORMLET',   level:25 },
@@ -2084,6 +1350,24 @@ DG.TRAINERS.RIVAL_4_FIRE = {
   loseDialogue: "FLINT: '...Go. Stop them. I\\'ll catch up.'",
   reward: 2400, aiTier: 3,
   party: [
+    { speciesId:'VERDANTHORN', level:42 },
+    { speciesId:'OSSIFANG',    level:40 },
+    { speciesId:'SWOOPTER',    level:39 },
+    { speciesId:'MIDDODON',    level:38 },
+    { speciesId:'SPARKHORN',   level:37 },
+  ],
+};
+
+DG.TRAINERS.RIVAL_4_GRASS = {
+  id: 'RIVAL_4_GRASS', name: 'Flint', class: 'Rival',
+  isGymLeader: false, isStoryBoss: true, badge: null,
+  preMon: 'FLINT',
+  preBattleDialogue:  'RIVAL_PRE_4',
+  postBattleDialogue: 'RIVAL_POST_4_WIN',
+  winDialogue:  "FLINT: 'Good. You\\'re going to need every bit of that.'",
+  loseDialogue: "FLINT: '...Go. Stop them. I\\'ll catch up.'",
+  reward: 2400, aiTier: 3,
+  party: [
     { speciesId:'TIDANOSAURUS', level:42 },
     { speciesId:'OSSIFANG',     level:40 },
     { speciesId:'SWOOPTER',     level:39 },
@@ -2092,8 +1376,8 @@ DG.TRAINERS.RIVAL_4_FIRE = {
   ],
 };
 
-DG.TRAINERS.RIVAL_4_GRASS = {
-  id: 'RIVAL_4_GRASS', name: 'Flint', class: 'Rival',
+DG.TRAINERS.RIVAL_4_WATER = {
+  id: 'RIVAL_4_WATER', name: 'Flint', class: 'Rival',
   isGymLeader: false, isStoryBoss: true, badge: null,
   preMon: 'FLINT',
   preBattleDialogue:  'RIVAL_PRE_4',
@@ -2110,66 +1394,10 @@ DG.TRAINERS.RIVAL_4_GRASS = {
   ],
 };
 
-DG.TRAINERS.RIVAL_4_WATER = {
-  id: 'RIVAL_4_WATER', name: 'Flint', class: 'Rival',
-  isGymLeader: false, isStoryBoss: true, badge: null,
-  preMon: 'FLINT',
-  preBattleDialogue:  'RIVAL_PRE_4',
-  postBattleDialogue: 'RIVAL_POST_4_WIN',
-  winDialogue:  "FLINT: 'Good. You\\'re going to need every bit of that.'",
-  loseDialogue: "FLINT: '...Go. Stop them. I\\'ll catch up.'",
-  reward: 2400, aiTier: 3,
-  party: [
-    { speciesId:'VERDANTHORN', level:42 },
-    { speciesId:'OSSIFANG',    level:40 },
-    { speciesId:'SWOOPTER',    level:39 },
-    { speciesId:'MIDDODON',    level:38 },
-    { speciesId:'SPARKHORN',   level:37 },
-  ],
-};
-
 // ── Encounter 5 (Lv 55 — full team of 6) ─────────────────────
 
 DG.TRAINERS.RIVAL_5_FIRE = {
   id: 'RIVAL_5_FIRE', name: 'Flint', class: 'Rival',
-  isGymLeader: false, isStoryBoss: true, badge: null,
-  preMon: 'FLINT',
-  preBattleDialogue:  'RIVAL_PRE_5',
-  postBattleDialogue: 'RIVAL_POST_5_WIN',
-  winDialogue:  "FLINT: 'Get up. Get stronger. And go end this.'",
-  loseDialogue: "FLINT: '...Go finish this. I\\'ll be right behind you.'",
-  reward: 3600, aiTier: 3,
-  party: [
-    { speciesId:'TIDANOSAURUS', level:55 },
-    { speciesId:'SKYFANG',      level:53 },
-    { speciesId:'TERRADON',     level:52 },
-    { speciesId:'OSSIFANG',     level:51 },
-    { speciesId:'THUNDERSAUR',  level:50 },
-    { speciesId:'SHADOWLET',    level:49 },
-  ],
-};
-
-DG.TRAINERS.RIVAL_5_GRASS = {
-  id: 'RIVAL_5_GRASS', name: 'Flint', class: 'Rival',
-  isGymLeader: false, isStoryBoss: true, badge: null,
-  preMon: 'FLINT',
-  preBattleDialogue:  'RIVAL_PRE_5',
-  postBattleDialogue: 'RIVAL_POST_5_WIN',
-  winDialogue:  "FLINT: 'Get up. Get stronger. And go end this.'",
-  loseDialogue: "FLINT: '...Go finish this. I\\'ll be right behind you.'",
-  reward: 3600, aiTier: 3,
-  party: [
-    { speciesId:'PYROCERATH',  level:55 },
-    { speciesId:'SKYFANG',     level:53 },
-    { speciesId:'TERRADON',    level:52 },
-    { speciesId:'OSSIFANG',    level:51 },
-    { speciesId:'THUNDERSAUR', level:50 },
-    { speciesId:'SHADOWLET',   level:49 },
-  ],
-};
-
-DG.TRAINERS.RIVAL_5_WATER = {
-  id: 'RIVAL_5_WATER', name: 'Flint', class: 'Rival',
   isGymLeader: false, isStoryBoss: true, badge: null,
   preMon: 'FLINT',
   preBattleDialogue:  'RIVAL_PRE_5',
@@ -2187,30 +1415,68 @@ DG.TRAINERS.RIVAL_5_WATER = {
   ],
 };
 
+DG.TRAINERS.RIVAL_5_GRASS = {
+  id: 'RIVAL_5_GRASS', name: 'Flint', class: 'Rival',
+  isGymLeader: false, isStoryBoss: true, badge: null,
+  preMon: 'FLINT',
+  preBattleDialogue:  'RIVAL_PRE_5',
+  postBattleDialogue: 'RIVAL_POST_5_WIN',
+  winDialogue:  "FLINT: 'Get up. Get stronger. And go end this.'",
+  loseDialogue: "FLINT: '...Go finish this. I\\'ll be right behind you.'",
+  reward: 3600, aiTier: 3,
+  party: [
+    { speciesId:'TIDANOSAURUS', level:55 },
+    { speciesId:'SKYFANG',      level:53 },
+    { speciesId:'TERRADON',     level:52 },
+    { speciesId:'OSSIFANG',     level:51 },
+    { speciesId:'THUNDERSAUR',  level:50 },
+    { speciesId:'SHADOWLET',    level:49 },
+  ],
+};
+
+DG.TRAINERS.RIVAL_5_WATER = {
+  id: 'RIVAL_5_WATER', name: 'Flint', class: 'Rival',
+  isGymLeader: false, isStoryBoss: true, badge: null,
+  preMon: 'FLINT',
+  preBattleDialogue:  'RIVAL_PRE_5',
+  postBattleDialogue: 'RIVAL_POST_5_WIN',
+  winDialogue:  "FLINT: 'Get up. Get stronger. And go end this.'",
+  loseDialogue: "FLINT: '...Go finish this. I\\'ll be right behind you.'",
+  reward: 3600, aiTier: 3,
+  party: [
+    { speciesId:'PYROCERATH',  level:55 },
+    { speciesId:'SKYFANG',     level:53 },
+    { speciesId:'TERRADON',    level:52 },
+    { speciesId:'OSSIFANG',    level:51 },
+    { speciesId:'THUNDERSAUR', level:50 },
+    { speciesId:'SHADOWLET',   level:49 },
+  ],
+};
+
 // ── Double Battle: Flint + Commander Cretaceous ──────────────
 // Flint brings 2 mons (lead + Swoopter), Cretaceous brings 2 mons
 DG.TRAINERS.RIVAL_4_DOUBLE_FIRE = {
   id:'RIVAL_4_DOUBLE_FIRE', name:'Flint', class:'Team Extinction',
   isStoryBoss:true, aiTier:2,
   party:[
-    { speciesId:'TIDANOSAURUS', level:38 },
-    { speciesId:'SWOOPTER',     level:36 },
+    { speciesId:'VERDANTHORN', level:38 },
+    { speciesId:'SWOOPTER',    level:36 },
   ],
 };
 DG.TRAINERS.RIVAL_4_DOUBLE_GRASS = {
   id:'RIVAL_4_DOUBLE_GRASS', name:'Flint', class:'Team Extinction',
   isStoryBoss:true, aiTier:2,
   party:[
-    { speciesId:'PYROCERATH',  level:38 },
-    { speciesId:'SWOOPTER',    level:36 },
+    { speciesId:'TIDANOSAURUS', level:38 },
+    { speciesId:'SWOOPTER',     level:36 },
   ],
 };
 DG.TRAINERS.RIVAL_4_DOUBLE_WATER = {
   id:'RIVAL_4_DOUBLE_WATER', name:'Flint', class:'Team Extinction',
   isStoryBoss:true, aiTier:2,
   party:[
-    { speciesId:'VERDANTHORN', level:38 },
-    { speciesId:'SWOOPTER',    level:36 },
+    { speciesId:'PYROCERATH', level:38 },
+    { speciesId:'SWOOPTER',   level:36 },
   ],
 };
 DG.TRAINERS.CMD_CRETACEOUS_DOUBLE = {
@@ -2234,230 +1500,21 @@ DG.TRAINERS.MORAX_ALLY = {
 // GYM WRONG-PATH TRAINERS (puzzle mechanic - 2 per gym)
 // ============================================================
 
-DG.TRAINERS.SAILOR_BRINE = {
-  id:'SAILOR_BRINE', name:'Sailor Brine', class:'Sailor',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"Ha! The current fooled you. Now battle for passage!",
-  loseDialogue:"You know your tides after all. Carry on, Trainer.",
-  reward:280,
-  party:[
-    { speciesId:'AQUEEL', level:13, moves:['WATER_GUN','AQUA_JET','BUBBLE_BEAM','GROWL'] },
-    { speciesId:'MUDFIN', level:14, moves:['WATER_PULSE','MUD_SLAP','BUBBLE_BEAM','GROWL'] },
-  ],
-  aiTier:1, location:'SHELLCREEK_GYM',
-};
 
-DG.TRAINERS.DIVER_MIRA = {
-  id:'DIVER_MIRA', name:'Diver Mira', class:'Diver',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"Wrong tide, wrong Trainer! Deep water is my domain!",
-  loseDialogue:"You read the currents well. Rex won't be easy though.",
-  reward:320,
-  party:[
-    { speciesId:'AQUAFLIP', level:15, moves:['WATER_GUN','AQUA_JET','BUBBLE_BEAM','AGILITY'] },
-    { speciesId:'PLESIWAVE', level:16, moves:['WATER_PULSE','BUBBLE_BEAM','AQUA_JET','GROWL'] },
-  ],
-  aiTier:1, location:'SHELLCREEK_GYM',
-};
 
-DG.TRAINERS.EXCAVATOR_DAG = {
-  id:'EXCAVATOR_DAG', name:'Excavator Dag', class:'Excavator',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"That fossil belongs to a horn-type! Back to school!",
-  loseDialogue:"Impressive. You've read the rock layers better than I have.",
-  reward:380,
-  party:[
-    { speciesId:'BONEBACK', level:19, moves:['ROCK_THROW','TACKLE','HARDEN','HEADBUTT'] },
-    { speciesId:'ROCKLETT', level:20, moves:['ROCK_THROW','HARDEN','ROCK_BLAST','HEADBUTT'] },
-  ],
-  aiTier:1, location:'DUSTWALL_GYM',
-};
 
-DG.TRAINERS.GEOLOGIST_FEN = {
-  id:'GEOLOGIST_FEN', name:'Geologist Fen', class:'Geologist',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"The Cretaceous layer! You should study your strata more!",
-  loseDialogue:"Ha! You know your geological periods. Ridley will test you further.",
-  reward:420,
-  party:[
-    { speciesId:'QUAKELING', level:21, moves:['MUD_SLAP','TACKLE','MAGNITUDE','ROCK_THROW'] },
-    { speciesId:'STONESKULL', level:22, moves:['ROCK_SLIDE','HEADBUTT','HARDEN','STEALTH_ROCK'] },
-  ],
-  aiTier:2, location:'DUSTWALL_GYM',
-};
 
-DG.TRAINERS.PYRO_BLAZE = {
-  id:'PYRO_BLAZE', name:'Pyro Blaze', class:'Fire Trainer',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"Hot tip: fire melts grass, not rock! Learn your types!",
-  loseDialogue:"You know your flames. Ignis burns even brighter though.",
-  reward:480,
-  party:[
-    { speciesId:'EMBRIX', level:27, moves:['EMBER','FLAME_CHARGE','SMOKESCREEN','FIRE_SPIN'] },
-    { speciesId:'FIRECOAL', level:28, moves:['EMBER','FLAME_CHARGE','SMOG','QUICK_ATTACK'] },
-  ],
-  aiTier:1, location:'PYRESIDE_GYM',
-};
 
-DG.TRAINERS.LAVA_CINDER = {
-  id:'LAVA_CINDER', name:'Cinder', class:'Lava Guard',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"Against the lava flow? You'll burn! Pyrocerath rules here!",
-  loseDialogue:"You flow with the lava, not against it. Smart Trainer.",
-  reward:520,
-  party:[
-    { speciesId:'TINDRAK', level:30, moves:['FLAME_CHARGE','HEADBUTT','FIRE_SPIN','EMBER'] },
-    { speciesId:'SOLARIX', level:31, moves:['FLAMETHROWER','ROCK_SLIDE','EMBER','HARDEN'] },
-  ],
-  aiTier:2, location:'PYRESIDE_GYM',
-};
 
-DG.TRAINERS.BOTANIST_FERN = {
-  id:'BOTANIST_FERN', name:'Botanist Fern', class:'Botanist',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"The yellow ones! Sunflowers face the sun, not the water!",
-  loseDialogue:"You follow the light well. The garden holds more secrets ahead.",
-  reward:520,
-  party:[
-    { speciesId:'FRONDLET', level:30, moves:['VINE_WHIP','RAZOR_LEAF','STUN_SPORE','SYNTHESIS'] },
-    { speciesId:'LEAFAWN', level:31, moves:['RAZOR_LEAF','SYNTHESIS','GROWTH','ABSORB'] },
-  ],
-  aiTier:2, location:'FERNGROVE_GYM',
-};
 
-DG.TRAINERS.VINE_BRAMBLE = {
-  id:'VINE_BRAMBLE', name:'Bramble', class:'Vine Trainer',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"Two evolutions make it the third stage! Count the rings!",
-  loseDialogue:"You count the rings correctly. Sylva tends the deepest garden.",
-  reward:560,
-  party:[
-    { speciesId:'FRONDLET', level:32, moves:['VINE_WHIP','RAZOR_LEAF','GIGA_DRAIN','STUN_SPORE'] },
-    { speciesId:'VINOSAUR', level:34, moves:['GIGA_DRAIN','RAZOR_LEAF','LEECH_SEED','SYNTHESIS'] },
-  ],
-  aiTier:2, location:'FERNGROVE_GYM',
-};
 
-DG.TRAINERS.CANYON_SCOUT = {
-  id:'CANYON_SCOUT', name:'Scout Drake', class:'Canyon Scout',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"Never run INTO the canyon! Head for high ground!",
-  loseDialogue:"You know canyon survival. Terra will still shake your foundations.",
-  reward:620,
-  party:[
-    { speciesId:'QUAKELING', level:37, moves:['EARTHQUAKE','MUD_SHOT','ROCK_SLIDE','MAGNITUDE'] },
-    { speciesId:'MIDDODON', level:38, moves:['EARTHQUAKE','BULLDOZE','ROCK_SLIDE','MAGNITUDE'] },
-  ],
-  aiTier:2, location:'STONEHAVEN_GYM',
-};
 
-DG.TRAINERS.TREMOR_GRAVEL = {
-  id:'TREMOR_GRAVEL', name:'Gravel', class:'Tremor Trainer',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"The stone bridge holds the weight! Sand collapses under pressure!",
-  loseDialogue:"Solid reasoning. Terra tests more than just weight tolerance.",
-  reward:660,
-  party:[
-    { speciesId:'TERRADON', level:39, moves:['EARTHQUAKE','ROCK_SLIDE','BULLDOZE','IRON_DEFENSE'] },
-    { speciesId:'MIDDODON', level:40, moves:['MAGNITUDE','ROCK_SLIDE','EARTHQUAKE','MUD_SHOT'] },
-  ],
-  aiTier:2, location:'STONEHAVEN_GYM',
-};
 
-DG.TRAINERS.ELECTRICIAN_ZAP = {
-  id:'ELECTRICIAN_ZAP', name:'Zap', class:'Electrician',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"Dead wire! The glow shows the live path — open your eyes!",
-  loseDialogue:"You traced the circuit correctly. Volt carries twice the charge.",
-  reward:720,
-  party:[
-    { speciesId:'SPARKHORN', level:44, moves:['THUNDER_SHOCK','SPARK','CHARGE','THUNDER_WAVE'] },
-    { speciesId:'VOLTSCALE', level:45, moves:['SPARK','THUNDER_WAVE','AGILITY','CHARGE_BEAM'] },
-  ],
-  aiTier:2, location:'CRESTFALL_GYM',
-};
 
-DG.TRAINERS.SPARKY_CF = {
-  id:'SPARKY_CF', name:'Sparky', class:'Storm Chaser',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"Special attacks! Lightning doesn't punch, it ZAPS!",
-  loseDialogue:"You know your electric theory. Volt will push that knowledge to its limit.",
-  reward:760,
-  party:[
-    { speciesId:'VOLTSCALE', level:46, moves:['CHARGE_BEAM','SPARK','THUNDER_WAVE','AGILITY'] },
-    { speciesId:'THUNDERSAUR', level:47, moves:['THUNDERBOLT','SPARK','AGILITY','THUNDER_WAVE'] },
-  ],
-  aiTier:2, location:'CRESTFALL_GYM',
-};
 
-DG.TRAINERS.TEMPLE_CORAL = {
-  id:'TEMPLE_CORAL', name:'Temple Diver Coral', class:'Temple Diver',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"The inscription speaks of Psychic waters! Read the tablets again!",
-  loseDialogue:"You interpret the temple's words well. Marina guards the inner sanctum.",
-  reward:800,
-  party:[
-    { speciesId:'MUDFIN', level:46, moves:['WATER_PULSE','MUD_SLAP','BUBBLE_BEAM','PSYCHIC_MOVE'] },
-    { speciesId:'MARSHFIN', level:47, moves:['MUDDY_WATER','PSYCHIC_MOVE','BUBBLE_BEAM','WATER_GUN'] },
-  ],
-  aiTier:2, location:'BOGMIRE_GYM',
-};
 
-DG.TRAINERS.ORACLE_TIDE = {
-  id:'ORACLE_TIDE', name:'Oracle Tide', class:'Temple Oracle',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"The North Star! The temple always faces north toward the deep!",
-  loseDialogue:"Your navigation is true. Marina awaits at the temple heart.",
-  reward:840,
-  party:[
-    { speciesId:'MARSHFIN', level:48, moves:['MUDDY_WATER','PSYCHIC_MOVE','WATER_PULSE','ICY_WIND'] },
-    { speciesId:'SEAFANG', level:49, moves:['WATER_PULSE','AQUA_JET','PSYCHIC_MOVE','AQUA_TAIL'] },
-  ],
-  aiTier:2, location:'BOGMIRE_GYM',
-};
 
-DG.TRAINERS.ICE_WARDEN = {
-  id:'ICE_WARDEN', name:'Warden Peak', class:'Ice Warden',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"A dragon! It sleeps in ice but breathes fire — the first riddle!",
-  loseDialogue:"You solved the riddle of the dragon. Two more await within.",
-  reward:920,
-  party:[
-    { speciesId:'FROSTLING', level:52, moves:['ICY_WIND','AURORA_BEAM','ICE_SHARD','BLIZZARD'] },
-    { speciesId:'BLIZZHORN', level:54, moves:['BLIZZARD','ICE_BEAM','ICY_WIND','HAIL'] },
-  ],
-  aiTier:3, location:'APEXSUMMIT_GYM',
-};
 
-DG.TRAINERS.DRAGON_KNIGHT = {
-  id:'DRAGON_KNIGHT', name:'Dragon Knight Blizzard', class:'Dragon Knight',
-  isGymLeader:false, isStoryBoss:false, badge:null,
-  preBattleDialogue:null, postBattleDialogue:null,
-  winDialogue:"ICE slays dragons! The final test demands knowledge of weakness!",
-  loseDialogue:"You know the dragon's vulnerability. Valdez will not fall so easily.",
-  reward:1000,
-  party:[
-    { speciesId:'SKYFANG', level:57, moves:['DRACO_METEOR','DRAGON_CLAW','PSYCHIC_MOVE','DRAGON_RAGE'] },
-    { speciesId:'DARKSCALE', level:57, moves:['DRAGON_PULSE','DARK_PULSE','BITE','AGILITY'] },
-    { speciesId:'OBSIDIUDON', level:59, moves:['OUTRAGE','DARK_PULSE','ANCIENT_POWER','DRAGON_DANCE'] },
-  ],
-  aiTier:3, location:'APEXSUMMIT_GYM',
-};
 
 // ══════════════════════════════════════════════════════════════════════
 // GYM QUIZ-PATH TRAINERS  (72 total — 9 per gym × 8 gyms)

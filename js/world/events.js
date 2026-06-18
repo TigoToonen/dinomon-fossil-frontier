@@ -213,6 +213,7 @@ DG.Events = (function () {
           DG.SaveLoad.setFlag(gameState, STARTER_FLAG);
           // Track starter type for rival battle variant selection
           gameState.player.flags['STARTER_CHOSEN'] = chosen.type;
+          try { if (DG.Analytics) DG.Analytics.track('starter_chosen', { type: chosen.type, species: chosen.id }); } catch(e) {}
           DG.DialogueBox.show([
             `You chose ${DG.SPECIES[chosen.id].name}!`,
             `Take good care of your DinoMon!`,

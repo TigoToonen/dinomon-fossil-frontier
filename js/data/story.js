@@ -1023,7 +1023,6 @@ DG.STORY.EVENTS = {
   INTRO_CUTSCENE:         { flag: null,                             mapId: 'PROF_LAB',      trigger: 'auto'     },
   STARTER_SELECTION:      { flag: 'GAME_STARTED',                  mapId: 'PROF_LAB',      trigger: 'interact' },
   MOM_FAREWELL:           { flag: 'STARTER_CHOSEN',                mapId: 'AMBERTOWN',     trigger: 'interact' },
-  RIVAL_ROUTE1_BATTLE:    { flag: 'STARTER_CHOSEN',                mapId: 'ROUTE_1',       trigger: 'auto'     },
   GRUNT_AMBUSH_ROUTE3:    { flag: 'LEFT_AMBERTOWN',                mapId: 'ROUTE_3',       trigger: 'auto'     },
   CMD_TRIASSIC_FIGHT_1:   { flag: 'LEFT_AMBERTOWN',                mapId: 'ROUTE_3',       trigger: 'auto'     },
   // CMD_JURASSIC triggers after Gym 5 (Bedrock Badge — Terra, Stonehaven)

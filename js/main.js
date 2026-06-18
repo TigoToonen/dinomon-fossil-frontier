@@ -345,6 +345,7 @@ window.DG = window.DG || {};
     _gs.settings = _gs.settings || {};
     _gs.settings.difficulty = diff;
     window._CURRENT_DIFFICULTY = diff;
+    try { if (DG.Analytics) DG.Analytics.track('new_game', { difficulty: diff }); } catch(e) {}
     DG.SaveLoad.save(_gs); // saves to active slot
     _startGame();
   }
@@ -423,6 +424,12 @@ window.DG = window.DG || {};
       });
     } else {
       try { DG.Audio.playMusic(_getMapMusic()); } catch(e) {}
+      try {
+        if (DG.Analytics) DG.Analytics.track('game_resumed', {
+          badges: (_gs.player.badges || []).length,
+          map: _gs.player.currentMap
+        });
+      } catch(e) {}
     }
     // NOTE: do NOT call requestAnimationFrame(_loop) here.
     // The loop is already running from boot() — adding another one
@@ -539,6 +546,12 @@ window.DG = window.DG || {};
         window._KNOCKOUT_FADE = 0;
         _pendingBlackout = false;
         _state = DG.STATE.OVERWORLD;
+        try {
+          if (DG.Analytics) DG.Analytics.track('blackout', {
+            map: _gs.player.currentMap,
+            badges: (_gs.player.badges || []).length
+          });
+        } catch(e) {}
         try { DG.Audio.playMusic('CENTER_THEME'); } catch(e) {}
         DG.SaveLoad.save(_gs);
         // FASE 9: geldstraf expliciet melden

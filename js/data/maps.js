@@ -226,7 +226,7 @@ SHELLCREEK_CITY: {
     [64, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,64],
     [64, 0,65,65,65,65,65,65, 0, 0, 0, 0, 0, 0, 0,65,65,65, 0,64],
     [64, 0,65,65,65,65,65,65, 0, 0, 0, 0, 0, 0, 0,65,65,65, 0,64],
-    [64, 0,65,65,65,65,65,65, 0, 0, 0, 0, 0, 0, 0,65,68,65, 0,64],
+    [64, 0,65,65,68,65,65,65, 0, 0, 0, 0, 0, 0, 0,65,68,65, 0,64],
     [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,67, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [64,72, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1,72, 0],
     [64, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 2, 2, 0],
@@ -242,6 +242,7 @@ SHELLCREEK_CITY: {
     // de center-warp zat aan de zijkant en de shop-deur was ingemetseld
     { x:16, y:9,  targetMap:'SHELLCREEK_CENTER', targetX:7, targetY:8 },
     { x:15, y:5,  targetMap:'SHELLCREEK_SHOP', targetX:5, targetY:7  },
+    { x:4,  y:9,  targetMap:'SHELLCREEK_HOUSE1', targetX:3, targetY:8 },
     { x:19, y:11, targetMap:'SHELLCREEK_WILD', targetX:1, targetY:7  },
     { x:19, y:12, targetMap:'SHELLCREEK_WILD', targetX:1, targetY:8  },
   ],
@@ -276,57 +277,6 @@ SHELLCREEK_CITY: {
   events:[],
 },
 
-SHELLCREEK_GYM: {
-  // Tidal Labyrinth - two water channels (L: Tide Gate, R: Current Run).
-  id:'SHELLCREEK_GYM', name:'Shellcreek City Gym', width:20, height:15,
-  music:'GYM_THEME', isIndoor:true, isCave:false,
-  tiles:[
-    [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
-    [65,3,3,3,3,3,3,3,3,0,0,3,3,3,3,3,3,3,77,65],
-    [65,77,77,77,77,77,77,77,77,0,0,77,77,77,77,77,77,77,77,65],
-    [65,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,65],
-    [65,77,77,77,77,77,77,77,77,0,77,77,77,77,77,77,77,77,77,65],
-    [65,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,65],
-    [65,77,77,77,77,0,0,77,77,65,65,77,77,77,0,0,77,77,77,65],
-    [65,3,3,3,3,3,3,3,3,65,65,3,3,3,3,3,3,3,3,65],
-    [65,77,0,0,77,77,77,77,77,65,65,77,77,77,77,0,0,77,77,65],
-    [65,3,3,3,3,3,3,3,3,65,65,3,3,3,3,3,3,3,3,65],
-    [65,77,77,0,0,77,77,77,77,65,65,77,77,77,0,0,77,77,77,65],
-    [65,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,65],
-    [65,77,77,77,77,77,77,77,77,0,0,77,77,77,77,77,77,77,77,65],
-    [65,3,3,3,3,3,3,3,3,0,0,3,3,3,3,3,3,3,3,65],
-    [65,65,65,65,65,65,65,65,65,68,68,65,65,65,65,65,65,65,65,65],
-  ],
-  warps:[
-    { x:9,  y:14, targetMap:'SHELLCREEK_CITY', targetX:3, targetY:6, gymLock:'TRAINER_GYM_REX_DEFEATED' },
-    { x:10, y:14, targetMap:'SHELLCREEK_CITY', targetX:3, targetY:6, gymLock:'TRAINER_GYM_REX_DEFEATED' },
-  ],
-  npcs:[
-    { id:'SIGN_SHELLCREEK_GYM_L', name:'Left Route Sign', x:4, y:11, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['SIGN_SC_LEFT'], onInteract:null },
-    { id:'SIGN_SHELLCREEK_GYM_R', name:'Right Route Sign', x:14, y:11, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['SIGN_SC_RIGHT'], onInteract:null },
-    { id:'GYM_SC_L1', name:'Herder Cal', x:4, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['GRUNT_1'], trainerRef:'SC_TRAINER_1',
-      flagToHide:'TRAINER_SC_TRAINER_1_DEFEATED' },
-    { id:'GYM_SC_R1', name:'Rancher Tess', x:14, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'SC_TRAINER_2',
-      flagToHide:'TRAINER_SC_TRAINER_2_DEFEATED' },
-    { id:'GYM_SC_L2', name:'Sailor Brine', x:3, y:7, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['GRUNT_1'], trainerRef:'SAILOR_BRINE',
-      flagToHide:'TRAINER_SAILOR_BRINE_DEFEATED' },
-    { id:'GYM_SC_R2', name:'Diver Mira', x:15, y:7, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'DIVER_MIRA',
-      flagToHide:'TRAINER_DIVER_MIRA_DEFEATED' },
-    { id:'GYM_LEADER_REX', name:'Rex', x:9, y:1, facing:'DOWN', spriteKey:'NPC_LEADER',
-      movementType:'STATIONARY', dialogue:['GYM_REX_PRE'], onInteract:'TRIGGER_GYM',
-      trainerRef:'GYM_REX', flagToHide:'TRAINER_GYM_REX_DEFEATED' },
-    { id:'GYM_LEADER_REX_DONE', name:'Rex', x:9, y:1, facing:'DOWN', spriteKey:'NPC_LEADER',
-      movementType:'STATIONARY', dialogue:['GYM_REX_POST'], onInteract:null,
-      requiresFlag:'TRAINER_GYM_REX_DEFEATED' },
-  ],
-  encounterTable:{ grass:[], water:[] }, events:[],
-},
 
 DUSTWALL_TOWN: {
   id:'DUSTWALL_TOWN', name:'Dustwall Town', width:20, height:15,
@@ -356,6 +306,7 @@ DUSTWALL_TOWN: {
     { x:5,  y:4, targetMap:'DUSTWALL_GYM', targetX:14, targetY:16 },
     { x:17, y:3, targetMap:'DUSTWALL_CENTER', targetX:7, targetY:8 },
     { x:16, y:7, targetMap:'DUSTWALL_SHOP', targetX:5, targetY:7  },
+    { x:5,  y:8, targetMap:'DUSTWALL_HOUSE1', targetX:3, targetY:8 },
     { x:19, y:11, targetMap:'DUSTWALL_WILD', targetX:1, targetY:7  },
     { x:19, y:12, targetMap:'DUSTWALL_WILD', targetX:1, targetY:8  },
   ],
@@ -390,59 +341,6 @@ DUSTWALL_TOWN: {
   events:[],
 },
 
-DUSTWALL_GYM: {
-  // Gym 2 — Fossil Cavern. Cave walls, rock pillars, fossil chambers.
-  // Puzzle 1 (row 10): go Right through rock tunnel (left = EXCAVATOR_DAG in fossil pocket)
-  // Puzzle 2 (row 4): go Right to Ridley (left cave = GEOLOGIST_FEN)
-  id:'DUSTWALL_GYM', name:'Dustwall City Gym', width:20, height:15,
-  music:'GYM_THEME', isIndoor:true, isCave:false,
-  tiles:[
-    [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
-    [65, 4,77, 4, 4, 4, 4, 4, 4,73,73, 4, 4, 4, 4, 4,77, 4, 4,65],
-    [65, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,65],
-    [65, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,65],
-    [65,72,72,72,72,72,72, 4, 4, 4, 4, 4, 4, 4,72,72,72,72,72,65],
-    [65,72,73, 4, 4,72,72, 4, 4, 4, 4, 4, 4, 4,72,73, 4, 4,72,65],
-    [65,72,73, 4, 4,72,72, 4, 4, 4, 4, 4, 4, 4,72,73, 4, 4,72,65],
-    [65, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,65],
-    [65, 4,72,72,72,72,72,72, 4, 4, 4, 4,72,72,72,72,72,72, 4,65],
-    [65, 4, 4, 4, 4, 4,72,72, 4, 4, 4, 4,72,72, 4, 4, 4, 4, 4,65],
-    [65, 4,66, 4, 4, 4,72,72, 4, 4, 4, 4,72,72, 4, 4,66, 4, 4,65],
-    [65, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,65],
-    [65, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,65],
-    [65, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,65],
-    [65,65,65,65,65,65,65,65,65,68,68,65,65,65,65,65,65,65,65,65],
-  ],
-  warps:[
-    { x:9,  y:14, targetMap:'DUSTWALL_TOWN', targetX:3, targetY:6, gymLock:'TRAINER_GYM_RIDLEY_DEFEATED' },
-    { x:10, y:14, targetMap:'DUSTWALL_TOWN', targetX:3, targetY:6, gymLock:'TRAINER_GYM_RIDLEY_DEFEATED' },
-  ],
-  npcs:[
-    { id:'SIGN_DW_NPC1', name:'Fossil Display', x:9, y:11, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['SIGN_DW_1'], onInteract:null },
-    { id:'SIGN_DW_NPC2', name:'Stratum Board', x:9, y:7, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['SIGN_DW_2'], onInteract:null },
-    { id:'GYM_DW_WRONG1', name:'Excavator Dag', x:3, y:10, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['GRUNT_1'], trainerRef:'EXCAVATOR_DAG',
-      flagToHide:'TRAINER_EXCAVATOR_DAG_DEFEATED' },
-    { id:'GYM_DW_WRONG2', name:'Geologist Fen', x:3, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'GEOLOGIST_FEN',
-      flagToHide:'TRAINER_GEOLOGIST_FEN_DEFEATED' },
-    { id:'DUSTWALL_GYM_TRAINER1', name:'Hiker Burl', x:14, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['GRUNT_1'], trainerRef:'DW_TRAINER_1',
-      flagToHide:'TRAINER_DW_TRAINER_1_DEFEATED' },
-    { id:'DUSTWALL_GYM_TRAINER2', name:'Granite Gal', x:16, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'DW_TRAINER_2',
-      flagToHide:'TRAINER_DW_TRAINER_2_DEFEATED' },
-    { id:'GYM_LEADER_RIDLEY', name:'Ridley', x:9, y:1, facing:'DOWN', spriteKey:'NPC_LEADER',
-      movementType:'STATIONARY', dialogue:['GYM_RIDLEY_PRE'], onInteract:'TRIGGER_GYM',
-      trainerRef:'GYM_RIDLEY', flagToHide:'TRAINER_GYM_RIDLEY_DEFEATED' },
-    { id:'GYM_LEADER_RIDLEY_DONE', name:'Ridley', x:9, y:1, facing:'DOWN', spriteKey:'NPC_LEADER',
-      movementType:'STATIONARY', dialogue:['GYM_RIDLEY_POST'], onInteract:null,
-      requiresFlag:'TRAINER_GYM_RIDLEY_DEFEATED' },
-  ],
-  encounterTable:{ grass:[], water:[] }, events:[],
-},
 
 PYRESIDE_CITY: {
   id:'PYRESIDE_CITY', name:'Pyreside City', width:20, height:15,
@@ -596,6 +494,8 @@ APEXSUMMIT: {
     { x:17,y:3, targetMap:'APEXSUMMIT_CENTER',  targetX:7, targetY:8 },
     { x:14,y:8, targetMap:'APEXSUMMIT_SHOP',    targetX:5, targetY:7 },
     { x:3, y:8, targetMap:'APEXSUMMIT_GYM',     targetX:14, targetY:16 },
+    { x:12, y:5, targetMap:'APEXSUMMIT_WILD', targetX:1, targetY:6 },
+    { x:12, y:6, targetMap:'APEXSUMMIT_WILD', targetX:1, targetY:7 },
   ],
   npcs:[
     { id:'AS_NPC1', name:'Champion', x:7, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -653,9 +553,6 @@ ROUTE_1A: {
     { x:11, y:17, targetMap:'AMBERTOWN', targetX:10, targetY:1  },
   ],
   npcs:[
-    { id:'R1A_RIVAL', name:'Rex', x:11, y:8, facing:'DOWN', spriteKey:'NPC_KID',
-      movementType:'STATIONARY', dialogue:['RIVAL_INTRO'], trainerRef:'RIVAL_ROUTE1',
-      requiresFlag:'STARTER_CHOSEN', flagToHide:'TRAINER_RIVAL_ROUTE1_DEFEATED' },
     { id:'R1A_TRAINER1', name:'Jake', x:5, y:8, facing:'RIGHT', spriteKey:'NPC_KID',
       movementType:'STATIONARY', dialogue:['GRUNT_1'], trainerRef:'YOUNGSTER_JAKE',
       flagToHide:'TRAINER_YOUNGSTER_JAKE_DEFEATED' },
@@ -757,9 +654,6 @@ ROUTE_1: {
     { x:10, y:14, targetMap:'AMBERTOWN',        targetX:10, targetY:1  },
   ],
   npcs:[
-    { id:'R1_RIVAL', name:'Rex', x:10, y:8, facing:'DOWN', spriteKey:'NPC_KID',
-      movementType:'STATIONARY', dialogue:['RIVAL_INTRO'], trainerRef:'RIVAL_ROUTE1',
-      requiresFlag:'STARTER_CHOSEN', flagToHide:'TRAINER_RIVAL_ROUTE1_DEFEATED' },
     { id:'R1_TRAINER1', name:'Jake', x:5, y:7, facing:'RIGHT', spriteKey:'NPC_KID',
       movementType:'STATIONARY', dialogue:['GRUNT_1'], trainerRef:'YOUNGSTER_JAKE',
       flagToHide:'TRAINER_YOUNGSTER_JAKE_DEFEATED' },
@@ -4091,7 +3985,7 @@ DG.MAPS.SHELLCREEK_HOUSE1 = {
     [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
     [65,65,65,68,65,65,65,65,65,65,65,65],
   ],
-  warps:[{ x:3, y:9, targetMap:'SHELLCREEK_CITY', targetX:5, targetY:6 }],
+  warps:[{ x:3, y:9, targetMap:'SHELLCREEK_CITY', targetX:4, targetY:10 }],
   npcs:[
     { id:'SAILOR_ELDER', name:'Old Sailor', x:6, y:4, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
@@ -4124,7 +4018,7 @@ DG.MAPS.DUSTWALL_HOUSE1 = {
     [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
     [65,65,65,68,65,65,65,65,65,65,65,65],
   ],
-  warps:[{ x:3, y:9, targetMap:'DUSTWALL_TOWN', targetX:10, targetY:10 }],
+  warps:[{ x:3, y:9, targetMap:'DUSTWALL_TOWN', targetX:5, targetY:9 }],
   npcs:[
     { id:'HERMIT', name:'Desert Hermit', x:6, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
@@ -4138,26 +4032,9 @@ DG.MAPS.DUSTWALL_HOUSE1 = {
   encounterTable:{grass:[],water:[]}, events:[],
 };
 
-DG.MAPS.STONEHAVEN_HOUSE1 = {
-  id:'STONEHAVEN_HOUSE1', name:'Historian\'s Study', width:14, height:10,
-  music:'HOUSE_THEME', isIndoor:true, isCave:false,
-  tiles:[
-    [65,65,65,65,65,65,65,65,65,65,65,65,65,65],
-    [65,81,81,81, 5, 5, 5, 5, 5,81,81,81,81,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65,74,74,74,74, 5, 5, 5, 5,74,74,74,74,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5,73, 5, 5, 5, 5, 5, 5, 5,73, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65,65,65,65,65,65,68,68,65,65,65,65,65,65],
-  ],
-  warps:[
-    { x:6, y:9, targetMap:'STONEHAVEN_CITY', targetX:3, targetY:9 },
-    { x:7, y:9, targetMap:'STONEHAVEN_CITY', targetX:3, targetY:9 },
-  ],
-  npcs:[
+// STONEHAVEN_HOUSE1 retired — it was unreachable (no door in town) and duplicated the
+// empty, already-reachable STONEHAVEN_MUSEUM. Its historian exhibits now live in the museum.
+DG.MAPS.STONEHAVEN_MUSEUM.npcs = [
     { id:'HISTORIAN', name:'Historian', x:7, y:3, facing:'DOWN', spriteKey:'NPC_PROF',
       movementType:'STATIONARY',
       dialogue:["The Fossil Citadel was built 800 years ago by the first Grand Archon.", "It is said the four Elite Four were chosen by the DinoMons themselves.", "Each one embodies a force of nature — water, fire, earth, shadow."],
@@ -4178,9 +4055,7 @@ DG.MAPS.STONEHAVEN_HOUSE1 = {
       movementType:'STATIONARY',
       dialogue:["(A carved dragon skull. Inscription: 'Skyfang — apex of the ancient sky hunters.')"],
       onInteract:null },
-  ],
-  encounterTable:{grass:[],water:[]}, events:[],
-};
+];
 
 // ═══════════════════════════════════════════════════════════════
 // PROPER CENTER MAPS (override forEach stubs) — v31
@@ -4732,32 +4607,6 @@ DG.MAPS.BOGMIRE_CITY = {
 // (the original AMBERTOWN_HOUSE is your home; this is a neighbor)
 // ═══════════════════════════════════════════════════════════════
 
-DG.MAPS.AMBERTOWN_HOUSE2 = {
-  id:'AMBERTOWN_HOUSE2', name:'Neighbor\'s House', width:16, height:10,
-  music:'HOUSE_THEME', isIndoor:true, isCave:false,
-  tiles: [
-    [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
-    [65,81,81,81,81, 5, 5, 5, 5,81,81,81,81,81,81,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5,77, 5, 5, 5, 5, 5, 5, 5, 5, 5,79, 5, 5,65],
-    [65, 5,78,78, 5, 5, 5, 5, 5, 5, 5,78,78, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65,65,65,65,68,65,65,65,65,65,65,65,65,65,65,65],
-  ],
-  warps:[
-    { x:4, y:9, targetMap:'AMBERTOWN', targetX:2, targetY:12 },
-  ],
-  npcs:[
-    { id:'NEIGHBOR_ELDER', name:'Old Trainer', x:7, y:4, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY',
-      dialogue:["Back in my day, we had to walk uphill both ways to the DinoCenter!", "The ancient fossils in the Dustwall desert... they say they still hold power.", "Young trainer — keep your DinoMons close and your Dinoballs closer!"],
-      onInteract:null },
-  ],
-  encounterTable:{ grass:[], water:[] }, events:[],
-};
 
 // ── FASE 8: gym-labyrint dichtmetselen ────────────────────────────────────
 // De quiz-muren hadden een opening van 2 tegels waarvan de quizmaster er maar
