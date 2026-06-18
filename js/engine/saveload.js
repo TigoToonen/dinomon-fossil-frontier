@@ -177,7 +177,7 @@ DG.SaveLoad = (function () {
   }
 
   // ── Live DinoMon Factory ──────────────────────────────────
-  function createDinoMon(speciesId, level, nickname) {
+  function createDinoMon(speciesId, level, nickname, movesOverride) {
     const species = DG.SPECIES[speciesId];
     if (!species) { console.error('Unknown species:', speciesId); return null; }
 
@@ -205,12 +205,25 @@ DG.SaveLoad = (function () {
 
     const maxHP = stats.hp;
 
-    // Build initial moveset from learnset (last 4 moves learned at or before this level)
-    const learned = species.learnset
+    // Build moveset. Trainer parties may pass an explicit set (movesOverride); otherwise
+    // derive from the learnset (last 4 moves learned at or before this level). Unknown move
+    // IDs are skipped and the set is topped up from the learnset, so a mon never ends up with
+    // fewer than 4 usable moves when its learnset allows.
+    const learnedAll = species.learnset
       .filter(e => e.level <= level)
-      .map(e => e.move);
-    const last4 = learned.slice(-4);
-    const moves = last4.map(moveId => {
+      .map(e => e.move)
+      .filter(id => DG.MOVES[id]);
+    let chosen;
+    if (Array.isArray(movesOverride) && movesOverride.length) {
+      chosen = movesOverride.filter(id => DG.MOVES[id]);
+      for (let i = learnedAll.length - 1; i >= 0 && chosen.length < 4; i--) {
+        if (chosen.indexOf(learnedAll[i]) < 0) chosen.push(learnedAll[i]);
+      }
+      if (!chosen.length) chosen = learnedAll.slice(-4);
+    } else {
+      chosen = learnedAll.slice(-4);
+    }
+    const moves = chosen.slice(0, 4).map(moveId => {
       const mv = DG.MOVES[moveId];
       return mv ? { moveId, ppCurrent: mv.pp, ppMax: mv.pp } : null;
     }).filter(Boolean);

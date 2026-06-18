@@ -68,7 +68,7 @@ DG.Battle = (function () {
     let enemyParty, enemyMon;
     if (battleConfig.type === 'TRAINER' && battleConfig.trainerData) {
       enemyParty = battleConfig.trainerData.party.map(p =>
-        DG.SaveLoad.createDinoMon(p.speciesId, p.level)
+        DG.SaveLoad.createDinoMon(p.speciesId, p.level, null, p.moves)
       );
       // Sort ascending: weakest first, strongest last
       enemyParty.sort((a, b) => _monStrengthScore(a) - _monStrengthScore(b));
@@ -221,13 +221,13 @@ DG.Battle = (function () {
     const playerParty = gs.player.party;
 
     // Build enemy parties (sorted weakest→strongest)
-    const enemy1Party = config.enemy1Trainer.party.map(p => DG.SaveLoad.createDinoMon(p.speciesId, p.level));
+    const enemy1Party = config.enemy1Trainer.party.map(p => DG.SaveLoad.createDinoMon(p.speciesId, p.level, null, p.moves));
     enemy1Party.sort((a,b) => _monStrengthScore(a) - _monStrengthScore(b));
-    const enemy2Party = config.enemy2Trainer.party.map(p => DG.SaveLoad.createDinoMon(p.speciesId, p.level));
+    const enemy2Party = config.enemy2Trainer.party.map(p => DG.SaveLoad.createDinoMon(p.speciesId, p.level, null, p.moves));
     enemy2Party.sort((a,b) => _monStrengthScore(a) - _monStrengthScore(b));
 
     // Build ally party
-    const allyParty = config.allyTrainer.party.map(p => DG.SaveLoad.createDinoMon(p.speciesId, p.level));
+    const allyParty = config.allyTrainer.party.map(p => DG.SaveLoad.createDinoMon(p.speciesId, p.level, null, p.moves));
 
     // Player's first alive mon
     const playerAlive = playerParty.filter(m => m && !m.isEgg && m.hp.current > 0);

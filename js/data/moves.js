@@ -5738,3 +5738,35 @@ ETHEREAL_SLASH: { id:'ETHEREAL_SLASH', name:'Ethereal Slash', type:'GHOST', cate
     }
   }
 })();
+
+// ============================================================
+// Moves referenced by trainer movesets but previously missing from the DB.
+// Adding them lets trainers fight with their intended sets (the engine now reads
+// trainer.party[].moves). All use supported effect types + valid animStyles.
+// ============================================================
+Object.assign(DG.MOVES, {
+  AGILITY:      { id:'AGILITY', name:'Agility', type:'PSYCHIC', category:'STATUS', power:0, accuracy:999, pp:30, priority:0, animStyle:'SELF', effect:{ type:'STAT_RAISE', stat:'spd', stages:2, chance:100, target:'self' }, description:'The user relaxes its body to sharply raise Speed.' },
+  HARDEN:       { id:'HARDEN', name:'Harden', type:'NORMAL', category:'STATUS', power:0, accuracy:999, pp:30, priority:0, animStyle:'SELF', effect:{ type:'STAT_RAISE', stat:'def', stages:1, chance:100, target:'self' }, description:'The user stiffens its muscles to raise Defense.' },
+  DEFENSE_CURL: { id:'DEFENSE_CURL', name:'Defense Curl', type:'NORMAL', category:'STATUS', power:0, accuracy:999, pp:40, priority:0, animStyle:'SELF', effect:{ type:'STAT_RAISE', stat:'def', stages:1, chance:100, target:'self' }, description:'The user curls up to raise Defense.' },
+  GROWTH:       { id:'GROWTH', name:'Growth', type:'NORMAL', category:'STATUS', power:0, accuracy:999, pp:20, priority:0, animStyle:'SELF', effect:{ type:'STAT_RAISE', stat:'spAtk', stages:1, chance:100, target:'self' }, description:'The user grows to raise its Sp. Atk.' },
+  HOWL:         { id:'HOWL', name:'Howl', type:'NORMAL', category:'STATUS', power:0, accuracy:999, pp:40, priority:0, animStyle:'SELF', effect:{ type:'STAT_RAISE', stat:'atk', stages:1, chance:100, target:'self' }, description:'The user howls to raise its Attack.' },
+  SCARY_FACE:   { id:'SCARY_FACE', name:'Scary Face', type:'NORMAL', category:'STATUS', power:0, accuracy:100, pp:10, priority:0, animStyle:'BURST', effect:{ type:'STAT_LOWER', stat:'spd', stages:2, chance:100, target:'opponent' }, description:'A scary face harshly lowers the target Speed.' },
+  GLARE:        { id:'GLARE', name:'Glare', type:'NORMAL', category:'STATUS', power:0, accuracy:100, pp:30, priority:0, animStyle:'BURST', effect:{ type:'STATUS_CHANCE', status:'PARALYSIS', chance:100 }, description:'A piercing glare paralyzes the target.' },
+  STUN_SPORE:   { id:'STUN_SPORE', name:'Stun Spore', type:'GRASS', category:'STATUS', power:0, accuracy:75, pp:30, priority:0, animStyle:'FIELD', effect:{ type:'STATUS_CHANCE', status:'PARALYSIS', chance:100 }, description:'Paralyzing powder is scattered on the target.' },
+  ABSORB:       { id:'ABSORB', name:'Absorb', type:'GRASS', category:'SPECIAL', power:20, accuracy:100, pp:25, priority:0, animStyle:'DRAIN', effect:{ type:'DRAIN', fraction:0.5 }, description:'Drains HP, healing the user by half the damage dealt.' },
+  BUBBLE_BEAM:  { id:'BUBBLE_BEAM', name:'Bubble Beam', type:'WATER', category:'SPECIAL', power:65, accuracy:100, pp:20, priority:0, animStyle:'BEAM', effect:{ type:'STAT_LOWER', stat:'spd', stages:1, chance:10, target:'opponent' }, description:'A spray of bubbles that may lower the target Speed.' },
+  ICY_WIND:     { id:'ICY_WIND', name:'Icy Wind', type:'ICE', category:'SPECIAL', power:55, accuracy:95, pp:15, priority:0, animStyle:'WAVE', effect:{ type:'STAT_LOWER', stat:'spd', stages:1, chance:100, target:'opponent' }, description:'A gust of chilled air that lowers the target Speed.' },
+  SMOG:         { id:'SMOG', name:'Smog', type:'POISON', category:'SPECIAL', power:30, accuracy:70, pp:20, priority:0, animStyle:'WAVE', effect:{ type:'STATUS_CHANCE', status:'POISON', chance:40 }, description:'Foul gases that may poison the target.' },
+  LICK:         { id:'LICK', name:'Lick', type:'GHOST', category:'PHYSICAL', power:30, accuracy:100, pp:30, priority:0, animStyle:'MELEE', effect:{ type:'STATUS_CHANCE', status:'PARALYSIS', chance:30 }, description:'A lick that may paralyze the target.' },
+  PSYCHIC:      { id:'PSYCHIC', name:'Psychic', type:'PSYCHIC', category:'SPECIAL', power:90, accuracy:100, pp:10, priority:0, animStyle:'BURST', effect:{ type:'STAT_LOWER', stat:'spDef', stages:1, chance:10, target:'opponent' }, description:'A strong telekinetic blast that may lower Sp. Def.' },
+  HORN_ATTACK:  { id:'HORN_ATTACK', name:'Horn Attack', type:'NORMAL', category:'PHYSICAL', power:65, accuracy:100, pp:25, priority:0, animStyle:'MELEE', effect:{ type:'NONE' }, description:'The target is jabbed with a sharp horn.' },
+  SLASH:        { id:'SLASH', name:'Slash', type:'NORMAL', category:'PHYSICAL', power:70, accuracy:100, pp:20, priority:0, animStyle:'SLASH', highCrit:true, effect:{ type:'NONE' }, description:'Slashes with claws or blades; high critical-hit ratio.' },
+  TAKE_DOWN:    { id:'TAKE_DOWN', name:'Take Down', type:'NORMAL', category:'PHYSICAL', power:90, accuracy:85, pp:20, priority:0, animStyle:'SLAM', effect:{ type:'RECOIL', fraction:0.25 }, description:'A reckless charge that also hurts the user a little.' },
+  THRASH:       { id:'THRASH', name:'Thrash', type:'NORMAL', category:'PHYSICAL', power:90, accuracy:100, pp:10, priority:0, animStyle:'SLAM', effect:{ type:'NONE' }, description:'A wild rampage that batters the target.' },
+  WRAP:         { id:'WRAP', name:'Wrap', type:'NORMAL', category:'PHYSICAL', power:15, accuracy:90, pp:20, priority:0, animStyle:'MELEE', effect:{ type:'NONE' }, description:'Squeezes the target with a long body or vines.' },
+  SMACK_DOWN:   { id:'SMACK_DOWN', name:'Smack Down', type:'ROCK', category:'PHYSICAL', power:50, accuracy:100, pp:15, priority:0, animStyle:'ARC', effect:{ type:'NONE' }, description:'A hurled rock strikes the target down.' },
+  DOUBLE_KICK:  { id:'DOUBLE_KICK', name:'Double Kick', type:'FIGHTING', category:'PHYSICAL', power:30, accuracy:100, pp:30, priority:0, animStyle:'MELEE', effect:{ type:'MULTI', min:2, max:2 }, description:'A pair of kicks that strike twice.' },
+  FLARE_BLITZ:  { id:'FLARE_BLITZ', name:'Flare Blitz', type:'FIRE', category:'PHYSICAL', power:120, accuracy:100, pp:15, priority:0, animStyle:'SLAM', effect:{ type:'RECOIL', fraction:0.33 }, description:'A blazing tackle that also hurts the user.' },
+  GLACIER_CRASH:{ id:'GLACIER_CRASH', name:'Glacier Crash', type:'ICE', category:'PHYSICAL', power:85, accuracy:90, pp:10, priority:0, animStyle:'SLAM', effect:{ type:'STATUS_CHANCE', status:'FREEZE', chance:10 }, description:'A crushing blow of ice that may freeze the target.' },
+  LEAFAGE:      { id:'LEAFAGE', name:'Leafage', type:'GRASS', category:'PHYSICAL', power:40, accuracy:100, pp:40, priority:0, animStyle:'PROJECTILE', effect:{ type:'NONE' }, description:'The target is pelted with sharp leaves.' },
+});
