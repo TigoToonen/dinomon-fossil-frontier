@@ -529,23 +529,31 @@ DG.PartyMenu = (function () {
         return;
       }
 
-      // Sprite
+      // Sprite (shiny mons get the hue-shifted palette, same as battle)
       if (typeof DG.SpriteRenderer !== 'undefined') {
+        if (mon.isShiny) ctx.filter = 'hue-rotate(180deg) saturate(2)';
         DG.SpriteRenderer.drawMon(ctx, mon.speciesId, 14, y + 2, 0.85);
+        if (mon.isShiny) ctx.filter = 'none';
       } else {
         ctx.fillStyle = sp ? (sp.color || '#888') : '#888';
         ctx.fillRect(14, y + 4, 26, 26);
       }
 
-      // Name
-      ctx.fillStyle = mon.hp.current <= 0 ? '#888' : '#ffffff';
+      // Name (shiny mons get a gold ✦ in front)
       ctx.font = '11px monospace';
-      ctx.fillText(name, 48, y + 3);
+      let nameX = 48;
+      if (mon.isShiny) {
+        ctx.fillStyle = '#ffd700';
+        ctx.fillText('✦', nameX, y + 3);
+        nameX += 12;
+      }
+      ctx.fillStyle = mon.hp.current <= 0 ? '#888' : '#ffffff';
+      ctx.fillText(name, nameX, y + 3);
 
       // Type badge next to name
       if (sp && sp.types && sp.types[0]) {
         const nameW = ctx.measureText(name).width;
-        _typeBadge(ctx, sp.types[0], 48 + nameW + 4, y + 2);
+        _typeBadge(ctx, sp.types[0], nameX + nameW + 4, y + 2);
       }
 
       // Level
@@ -688,9 +696,15 @@ DG.PartyMenu = (function () {
     // Header
     ctx.fillStyle = '#0a1a2e';
     ctx.fillRect(2, 2, W - 4, 30);
-    ctx.fillStyle = '#8ed8f8';
     ctx.font = 'bold 13px monospace';
-    ctx.fillText(`${name}  Lv.${mon.level}`, 10, 8);
+    let hx = 10;
+    if (mon.isShiny) {
+      ctx.fillStyle = '#ffd700';
+      ctx.fillText('✦', hx, 8);
+      hx += 14;
+    }
+    ctx.fillStyle = '#8ed8f8';
+    ctx.fillText(`${name}  Lv.${mon.level}`, hx, 8);
     // Type badges in header
     if (sp && sp.types) {
       let bx = W - 80;
@@ -700,9 +714,11 @@ DG.PartyMenu = (function () {
       }
     }
 
-    // Sprite (large)
+    // Sprite (large) — shiny mons get the hue-shifted palette
     if (typeof DG.SpriteRenderer !== 'undefined') {
+      if (mon.isShiny) ctx.filter = 'hue-rotate(180deg) saturate(2)';
       DG.SpriteRenderer.drawMon(ctx, mon.speciesId, 20, 38, 2.2);
+      if (mon.isShiny) ctx.filter = 'none';
     } else {
       ctx.fillStyle = sp?.color || '#555';
       ctx.fillRect(20, 38, 70, 70);
