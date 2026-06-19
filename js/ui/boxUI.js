@@ -307,14 +307,25 @@ DG.BoxUI = (function () {
           ctx.fillStyle = 'rgba(255,255,255,0.04)';
           ctx.fillRect(cx + 1, cy + 1, CELL_W - 5, CELL_H - 14);
           // DinoMon sprite — scale 0.80 centered in upper portion of cell
+          // Shiny mons get the hue-shifted palette, same as battle/party.
           if (typeof DG.SpriteRenderer !== 'undefined') {
+            if (mon.isShiny) ctx.filter = 'hue-rotate(180deg) saturate(2)';
             DG.SpriteRenderer.drawMon(ctx, mon.speciesId, cx + 11, cy + 2, 0.80);
+            if (mon.isShiny) ctx.filter = 'none';
           } else {
             // Fallback: type-colored circle
             ctx.fillStyle = (sp && sp.types && sp.types[0]) ? '#888' : '#888';
             ctx.beginPath();
             ctx.arc(cx + CELL_W / 2, cy + CELL_H / 2 - 6, 9, 0, Math.PI * 2);
             ctx.fill();
+          }
+          // Shiny star (top-left)
+          if (mon.isShiny) {
+            ctx.fillStyle = '#ffd700';
+            ctx.font = '8px monospace';
+            ctx.textBaseline = 'top';
+            ctx.fillText('✦', cx + 2, cy + 2);
+            ctx.textBaseline = 'alphabetic';
           }
           // Ball dot (top-right)
           if (mon.caughtBall) {
