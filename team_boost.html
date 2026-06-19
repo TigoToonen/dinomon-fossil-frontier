@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DinoMon Team Boost</title>
+  <style>
+    body { font-family: monospace; background: #1a1a2e; color: #eee; padding: 18px; max-width: 760px; margin: 0 auto; }
+    h2 { color: #f0a500; }
+    p  { line-height: 1.5; }
+    .log { background: #0d1117; border-radius: 6px; padding: 14px; margin: 14px 0; font-size: 13px; line-height: 1.7; }
+    .ok  { color: #28a745; }
+    .warn{ color: #f0a500; }
+    .err { color: #e94560; }
+    button { background: #28a745; color: #fff; border: none; border-radius: 8px; padding: 16px 30px; font-size: 18px; cursor: pointer; margin-top: 10px; width: 100%; }
+    button:hover  { background: #218838; }
+    button:disabled { background: #555; cursor: not-allowed; }
+    .mon  { background: #16213e; border-radius: 6px; padding: 9px 12px; margin: 6px 0; border-left: 3px solid #f0a500; font-size: 13px; }
+    .shiny { color: #ffd700; }
+    .arrow { color: #6cf; }
+  </style>
+
+  <!-- Echte gamedata laden zodat we de juiste stat-formules, learnsets & evoluties gebruiken -->
+  <script src="js/constants.js?v=80"></script>
+  <script src="js/data/moves.js?v=83"></script>
+  <script src="js/data/dinomons.js?v=81"></script>
+  <script src="js/data/natures.js?v=80"></script>
+</head>
+<body>
+  <h2>🦕 DinoMon Team Boost</h2>
+  <p>Dit brengt je <b>team</b> naar de <b>2e evolutievorm</b> op <b>level ~35</b> (met wat variatie),
+     en vult lege teamslots aan. IV's, nature, bijnaam en <span class="shiny">shiny</span> blijven behouden.</p>
+
+  <div class="log" id="log">Bezig met laden van gamedata…</div>
+  <button id="btn" onclick="doBoost()" disabled>Boost mijn team</button>
+
+  <script>
+  // ── Configuratie ───────────────────────────────────────────
+  const SLOT_KEYS = ['DG_SAVE_SLOT_0','DG_SAVE_SLOT_1','DG_SAVE_SLOT_2','dinomonFossilFrontier_save'];
+  const BASE_LEVEL = 35;          // doel-level
+  const LEVEL_SPREAD = 2;         // ± variatie  -> 33..37
+
+  const log = document.getElementById('log');
+  function addLog(msg, cls) {
+    const d = document.createElement('div');
+    d.className = cls || '';
+    d.innerHTML = msg;
+    log.appendChild(d);
+  }
+
+  // ── Evolutie-helpers ───────────────────────────────────────
+  function chainBaseId(speciesId) {
+    let id = speciesId, guard = 0;
+    while (guard++ < 10) {
+      const sp = DG.SPECIES[id];
+      if (!sp || !sp.prevForm || !DG.SPECIES[sp.prevForm]) break;
+      id = sp.prevForm;
+    }
+    return id;
+  }
+  function stageOf(speciesId) {
+    let id = speciesId, n = 0, guard = 0;
+    while (guard++ < 10) {
+      const sp = DG.SPECIES[id];
+      if (!sp || !sp.prevForm || !DG.SPECIES[sp.prevForm]) break;
+      id = sp.prevForm; n++;
+    }
+    return n; // 0 = basis, 1 = 2e vorm, 2 = eindvorm
+  }
+  // 2e vorm van een soort (= stage 1 in zijn keten)
+  function secondFormId(speciesId) {
+    const baseId = chainBaseId(speciesId);
+    const base = DG.SPECIES[baseId];
+    if (base && base.evolvesTo && DG.SPECIES[base.evolvesTo]) return base.evolvesTo;
+    return baseId; // 1-traps soort: blijft zichzelf
+  }
+
+  // ── Stat-/move-berekening (zelfde formules als de engine) ──
+  function calcStats(base, ivs, evs, level, nature) {
+    const b_ = k => (base && base[k]) || 0;
+    const iv_ = k => (ivs && ivs[k]) || 0;
+    const ev_ = k => (evs && evs[k]) || 0;
+    const stat = k => Math.floor((2*b_(k) + iv_(k) + Math.floor(ev_(k)/4)) * level / 100) + 5;
+    const out = {
+      hp:    Math.floor((2*b_('hp') + iv_('hp') + Math.floor(ev_('hp')/4)) * level / 100) + level + 10,
+      atk:   stat('atk'),  def:   stat('def'),
+      spAtk: stat('spAtk'), spDef: stat('spDef'), spd: stat('spd'),
+    };
+    const nat = (nature && DG.NATURES) ? DG.NATURES[nature] : null;
+    if (nat && nat.boosts)  out[nat.boosts]  = Math.floor(out[nat.boosts]  * 1.1);
+    if (nat && nat.reduces) out[nat.reduces] = Math.floor(out[nat.reduces] * 0.9);
+    return out;
+  }
+  function buildMoves(species, level) {
+    if (!species.learnset) return [];
+    const learned = species.learnset.filter(e => e.level <= level).map(e => e.move);
+    return learned.slice(-4).map(mid => {
+      const id = Array.isArray(mid) ? mid[0] : mid;
+      const mv = DG.MOVES && DG.MOVES[id];
+      return mv ? { moveId: id, ppCurrent: mv.pp, ppMax: mv.pp } : null;
+    }).filter(Boolean);
+  }
+  function expFor(species, level) {
+    try { return DG.EXP_CURVE[species.expCurve](level); } catch(e) { return level*level*level; }
+  }
+  function randLevel() {
+    return BASE_LEVEL + Math.floor(Math.random() * (2*LEVEL_SPREAD + 1)) - LEVEL_SPREAD;
+  }
+  function randNature() {
+    const keys = DG.NATURE_NAMES || Object.keys(DG.NATURES);
+    return keys[Math.floor(Math.random() * keys.length)];
+  }
+  function randIVs() {
+    const r = () => Math.floor(Math.random() * 16) + 12; // 12..27 = degelijk
+    return { hp:r(), atk:r(), def:r(), spAtk:r(), spDef:r(), spd:r() };
+  }
+
+  // ── Bestaande mon optillen (soort/level/stats/moves) ───────
+  function upgradeMon(mon) {
+    const before = { sp: mon.speciesId, lv: mon.level };
+    // Naar (minstens) 2e vorm — nooit terugzetten
+    let targetSpecies = mon.speciesId;
+    if (stageOf(mon.speciesId) === 0) targetSpecies = secondFormId(mon.speciesId);
+    const species = DG.SPECIES[targetSpecies];
+    if (!species) return null;
+
+    const level = randLevel();
+    mon.speciesId = targetSpecies;
+    mon.level = level;
+    if (!mon.ivs) mon.ivs = randIVs();
+    if (!mon.evs) mon.evs = { hp:0, atk:0, def:0, spAtk:0, spDef:0, spd:0 };
+    if (!mon.nature) mon.nature = 'HARDY';
+    const stats = calcStats(species.baseStats, mon.ivs, mon.evs, level, mon.nature);
+    mon.stats = stats;
+    mon.hp = { current: stats.hp, max: stats.hp };
+    mon.moves = buildMoves(species, level);
+    mon.exp = expFor(species, level);
+    mon.expToNext = expFor(species, level + 1);
+    mon.statusEffect = null; mon.statusTurns = 0; mon.confusionTurns = 0;
+    return { before, after: { sp: targetSpecies, lv: level, shiny: !!mon.isShiny } };
+  }
+
+  // ── Verse filler-mon (voor lege slots) ─────────────────────
+  function fillerPool(excludeIds) {
+    const pool = [];
+    for (const id in DG.SPECIES) {
+      const sp = DG.SPECIES[id];
+      if (!sp || sp.isLegendary || sp.isMega) continue;
+      if (stageOf(id) !== 1) continue;           // alleen 2e vormen
+      if (excludeIds.has(id)) continue;
+      pool.push(id);
+    }
+    return pool;
+  }
+  function makeFiller(speciesId) {
+    const species = DG.SPECIES[speciesId];
+    const level = randLevel();
+    const ivs = randIVs();
+    const evs = { hp:0, atk:0, def:0, spAtk:0, spDef:0, spd:0 };
+    const nature = randNature();
+    const stats = calcStats(species.baseStats, ivs, evs, level, nature);
+    return {
+      uid: Date.now().toString(36) + Math.random().toString(36).slice(2),
+      speciesId, nickname: null, level,
+      exp: expFor(species, level), expToNext: expFor(species, level+1),
+      hp: { current: stats.hp, max: stats.hp }, stats, ivs, evs,
+      moves: buildMoves(species, level),
+      statusEffect: null, statusTurns: 0, confusionTurns: 0,
+      nature, happiness: 70, heldItem: null,
+      caughtBall: 'DINOBALL', caughtAt: 'Team Boost', caughtAtLevel: level,
+      isShiny: false,
+    };
+  }
+
+  // ── Save-slot vinden ───────────────────────────────────────
+  function findSave() {
+    for (const key of SLOT_KEYS) {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      try {
+        const s = JSON.parse(raw);
+        if (s && s.player && Array.isArray(s.player.party) && s.player.party.some(Boolean)) {
+          return { key, save: s };
+        }
+      } catch(e) {}
+    }
+    return null;
+  }
+
+  let _found = null;
+
+  // ── Init ───────────────────────────────────────────────────
+  window.addEventListener('load', function() {
+    log.innerHTML = '';
+    let ok = true;
+    if (!window.DG)   { addLog('❌ DG namespace niet geladen', 'err'); ok = false; }
+    if (!DG.SPECIES)  { addLog('❌ DG.SPECIES niet geladen (dinomons.js)', 'err'); ok = false; }
+    if (!DG.MOVES)    { addLog('❌ DG.MOVES niet geladen (moves.js)', 'err'); ok = false; }
+    if (!ok) return;
+
+    _found = findSave();
+    if (!_found) {
+      addLog('❌ Geen save met een team gevonden. Speel je wel op deze browser/URL?', 'err');
+      return;
+    }
+    addLog('✅ Gamedata geladen — ' + Object.keys(DG.SPECIES).length + ' soorten', 'ok');
+    addLog('✅ Save gevonden in <b>' + _found.key + '</b> — speler: ' + (_found.save.player.name || '?'), 'ok');
+    addLog('');
+    addLog('<b>Huidig team:</b>', 'warn');
+    const party = _found.save.player.party.filter(Boolean);
+    if (!party.length) { addLog('(leeg)', 'warn'); }
+    for (const m of party) {
+      const sp = DG.SPECIES[m.speciesId];
+      const nm = m.nickname || (sp && sp.name) || m.speciesId;
+      addLog(`<div class="mon">${m.isShiny ? '<span class="shiny">✦ </span>' : ''}${nm} (${m.speciesId}) — Lv.${m.level}</div>`);
+    }
+    const empties = 6 - party.length;
+    addLog('');
+    addLog(empties > 0 ? `➕ ${empties} lege slot(s) worden aangevuld.` : 'Team is vol (6).', 'warn');
+    addLog('Klik op <b>Boost mijn team</b> om door te voeren.', 'warn');
+    document.getElementById('btn').disabled = false;
+  });
+
+  // ── Uitvoeren ──────────────────────────────────────────────
+  function doBoost() {
+    document.getElementById('btn').disabled = true;
+    if (!_found) { addLog('❌ Geen save.', 'err'); return; }
+    const { key, save } = _found;
+    log.innerHTML = '';
+    addLog('🔧 Bezig…', 'warn');
+
+    // Normaliseer naar exact 6 slots, behoud volgorde, sla eieren over
+    const oldParty = (save.player.party || []).filter(Boolean);
+    const newParty = [];
+    const present = new Set();
+
+    for (const mon of oldParty) {
+      if (newParty.length >= 6) break;
+      if (mon.isEgg) { newParty.push(mon); continue; } // eieren niet aanraken
+      const res = upgradeMon(mon);
+      if (res) {
+        const sp = DG.SPECIES[mon.speciesId];
+        const nm = mon.nickname || (sp && sp.name) || mon.speciesId;
+        present.add(chainBaseId(mon.speciesId));
+        addLog(`<div class="mon">${mon.isShiny ? '<span class="shiny">✦ </span>' : ''}<b>${nm}</b>: `
+          + `${res.before.sp} Lv${res.before.lv} <span class="arrow">→</span> ${res.after.sp} Lv${res.after.lv}</div>`);
+      }
+      newParty.push(mon);
+    }
+
+    // Lege slots aanvullen met gevarieerde 2e-vorm soorten
+    const exclude = new Set();
+    for (const m of newParty) if (m) exclude.add(m.speciesId);
+    let pool = fillerPool(exclude);
+    while (newParty.length < 6 && pool.length) {
+      const pick = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+      const mon = makeFiller(pick);
+      newParty.push(mon);
+      const sp = DG.SPECIES[pick];
+      addLog(`<div class="mon">➕ Nieuw: <b>${sp.name}</b> (${pick}) — Lv.${mon.level}</div>`);
+    }
+
+    save.player.party = newParty;
+    save._savedAt = new Date().toLocaleString();
+
+    try {
+      localStorage.setItem(key, JSON.stringify(save));
+      addLog('');
+      addLog('✅ Klaar! Sluit dit tabblad, open het spel en laad je save.', 'ok');
+      addLog('✅ Tip: maak meteen in-game een nieuwe save zodat het vast staat.', 'ok');
+    } catch(e) {
+      addLog('❌ Opslaan mislukt: ' + e.message, 'err');
+    }
+  }
+  </script>
+</body>
+</html>
