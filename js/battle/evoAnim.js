@@ -32,6 +32,7 @@ DG.EvoAnim = (function () {
   let _oldId     = '';
   let _newId     = '';
   let _newName   = '';
+  let _isShiny   = false;
   let _onComplete= null;
 
   // Procedural crack lines
@@ -96,7 +97,11 @@ DG.EvoAnim = (function () {
     if (!DG.SpriteRenderer || !DG.SpriteRenderer.drawMon) return;
     ctx.save();
     ctx.globalAlpha = _clamp(alpha, 0, 1);
-    if (filter) ctx.filter = filter;
+    // Shiny mons keep their hue-shifted palette through the whole animation.
+    // Prepended so grayscale/flash phases still override the colour as before.
+    const shinyF = _isShiny ? 'hue-rotate(180deg) saturate(2)' : '';
+    const f = (shinyF && filter) ? (shinyF + ' ' + filter) : (shinyF || filter);
+    if (f) ctx.filter = f;
     DG.SpriteRenderer.drawMon(ctx, speciesId, CX, CY, MON_SCALE);
     ctx.filter = 'none';
     ctx.restore();
@@ -454,11 +459,12 @@ DG.EvoAnim = (function () {
   }
 
   // ── Public API ────────────────────────────────────────────
-  function start(oldSpeciesId, newSpeciesId, onComplete) {
+  function start(oldSpeciesId, newSpeciesId, onComplete, isShiny) {
     const sp   = DG.SPECIES && DG.SPECIES[newSpeciesId];
     _oldId     = oldSpeciesId;
     _newId     = newSpeciesId;
     _newName   = sp ? sp.name : newSpeciesId;
+    _isShiny   = !!isShiny;
     _onComplete= onComplete || null;
     _phase     = PH.DARKEN;
     _frame     = 0;

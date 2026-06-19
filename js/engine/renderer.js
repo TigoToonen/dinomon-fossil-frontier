@@ -1452,29 +1452,41 @@ DG.Renderer = (function () {
     const e1x = W * 0.18, e1y = H * 0.16;
     ctx.fillStyle = 'rgba(0,0,0,0.25)';
     ctx.beginPath(); ctx.ellipse(e1x + 16, e1y + 38, 20, 6, 0, 0, Math.PI*2); ctx.fill();
-    if (battle.enemyMon && battle.enemyMon.hp.current > 0)
+    if (battle.enemyMon && battle.enemyMon.hp.current > 0) {
+      if (battle.enemyMon.isShiny) ctx.filter = 'hue-rotate(180deg) saturate(2)';
       DG.SpriteRenderer.drawMon(ctx, battle.enemyMon.speciesId, e1x, e1y, 1.6);
+      if (battle.enemyMon.isShiny) ctx.filter = 'none';
+    }
 
     // Enemy 2 (Cretaceous) — top-right
     const e2x = W * 0.56, e2y = H * 0.10;
     ctx.fillStyle = 'rgba(0,0,0,0.25)';
     ctx.beginPath(); ctx.ellipse(e2x + 16, e2y + 38, 20, 6, 0, 0, Math.PI*2); ctx.fill();
-    if (battle.enemy2Mon && battle.enemy2Mon.hp.current > 0)
+    if (battle.enemy2Mon && battle.enemy2Mon.hp.current > 0) {
+      if (battle.enemy2Mon.isShiny) ctx.filter = 'hue-rotate(180deg) saturate(2)';
       DG.SpriteRenderer.drawMon(ctx, battle.enemy2Mon.speciesId, e2x, e2y, 1.6);
+      if (battle.enemy2Mon.isShiny) ctx.filter = 'none';
+    }
 
     // Player mon — bottom-left
     const ppx = W * 0.04, ppy = H * 0.40;
     ctx.fillStyle = 'rgba(0,0,0,0.25)';
     ctx.beginPath(); ctx.ellipse(ppx + 32, ppy + 58, 28, 8, 0, 0, Math.PI*2); ctx.fill();
-    if (battle.playerMon && battle.playerMon.hp.current > 0)
+    if (battle.playerMon && battle.playerMon.hp.current > 0) {
+      if (battle.playerMon.isShiny) ctx.filter = 'hue-rotate(180deg) saturate(2)';
       DG.SpriteRenderer.drawMon(ctx, battle.playerMon.speciesId, ppx, ppy, 2.2);
+      if (battle.playerMon.isShiny) ctx.filter = 'none';
+    }
 
     // Ally mon (Morax) — bottom-right
     const apx = W * 0.50, apy = H * 0.44;
     ctx.fillStyle = 'rgba(0,0,0,0.25)';
     ctx.beginPath(); ctx.ellipse(apx + 32, apy + 58, 28, 8, 0, 0, Math.PI*2); ctx.fill();
-    if (battle.allyMon && battle.allyMon.hp.current > 0)
+    if (battle.allyMon && battle.allyMon.hp.current > 0) {
+      if (battle.allyMon.isShiny) ctx.filter = 'hue-rotate(180deg) saturate(2)';
       DG.SpriteRenderer.drawMon(ctx, battle.allyMon.speciesId, apx, apy, 2.2);
+      if (battle.allyMon.isShiny) ctx.filter = 'none';
+    }
 
     // Target cursor (yellow triangle above target)
     if (DG.Battle.getState() === DG.Battle.BS.PLAYER_INPUT) {

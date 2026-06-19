@@ -616,7 +616,7 @@ window.DG = window.DG || {};
       if (data.event === 'EVOLUTION') {
         // Full-screen Fossil Awakening animation
         if (typeof DG.EvoAnim !== 'undefined' && data.oldSpeciesId && data.mon) {
-          DG.EvoAnim.start(data.oldSpeciesId, data.mon.speciesId, null);
+          DG.EvoAnim.start(data.oldSpeciesId, data.mon.speciesId, null, data.mon.isShiny);
         } else {
           try { DG.Audio.playEvolution(); } catch(e) {}
         }
