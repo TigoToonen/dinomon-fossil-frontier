@@ -716,6 +716,61 @@ DG.Renderer = (function () {
     ctx.textAlign = 'left';
   }
 
+  // Directional exit markers: for each edge warp that leads to another OUTDOOR
+  // area, draw an arrow + destination name pinned to that edge, over the gap.
+  // Gives an at-a-glance "this way to <place>" in every town and route.
+  function _drawExitMarkers(ctx, mapData, camX, camY, T, W, H) {
+    if (!mapData || mapData.isIndoor || !mapData.warps || !window.DG || !DG.MAPS) return;
+    const groups = {};
+    for (const w of mapData.warps) {
+      const tm = DG.MAPS[w.targetMap];
+      if (!tm || tm.isIndoor) continue;            // only outdoor travel exits
+      let dir = null;
+      if (w.y <= 0) dir = 'up';
+      else if (w.y >= mapData.height - 1) dir = 'down';
+      else if (w.x <= 0) dir = 'left';
+      else if (w.x >= mapData.width - 1) dir = 'right';
+      else continue;                                // interior warp, not an edge
+      const locked = !!(w.gymLock && _gs && _gs.player && !_gs.player.flags[w.gymLock]);
+      const key = w.targetMap + '|' + dir;
+      if (!groups[key]) groups[key] = { dir, name: tm.name || w.targetMap, xs: [], ys: [], locked: true };
+      groups[key].xs.push(w.x); groups[key].ys.push(w.y);
+      if (!locked) groups[key].locked = false;
+    }
+    const ARROW = { up: '▲', down: '▼', left: '◄', right: '►' };
+    for (const key in groups) {
+      const g = groups[key];
+      const ax = g.xs.reduce((a, b) => a + b, 0) / g.xs.length;
+      const ay = g.ys.reduce((a, b) => a + b, 0) / g.ys.length;
+      let sx = ax * T - camX + T / 2;
+      let sy = ay * T - camY + T / 2;
+      const pad = 16;
+      if (g.dir === 'up')         sy = pad;
+      else if (g.dir === 'down')  sy = H - pad;
+      else if (g.dir === 'left')  sx = pad + 12;
+      else if (g.dir === 'right') sx = W - pad - 12;
+      const label = (g.dir === 'left' ? ARROW[g.dir] + ' ' : '') + g.name +
+                    (g.dir !== 'left' ? ' ' + ARROW[g.dir] : '');
+      ctx.save();
+      ctx.font = 'bold 9px monospace';
+      const bw = ctx.measureText(label).width + 10, bh = 14;
+      sx = Math.max(bw / 2 + 2, Math.min(W - bw / 2 - 2, sx));
+      sy = Math.max(bh / 2 + 2, Math.min(H - bh / 2 - 2, sy));
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = g.locked ? 'rgba(40,24,24,0.9)' : 'rgba(8,14,40,0.9)';
+      ctx.fillRect(sx - bw / 2, sy - bh / 2, bw, bh);
+      ctx.strokeStyle = g.locked ? '#aa6666' : '#66ccff';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(sx - bw / 2, sy - bh / 2, bw, bh);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = g.locked ? '#dd99aa' : '#ffe27a';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(label, sx, sy + 0.5);
+      ctx.restore();
+      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    }
+  }
+
   // ── Overworld ─────────────────────────────────────────────
   function _drawOverworld(ctx) {
     if (!_gs) return;
@@ -883,6 +938,9 @@ DG.Renderer = (function () {
     ctx.globalAlpha = 1;
 
     DG.SpriteRenderer.drawPlayer(ctx, ppX, ppY, p.facing, _animOff);
+
+    // Directional exit markers (which way to the next route/city)
+    _drawExitMarkers(ctx, mapData, camX, camY, T, W, H);
 
     // ── Full-screen location takeover (outdoor areas only) ────
     // Dramatic centred overlay when entering a new named area (~1.8s, auto fade).
