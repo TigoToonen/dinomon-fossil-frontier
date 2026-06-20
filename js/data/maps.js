@@ -354,7 +354,7 @@ PYRESIDE_CITY: {
     [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
     [66, 5,65,65,65,65,65,65, 5, 5, 5,65,65,65,65, 5,65,65, 5,66],
     [66, 5,65,65,65,65,65,65, 5, 5, 5,65,65,65,65, 5,65,68, 5,66],
-    [66, 5,65,68,65,65,65,65, 5, 5, 5,65,65,65,65, 5,65,65, 5,66],
+    [66, 5,65,68,65,65,65,65, 5, 5, 5,65,68,65,65, 5,65,65, 5,66],
     [66, 5, 5, 5, 5, 5, 5, 5, 5, 5,67, 5, 5, 5, 5, 5, 5, 5, 5,66],
     [66, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 7, 5,66],
     [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0],
@@ -367,6 +367,8 @@ PYRESIDE_CITY: {
     { x:10,y:0,  targetMap:'ROUTE_3B', targetX:10,targetY:18 },
     { x:9, y:14, targetMap:'ROUTE_4A', targetX:9, targetY:1, requiresFlag:'BADGE_3'  },
     { x:10,y:14, targetMap:'ROUTE_4A', targetX:10,targetY:1, requiresFlag:'BADGE_3'  },
+    { x:3,  y:8, targetMap:'PYRESIDE_WEST_HOUSE', targetX:3, targetY:6 },
+    { x:12, y:8, targetMap:'PYRESIDE_EAST_HOUSE', targetX:3, targetY:6 },
     { x:3, y:4,  targetMap:'PYRESIDE_GYM',    targetX:14, targetY:16 },
     { x:17,y:3,  targetMap:'PYRESIDE_CENTER', targetX:7, targetY:8  },
     { x:17,y:7,  targetMap:'PYRESIDE_SHOP',   targetX:5, targetY:7  },
@@ -4032,6 +4034,38 @@ DG.MAPS.DUSTWALL_HOUSE1 = {
   encounterTable:{grass:[],water:[]}, events:[],
 };
 
+// ── Town homes (interiors for buildings that previously had a door but no
+//    warp, so the player could not enter). Each exits to its town's doorstep. ──
+function _townHome(id, name, townMap, exitX, exitY, npcName, npcSprite, lines) {
+  return {
+    id:id, name:name, width:10, height:8, music:'HOUSE_THEME', isIndoor:true, isCave:false,
+    tiles:[
+      [65,65,65,65,65,65,65,65,65,65],
+      [65,81, 5, 5, 5, 5, 5,82,81,65],
+      [65, 5, 5, 5,78,78, 5, 5, 5,65],
+      [65, 5, 5, 5, 5, 5, 5, 5, 5,65],
+      [65, 5,77, 5, 5, 5, 5,80, 5,65],
+      [65, 5, 5, 5, 5, 5, 5, 5, 5,65],
+      [65, 5, 5, 5, 5, 5, 5, 5, 5,65],
+      [65,65,65,68,65,65,65,65,65,65],
+    ],
+    warps:[{ x:3, y:7, targetMap:townMap, targetX:exitX, targetY:exitY }],
+    npcs:[{ id:id+'_NPC', name:npcName, x:5, y:4, facing:'DOWN', spriteKey:npcSprite,
+            movementType:'STATIONARY', dialogue:lines, onInteract:null }],
+    encounterTable:{grass:[],water:[]}, events:[],
+  };
+}
+DG.MAPS.PYRESIDE_WEST_HOUSE = _townHome('PYRESIDE_WEST_HOUSE','Pyreside Home','PYRESIDE_CITY',3,9,
+  'Resident','NPC_WOMAN',["Pyreside sits right on the volcano — Ignis trains Fire-types here.","Stay cool out there, traveller!"]);
+DG.MAPS.PYRESIDE_EAST_HOUSE = _townHome('PYRESIDE_EAST_HOUSE','Pyreside Cottage','PYRESIDE_CITY',12,9,
+  'Old Miner','NPC_MAN',["The volcano's glow keeps our home warm through the night.","Dig deep and you'll find Fire DinoMon love the heat."]);
+DG.MAPS.FERNGROVE_HOUSE = _townHome('FERNGROVE_HOUSE','Ferngrove Home','FERNGROVE_TOWN',3,9,
+  'Resident','NPC_WOMAN',["Welcome to Ferngrove! Our forest is full of Grass-type DinoMon.","Sylva's Gym is the heart of our little town."]);
+DG.MAPS.CRESTFALL_HOUSE = _townHome('CRESTFALL_HOUSE','Crestfall Home','CRESTFALL_TOWN',3,9,
+  'Resident','NPC_MAN',["Crestfall's storms power Volt's Electric Gym.","Mind the lightning when the sky turns dark!"]);
+DG.MAPS.BOGMIRE_HOUSE = _townHome('BOGMIRE_HOUSE','Bogmire Home','BOGMIRE_CITY',3,9,
+  'Resident','NPC_WOMAN',["Bogmire's wetlands hide all sorts of Water-type DinoMon.","Marina's Gym is just across the marsh."]);
+
 // STONEHAVEN_HOUSE1 retired — it was unreachable (no door in town) and duplicated the
 // empty, already-reachable STONEHAVEN_MUSEUM. Its historian exhibits now live in the museum.
 DG.MAPS.STONEHAVEN_MUSEUM.npcs = [
@@ -4453,6 +4487,7 @@ DG.MAPS.FERNGROVE_TOWN = {
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_5A',       targetX:9,  targetY:1, requiresFlag:'BADGE_4'  },
     { x:10, y:0,  targetMap:'ROUTE_5A',       targetX:10, targetY:1, requiresFlag:'BADGE_4'  },
+    { x:3,  y:8,  targetMap:'FERNGROVE_HOUSE', targetX:3, targetY:6 },
     { x:9,  y:14, targetMap:'ROUTE_4C',       targetX:9,  targetY:20 },
     { x:10, y:14, targetMap:'ROUTE_4C',       targetX:10, targetY:20 },
     { x:3,  y:4,  targetMap:'FERNGROVE_GYM', targetX:14, targetY:16 },
@@ -4507,6 +4542,7 @@ DG.MAPS.CRESTFALL_TOWN = {
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_8A',       targetX:9,  targetY:1, requiresFlag:'BADGE_6'  },
     { x:10, y:0,  targetMap:'ROUTE_8A',       targetX:10, targetY:1, requiresFlag:'BADGE_6'  },
+    { x:3,  y:8,  targetMap:'CRESTFALL_HOUSE', targetX:3, targetY:6 },
     { x:9,  y:14, targetMap:'ROUTE_6D',       targetX:9,  targetY:26 },
     { x:10, y:14, targetMap:'ROUTE_6D',       targetX:10, targetY:26 },
     { x:3,  y:4,  targetMap:'CRESTFALL_GYM', targetX:14, targetY:16 },
@@ -4561,6 +4597,7 @@ DG.MAPS.BOGMIRE_CITY = {
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_9A',    targetX:9,  targetY:1, requiresFlag:'BADGE_7'  },
     { x:10, y:0,  targetMap:'ROUTE_9A',    targetX:10, targetY:1, requiresFlag:'BADGE_7'  },
+    { x:3,  y:8,  targetMap:'BOGMIRE_HOUSE', targetX:3, targetY:6 },
     { x:9,  y:14, targetMap:'ROUTE_7D',    targetX:9,  targetY:26 },
     { x:10, y:14, targetMap:'ROUTE_7D',    targetX:10, targetY:26 },
     { x:3,  y:4,  targetMap:'BOGMIRE_GYM',    targetX:14, targetY:16 },
