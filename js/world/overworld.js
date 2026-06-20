@@ -1021,7 +1021,20 @@ DG.Overworld = (function () {
       const trainer = DG.TRAINERS[trainerId];
       if (trainer) {
         const _ld = (d) => { if (!d) return null; if (typeof d === 'string') return DG.STORY.DIALOGUES[d] || [d]; return d; };
-        const lines = _ld(trainer.postBattleDialogue) || ['You were amazing!'];
+        // Sensible, varied fallback for a DEFEATED trainer (picked deterministically
+        // per trainer so the same one always says the same thing).
+        const _DEFEATED_LINES = [
+          ["That was a great battle. Well fought!"],
+          ["You and your DinoMon are tough. I'll train harder!"],
+          ["I still can't believe I lost... You're strong!"],
+          ["Come back anytime for a rematch!"],
+          ["Your bond with your DinoMon is impressive."],
+          ["You beat me fair and square. Nice work!"],
+        ];
+        let _h = 0;
+        for (let _i = 0; _i < trainerId.length; _i++) _h = (_h * 31 + trainerId.charCodeAt(_i)) | 0;
+        const _fallback = _DEFEATED_LINES[Math.abs(_h) % _DEFEATED_LINES.length];
+        const lines = _ld(trainer.postBattleDialogue) || _fallback;
         DG.DialogueBox.show(lines, () => { _blocked = false; });
         return;
       }
