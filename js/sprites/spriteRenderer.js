@@ -6287,6 +6287,35 @@ DG.SpriteRenderer = (function () {
     return '#'+[r,g,b].map(n=>n.toString(16).padStart(2,'0')).join('');
   }
 
+  // Town dressing drawn around every building facade: potted bushes flanking the
+  // entrance + a lamppost that glows warmly at night. Makes cities feel lived-in.
+  function _facadeProps(ctx, fx, fy, fw, fh, T) {
+    var baseY = fy + fh;
+    function planter(cx) {
+      ctx.fillStyle='#7a4f28'; ctx.fillRect(cx-3, baseY-5, 6, 5);
+      ctx.fillStyle='#925f30'; ctx.fillRect(cx-3, baseY-5, 6, 1);
+      ctx.fillStyle='#2f7d36'; ctx.beginPath(); ctx.arc(cx, baseY-7, 4.2, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle='#46a84a'; ctx.beginPath(); ctx.arc(cx-1.4, baseY-8.4, 2.1, 0, Math.PI*2); ctx.fill();
+    }
+    planter(fx + 5);
+    planter(fx + fw - 5);
+    var lx = fx - 7;                                   // lamppost just left of it
+    ctx.fillStyle='#26262e';
+    ctx.fillRect(lx-1, baseY-23, 2, 23);               // pole
+    ctx.fillRect(lx-3, baseY-2, 6, 2);                 // base
+    ctx.fillRect(lx-3, baseY-25, 6, 2);                // top arm
+    var night = (window.DG && DG.getNightFactor) ? DG.getNightFactor() : 0;
+    if (night > 0.12) {
+      var gl = ctx.createRadialGradient(lx, baseY-26, 1, lx, baseY-26, 15);
+      gl.addColorStop(0, 'rgba(255,221,140,'+(0.55*night).toFixed(2)+')');
+      gl.addColorStop(1, 'rgba(255,221,140,0)');
+      ctx.fillStyle = gl; ctx.fillRect(lx-15, baseY-41, 30, 30);
+    }
+    ctx.fillStyle = night > 0.12 ? '#ffe487' : '#c8cdd6';  // lantern
+    ctx.fillRect(lx-2, baseY-27, 4, 5);
+    ctx.strokeStyle='#15151b'; ctx.lineWidth=1; ctx.strokeRect(lx-2, baseY-27, 4, 5);
+  }
+
   // ── Building signs — full facades per building type ───────────
   function drawBuildingSign(ctx, px, py, T, type, seed, townTheme, targetMap) {
     seed      = (seed      == null) ? 0      : seed;
@@ -6575,6 +6604,9 @@ DG.SpriteRenderer = (function () {
       }
       _outline(fx,fy,fw,fh);
     }
+
+    // Town dressing (planters + lamppost) around every building
+    try { _facadeProps(ctx, fx, fy, fw, fh, T); } catch(e) {}
 
     ctx.restore();
   }
