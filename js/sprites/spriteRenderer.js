@@ -6433,10 +6433,18 @@ DG.SpriteRenderer = (function () {
       for(var s=0;s<8;s++){ ctx.fillStyle=s%2===0?th.acc:'#ffffff'; ctx.fillRect(ax2+s*(aw/8),ay2,aw/8+0.5,ah); }
       ctx.strokeStyle=th.dark; ctx.lineWidth=1; ctx.strokeRect(ax2,ay2,aw,ah);
       var ww2=fw*0.76,wh2=T*0.7,wx2=fx+(fw-ww2)/2,wy2=ay2+ah+T*0.07;
-      ctx.fillStyle='#c8eeff'; ctx.fillRect(wx2,wy2,ww2,wh2);
-      ctx.fillStyle='#ff8844'; ctx.fillRect(wx2+ww2*0.1,wy2+wh2*0.15,ww2*0.15,wh2*0.6);
-      ctx.fillStyle='#44aaff'; ctx.fillRect(wx2+ww2*0.35,wy2+wh2*0.15,ww2*0.15,wh2*0.6);
-      ctx.fillStyle='#ffdd44'; ctx.fillRect(wx2+ww2*0.60,wy2+wh2*0.15,ww2*0.15,wh2*0.6);
+      // Storefront display window: glass + a shelf with a few glossy goods
+      ctx.fillStyle='#cdeefb'; ctx.fillRect(wx2,wy2,ww2,wh2);
+      ctx.fillStyle='rgba(255,255,255,0.35)';                       // glass sheen
+      ctx.beginPath(); ctx.moveTo(wx2+ww2*0.1,wy2); ctx.lineTo(wx2+ww2*0.32,wy2); ctx.lineTo(wx2+ww2*0.12,wy2+wh2); ctx.lineTo(wx2,wy2+wh2); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#a9763f'; ctx.fillRect(wx2, wy2+wh2*0.64, ww2, wh2*0.12); // shelf
+      var _itY=wy2+wh2*0.45, _itR=wh2*0.17;
+      ['#e8504d','#4d8fe8','#e8c44d'].forEach(function(_col,_ii){
+        var _itX=wx2+ww2*(0.24+_ii*0.26);
+        ctx.fillStyle=_col; ctx.beginPath(); ctx.arc(_itX,_itY,_itR,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='rgba(0,0,0,0.18)'; ctx.fillRect(_itX-_itR,_itY,_itR*2,1);    // ball band
+        ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.beginPath(); ctx.arc(_itX-_itR*0.32,_itY-_itR*0.32,_itR*0.3,0,Math.PI*2); ctx.fill();
+      });
       ctx.strokeStyle=th.acc; ctx.lineWidth=2; ctx.strokeRect(wx2,wy2,ww2,wh2);
       var sw=fw*0.52,sh=T*0.38,sx=fx+(fw-sw)/2,sy=wy2+wh2+T*0.1;
       ctx.fillStyle=th.dark; ctx.fillRect(sx,sy,sw,sh);
