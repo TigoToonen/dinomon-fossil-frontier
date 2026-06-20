@@ -1259,8 +1259,8 @@ DG.Renderer = (function () {
     // ── Smooth night overlay using getNightFactor ─────────────
     const nightFactor = DG.getNightFactor ? DG.getNightFactor() : 0;
     if (nightFactor > 0) {
-      const nightAlpha = nightFactor * 0.55; // max 55% overlay at midnight
-      ctx.fillStyle = `rgba(10, 15, 60, ${nightAlpha})`;
+      const nightAlpha = nightFactor * 0.42; // softer night so towns stay readable
+      ctx.fillStyle = `rgba(22, 20, 52, ${nightAlpha})`; // a touch warmer/less icy-blue
       ctx.fillRect(0, 0, W, H);
 
       // ── Animated star field at night ─────────────────────────

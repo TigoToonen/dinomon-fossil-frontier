@@ -229,13 +229,27 @@ DG.SpriteRenderer = (function () {
           TUNDRA:'#b8ccd8',SUMMIT:'#e0dcd0',DEFAULT:'#a89880'};
         ctx.fillStyle=_cbB0[_th0]||_cbB0.DEFAULT; ctx.fillRect(px,py,T,T);
         const _cs0=_cbS0[_th0]||_cbS0.DEFAULT;
-        [[px+1,py+1,13,13],[px+17,py+1,13,13],[px+9,py+17,13,13]].forEach(([_cx0,_cy0,_cw0,_ch0])=>{
+        [[px+1,py+1,13,13],[px+17,py+1,13,13],[px+9,py+17,13,13]].forEach(([_cx0,_cy0,_cw0,_ch0],_si0)=>{
           ctx.fillStyle=_cs0; ctx.fillRect(_cx0,_cy0,_cw0,_ch0);
+          // Per-stone brightness variation breaks the repeating-stamp look
+          const _sv0 = _rv0[(_si0*5+3)%18];
+          ctx.fillStyle = _sv0 > 0.5 ? 'rgba(255,255,255,'+((_sv0-0.5)*0.20)+')' : 'rgba(0,0,0,'+((0.5-_sv0)*0.24)+')';
+          ctx.fillRect(_cx0,_cy0,_cw0,_ch0);
           ctx.fillStyle='rgba(255,255,255,0.22)';
           ctx.fillRect(_cx0,_cy0,_cw0,2); ctx.fillRect(_cx0,_cy0,2,_ch0);
           ctx.fillStyle='rgba(0,0,0,0.28)';
           ctx.fillRect(_cx0,_cy0+_ch0-2,_cw0,2); ctx.fillRect(_cx0+_cw0-2,_cy0,2,_ch0);
         });
+        // Occasional surface detail (moss / crack) so the ground isn't uniform
+        const _dv0 = _rv0[15];
+        if (_dv0 > 0.86) {
+          ctx.fillStyle = _th0==='COASTAL' ? 'rgba(96,150,128,0.45)' : _th0==='DESERT' ? 'rgba(150,120,60,0.40)' : 'rgba(74,110,44,0.42)';
+          ctx.fillRect(px + 4 + _rv0[14]*20, py + 5 + _rv0[13]*20, 3, 2);
+          ctx.fillRect(px + 6 + _rv0[12]*18, py + 7 + _rv0[11]*18, 2, 2);
+        } else if (_dv0 < 0.12) {
+          ctx.strokeStyle = 'rgba(0,0,0,0.22)'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(px + 5 + _rv0[10]*16, py + 5); ctx.lineTo(px + 7 + _rv0[9]*14, py + T - 5); ctx.stroke();
+        }
         // FASE 12: padrand waar gras grenst — routes lezen als routes
         if (edges) {
           ctx.fillStyle = 'rgba(18,30,8,0.32)';
