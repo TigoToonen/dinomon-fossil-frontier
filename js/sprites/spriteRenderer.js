@@ -220,34 +220,38 @@ DG.SpriteRenderer = (function () {
           ctx.fillRect(_tx0,_ty0+12,14,2); ctx.fillRect(_tx0+12,_ty0,2,14);
         }
       } else {
-        // Outdoor cobblestone: 3 stones in staggered pattern
-        const _cbB0={AMBER:'#9a7848',COASTAL:'#5a7080',DESERT:'#b89040',VOLCANIC:'#2a1818',
-          FOREST:'#6a5030',GRANITE:'#555555',MOUNTAIN:'#585048',SWAMP:'#323e22',
-          TUNDRA:'#8898a8',SUMMIT:'#c8c0b0',DEFAULT:'#848078'};
-        const _cbS0={AMBER:'#c09060',COASTAL:'#7898a8',DESERT:'#d0b060',VOLCANIC:'#483028',
-          FOREST:'#8a6848',GRANITE:'#787878',MOUNTAIN:'#706858',SWAMP:'#4a5838',
-          TUNDRA:'#b8ccd8',SUMMIT:'#e0dcd0',DEFAULT:'#a89880'};
-        ctx.fillStyle=_cbB0[_th0]||_cbB0.DEFAULT; ctx.fillRect(px,py,T,T);
-        const _cs0=_cbS0[_th0]||_cbS0.DEFAULT;
-        [[px+1,py+1,13,13],[px+17,py+1,13,13],[px+9,py+17,13,13]].forEach(([_cx0,_cy0,_cw0,_ch0],_si0)=>{
-          ctx.fillStyle=_cs0; ctx.fillRect(_cx0,_cy0,_cw0,_ch0);
-          // Per-stone brightness variation breaks the repeating-stamp look
-          const _sv0 = _rv0[(_si0*5+3)%18];
-          ctx.fillStyle = _sv0 > 0.5 ? 'rgba(255,255,255,'+((_sv0-0.5)*0.20)+')' : 'rgba(0,0,0,'+((0.5-_sv0)*0.24)+')';
-          ctx.fillRect(_cx0,_cy0,_cw0,_ch0);
-          ctx.fillStyle='rgba(255,255,255,0.22)';
-          ctx.fillRect(_cx0,_cy0,_cw0,2); ctx.fillRect(_cx0,_cy0,2,_ch0);
-          ctx.fillStyle='rgba(0,0,0,0.28)';
-          ctx.fillRect(_cx0,_cy0+_ch0-2,_cw0,2); ctx.fillRect(_cx0+_cw0-2,_cy0,2,_ch0);
-        });
+        // Outdoor paving — flat slabs with recessed seams so the ground reads as
+        // GROUND (not a wall). Lighter, warmer per-biome palette than before.
+        const _cbB0={AMBER:'#b89a64',COASTAL:'#9fa49a',DESERT:'#caa862',VOLCANIC:'#5c4c44',
+          FOREST:'#8c7048',GRANITE:'#8a8a8c',MOUNTAIN:'#8c8478',SWAMP:'#5e6c4a',
+          TUNDRA:'#aeb8c4',SUMMIT:'#d4d0c6',DEFAULT:'#9c968c'};   // seam/base colour
+        const _cbS0={AMBER:'#cdb084',COASTAL:'#c2c6bc',DESERT:'#e2c684',VOLCANIC:'#705e54',
+          FOREST:'#a4825a',GRANITE:'#a6a6a8',MOUNTAIN:'#a29888',SWAMP:'#76845a',
+          TUNDRA:'#cad6e0',SUMMIT:'#ece8de',DEFAULT:'#b6b0a4'};   // slab face
+        const _base0=_cbB0[_th0]||_cbB0.DEFAULT;
+        const _slab0=_cbS0[_th0]||_cbS0.DEFAULT;
+        ctx.fillStyle=_base0; ctx.fillRect(px,py,T,T);
+        // 2×2 flat slabs inset by 1px; the base shows through as a thin seam
+        for (let _r=0;_r<2;_r++) for (let _c=0;_c<2;_c++){
+          const _sx=px+_c*16+1, _sy=py+_r*16+1, _sv0=_rv0[((_r*2+_c)*5+3)%18];
+          ctx.fillStyle=_slab0; ctx.fillRect(_sx,_sy,14,14);
+          // subtle per-slab brightness variation breaks the repeating look
+          ctx.fillStyle=_sv0>0.5?'rgba(255,255,255,'+((_sv0-0.5)*0.16)+')':'rgba(0,0,0,'+((0.5-_sv0)*0.16)+')';
+          ctx.fillRect(_sx,_sy,14,14);
+          // flat top sheen (no big bevel — keeps it reading as flat ground)
+          ctx.fillStyle='rgba(255,255,255,0.08)'; ctx.fillRect(_sx,_sy,14,1);
+        }
+        // darker recessed seam cross
+        ctx.fillStyle='rgba(0,0,0,0.16)';
+        ctx.fillRect(px+15,py,2,T); ctx.fillRect(px,py+15,T,2);
         // Occasional surface detail (moss / crack) so the ground isn't uniform
         const _dv0 = _rv0[15];
         if (_dv0 > 0.86) {
-          ctx.fillStyle = _th0==='COASTAL' ? 'rgba(96,150,128,0.45)' : _th0==='DESERT' ? 'rgba(150,120,60,0.40)' : 'rgba(74,110,44,0.42)';
+          ctx.fillStyle = _th0==='COASTAL' ? 'rgba(120,160,140,0.40)' : _th0==='DESERT' ? 'rgba(170,140,80,0.38)' : 'rgba(90,120,55,0.40)';
           ctx.fillRect(px + 4 + _rv0[14]*20, py + 5 + _rv0[13]*20, 3, 2);
           ctx.fillRect(px + 6 + _rv0[12]*18, py + 7 + _rv0[11]*18, 2, 2);
-        } else if (_dv0 < 0.12) {
-          ctx.strokeStyle = 'rgba(0,0,0,0.22)'; ctx.lineWidth = 1;
+        } else if (_dv0 < 0.10) {
+          ctx.strokeStyle = 'rgba(0,0,0,0.16)'; ctx.lineWidth = 1;
           ctx.beginPath(); ctx.moveTo(px + 5 + _rv0[10]*16, py + 5); ctx.lineTo(px + 7 + _rv0[9]*14, py + T - 5); ctx.stroke();
         }
         // FASE 12: padrand waar gras grenst — routes lezen als routes
