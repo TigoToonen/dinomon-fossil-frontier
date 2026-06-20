@@ -4065,6 +4065,10 @@ DG.MAPS.CRESTFALL_HOUSE = _townHome('CRESTFALL_HOUSE','Crestfall Home','CRESTFAL
   'Resident','NPC_MAN',["Crestfall's storms power Volt's Electric Gym.","Mind the lightning when the sky turns dark!"]);
 DG.MAPS.BOGMIRE_HOUSE = _townHome('BOGMIRE_HOUSE','Bogmire Home','BOGMIRE_CITY',3,9,
   'Resident','NPC_WOMAN',["Bogmire's wetlands hide all sorts of Water-type DinoMon.","Marina's Gym is just across the marsh."]);
+DG.MAPS.BOGMIRE_EAST_HOUSE = _townHome('BOGMIRE_EAST_HOUSE','Market Quarter Home','BOGMIRE_CITY',22,5,
+  'Trader','NPC_MAN',["We opened up the east market two years back.","Business is booming since the dock reopened!"]);
+DG.MAPS.BOGMIRE_DOCK_HOUSE = _townHome('BOGMIRE_DOCK_HOUSE','Dockside Home','BOGMIRE_CITY',22,9,
+  'Fisher','NPC_WOMAN',["From our window we watch the marsh mist roll in.","Mudfin practically jump into the nets here."]);
 
 // STONEHAVEN_HOUSE1 retired — it was unreachable (no door in town) and duplicated the
 // empty, already-reachable STONEHAVEN_MUSEUM. Its historian exhibits now live in the museum.
@@ -4575,24 +4579,26 @@ DG.MAPS.CRESTFALL_TOWN = {
 };
 
 DG.MAPS.BOGMIRE_CITY = {
-  id:'BOGMIRE_CITY', name:'Bogmire City', width:20, height:15,
+  id:'BOGMIRE_CITY', name:'Bogmire City', width:28, height:15,
   music:'TOWN_CALM', isIndoor:false, isCave:false,
+  // Enlarged: original town (cols 0-18) is unchanged; a market/dock district was
+  // appended on the right (cols 19-27) — extra homes, a market stall and NPCs.
   tiles: [
-    [64,64,64,64,64,64,64,64,64, 8, 8,64,64,64,64,64,64,64,64,64],
-    [64, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,64],
-    [64, 8,65,65,65,65, 8, 8, 8, 8, 8, 8, 8,65,65,65,65,65, 8,64],
-    [64, 8,65,65,65,65, 8, 8, 8, 8, 8, 8, 8,65,75,65,76,68, 8,64],
-    [64, 8,65,68,65,65, 8, 8, 8, 8, 8, 8, 8,65,65,65,65,65, 8,64],
-    [64, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,64],
-    [64, 8,65,65,65,65,65,65, 8, 8, 8, 8,65,65,65,65, 8, 8, 8,64],
-    [64, 8,65,65,65,65,65,65, 8, 8, 8, 8,65,65,65,65, 8, 8, 8,64],
-    [64, 8,65,68,65,65,65,65, 8, 8, 8, 8,65,68,65,65, 8, 8, 8,64],
-    [64, 8, 8, 8, 8, 8, 8, 8, 8, 0,67, 8, 8, 8, 8, 8, 8, 8, 8,64],
-    [64, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 8, 8, 8, 8,64],
-    [64, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8,64],
-    [64, 3, 3, 3, 3, 3, 3, 8, 0, 0, 0, 0, 8, 3, 3, 3, 3, 3, 3,64],
-    [64,64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,64,64],
-    [64,64,64,64,64,64,64,64,64, 8, 8,64,64,64,64,64,64,64,64,64],
+    [64,64,64,64,64,64,64,64,64, 8, 8,64,64,64,64,64,64,64,64, 64,64,64,64,64,64,64,64,64],
+    [64, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,  8, 8, 8, 8, 8, 8, 8, 8,64],
+    [64, 8,65,65,65,65, 8, 8, 8, 8, 8, 8, 8,65,65,65,65,65, 8,  8, 8,65,65,65, 8, 8, 8,64],
+    [64, 8,65,65,65,65, 8, 8, 8, 8, 8, 8, 8,65,75,65,76,68, 8,  8, 8,65,65,65, 8, 8, 8,64],
+    [64, 8,65,68,65,65, 8, 8, 8, 8, 8, 8, 8,65,65,65,65,65, 8,  8, 8,65,68,65, 8, 8, 8,64],
+    [64, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,  8, 8, 8, 8, 8, 8, 8, 8,64],
+    [64, 8,65,65,65,65,65,65, 8, 8, 8, 8,65,65,65,65, 8, 8, 8,  8, 8,65,65,65, 8, 8, 8,64],
+    [64, 8,65,65,65,65,65,65, 8, 8, 8, 8,65,65,65,65, 8, 8, 8,  8, 8,65,65,65, 8, 8, 8,64],
+    [64, 8,65,68,65,65,65,65, 8, 8, 8, 8,65,68,65,65, 8, 8, 8,  8, 8,65,68,65, 8, 8, 8,64],
+    [64, 8, 8, 8, 8, 8, 8, 8, 8, 0,67, 8, 8, 8, 8, 8, 8, 8, 8,  8, 8, 8, 8, 8, 8, 8, 8,64],
+    [64, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 8, 8, 8, 8,  8, 8,74,74, 8, 8, 8, 8,64],
+    [64, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8,  8, 8, 8, 8, 8, 8, 8, 8,64],
+    [64, 3, 3, 3, 3, 3, 3, 8, 0, 0, 0, 0, 8, 3, 3, 3, 3, 3, 3,  8, 3, 3, 3, 3, 3, 3, 3,64],
+    [64,64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,64, 64,64,64,64,64,64,64,64,64],
+    [64,64,64,64,64,64,64,64,64, 8, 8,64,64,64,64,64,64,64,64, 64,64,64,64,64,64,64,64,64],
   ],
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_9A',    targetX:9,  targetY:1, requiresFlag:'BADGE_7'  },
@@ -4605,6 +4611,8 @@ DG.MAPS.BOGMIRE_CITY = {
     { x:13, y:8,  targetMap:'BOGMIRE_CENTER',  targetX:7,  targetY:8 },
     { x:12, y:5,  targetMap:'BOGMIRE_WILD', targetX:1, targetY:6 },
     { x:12, y:6,  targetMap:'BOGMIRE_WILD', targetX:1, targetY:7 },
+    { x:22, y:4,  targetMap:'BOGMIRE_EAST_HOUSE', targetX:3, targetY:6 },
+    { x:22, y:8,  targetMap:'BOGMIRE_DOCK_HOUSE', targetX:3, targetY:6 },
   ],
   npcs:[
     { id:'BG_NPC1', name:'Fisherman', x:7, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -4627,6 +4635,19 @@ DG.MAPS.BOGMIRE_CITY = {
     { id:'FLINT_BOGMIRE', name:'Flint', x:9, y:6, facing:'DOWN', spriteKey:'NPC_RIVAL',
       movementType:'STATIONARY', dialogue:['DOUBLE_BATTLE_PRE'], onInteract:'TRIGGER_DOUBLE_BATTLE',
       requiresFlag:'BADGE_6', flagToHide:'DOUBLE_BATTLE_DONE' },
+    // ── Market / dock district (right side) ──
+    { id:'BG_VENDOR', name:'Market Vendor', x:21, y:9, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY',
+      dialogue:["Fresh swamp catch and rare berries — finest stall in Bogmire!","The marsh provides, if you know where to look."], onInteract:null },
+    { id:'BG_DOCKHAND', name:'Dockhand', x:25, y:12, facing:'UP', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["Once you've got Surf, these waterways open right up.","Boats used to run from this dock all the way to Apex."], onInteract:null },
+    { id:'BG_KID', name:'Child', x:24, y:6, facing:'LEFT', spriteKey:'NPC_KID',
+      movementType:'WANDER',
+      dialogue:["My family moved to the new market quarter last spring!"], onInteract:null },
+    { id:'BG_ELDER', name:'Elder', x:20, y:3, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["Bogmire keeps growing east, year after year.","Soon we'll be as grand as Apex itself!"], onInteract:null },
   ],
   encounterTable:{ grass:[
     { speciesId:'MUDFIN',   minLv:42, maxLv:47, rate:35 },
