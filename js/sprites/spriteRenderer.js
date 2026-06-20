@@ -84,6 +84,26 @@ DG.SpriteRenderer = (function () {
       return;
     }
 
+    if (tileId === 89) {
+      // ── Plaza fountain centerpiece ─────────────────────────────
+      var fcx = px + T/2, fcy = py + T/2;
+      ctx.fillStyle='#9a948a'; ctx.fillRect(px,py,T,T);            // plaza base
+      ctx.fillStyle='#857d72'; ctx.beginPath(); ctx.arc(fcx,fcy+2,14,0,Math.PI*2); ctx.fill(); // shadow
+      ctx.fillStyle='#a8a096'; ctx.beginPath(); ctx.arc(fcx,fcy,13,0,Math.PI*2); ctx.fill();    // stone rim
+      ctx.strokeStyle='#5e574c'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(fcx,fcy,13,0,Math.PI*2); ctx.stroke();
+      ctx.fillStyle='#2f7fd0'; ctx.beginPath(); ctx.arc(fcx,fcy,10,0,Math.PI*2); ctx.fill();     // water
+      ctx.fillStyle='#4a9be0'; ctx.beginPath(); ctx.arc(fcx,fcy-1,10,0,Math.PI*2); ctx.fill();
+      var ph = anim || 0;                                          // animated ripples
+      ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.arc(fcx,fcy,3+((ph*0.06)%6),0,Math.PI*2); ctx.stroke();
+      ctx.globalAlpha=0.5; ctx.beginPath(); ctx.arc(fcx,fcy,3+(((ph*0.06)+3)%6),0,Math.PI*2); ctx.stroke(); ctx.globalAlpha=1;
+      ctx.fillStyle='#c2bbae'; ctx.fillRect(fcx-2,fcy-8,4,8);      // central pillar
+      ctx.fillStyle='#d6cfc2'; ctx.fillRect(fcx-3,fcy-10,6,2);
+      ctx.fillStyle='rgba(190,225,255,0.9)';                       // spouting droplets
+      for (var fi=0;fi<4;fi++){ var a=ph*0.12+fi*1.6; ctx.fillRect(fcx+Math.cos(a)*4-0.5, fcy-7+Math.abs(Math.sin(a))*4, 1.5, 1.5); }
+      return;
+    }
+
     if (tileId === 1) {
       // ── Regular grass — biome-aware ────────────────────────────
       const _thG1 = window.DG_MAP_THEME || 'DEFAULT';

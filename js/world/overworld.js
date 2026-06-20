@@ -1699,6 +1699,22 @@ DG.Overworld = (function () {
     ].filter(Boolean) });
   }
 
+  // Drop a fountain (tile 89) on a central, walkable, connectivity-safe tile in
+  // each town. Positions were pre-verified (8 walkable neighbours + the town
+  // stays fully connected with the tile made solid). Runs once per map.
+  var _FOUNTAIN_POS = {
+    AMBERTOWN:[8,5], SHELLCREEK_CITY:[10,7], DUSTWALL_TOWN:[11,6], PYRESIDE_CITY:[9,6],
+    STONEHAVEN_CITY:[9,4], FERNGROVE_TOWN:[10,7], CRESTFALL_TOWN:[10,7], BOGMIRE_CITY:[10,7],
+  };
+  function _injectFountain(m) {
+    if (!m || !m.id || !m.tiles || m._fountain) return;
+    var p = _FOUNTAIN_POS[m.id];
+    if (!p) return;
+    m._fountain = true;
+    var row = m.tiles[p[1]];
+    if (row && row[p[0]] !== undefined && !_isSolid(row[p[0]])) row[p[0]] = 89;
+  }
+
   // _updateTransition kept as no-op for safety (isTransitioning always returns false now)
   function _updateTransition() {
     _transitioning = false;
@@ -1722,6 +1738,8 @@ DG.Overworld = (function () {
 
     // Auto-place a route signpost at the city-facing entrance (once per map)
     try { _injectRouteSign(newData); } catch(e) {}
+    // Auto-place a fountain centrepiece in each town (once per map)
+    try { _injectFountain(newData); } catch(e) {}
 
     // Set map theme for themed tile drawing
     const _GYM_THEMES = {
