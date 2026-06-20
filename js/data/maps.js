@@ -287,24 +287,27 @@ SHELLCREEK_CITY: {
 
 
 DUSTWALL_TOWN: {
-  id:'DUSTWALL_TOWN', name:'Dustwall Town', width:20, height:15,
+  id:'DUSTWALL_TOWN', name:'Dustwall Town', width:25, height:15,
   music:'TOWN_DESERT', isIndoor:false, isCave:false,
+  // Lightly enlarged (mid city): original (cols 0-18) unchanged; a small eastern
+  // quarter (cols 19-24) with a home, a stall and an NPC. The wild exit moved
+  // from the old right edge to the new one (cols 24, rows 11-12).
   tiles: [
-    [66,66,66,66,66,66,66,66,66, 4, 4,66,66,66,66,66,66,66,66,66],
-    [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,66],
-    [66, 4, 4, 4,65,65,65,65, 4, 4, 4, 4,65,65,65,65,65,65, 4,66],
-    [66, 4, 4, 4,65,65,65,65, 4, 4, 4, 4,65,75,65,76,65,68, 4,66],
-    [66, 4, 4, 4,65,68,65,65, 4, 4, 4, 4,65,65,65,65,65,65, 4,66],
-    [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,66],
-    [66, 4, 4, 4,65,65,65,65,65,65, 4, 4, 4, 4, 4,65,65,65, 4,66],
-    [66, 4, 4, 4,65,65,65,65,65,65, 4, 4, 4, 4, 4,65,65,65, 4,66],
-    [66, 4, 4, 4,65,68,65,65,65,65, 4, 4, 4, 4, 4,65,68,65, 4,66],
-    [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,67, 4, 4, 4, 4, 4, 4, 4,66],
-    [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,66],
-    [66, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 4],
-    [66, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 4],
-    [66,66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,66,66],
-    [66,66,66,66,66,66,66,66,66, 4, 4,66,66,66,66,66,66,66,66,66],
+    [66,66,66,66,66,66,66,66,66, 4, 4,66,66,66,66,66,66,66,66, 66,66,66,66,66,66],
+    [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,  4, 4, 4, 4, 4,66],
+    [66, 4, 4, 4,65,65,65,65, 4, 4, 4, 4,65,65,65,65,65,65, 4,  4,65,65,65, 4,66],
+    [66, 4, 4, 4,65,65,65,65, 4, 4, 4, 4,65,75,65,76,65,68, 4,  4,65,65,65, 4,66],
+    [66, 4, 4, 4,65,68,65,65, 4, 4, 4, 4,65,65,65,65,65,65, 4,  4,65,68,65, 4,66],
+    [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,  4, 4, 4, 4, 4,66],
+    [66, 4, 4, 4,65,65,65,65,65,65, 4, 4, 4, 4, 4,65,65,65, 4,  4, 4, 4, 4, 4,66],
+    [66, 4, 4, 4,65,65,65,65,65,65, 4, 4, 4, 4, 4,65,65,65, 4,  4,74,74, 4, 4,66],
+    [66, 4, 4, 4,65,68,65,65,65,65, 4, 4, 4, 4, 4,65,68,65, 4,  4, 4, 4, 4, 4,66],
+    [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,67, 4, 4, 4, 4, 4, 4, 4,  4, 4, 4, 4, 4,66],
+    [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,  4, 4, 4, 4, 4,66],
+    [66, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2,  4, 4, 4, 4, 4, 4],
+    [66, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2,  4, 4, 4, 4, 4, 4],
+    [66,66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,66,  4, 4, 4, 4, 4,66],
+    [66,66,66,66,66,66,66,66,66, 4, 4,66,66,66,66,66,66,66,66, 66,66,66,66,66,66],
   ],
   warps:[
     { x:9,  y:0, targetMap:'ROUTE_2B', targetX:9,  targetY:16 },
@@ -315,12 +318,16 @@ DUSTWALL_TOWN: {
     { x:17, y:3, targetMap:'DUSTWALL_CENTER', targetX:7, targetY:8 },
     { x:16, y:8, targetMap:'DUSTWALL_SHOP', targetX:5, targetY:7  },
     { x:5,  y:8, targetMap:'DUSTWALL_HOUSE1', targetX:3, targetY:8 },
-    { x:19, y:11, targetMap:'DUSTWALL_WILD', targetX:1, targetY:7  },
-    { x:19, y:12, targetMap:'DUSTWALL_WILD', targetX:1, targetY:8  },
+    { x:24, y:11, targetMap:'DUSTWALL_WILD', targetX:1, targetY:7  },
+    { x:24, y:12, targetMap:'DUSTWALL_WILD', targetX:1, targetY:8  },
+    { x:21, y:4,  targetMap:'DUSTWALL_EAST_HOUSE', targetX:3, targetY:6 },
   ],
   npcs:[
     { id:'DW_NPC1', name:'Geologist', x:6, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'WANDER', dialogue:['NPC_DUSTWALL_1'], onInteract:null },
+    { id:'DW_TRADER', name:'Caravan Trader', x:20, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["Caravans rest in this east quarter before crossing the dunes.","Water's worth more than gold out in the Sand Wastes."], onInteract:null },
     { id:'DW_NPC2', name:'Child', x:12, y:5, facing:'LEFT', spriteKey:'NPC_KID',
       movementType:'WANDER', dialogue:['NPC_DUSTWALL_2'], onInteract:null },
     { id:'DW_NPC3', name:'Elder', x:10, y:10, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -351,24 +358,27 @@ DUSTWALL_TOWN: {
 
 
 PYRESIDE_CITY: {
-  id:'PYRESIDE_CITY', name:'Pyreside City', width:20, height:15,
+  id:'PYRESIDE_CITY', name:'Pyreside City', width:25, height:15,
   music:'TOWN_INDUSTRIAL', isIndoor:false, isCave:false,
+  // Lightly enlarged (mid city): original (cols 0-18) unchanged; a small eastern
+  // forge quarter (cols 19-24) with a home, a stall and an NPC. The wild exit
+  // moved from the old right edge to the new one (col 24, rows 11-12).
   tiles: [
-    [66,66,66,66,66,66,66,66,66, 0, 0,66,66,66,66,66,66,66,66,66],
-    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
-    [66, 5,65,65,65,65, 5, 5, 5, 5, 5, 5,65,65,65,65,65,65, 5,66],
-    [66, 5,65,65,65,65, 5, 5, 5, 5, 5, 5,65,75,65,76,65,68, 5,66],
-    [66, 5,65,68,65,65, 5, 5, 5, 5, 5, 5,65,65,65,65,65,65, 5,66],
-    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
-    [66, 5,65,65,65,65,65,65, 5, 5, 5,65,65,65,65, 5,65,65, 5,66],
-    [66, 5,65,65,65,65,65,65, 5, 5, 5,65,65,65,65, 5,65,68, 5,66],
-    [66, 5,65,68,65,65,65,65, 5, 5, 5,65,68,65,65, 5,65,65, 5,66],
-    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5,67, 5, 5, 5, 5, 5, 5, 5, 5,66],
-    [66, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 7, 5,66],
-    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0],
-    [66, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 0],
-    [66,66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66,66],
-    [66,66,66,66,66,66,66,66,66, 0, 0,66,66,66,66,66,66,66,66,66],
+    [66,66,66,66,66,66,66,66,66, 0, 0,66,66,66,66,66,66,66,66, 66,66,66,66,66,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,  5, 5, 5, 5, 5,66],
+    [66, 5,65,65,65,65, 5, 5, 5, 5, 5, 5,65,65,65,65,65,65, 5,  5,65,65,65, 5,66],
+    [66, 5,65,65,65,65, 5, 5, 5, 5, 5, 5,65,75,65,76,65,68, 5,  5,65,65,65, 5,66],
+    [66, 5,65,68,65,65, 5, 5, 5, 5, 5, 5,65,65,65,65,65,65, 5,  5,65,68,65, 5,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,  5, 5, 5, 5, 5,66],
+    [66, 5,65,65,65,65,65,65, 5, 5, 5,65,65,65,65, 5,65,65, 5,  5, 5, 5, 5, 5,66],
+    [66, 5,65,65,65,65,65,65, 5, 5, 5,65,65,65,65, 5,65,68, 5,  5,74,74, 5, 5,66],
+    [66, 5,65,68,65,65,65,65, 5, 5, 5,65,68,65,65, 5,65,65, 5,  5, 5, 5, 5, 5,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5,67, 5, 5, 5, 5, 5, 5, 5, 5,  5, 5, 5, 5, 5,66],
+    [66, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 7, 5,  5, 5, 5, 5, 5,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,  5, 5, 5, 5, 5, 5],
+    [66, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1,  5, 5, 5, 5, 5, 5],
+    [66,66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66,  5, 5, 5, 5, 5,66],
+    [66,66,66,66,66,66,66,66,66, 0, 0,66,66,66,66,66,66,66,66, 66,66,66,66,66,66],
   ],
   warps:[
     { x:9, y:0,  targetMap:'ROUTE_3B', targetX:9, targetY:18 },
@@ -380,12 +390,16 @@ PYRESIDE_CITY: {
     { x:3, y:4,  targetMap:'PYRESIDE_GYM',    targetX:14, targetY:16 },
     { x:17,y:3,  targetMap:'PYRESIDE_CENTER', targetX:7, targetY:8  },
     { x:17,y:7,  targetMap:'PYRESIDE_SHOP',   targetX:5, targetY:7  },
-    { x:19, y:11, targetMap:'PYRESIDE_WILD', targetX:1, targetY:7  },
-    { x:19, y:12, targetMap:'PYRESIDE_WILD', targetX:1, targetY:8  },
+    { x:24, y:11, targetMap:'PYRESIDE_WILD', targetX:1, targetY:7  },
+    { x:24, y:12, targetMap:'PYRESIDE_WILD', targetX:1, targetY:8  },
+    { x:21, y:4,  targetMap:'PYRESIDE_FORGE_HOUSE', targetX:3, targetY:6 },
   ],
   npcs:[
     { id:'PY_NPC1', name:'Worker', x:7, y:9, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'WANDER', dialogue:['NPC_PYRESIDE_1'], onInteract:null },
+    { id:'PY_SMITH', name:'Forge Smith', x:20, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["The east forge runs day and night on volcano heat.","Bring me Fire-types and watch the sparks fly!"], onInteract:null },
     { id:'PY_NPC2', name:'Engineer', x:13, y:5, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['NPC_PYRESIDE_2'], onInteract:null },
     { id:'PY_WILD_SIGN', name:'Sign', x:18, y:10, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -2914,8 +2928,8 @@ DUSTWALL_WILD: {
     [66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66],
   ],
   warps:[
-    { x:0, y:6, targetMap:'DUSTWALL_TOWN', targetX:18, targetY:11 },
-    { x:0, y:7, targetMap:'DUSTWALL_TOWN', targetX:18, targetY:12 },
+    { x:0, y:6, targetMap:'DUSTWALL_TOWN', targetX:23, targetY:11 },
+    { x:0, y:7, targetMap:'DUSTWALL_TOWN', targetX:23, targetY:12 },
   ],
   npcs:[
     { id:'DWW_SIGN', name:'Sign', x:4, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -2952,8 +2966,8 @@ PYRESIDE_WILD: {
     [66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66],
   ],
   warps:[
-    { x:0, y:6, targetMap:'PYRESIDE_CITY', targetX:18, targetY:11 },
-    { x:0, y:7, targetMap:'PYRESIDE_CITY', targetX:18, targetY:12 },
+    { x:0, y:6, targetMap:'PYRESIDE_CITY', targetX:23, targetY:11 },
+    { x:0, y:7, targetMap:'PYRESIDE_CITY', targetX:23, targetY:12 },
   ],
   npcs:[
     { id:'PYW_SIGN', name:'Sign', x:4, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -4144,6 +4158,12 @@ DG.MAPS.APEX_PEAK_HOUSE = _townHome('APEX_PEAK_HOUSE','Peak Home','APEXSUMMIT',2
   'Sky Watcher','NPC_WOMAN',["From our roof you can see clear to Mt Cretaceous.","On still nights the whole region glitters below."]);
 DG.MAPS.APEX_SOUTH_HOUSE = _townHome('APEX_SOUTH_HOUSE','Plaza Home','APEXSUMMIT',22,9,
   'Elder','NPC_MAN',["Apex Summit grew into the grandest town in the land.","Fitting, for the home of the final Gym."]);
+DG.MAPS.FERNGROVE_EAST_HOUSE = _townHome('FERNGROVE_EAST_HOUSE','Grove Home','FERNGROVE_TOWN',21,5,
+  'Gardener','NPC_WOMAN',["We grow herbs the whole town trades for.","The grove out back is full of Grass DinoMon."]);
+DG.MAPS.DUSTWALL_EAST_HOUSE = _townHome('DUSTWALL_EAST_HOUSE','Caravan Rest','DUSTWALL_TOWN',21,5,
+  'Caravanner','NPC_MAN',["We outfit caravans bound for the deep desert.","Sandclaw make loyal companions out on the dunes."]);
+DG.MAPS.PYRESIDE_FORGE_HOUSE = _townHome('PYRESIDE_FORGE_HOUSE','Forge Home','PYRESIDE_CITY',21,5,
+  'Smith','NPC_MAN',["We temper steel in the volcano's own heat.","Ignis's Fire-types keep our forge burning hot."]);
 
 // STONEHAVEN_HOUSE1 retired — it was unreachable (no door in town) and duplicated the
 // empty, already-reachable STONEHAVEN_MUSEUM. Its historian exhibits now live in the museum.
@@ -4544,24 +4564,26 @@ DG.MAPS.APEXSUMMIT_SHOP = {
 // ═══════════════════════════════════════════════════════════════
 
 DG.MAPS.FERNGROVE_TOWN = {
-  id:'FERNGROVE_TOWN', name:'Ferngrove Town', width:20, height:15,
+  id:'FERNGROVE_TOWN', name:'Ferngrove Town', width:25, height:15,
   music:'TOWN_CALM', isIndoor:false, isCave:false,
+  // Lightly enlarged (mid city): original (cols 0-18) unchanged; a small eastern
+  // grove (cols 19-24) with one home, a stall and an NPC.
   tiles: [
-    [64,64,64,64,64,64,64,64,64, 1, 1,64,64,64,64,64,64,64,64,64],
-    [64, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9, 1,64],
-    [64, 1,65,65,65,65, 1, 1, 1, 1, 1, 1, 1,65,65,65,65,65, 1,64],
-    [64, 1,65,65,65,65, 1, 1, 1, 1, 1, 1, 1,65,75,65,76,68, 1,64],
-    [64, 1,65,68,65,65, 1, 1, 1, 1, 1, 1, 1,65,65,65,65,65, 1,64],
-    [64, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64, 1,65,65,65,65,65,65, 1, 1, 1, 1,65,65,65,65, 1, 1, 1,64],
-    [64, 1,65,65,65,65,65,65, 1, 1, 1, 1,65,65,65,65, 1, 9, 1,64],
-    [64, 1,65,68,65,65,65,65, 1, 1, 1, 1,65,68,65,65, 1, 1, 1,64],
-    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1,67, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9,64],
-    [64, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2,64],
-    [64, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,64],
-    [64,64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64,64],
-    [64,64,64,64,64,64,64,64,64, 1, 1,64,64,64,64,64,64,64,64,64],
+    [64,64,64,64,64,64,64,64,64, 1, 1,64,64,64,64,64,64,64,64, 64,64,64,64,64,64],
+    [64, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9, 1,  1, 1, 1, 1, 1,64],
+    [64, 1,65,65,65,65, 1, 1, 1, 1, 1, 1, 1,65,65,65,65,65, 1,  1,65,65,65, 1,64],
+    [64, 1,65,65,65,65, 1, 1, 1, 1, 1, 1, 1,65,75,65,76,68, 1,  1,65,65,65, 1,64],
+    [64, 1,65,68,65,65, 1, 1, 1, 1, 1, 1, 1,65,65,65,65,65, 1,  1,65,68,65, 1,64],
+    [64, 1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1,64],
+    [64, 1,65,65,65,65,65,65, 1, 1, 1, 1,65,65,65,65, 1, 1, 1,  1, 1, 1, 1, 1,64],
+    [64, 1,65,65,65,65,65,65, 1, 1, 1, 1,65,65,65,65, 1, 9, 1,  1,74,74, 1, 1,64],
+    [64, 1,65,68,65,65,65,65, 1, 1, 1, 1,65,68,65,65, 1, 1, 1,  1, 1, 1, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1,67, 1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1,64],
+    [64, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9,  1, 1, 1, 1, 1,64],
+    [64, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2,  1, 2, 2, 2, 1,64],
+    [64, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,  1, 2, 2, 2, 1,64],
+    [64,64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64,  1, 1, 1, 1, 1,64],
+    [64,64,64,64,64,64,64,64,64, 1, 1,64,64,64,64,64,64,64,64, 64,64,64,64,64,64],
   ],
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_5A',       targetX:9,  targetY:1, requiresFlag:'BADGE_4'  },
@@ -4574,6 +4596,7 @@ DG.MAPS.FERNGROVE_TOWN = {
     { x:13, y:8,  targetMap:'FERNGROVE_CENTER', targetX:7, targetY:8 },
     { x:12, y:5,  targetMap:'FERNGROVE_WILD', targetX:1, targetY:6 },
     { x:12, y:6,  targetMap:'FERNGROVE_WILD', targetX:1, targetY:7 },
+    { x:21, y:4,  targetMap:'FERNGROVE_EAST_HOUSE', targetX:3, targetY:6 },
   ],
   npcs:[
     { id:'FN_NPC1', name:'Botanist', x:7, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -4589,6 +4612,18 @@ DG.MAPS.FERNGROVE_TOWN = {
       movementType:'STATIONARY',
       dialogue:["The Canopy Badge — Sylva's mark. Route 5 to Stonehaven lies ahead — good luck!"],
       requiresFlag:'BADGE_4', onInteract:null },
+    // ── Eastern grove ──
+    { id:'FN_FORAGER', name:'Forager', x:20, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'WANDER',
+      dialogue:["The eastern grove is thick with Grass-type DinoMon.","Mind the brambles — they hide more than berries."], onInteract:null },
+    { id:'FN_QUEST', name:'Grove Keeper', x:22, y:9, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', onInteract:'SIDE_QUEST',
+      questFlag:'Q_FN_STARTED', questDoneFlag:'Q_FN_DONE',
+      questIntro:["I tend this grove, but my eyes aren't what they were.","Show me a Grass-type DinoMon and I'll reward you for the company!"],
+      questReminder:["No Grass-type yet? Frondlet hide in the tall grass.","Come back when you've found one."],
+      questSuccess:["Ahh, a lovely Grass-type — just like the old days.","Take these, with my thanks."],
+      questThanks:["Thank you again — the grove feels brighter."],
+      questCheck:{ type:'HAS_TYPE', value:'GRASS' }, reward:{ item:'ULTRABALL', qty:2 } },
   ],
   encounterTable:{ grass:[
     { speciesId:'FRONDLET',  minLv:24, maxLv:28, rate:35 },
