@@ -1705,6 +1705,7 @@ DG.Overworld = (function () {
   var _FOUNTAIN_POS = {
     AMBERTOWN:[8,5], SHELLCREEK_CITY:[10,7], DUSTWALL_TOWN:[11,6], PYRESIDE_CITY:[9,6],
     STONEHAVEN_CITY:[9,4], FERNGROVE_TOWN:[10,7], CRESTFALL_TOWN:[10,7], BOGMIRE_CITY:[10,7],
+    APEXSUMMIT:[9,11],
   };
   function _injectFountain(m) {
     if (!m || !m.id || !m.tiles || m._fountain) return;

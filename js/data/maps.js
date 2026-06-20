@@ -414,8 +414,10 @@ PYRESIDE_CITY: {
 },
 
 STONEHAVEN_CITY: {
-  id:'STONEHAVEN_CITY', name:'Stonehaven City', width:20, height:15,
+  id:'STONEHAVEN_CITY', name:'Stonehaven City', width:20, height:20,
   music:'TOWN_GRAND', isIndoor:false, isCave:false,
+  // Enlarged downward (rows 0-13 unchanged): a stonemason quarter was added
+  // below (rows 14-19) — two enterable homes and NPCs. Edge exits untouched.
   tiles: [
     [66,66,66,66,66,66,66,66,66, 4, 4,66,66,66,66,66,66,66,66,66],
     [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,66],
@@ -431,6 +433,11 @@ STONEHAVEN_CITY: {
     [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0],
     [66, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 0],
     [66,66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,66,66],
+    [66,66,66,66,66,66,66, 4, 4, 4, 4, 4, 4,66,66,66,66,66,66,66],
+    [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,66],
+    [66, 4,65,65,65, 4, 4, 4, 4, 4, 4, 4, 4,65,65,65,65, 4, 4,66],
+    [66, 4,65,68,65, 4, 4, 4, 4, 4, 4, 4, 4,65,68,65,65, 4, 4,66],
+    [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,66],
     [66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66],
   ],
   warps:[
@@ -444,6 +451,8 @@ STONEHAVEN_CITY: {
     { x:3,  y:8,  targetMap:'STONEHAVEN_SHOP',    targetX:5, targetY:7  },
     { x:19, y:11, targetMap:'STONEHAVEN_WILD', targetX:1, targetY:7  },
     { x:19, y:12, targetMap:'STONEHAVEN_WILD', targetX:1, targetY:8  },
+    { x:3,  y:17, targetMap:'STONEHAVEN_WEST_HOUSE', targetX:3, targetY:6 },
+    { x:14, y:17, targetMap:'STONEHAVEN_EAST_HOUSE', targetX:3, targetY:6 },
   ],
   npcs:[
     { id:'SH_NPC1', name:'Professor', x:7, y:9, facing:'DOWN', spriteKey:'NPC_PROF',
@@ -452,6 +461,16 @@ STONEHAVEN_CITY: {
       movementType:'WANDER', dialogue:['NPC_STONEHAVEN_2'], onInteract:null },
     { id:'SH_NPC3', name:'Artist', x:10, y:11, facing:'UP', spriteKey:'NPC_WOMAN',
       movementType:'WANDER', dialogue:['NPC_STONEHAVEN_3'], onInteract:null },
+    // ── Stonemason quarter (south) ──
+    { id:'SH_MASON', name:'Stonemason', x:8, y:15, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["We cut the finest granite in the land down in this quarter.","Half the cities you've seen were built from Stonehaven stone."], onInteract:null },
+    { id:'SH_GEM_VENDOR', name:'Gem Vendor', x:11, y:18, facing:'UP', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY',
+      dialogue:["Polished gemstones and carved charms — straight from the quarry!","Terra's Ground-types love digging these up for us."], onInteract:null },
+    { id:'SH_QUARRYHAND', name:'Quarryhand', x:6, y:18, facing:'DOWN', spriteKey:'NPC_KID',
+      movementType:'WANDER',
+      dialogue:["The new south quarter doubled the size of our town!"], onInteract:null },
     { id:'SH_CMD_JURASSIC', name:'Commander Jurassic', x:9, y:10, facing:'DOWN', spriteKey:'NPC_GRUNT',
       movementType:'STATIONARY', dialogue:['CMD_JURASSIC_1'],
       trainerRef:'CMD_JURASSIC', requiresFlag:'BADGE_5', flagToHide:'TRAINER_CMD_JURASSIC_DEFEATED' },
@@ -467,24 +486,26 @@ STONEHAVEN_CITY: {
 },
 
 APEXSUMMIT: {
-  id:'APEXSUMMIT', name:'Apex Summit', width:20, height:15,
+  id:'APEXSUMMIT', name:'Apex Summit', width:30, height:15,
   music:'TOWN_PEAK', isIndoor:false, isCave:false,
+  // Grandest town: original (cols 0-18) unchanged; a large summit market plaza
+  // was appended on the right (cols 19-29) — three homes, market stalls, NPCs.
   tiles: [
-    [66,66,66,66,66,66,66,66,66, 6, 6,66,66,66,66,66,66,66,66,66],
-    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66],
-    [66, 6,65,65,65,65, 6, 6, 6, 6, 6, 6,65,65,65,65,65,65, 6,66],
-    [66, 6,65,65,65,65, 6, 6, 6, 6, 6, 6,65,75,65,76,65,68, 6,66],
-    [66, 6,65,68,65,65, 6, 6, 6, 6, 6, 6,65,65,65,65,65,65, 6,66],
-    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66],
-    [66, 6,65,65,65,65,65,65, 6, 6, 6, 6, 6,65,65,65,65,65, 6,66],
-    [66, 6,65,65,65,65,65,65, 6, 6, 6, 6, 6,65,65,65,65,65, 6,66],
-    [66, 6,65,68,65,65,65,65, 6, 6, 6, 6, 6,65,68,65,65,65, 6,66],
-    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6,67, 6, 6, 6, 6, 6, 6, 6, 6,66],
-    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66],
-    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66],
-    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66],
-    [66,66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66,66],
-    [66,66,66,66,66,66,66,66,66, 6, 6,66,66,66,66,66,66,66,66,66],
+    [66,66,66,66,66,66,66,66,66, 6, 6,66,66,66,66,66,66,66,66, 66,66,66,66,66,66,66,66,66,66,66],
+    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,  6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66],
+    [66, 6,65,65,65,65, 6, 6, 6, 6, 6, 6,65,65,65,65,65,65, 6,  6, 6,65,65,65, 6,65,65,65, 6,66],
+    [66, 6,65,65,65,65, 6, 6, 6, 6, 6, 6,65,75,65,76,65,68, 6,  6, 6,65,65,65, 6,65,65,65, 6,66],
+    [66, 6,65,68,65,65, 6, 6, 6, 6, 6, 6,65,65,65,65,65,65, 6,  6, 6,65,68,65, 6,65,68,65, 6,66],
+    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,  6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66],
+    [66, 6,65,65,65,65,65,65, 6, 6, 6, 6, 6,65,65,65,65,65, 6,  6, 6,65,65,65, 6, 6, 6, 6, 6,66],
+    [66, 6,65,65,65,65,65,65, 6, 6, 6, 6, 6,65,65,65,65,65, 6,  6, 6,65,65,65, 6, 6, 6, 6, 6,66],
+    [66, 6,65,68,65,65,65,65, 6, 6, 6, 6, 6,65,68,65,65,65, 6,  6, 6,65,68,65, 6, 6, 6, 6, 6,66],
+    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6,67, 6, 6, 6, 6, 6, 6, 6, 6,  6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66],
+    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,  6, 6,74,74, 6, 6,74,74, 6, 6,66],
+    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,  6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66],
+    [66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,  6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66],
+    [66,66, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66,  6, 6, 6, 6, 6, 6, 6, 6, 6, 6,66],
+    [66,66,66,66,66,66,66,66,66, 6, 6,66,66,66,66,66,66,66,66, 66,66,66,66,66,66,66,66,66,66,66],
   ],
   warps:[
     { x:9, y:0, targetMap:'MT_CRETACEOUS', targetX:9, targetY:13, requiresFlag:'BADGE_8' },
@@ -498,12 +519,28 @@ APEXSUMMIT: {
     { x:3, y:8, targetMap:'APEXSUMMIT_GYM',     targetX:14, targetY:16 },
     { x:12, y:5, targetMap:'APEXSUMMIT_WILD', targetX:1, targetY:6 },
     { x:12, y:6, targetMap:'APEXSUMMIT_WILD', targetX:1, targetY:7 },
+    { x:22, y:4, targetMap:'APEX_NORTH_HOUSE', targetX:3, targetY:6 },
+    { x:26, y:4, targetMap:'APEX_PEAK_HOUSE',  targetX:3, targetY:6 },
+    { x:22, y:8, targetMap:'APEX_SOUTH_HOUSE', targetX:3, targetY:6 },
   ],
   npcs:[
     { id:'AS_NPC1', name:'Champion', x:7, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['NPC_APEXSUMMIT_1'], onInteract:null },
     { id:'AS_NPC2', name:'Ranger', x:13, y:5, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'WANDER', dialogue:['NPC_APEXSUMMIT_2'], onInteract:null },
+    // ── Summit market plaza (east) ──
+    { id:'AS_VENDOR1', name:'Summit Smith', x:21, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["Summit-forged gear — only the worthy climb high enough to buy it!","Every blade here was tempered in mountain frost."], onInteract:null },
+    { id:'AS_VENDOR2', name:'Herbalist', x:25, y:9, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY',
+      dialogue:["Frostberries and peak herbs, gathered from the highest crags!","They say the air up here makes DinoMon grow stronger."], onInteract:null },
+    { id:'AS_PILGRIM', name:'Pilgrim', x:24, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["Trainers from every corner gather at this summit plaza.","Reach the top and the whole world lies below you."], onInteract:null },
+    { id:'AS_KID3', name:'Child', x:27, y:6, facing:'LEFT', spriteKey:'NPC_KID',
+      movementType:'WANDER',
+      dialogue:["This is the biggest town in the whole region!"], onInteract:null },
     // Post-game: Champion rewards DinoMaster Ball after Clade is defeated
     { id:'AS_CHAMPION_REWARD', name:'Grand Champion', x:10, y:5, facing:'DOWN', spriteKey:'NPC_PROF',
       movementType:'STATIONARY', dialogue:['CHAMPION_REWARD'],
@@ -4073,6 +4110,16 @@ DG.MAPS.CRESTFALL_EAST_HOUSE = _townHome('CRESTFALL_EAST_HOUSE','Storm Quarter H
   'Technician','NPC_MAN',["We wire the whole quarter to Volt's grid.","Careful in a storm — everything here is live!"]);
 DG.MAPS.CRESTFALL_RIDGE_HOUSE = _townHome('CRESTFALL_RIDGE_HOUSE','Ridge Home','CRESTFALL_TOWN',22,9,
   'Climber','NPC_WOMAN',["The cliffs above town crackle with static before a storm.","Sparkhorn gather up there to feed on the lightning."]);
+DG.MAPS.STONEHAVEN_WEST_HOUSE = _townHome('STONEHAVEN_WEST_HOUSE','Quarry Home','STONEHAVEN_CITY',3,18,
+  'Mason','NPC_MAN',["Three generations of my family have cut stone here.","The south quarter only keeps growing."]);
+DG.MAPS.STONEHAVEN_EAST_HOUSE = _townHome('STONEHAVEN_EAST_HOUSE','Carver Home','STONEHAVEN_CITY',14,18,
+  'Carver','NPC_WOMAN',["I carve charms from the quarry's finest granite.","Bring me a rare stone sometime and I'll show you."]);
+DG.MAPS.APEX_NORTH_HOUSE = _townHome('APEX_NORTH_HOUSE','Summit Lodge','APEXSUMMIT',22,5,
+  'Lodge Keeper','NPC_MAN',["Climbers rest here before the final ascent.","You've come a long way to reach the summit, haven't you?"]);
+DG.MAPS.APEX_PEAK_HOUSE = _townHome('APEX_PEAK_HOUSE','Peak Home','APEXSUMMIT',26,5,
+  'Sky Watcher','NPC_WOMAN',["From our roof you can see clear to Mt Cretaceous.","On still nights the whole region glitters below."]);
+DG.MAPS.APEX_SOUTH_HOUSE = _townHome('APEX_SOUTH_HOUSE','Plaza Home','APEXSUMMIT',22,9,
+  'Elder','NPC_MAN',["Apex Summit grew into the grandest town in the land.","Fitting, for the home of the final Gym."]);
 
 // STONEHAVEN_HOUSE1 retired — it was unreachable (no door in town) and duplicated the
 // empty, already-reachable STONEHAVEN_MUSEUM. Its historian exhibits now live in the museum.
