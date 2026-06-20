@@ -1585,8 +1585,47 @@ DG.Overworld = (function () {
     _gs.player.x          = x;
     _gs.player.y          = y;
     _gs.player.currentMap = mapId;
+    // Spawn safety: some legacy warps target a wall/water tile or a guard's
+    // spot. Never strand the player — nudge to the nearest walkable, free tile.
+    try {
+      const safe = _nudgeToWalkable(x, y);
+      _gs.player.x = safe.x;
+      _gs.player.y = safe.y;
+    } catch(e) {}
     try { _updateCamera(); } catch(e) {}
     try { DG.SaveLoad.save(_gs); } catch(e) {}
+  }
+
+  // Find the nearest tile to (sx,sy) that is walkable and not occupied by a
+  // visible NPC. BFS outward (nearest-first) through blocked cells. Used as a
+  // safety net after warps so a bad target coordinate can't trap the player.
+  function _nudgeToWalkable(sx, sy) {
+    const okTile = (x, y) => {
+      const t = _getTile(x, y);
+      if (_isSolid(t)) return false;
+      if (t === DG.TILE.WATER || t === DG.TILE.DEEP_WATER_TILE) return false;
+      if (_npcAt(x, y)) return false;
+      return true;
+    };
+    const W = _mapData.width, H = _mapData.height;
+    // Clamp an out-of-bounds target back onto the map first
+    sx = Math.max(0, Math.min(W - 1, sx));
+    sy = Math.max(0, Math.min(H - 1, sy));
+    if (okTile(sx, sy)) return { x: sx, y: sy };
+    const seen = new Set([sx + ',' + sy]);
+    const q = [[sx, sy]];
+    let guard = 0;
+    while (q.length && guard++ < 4096) {
+      const [x, y] = q.shift();
+      for (const [dx, dy] of [[0,1],[0,-1],[1,0],[-1,0]]) {
+        const nx = x + dx, ny = y + dy, k = nx + ',' + ny;
+        if (nx < 0 || ny < 0 || nx >= W || ny >= H || seen.has(k)) continue;
+        seen.add(k);
+        if (okTile(nx, ny)) return { x: nx, y: ny };
+        q.push([nx, ny]);
+      }
+    }
+    return { x: sx, y: sy };
   }
 
   // _updateTransition kept as no-op for safety (isTransitioning always returns false now)
