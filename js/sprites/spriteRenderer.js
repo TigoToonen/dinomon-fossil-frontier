@@ -6451,38 +6451,39 @@ DG.SpriteRenderer = (function () {
 
     // SHOP (3.5T x 2.8T)
     else if (isShop) {
-      var fw=T*3.5,fh=T*2.8,fx=px-T*1.25,fy=py-T*1.8;
+      var fw=T*3.5, fh=T*2.8, fx=px-T*1.25, fy=py-T*1.8;
       _shadow(fx,fy,fw,fh);
-      ctx.fillStyle='#fff8e1'; ctx.fillRect(fx,fy,fw,fh);
-      ctx.fillStyle=th.acc;
-      ctx.beginPath(); ctx.moveTo(fx-T*0.18,fy+fh*0.3); ctx.lineTo(fx+fw/2,fy-T*0.12); ctx.lineTo(fx+fw+T*0.18,fy+fh*0.3); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle=th.dark; ctx.lineWidth=1.5;
-      ctx.beginPath(); ctx.moveTo(fx-T*0.18,fy+fh*0.3); ctx.lineTo(fx+fw/2,fy-T*0.12); ctx.lineTo(fx+fw+T*0.18,fy+fh*0.3); ctx.closePath(); ctx.stroke();
-      var aw=fw*0.88,ah=T*0.22,ax2=fx+fw*0.06,ay2=fy+fh*0.27;
-      for(var s=0;s<8;s++){ ctx.fillStyle=s%2===0?th.acc:'#ffffff'; ctx.fillRect(ax2+s*(aw/8),ay2,aw/8+0.5,ah); }
-      ctx.strokeStyle=th.dark; ctx.lineWidth=1; ctx.strokeRect(ax2,ay2,aw,ah);
-      var ww2=fw*0.76,wh2=T*0.7,wx2=fx+(fw-ww2)/2,wy2=ay2+ah+T*0.07;
-      // Storefront display window: glass + a shelf with a few glossy goods
+      // cream wall
+      ctx.fillStyle='#fff6e0'; ctx.fillRect(fx, fy+fh*0.18, fw, fh*0.82);
+      // flat roof slab in the town accent colour
+      ctx.fillStyle=th.acc; ctx.fillRect(fx-T*0.12, fy, fw+T*0.24, fh*0.2);
+      ctx.fillStyle=_bldAdjColor(th.acc,18); ctx.fillRect(fx-T*0.12, fy, fw+T*0.24, T*0.07);
+      ctx.strokeStyle=th.dark; ctx.lineWidth=1.5; ctx.strokeRect(fx-T*0.12, fy, fw+T*0.24, fh*0.2);
+      // large legible sign band
+      var sgY=fy+fh*0.23, sgH=T*0.5, sgX=fx+fw*0.07, sgW=fw*0.86;
+      ctx.fillStyle=th.dark; ctx.fillRect(sgX,sgY,sgW,sgH);
+      ctx.strokeStyle=th.acc; ctx.lineWidth=1.5; ctx.strokeRect(sgX,sgY,sgW,sgH);
+      ctx.fillStyle='#ffffff'; ctx.font='bold '+Math.max(9,(T*0.34|0))+'px monospace';
+      ctx.fillText('MART', fx+fw/2, sgY+sgH/2+1);
+      // storefront window with a shelf of glossy goods
+      var ww2=fw*0.8, wh2=T*0.62, wx2=fx+(fw-ww2)/2, wy2=sgY+sgH+T*0.12;
       ctx.fillStyle='#cdeefb'; ctx.fillRect(wx2,wy2,ww2,wh2);
-      ctx.fillStyle='rgba(255,255,255,0.35)';                       // glass sheen
-      ctx.beginPath(); ctx.moveTo(wx2+ww2*0.1,wy2); ctx.lineTo(wx2+ww2*0.32,wy2); ctx.lineTo(wx2+ww2*0.12,wy2+wh2); ctx.lineTo(wx2,wy2+wh2); ctx.closePath(); ctx.fill();
-      ctx.fillStyle='#a9763f'; ctx.fillRect(wx2, wy2+wh2*0.64, ww2, wh2*0.12); // shelf
-      var _itY=wy2+wh2*0.45, _itR=wh2*0.17;
+      ctx.fillStyle='rgba(255,255,255,0.32)';
+      ctx.beginPath(); ctx.moveTo(wx2+ww2*0.1,wy2); ctx.lineTo(wx2+ww2*0.3,wy2); ctx.lineTo(wx2+ww2*0.1,wy2+wh2); ctx.lineTo(wx2,wy2+wh2); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#a9763f'; ctx.fillRect(wx2, wy2+wh2*0.6, ww2, wh2*0.13);
+      var _itY=wy2+wh2*0.42, _itR=wh2*0.16;
       ['#e8504d','#4d8fe8','#e8c44d'].forEach(function(_col,_ii){
-        var _itX=wx2+ww2*(0.24+_ii*0.26);
+        var _itX=wx2+ww2*(0.26+_ii*0.24);
         ctx.fillStyle=_col; ctx.beginPath(); ctx.arc(_itX,_itY,_itR,0,Math.PI*2); ctx.fill();
-        ctx.fillStyle='rgba(0,0,0,0.18)'; ctx.fillRect(_itX-_itR,_itY,_itR*2,1);    // ball band
         ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.beginPath(); ctx.arc(_itX-_itR*0.32,_itY-_itR*0.32,_itR*0.3,0,Math.PI*2); ctx.fill();
       });
       ctx.strokeStyle=th.acc; ctx.lineWidth=2; ctx.strokeRect(wx2,wy2,ww2,wh2);
-      var sw=fw*0.52,sh=T*0.38,sx=fx+(fw-sw)/2,sy=wy2+wh2+T*0.1;
-      ctx.fillStyle=th.dark; ctx.fillRect(sx,sy,sw,sh);
-      ctx.strokeStyle=th.acc; ctx.lineWidth=1.5; ctx.strokeRect(sx,sy,sw,sh);
-      ctx.fillStyle='#ffffff'; ctx.font='bold '+(T*0.22|0)+'px monospace'; ctx.fillText('SHOP',fx+fw/2,sy+sh/2);
-      var ddw=T*0.62,ddh=T*0.72,ddx=fx+(fw-ddw)/2,ddy=fy+fh-ddh;
-      ctx.fillStyle=_bldAdjColor(th.acc,20); ctx.fillRect(ddx,ddy,ddw,ddh);
+      // glass door
+      var ddw=T*0.62, ddy=wy2+wh2+T*0.06, ddh=fy+fh-ddy, ddx=fx+(fw-ddw)/2;
+      ctx.fillStyle=_bldAdjColor(th.acc,28); ctx.fillRect(ddx,ddy,ddw,ddh);
       ctx.strokeStyle=th.dark; ctx.lineWidth=1.5; ctx.strokeRect(ddx,ddy,ddw,ddh);
-      _outline(fx,fy,fw,fh); ctx.strokeStyle=th.dark; ctx.lineWidth=1.5; ctx.strokeRect(fx,fy,fw,fh);
+      ctx.fillStyle='rgba(255,255,255,0.45)'; ctx.fillRect(ddx+ddw*0.5-0.5, ddy+ddh*0.12, 1, ddh*0.76);
+      _outline(fx,fy,fw,fh);
     }
 
     // LAB (3.5T x 2.8T)
