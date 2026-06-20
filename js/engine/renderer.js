@@ -731,7 +731,8 @@ DG.Renderer = (function () {
       else if (w.x <= 0) dir = 'left';
       else if (w.x >= mapData.width - 1) dir = 'right';
       else continue;                                // interior warp, not an edge
-      const locked = !!(w.gymLock && _gs && _gs.player && !_gs.player.flags[w.gymLock]);
+      const _lockFlag = w.gymLock || w.requiresFlag;
+      const locked = !!(_lockFlag && _gs && _gs.player && _gs.player.flags && !_gs.player.flags[_lockFlag]);
       const key = w.targetMap + '|' + dir;
       if (!groups[key]) groups[key] = { dir, name: tm.name || w.targetMap, xs: [], ys: [], locked: true };
       groups[key].xs.push(w.x); groups[key].ys.push(w.y);
@@ -750,7 +751,7 @@ DG.Renderer = (function () {
       else if (g.dir === 'left')  sx = pad + 12;
       else if (g.dir === 'right') sx = W - pad - 12;
       const label = (g.dir === 'left' ? ARROW[g.dir] + ' ' : '') + g.name +
-                    (g.dir !== 'left' ? ' ' + ARROW[g.dir] : '');
+                    (g.dir !== 'left' ? ' ' + ARROW[g.dir] : '') + (g.locked ? ' (locked)' : '');
       ctx.save();
       ctx.font = 'bold 9px monospace';
       const bw = ctx.measureText(label).width + 10, bh = 14;

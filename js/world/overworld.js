@@ -1812,7 +1812,10 @@ DG.Overworld = (function () {
     if (!w) return null;
     // Check requiresFlag gate
     if (w.requiresFlag && _gs && !_gs.player.flags[w.requiresFlag]) {
-      DG.DialogueBox.show(["The path is blocked."]);
+      const _msg = String(w.requiresFlag).indexOf('BADGE_') === 0
+        ? ["The way ahead is blocked.", "Defeat this city's Gym Leader to earn the badge that opens this route!"]
+        : ["The path is blocked."];
+      DG.DialogueBox.show(_msg);
       return null;
     }
     // Check gym lock — exit is blocked until the leader is defeated
