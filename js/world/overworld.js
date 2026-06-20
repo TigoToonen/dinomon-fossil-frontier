@@ -786,6 +786,30 @@ DG.Overworld = (function () {
       return;
     }
 
+    // onInteract: SIDE_QUEST — lightweight repeatable quest framework.
+    // NPC fields: questFlag, questDoneFlag, questIntro[], questReminder[],
+    // questSuccess[], questThanks[], questCheck{type,value}, reward{item,qty,money}.
+    if (npc.onInteract === 'SIDE_QUEST') {
+      if (npc.questDoneFlag && DG.SaveLoad.getFlag(_gs, npc.questDoneFlag)) {
+        DG.DialogueBox.show(npc.questThanks || ["Thanks again for your help!"], () => { _blocked = false; });
+        return;
+      }
+      const started = npc.questFlag && DG.SaveLoad.getFlag(_gs, npc.questFlag);
+      if (!started) {
+        if (npc.questFlag) DG.SaveLoad.setFlag(_gs, npc.questFlag);
+        DG.DialogueBox.show(npc.questIntro || ["Could you help me with something?"], () => { _blocked = false; DG.SaveLoad.save(_gs); });
+        return;
+      }
+      if (!_checkQuest(npc.questCheck)) {
+        DG.DialogueBox.show(npc.questReminder || ["Come back once you've managed it!"], () => { _blocked = false; });
+        return;
+      }
+      if (npc.questDoneFlag) DG.SaveLoad.setFlag(_gs, npc.questDoneFlag);
+      _giveQuestReward(npc.reward);
+      DG.DialogueBox.show((npc.questSuccess || ["Thank you so much!"]).concat(_rewardText(npc.reward)), () => { _blocked = false; DG.SaveLoad.save(_gs); });
+      return;
+    }
+
     // onInteract: TRIGGER_PRIMORDIA (post-game legendary encounter)
     if (npc.onInteract === 'TRIGGER_PRIMORDIA') {
       const dialogue = _getDialogue(npc);
@@ -1707,6 +1731,36 @@ DG.Overworld = (function () {
     STONEHAVEN_CITY:[9,4], FERNGROVE_TOWN:[10,7], CRESTFALL_TOWN:[10,7], BOGMIRE_CITY:[10,7],
     APEXSUMMIT:[9,11],
   };
+  // ── Side-quest helpers ────────────────────────────────────
+  function _checkQuest(c) {
+    if (!c) return true;
+    const p = _gs.player;
+    const party = (p.party || []).filter(function(m){ return m && !m.isEgg; });
+    switch (c.type) {
+      case 'HAS_ITEM':   return !!(p.bag && p.bag[c.value] > 0);
+      case 'PARTY_FULL': return party.length >= (c.value || 6);
+      case 'BADGES':     return (p.badges || []).length >= (c.value || 0);
+      case 'MONEY':      return (p.money || 0) >= (c.value || 0);
+      case 'SHINY':      return party.some(function(m){ return m.isShiny; });
+      case 'HAS_TYPE':   return party.some(function(m){
+        var sp = DG.SPECIES[m.speciesId]; return sp && sp.types && sp.types.indexOf(c.value) >= 0; });
+      case 'LEVEL':      return party.some(function(m){ return (m.level || 0) >= (c.value || 0); });
+      default:           return true;
+    }
+  }
+  function _giveQuestReward(r) {
+    if (!r) return;
+    if (r.item) { _gs.player.bag = _gs.player.bag || {}; _gs.player.bag[r.item] = (_gs.player.bag[r.item] || 0) + (r.qty || 1); }
+    if (r.money) { _gs.player.money = (_gs.player.money || 0) + r.money; }
+  }
+  function _rewardText(r) {
+    if (!r) return [];
+    var out = [];
+    if (r.item)  out.push('Received ' + (r.qty || 1) + 'x ' + ((DG.ITEMS && DG.ITEMS[r.item]) ? DG.ITEMS[r.item].name : r.item) + '!');
+    if (r.money) out.push('Received ¥' + r.money + '!');
+    return out;
+  }
+
   function _injectFountain(m) {
     if (!m || !m.id || !m.tiles || m._fountain) return;
     var p = _FOUNTAIN_POS[m.id];
