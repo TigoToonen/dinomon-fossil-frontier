@@ -61,6 +61,29 @@ DG.SpriteRenderer = (function () {
     const tileX = Math.round(px / T), tileY = Math.round(py / T);
     const seed = tileX * 31 + tileY * 17;
 
+    if (tileId === 67) {
+      // ── Wooden signpost (route direction sign) ─────────────────
+      // Neutral cleared-dirt base so it blends on both grass and sand routes.
+      ctx.fillStyle = '#7a6a4a';
+      ctx.fillRect(px, py, T, T);
+      const scx = px + T / 2;
+      // Ground shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.20)';
+      ctx.beginPath(); ctx.ellipse(scx, py + T - 3, 7, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+      // Post
+      ctx.fillStyle = '#6b4a24'; ctx.fillRect(scx - 2, py + 12, 4, T - 14);
+      ctx.fillStyle = '#4f3518'; ctx.fillRect(scx + 1, py + 12, 1, T - 14);
+      // Board
+      ctx.fillStyle = '#b98a4e'; ctx.fillRect(px + 4, py + 5, T - 8, 11);
+      ctx.fillStyle = '#d4a96a'; ctx.fillRect(px + 4, py + 5, T - 8, 2);
+      ctx.strokeStyle = '#3a2a14'; ctx.lineWidth = 1; ctx.strokeRect(px + 4, py + 5, T - 8, 11);
+      // Faux text lines on the board
+      ctx.fillStyle = '#3a2a14';
+      ctx.fillRect(px + 6, py + 8, T - 13, 1);
+      ctx.fillRect(px + 6, py + 11, T - 16, 1);
+      return;
+    }
+
     if (tileId === 1) {
       // ── Regular grass — biome-aware ────────────────────────────
       const _thG1 = window.DG_MAP_THEME || 'DEFAULT';

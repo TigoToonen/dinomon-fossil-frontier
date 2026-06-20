@@ -297,7 +297,7 @@ DG.Overworld = (function () {
     const tile = _getTile(fx, fy);
     if (tile === DG.TILE.SIGN) {
       const sign = _mapData.signs && _mapData.signs.find(s => s.x === fx && s.y === fy);
-      if (sign) DG.DialogueBox.show([sign.text], () => {});
+      if (sign) DG.DialogueBox.show(Array.isArray(sign.text) ? sign.text : [sign.text], () => {});
       return;
     }
 
@@ -1628,6 +1628,64 @@ DG.Overworld = (function () {
     return { x: sx, y: sy };
   }
 
+  // Auto-place a wooden signpost at a route's city-facing entrance, with text
+  // derived from the warp graph (which city each direction leads to). Runs once
+  // per map so every numbered route gets a readable "this way to X / Y" sign.
+  function _injectRouteSign(m) {
+    if (!m || !m.id || m.id.indexOf('ROUTE_') !== 0) return;
+    if (m._signed || !m.tiles || !m.warps) return;
+    m._signed = true;
+    const isRoute = id => !!id && id.indexOf('ROUTE_') === 0;
+    const nameOf  = id => { const mm = DG.MAPS[id]; return mm ? (mm.name || id) : id; };
+    const edgeWarp = (mm, edge) => {
+      let best = null;
+      for (const w of (mm.warps || [])) {
+        if (best === null) { best = w; continue; }
+        if (edge === 'top' && w.y < best.y) best = w;
+        if (edge === 'bot' && w.y > best.y) best = w;
+      }
+      return best;
+    };
+    const traceCity = (edge) => {          // follow segments to the terminal city
+      let id = m.id, depth = 0;
+      while (isRoute(id) && depth++ < 20) {
+        const w = edgeWarp(DG.MAPS[id], edge);
+        if (!w) return null;
+        id = w.targetMap;
+        if (!isRoute(id)) return id;
+      }
+      return null;
+    };
+    const openCol = (y) => {
+      const row = m.tiles[y] || [];
+      for (let x = 0; x < m.width; x++) if (!_isSolid(row[x])) return x;
+      return -1;
+    };
+    const topW = edgeWarp(m, 'top'), botW = edgeWarp(m, 'bot');
+    const topCity = topW && !isRoute(topW.targetMap) && DG.MAPS[topW.targetMap];
+    const botCity = botW && !isRoute(botW.targetMap) && DG.MAPS[botW.targetMap];
+    let signY, openRow;
+    if (topCity)      { signY = 1; openRow = 0; }
+    else if (botCity) { signY = m.height - 2; openRow = m.height - 1; }
+    else return;                            // mid-segment with no city entrance
+    const oc = openCol(openRow);
+    if (oc < 1) return;
+    const rowTiles = m.tiles[signY] || [];
+    let sx = oc - 1;                         // tile just beside the opening
+    if (_isSolid(rowTiles[sx])) sx = oc + 2;
+    if (sx < 1 || sx >= m.width - 1 || _isSolid(rowTiles[sx])) return;
+    const north = isRoute(topW && topW.targetMap) ? nameOf(traceCity('top')) : (topW ? nameOf(topW.targetMap) : null);
+    const south = isRoute(botW && botW.targetMap) ? nameOf(traceCity('bot')) : (botW ? nameOf(botW.targetMap) : null);
+    const label = (m.name || m.id).split('—')[0].trim();
+    m.tiles[signY][sx] = DG.TILE.SIGN;
+    if (!m.signs) m.signs = [];
+    m.signs.push({ x: sx, y: signY, text: [
+      label,
+      north ? '▲ ' + north : null,
+      south ? '▼ ' + south : null,
+    ].filter(Boolean) });
+  }
+
   // _updateTransition kept as no-op for safety (isTransitioning always returns false now)
   function _updateTransition() {
     _transitioning = false;
@@ -1648,6 +1706,9 @@ DG.Overworld = (function () {
       return;  // _mapData is preserved — old map stays visible
     }
     _mapData = newData;
+
+    // Auto-place a route signpost at the city-facing entrance (once per map)
+    try { _injectRouteSign(newData); } catch(e) {}
 
     // Set map theme for themed tile drawing
     const _GYM_THEMES = {
