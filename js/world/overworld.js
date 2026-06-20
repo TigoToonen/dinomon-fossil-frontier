@@ -895,14 +895,33 @@ DG.Overworld = (function () {
       const introLines = (introKey && DG.STORY.DIALOGUES[introKey])
         ? DG.STORY.DIALOGUES[introKey]
         : ["A question stands between you and the next challenge!"];
-      const optA = npc.quizOptionA || 'A';
-      const optB = npc.quizOptionB || 'B';
       const question = npc.quizQuestion || 'Choose your answer:';
+
+      // Build the answer pool. The correct answer is always stored in quizOptionA;
+      // distractors come from quizWrong[] (fallback: the legacy quizOptionB).
+      // Letter prefixes ("A) ") are stripped and re-applied per shuffled position,
+      // so the correct answer lands in a random slot each time.
+      const _strip = (s) => String(s == null ? '' : s).replace(/^[A-E]\)\s*/, '').trim();
+      const correctText = _strip(npc.quizOptionA) || 'Correct';
+      let wrongs = Array.isArray(npc.quizWrong) ? npc.quizWrong.slice()
+                 : (npc.quizOptionB ? [npc.quizOptionB] : []);
+      wrongs = wrongs.map(_strip).filter(w => w && w.toLowerCase() !== correctText.toLowerCase());
+      // De-dupe distractors
+      wrongs = wrongs.filter((w, i) => wrongs.findIndex(x => x.toLowerCase() === w.toLowerCase()) === i);
+      const pool = [correctText, ...wrongs];
+      // Fisher–Yates shuffle (Math.random is fine in the browser)
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+      }
+      const correctIdx = pool.indexOf(correctText);
+      const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+      const labels = pool.map((t, i) => `${LETTERS[i]}) ${t}`);
 
       DG.DialogueBox.show(introLines, () => {
         if (typeof DG.Menu !== 'undefined' && DG.Menu.showChoiceMenu) {
-          DG.Menu.showChoiceMenu(question, [optA, optB], (idx) => {
-            const isCorrect = (idx === 0); // Option A is always correct
+          DG.Menu.showChoiceMenu(question, labels, (idx) => {
+            const isCorrect = (idx === correctIdx);
             if (isCorrect) {
               if (correctFlag) DG.SaveLoad.setFlag(_gs, correctFlag);
               if (doneFlag)    DG.SaveLoad.setFlag(_gs, doneFlag);

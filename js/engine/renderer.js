@@ -12,6 +12,8 @@ DG.Renderer = (function () {
   let _gs      = null;
   let _levelUpFlash = 0; // golden flash on level up
   let _lastMapId = null; // for location banner reset on map change
+  let _locName   = null; // last displayed location name (takeover gating)
+  let _locFrames = 9999; // frames since the location takeover started (starts "done")
 
   // ── FASE 1: transitie-state ────────────────────────────────
   let _menuT         = 0;    // menu slide-in progress (0→1)
@@ -720,11 +722,19 @@ DG.Renderer = (function () {
     const mapData = DG.Overworld.getMapData();
     if (!mapData) return;
 
-    // Reset location banner counter whenever the player changes maps
+    // Reset global anim counter whenever the player changes maps
     const curMapId = _gs.player ? _gs.player.currentMap : null;
     if (curMapId && curMapId !== _lastMapId) {
       _lastMapId = curMapId;
-      _animOff   = 0; // restart banner animation
+      _animOff   = 0; // restart idle animations
+    }
+    // Full-screen location takeover counter — outdoor areas only (routes/cities/
+    // caves), re-armed only when the DISPLAYED name changes. This keeps
+    // multi-segment routes and building in/out trips from re-popping the banner.
+    if (!mapData.isIndoor) {
+      const _nm = mapData.name || '';
+      if (_nm !== _locName) { _locName = _nm; _locFrames = 0; }
+      else if (_locFrames < 9999) { _locFrames++; }
     }
 
     const T    = DG.CANVAS.TILE_SIZE;
@@ -874,27 +884,45 @@ DG.Renderer = (function () {
 
     DG.SpriteRenderer.drawPlayer(ctx, ppX, ppY, p.facing, _animOff);
 
-    // Map name overlay (first 3 seconds — fade in/out)
-    if (_animOff < 180) {
-      const alpha = _animOff < 60
-        ? _animOff / 60
-        : Math.min(1, (180 - _animOff) / 60);
-      ctx.globalAlpha = alpha;
-      // Panel
-      ctx.fillStyle = 'rgba(8,12,36,0.90)';
-      ctx.fillRect(0, H - 28, DG.CANVAS.W, 28);
+    // ── Full-screen location takeover (outdoor areas only) ────
+    // Dramatic centred overlay when entering a new named area (~1.8s, auto fade).
+    const LOC_IN = 16, LOC_HOLD = 80, LOC_OUT = 106;
+    if (!mapData.isIndoor && _locName && _locFrames < LOC_OUT) {
+      const f = _locFrames;
+      const a = f < LOC_IN  ? f / LOC_IN
+              : f < LOC_HOLD ? 1
+              : Math.max(0, (LOC_OUT - f) / (LOC_OUT - LOC_HOLD));
+      const cx = W / 2, cy = H / 2;
+      ctx.save();
+      ctx.textBaseline = 'alphabetic';
+      // Dim the world behind the title
+      ctx.globalAlpha = a * 0.72;
+      ctx.fillStyle = '#060a1e';
+      ctx.fillRect(0, 0, W, H);
+      // Central title band
+      ctx.globalAlpha = a * 0.95;
+      ctx.fillStyle = 'rgba(10,16,44,0.95)';
+      ctx.fillRect(0, cy - 27, W, 54);
       ctx.strokeStyle = '#5a9fd4';
-      ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(0, H - 28); ctx.lineTo(DG.CANVAS.W, H - 28); ctx.stroke();
-      // Location text
-      ctx.fillStyle = '#aaccff';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, cy - 27); ctx.lineTo(W, cy - 27); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, cy + 27); ctx.lineTo(W, cy + 27); ctx.stroke();
+      // Label + location name
+      ctx.globalAlpha = a;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#8fd0ff';
       ctx.font = '10px monospace';
-      ctx.textBaseline = 'top';
-      ctx.fillText('LOCATION', 10, H - 27);
+      ctx.fillText('NOW ENTERING', cx, cy - 8);
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 13px monospace';
-      ctx.fillText(mapData.name || '', 10, H - 16);
-      ctx.globalAlpha = 1;
+      ctx.font = 'bold 22px monospace';
+      ctx.fillText(_locName, cx, cy + 16);
+      // Accent ticks flanking the name
+      const nameW = ctx.measureText(_locName).width;
+      ctx.fillStyle = '#5a9fd4';
+      ctx.fillRect(cx - nameW / 2 - 16, cy + 8, 10, 2);
+      ctx.fillRect(cx + nameW / 2 + 6,  cy + 8, 10, 2);
+      ctx.restore();
+      ctx.textAlign = 'left';
     }
 
     // Weather particles (outdoors only)
