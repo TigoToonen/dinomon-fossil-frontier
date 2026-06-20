@@ -4069,6 +4069,10 @@ DG.MAPS.BOGMIRE_EAST_HOUSE = _townHome('BOGMIRE_EAST_HOUSE','Market Quarter Home
   'Trader','NPC_MAN',["We opened up the east market two years back.","Business is booming since the dock reopened!"]);
 DG.MAPS.BOGMIRE_DOCK_HOUSE = _townHome('BOGMIRE_DOCK_HOUSE','Dockside Home','BOGMIRE_CITY',22,9,
   'Fisher','NPC_WOMAN',["From our window we watch the marsh mist roll in.","Mudfin practically jump into the nets here."]);
+DG.MAPS.CRESTFALL_EAST_HOUSE = _townHome('CRESTFALL_EAST_HOUSE','Storm Quarter Home','CRESTFALL_TOWN',22,5,
+  'Technician','NPC_MAN',["We wire the whole quarter to Volt's grid.","Careful in a storm — everything here is live!"]);
+DG.MAPS.CRESTFALL_RIDGE_HOUSE = _townHome('CRESTFALL_RIDGE_HOUSE','Ridge Home','CRESTFALL_TOWN',22,9,
+  'Climber','NPC_WOMAN',["The cliffs above town crackle with static before a storm.","Sparkhorn gather up there to feed on the lightning."]);
 
 // STONEHAVEN_HOUSE1 retired — it was unreachable (no door in town) and duplicated the
 // empty, already-reachable STONEHAVEN_MUSEUM. Its historian exhibits now live in the museum.
@@ -4524,24 +4528,26 @@ DG.MAPS.FERNGROVE_TOWN = {
 };
 
 DG.MAPS.CRESTFALL_TOWN = {
-  id:'CRESTFALL_TOWN', name:'Crestfall Town', width:20, height:15,
+  id:'CRESTFALL_TOWN', name:'Crestfall Town', width:28, height:15,
   music:'TOWN_CALM', isIndoor:false, isCave:false,
+  // Enlarged: original town (cols 0-18) unchanged; a storm/energy quarter was
+  // appended on the right (cols 19-27) — extra homes, a stall and NPCs.
   tiles: [
-    [66,66,66,66,66,66,66,66,66, 5, 5,66,66,66,66,66,66,66,66,66],
-    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
-    [66, 5,65,65,65,65, 5, 5, 5, 5, 5, 5,65,65,65,65,65,65, 5,66],
-    [66, 5,65,65,65,65, 5, 5, 5, 5, 5, 5,65,75,65,76,65,68, 5,66],
-    [66, 5,65,68,65,65, 5, 5, 5, 5, 5, 5,65,65,65,65,65,65, 5,66],
-    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
-    [66, 5,65,65,65,65,65,65, 5, 5, 5, 5, 5,65,65,65,65,65, 5,66],
-    [66, 5,65,65,65,65,65,65, 5, 5, 5, 5, 5,65,65,65,65,65, 5,66],
-    [66, 5,65,68,65,65,65,65, 5, 5, 5, 5, 5,65,68,65,65,65, 5,66],
-    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5,67, 5, 5, 5, 5, 5, 5, 5, 5,66],
-    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
-    [66, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1,66],
-    [66, 2, 2, 2, 2, 2, 2, 1, 5, 5, 5, 5, 1, 2, 2, 2, 2, 2, 2,66],
-    [66,66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66,66],
-    [66,66,66,66,66,66,66,66,66, 5, 5,66,66,66,66,66,66,66,66,66],
+    [66,66,66,66,66,66,66,66,66, 5, 5,66,66,66,66,66,66,66,66, 66,66,66,66,66,66,66,66,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,  5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66, 5,65,65,65,65, 5, 5, 5, 5, 5, 5,65,65,65,65,65,65, 5,  5, 5,65,65,65, 5, 5, 5,66],
+    [66, 5,65,65,65,65, 5, 5, 5, 5, 5, 5,65,75,65,76,65,68, 5,  5, 5,65,65,65, 5, 5, 5,66],
+    [66, 5,65,68,65,65, 5, 5, 5, 5, 5, 5,65,65,65,65,65,65, 5,  5, 5,65,68,65, 5, 5, 5,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,  5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66, 5,65,65,65,65,65,65, 5, 5, 5, 5, 5,65,65,65,65,65, 5,  5, 5,65,65,65, 5, 5, 5,66],
+    [66, 5,65,65,65,65,65,65, 5, 5, 5, 5, 5,65,65,65,65,65, 5,  5, 5,65,65,65, 5, 5, 5,66],
+    [66, 5,65,68,65,65,65,65, 5, 5, 5, 5, 5,65,68,65,65,65, 5,  5, 5,65,68,65, 5, 5, 5,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5,67, 5, 5, 5, 5, 5, 5, 5, 5,  5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,  5, 5,74,74, 5, 5, 5, 5,66],
+    [66, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1,  5, 1, 1, 1, 1, 1, 1, 1,66],
+    [66, 2, 2, 2, 2, 2, 2, 1, 5, 5, 5, 5, 1, 2, 2, 2, 2, 2, 2,  5, 2, 2, 2, 2, 2, 2, 2,66],
+    [66,66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66, 66,66,66,66,66,66,66,66,66],
+    [66,66,66,66,66,66,66,66,66, 5, 5,66,66,66,66,66,66,66,66, 66,66,66,66,66,66,66,66,66],
   ],
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_8A',       targetX:9,  targetY:1, requiresFlag:'BADGE_6'  },
@@ -4554,6 +4560,8 @@ DG.MAPS.CRESTFALL_TOWN = {
     { x:14, y:8,  targetMap:'CRESTFALL_CENTER', targetX:7, targetY:8 },
     { x:12, y:5,  targetMap:'CRESTFALL_WILD', targetX:1, targetY:6 },
     { x:12, y:6,  targetMap:'CRESTFALL_WILD', targetX:1, targetY:7 },
+    { x:22, y:4,  targetMap:'CRESTFALL_EAST_HOUSE',  targetX:3, targetY:6 },
+    { x:22, y:8,  targetMap:'CRESTFALL_RIDGE_HOUSE', targetX:3, targetY:6 },
   ],
   npcs:[
     { id:'CF_NPC1', name:'Climber', x:7, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -4569,6 +4577,16 @@ DG.MAPS.CRESTFALL_TOWN = {
       movementType:'STATIONARY',
       dialogue:["The Static Badge — Volt's mark. Route 8 toward Bogmire lies ahead — good luck!"],
       requiresFlag:'BADGE_6', onInteract:null },
+    // ── Storm / energy quarter (right side) ──
+    { id:'CF_VENDOR', name:'Gear Vendor', x:21, y:9, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY',
+      dialogue:["Storm-charged gear here! Lightning-proof boots, today only!","Volt's gym keeps these stalls humming with power."], onInteract:null },
+    { id:'CF_ENGINEER', name:'Engineer', x:24, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["The whole east quarter runs on Volt's lightning grid.","One good storm could light the town for a month."], onInteract:null },
+    { id:'CF_KID2', name:'Child', x:25, y:7, facing:'LEFT', spriteKey:'NPC_KID',
+      movementType:'WANDER',
+      dialogue:["When it thunders, the stalls' lights flicker like fireflies!"], onInteract:null },
   ],
   encounterTable:{ grass:[
     { speciesId:'SPARKHORN', minLv:36, maxLv:40, rate:35 },
