@@ -63,7 +63,8 @@ DG.BagMenu = (function () {
     'LUM_BERRY','FOCUS_SASH','ROCKY_HELMET','SHELL_BELL',
   ];
   const REPELS    = ['REPEL','SUPER_REPEL','MAX_REPEL'];
-  const KEY_ITEMS = ['OLD_ROD','GOOD_ROD','SUPER_ROD','RUNNING_SHOES','BIKE'];
+  const KEY_ITEMS = ['OLD_ROD','GOOD_ROD','SUPER_ROD','RUNNING_SHOES','BIKE',
+    'AMBER_FOSSIL','TAR_FOSSIL','ICE_FOSSIL','SEA_FOSSIL','SKY_FOSSIL'];
 
   // ── Item display metadata ────────────────────────────────────
   const ITEM_DEFS = {
@@ -87,6 +88,11 @@ DG.BagMenu = (function () {
     DINOMASTERBALL:   { name:'DinoMasterBall',  desc:'Never fails — catches any DinoMon!' },
     AMBERF:           { name:'Amber Frag.',     desc:'Rare crafting material.' },
     RARE_CANDY:       { name:'Rare Candy',      desc:'Raises a DinoMon’s level by 1.' },
+    AMBER_FOSSIL:     { name:'Amber Fossil',    desc:'A Bug/Rock fossil. Carry it, then revive it at a Fossil Lab.' },
+    TAR_FOSSIL:       { name:'Tar Fossil',      desc:'A Dark/Rock fossil. Carry it, then revive it at a Fossil Lab.' },
+    ICE_FOSSIL:       { name:'Ice Fossil',      desc:'An Ice/Rock fossil. Carry it, then revive it at a Fossil Lab.' },
+    SEA_FOSSIL:       { name:'Sea Fossil',      desc:'A Water/Rock fossil. Carry it, then revive it at a Fossil Lab.' },
+    SKY_FOSSIL:       { name:'Sky Fossil',      desc:'A Flying/Rock fossil. Carry it, then revive it at a Fossil Lab.' },
     // Repels
     REPEL:       { name:'Repel',        desc:'Repels weak wild DinoMons for 100 steps.' },
     SUPER_REPEL: { name:'Super Repel',  desc:'Repels weak wild DinoMons for 200 steps.' },

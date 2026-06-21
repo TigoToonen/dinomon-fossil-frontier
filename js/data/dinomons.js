@@ -1369,6 +1369,90 @@ BOGZILLA: _sp('BOGZILLA','Bogzilla',['WATER','POISON'],
   '#2E7D32','#4A0080'),
 
 // ═══════════════════════════════════════════════════════
+// FOSSIL DINOMON — revived from carried fossils (exclusive)
+// ═══════════════════════════════════════════════════════
+
+// Amber Fossil — Bug/Rock
+AMBERLITE: _sp('AMBERLITE','Amberlite',['BUG','ROCK'],
+  {hp:45,atk:50,def:60,spAtk:40,spDef:50,spd:38},
+  _ls(1,'TACKLE',1,'HARDEN',6,'ROCK_THROW',10,'BUG_BITE',16,'ANCIENT_POWER',24,'ROCK_SLIDE'),
+  'AMBERWING',32,null,'Sturdy','Survives a KO with 1 HP when at full health.',
+  45,62,'MEDIUM',false,false,
+  'Trapped in amber for eons. Its shell still hums with prehistoric energy.',
+  '#d9a441','#8a5a18'),
+AMBERWING: _sp('AMBERWING','Amberwing',['BUG','ROCK'],
+  {hp:70,atk:82,def:90,spAtk:55,spDef:70,spd:58},
+  _ls(1,'TACKLE',1,'ROCK_THROW',16,'BUG_BITE',24,'ANCIENT_POWER',34,'X_SCISSOR',40,'ROCK_SLIDE',48,'STONE_EDGE'),
+  null,null,'AMBERLITE','Sturdy','Survives a KO with 1 HP when at full health.',
+  45,168,'MEDIUM',false,false,
+  'Its amber wings glint like stained glass. A living relic of the first age.',
+  '#e8b84a','#7a4e14'),
+
+// Tar Fossil — Dark/Rock
+TARCLAW: _sp('TARCLAW','Tarclaw',['DARK','ROCK'],
+  {hp:50,atk:58,def:52,spAtk:42,spDef:45,spd:48},
+  _ls(1,'TACKLE',1,'SAND_ATTACK',6,'BITE',10,'ROCK_THROW',16,'ANCIENT_POWER',24,'ROCK_SLIDE'),
+  'TARRASAUR',34,null,'Sturdy','Survives a KO with 1 HP when at full health.',
+  45,64,'MEDIUM',false,false,
+  'Hauled from a tar pit. Black ooze still drips from its claws.',
+  '#2a2620','#1a140a'),
+TARRASAUR: _sp('TARRASAUR','Tarrasaur',['DARK','ROCK'],
+  {hp:78,atk:95,def:80,spAtk:55,spDef:68,spd:62},
+  _ls(1,'BITE',1,'ROCK_THROW',16,'ANCIENT_POWER',24,'CRUNCH',34,'ROCK_SLIDE',40,'EARTHQUAKE',48,'STONE_EDGE'),
+  null,null,'TARCLAW','Sturdy','Survives a KO with 1 HP when at full health.',
+  45,172,'MEDIUM',false,false,
+  'A tar-soaked predator. The ooze hardens into armor when it hunts.',
+  '#1a1814','#3a2a10'),
+
+// Ice Fossil — Ice/Rock
+CRYOSHELL: _sp('CRYOSHELL','Cryoshell',['ICE','ROCK'],
+  {hp:55,atk:45,def:65,spAtk:48,spDef:55,spd:30},
+  _ls(1,'TACKLE',1,'HARDEN',6,'ICE_SHARD',10,'ROCK_THROW',16,'ANCIENT_POWER',24,'ROCK_SLIDE'),
+  'CRYOSAUR',34,null,'Sturdy','Survives a KO with 1 HP when at full health.',
+  45,64,'MEDIUM',false,false,
+  'Frozen in a glacier core. Frost crystals grow along its stone hide.',
+  '#bfe6f0','#5a8aa0'),
+CRYOSAUR: _sp('CRYOSAUR','Cryosaur',['ICE','ROCK'],
+  {hp:85,atk:70,def:100,spAtk:65,spDef:80,spd:42},
+  _ls(1,'ICE_SHARD',1,'ROCK_THROW',16,'ANCIENT_POWER',24,'ICE_FANG',34,'ROCK_SLIDE',40,'ICE_BEAM',48,'STONE_EDGE'),
+  null,null,'CRYOSHELL','Sturdy','Survives a KO with 1 HP when at full health.',
+  45,172,'MEDIUM',false,false,
+  'An ice-age titan. Its breath drops the temperature for metres around.',
+  '#9fd8ee','#3f7090'),
+
+// Sea Fossil — Water/Rock
+NAUTILON: _sp('NAUTILON','Nautilon',['WATER','ROCK'],
+  {hp:55,atk:48,def:58,spAtk:55,spDef:55,spd:40},
+  _ls(1,'TACKLE',1,'HARDEN',6,'WATER_GUN',10,'ROCK_THROW',16,'ANCIENT_POWER',24,'ROCK_SLIDE'),
+  'ABYSSHELL',34,null,'Sturdy','Survives a KO with 1 HP when at full health.',
+  45,64,'MEDIUM',false,false,
+  'A spiral-shelled fossil from the deep. Its shell rings like a bell.',
+  '#5aa0c8','#2a5a78'),
+ABYSSHELL: _sp('ABYSSHELL','Abysshell',['WATER','ROCK'],
+  {hp:80,atk:68,def:92,spAtk:80,spDef:78,spd:50},
+  _ls(1,'WATER_GUN',1,'ROCK_THROW',16,'ANCIENT_POWER',24,'AQUA_TAIL',34,'ROCK_SLIDE',40,'SURF',48,'STONE_EDGE'),
+  null,null,'NAUTILON','Sturdy','Survives a KO with 1 HP when at full health.',
+  45,172,'MEDIUM',false,false,
+  'An ancient ammonite-beast. Pressure from the abyss made its shell unbreakable.',
+  '#3f86b4','#1a4060'),
+
+// Sky Fossil — Flying/Rock
+AEROLITH: _sp('AEROLITH','Aerolith',['FLYING','ROCK'],
+  {hp:48,atk:55,def:50,spAtk:45,spDef:45,spd:62},
+  _ls(1,'TACKLE',1,'QUICK_ATTACK',6,'ROCK_THROW',10,'WING_ATTACK',16,'ANCIENT_POWER',24,'ROCK_SLIDE'),
+  'AERODON',34,null,'Sturdy','Survives a KO with 1 HP when at full health.',
+  45,64,'MEDIUM',false,false,
+  'A stone-winged flyer. Somehow these heavy wings once caught the wind.',
+  '#b8a890','#6a5a40'),
+AERODON: _sp('AERODON','Aerodon',['FLYING','ROCK'],
+  {hp:75,atk:88,def:72,spAtk:60,spDef:65,spd:95},
+  _ls(1,'WING_ATTACK',1,'ROCK_THROW',16,'ANCIENT_POWER',24,'AIR_SLASH',34,'AERIAL_ACE',40,'ROCK_SLIDE',48,'STONE_EDGE'),
+  null,null,'AEROLITH','Sturdy','Survives a KO with 1 HP when at full health.',
+  45,174,'MEDIUM',false,false,
+  'The apex of the ancient skies, reborn. Its stone wings shatter the sound barrier.',
+  '#c8b89a','#5a4a30'),
+
+// ═══════════════════════════════════════════════════════
 // LEGENDARIES
 // ═══════════════════════════════════════════════════════
 

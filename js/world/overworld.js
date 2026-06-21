@@ -180,6 +180,9 @@ DG.Overworld = (function () {
     _gs.player.y = ny;
     _gs.player.steps = (_gs.player.steps || 0) + 1;
 
+    // Fossil incubation: carried fossils awaken after enough steps
+    try { _incubateFossils(); } catch(e) {}
+
     // Terrain footstep SFX — play every step (audio.js throttles volume)
     try {
       if (typeof DG.Audio !== 'undefined' && DG.Audio.playFootstep) {
@@ -408,6 +411,12 @@ DG.Overworld = (function () {
     // onInteract: HEAL_PARTY
     if (npc.onInteract === 'HEAL_PARTY') {
       DG.Events.healParty(_gs, () => { _blocked = false; DG.SaveLoad.save(_gs); });
+      return;
+    }
+
+    // onInteract: REVIVE_FOSSIL (Fossil Lab scientist)
+    if (npc.onInteract === 'REVIVE_FOSSIL') {
+      _reviveFossils();
       return;
     }
 
@@ -1807,8 +1816,11 @@ DG.Overworld = (function () {
     ROUTE_3A: [{x:2,y:2,id:'REVIVE'},      {x:17,y:8,id:'SUPERBALL'}],
     ROUTE_4A: [{x:2,y:2,id:'HYPERPOTION'}, {x:16,y:8,id:'RARE_CANDY',hidden:true}],
     ROUTE_5A: [{x:2,y:2,id:'ULTRABALL'},   {x:16,y:17,id:'FIRE_STONE',hidden:true}],
-    ROUTE_6A: [{x:2,y:2,id:'RARE_CANDY'},  {x:17,y:8,id:'ULTRABALL'}],
-    ROUTE_7A: [{x:2,y:2,id:'HYPERPOTION'}, {x:9,y:8,id:'THUNDER_STONE',hidden:true}],
+    ROUTE_6A: [{x:2,y:2,id:'RARE_CANDY'},  {x:17,y:8,id:'ULTRABALL'},     {x:3,y:8,id:'AMBER_FOSSIL'}],
+    ROUTE_7A: [{x:2,y:2,id:'HYPERPOTION'}, {x:9,y:8,id:'THUNDER_STONE',hidden:true}, {x:16,y:3,id:'SEA_FOSSIL'}],
+    ROUTE_8A: [{x:3,y:3,id:'TAR_FOSSIL'},  {x:16,y:16,id:'ULTRABALL',hidden:true}],
+    ROUTE_9A: [{x:3,y:3,id:'ICE_FOSSIL'},  {x:16,y:16,id:'RARE_CANDY',hidden:true}],
+    ROUTE_10E:[{x:3,y:3,id:'SKY_FOSSIL'}],
   };
   function _injectGroundItems(m) {
     if (!m || !m.id || m._grounded) return;
@@ -1854,6 +1866,65 @@ DG.Overworld = (function () {
     DG.DialogueBox.show([intro, (qty > 1 ? (qty + 'x ') : '') + nm + '!'],
       () => { _blocked = false; DG.SaveLoad.save(_gs); });
     return true;
+  }
+
+  // ── Fossils: carry → incubate by steps → revive at a Fossil Lab ──
+  var _FOSSIL_THRESHOLD = 300;
+  var _FOSSIL_SPECIES = {
+    AMBER_FOSSIL:'AMBERLITE', TAR_FOSSIL:'TARCLAW', ICE_FOSSIL:'CRYOSHELL',
+    SEA_FOSSIL:'NAUTILON',    SKY_FOSSIL:'AEROLITH',
+  };
+  var _FOSSIL_NAMES = {
+    AMBER_FOSSIL:'Amber Fossil', TAR_FOSSIL:'Tar Fossil', ICE_FOSSIL:'Ice Fossil',
+    SEA_FOSSIL:'Sea Fossil',     SKY_FOSSIL:'Sky Fossil',
+  };
+  function _incubateFossils() {
+    const bag = _gs.player.bag || {};
+    _gs.player.fossilSteps = _gs.player.fossilSteps || {};
+    for (const fid in _FOSSIL_SPECIES) {
+      if (!(bag[fid] > 0)) continue;
+      if (_gs.player.flags && _gs.player.flags['FOSSIL_READY_' + fid]) continue;
+      _gs.player.fossilSteps[fid] = (_gs.player.fossilSteps[fid] || 0) + 1;
+      if (_gs.player.fossilSteps[fid] >= _FOSSIL_THRESHOLD) {
+        DG.SaveLoad.setFlag(_gs, 'FOSSIL_READY_' + fid);
+        _blocked = true;
+        DG.DialogueBox.show(
+          ['Your ' + (_FOSSIL_NAMES[fid] || 'fossil') + ' is trembling with ancient life!',
+           'Take it to a Fossil Lab to revive it.'],
+          () => { _blocked = false; DG.SaveLoad.save(_gs); });
+        return; // one notification at a time
+      }
+    }
+  }
+  function _reviveFossils() {
+    const bag = _gs.player.bag || {};
+    const ready = Object.keys(_FOSSIL_SPECIES).filter(
+      fid => bag[fid] > 0 && _gs.player.flags && _gs.player.flags['FOSSIL_READY_' + fid]);
+    if (ready.length === 0) {
+      const carrying = Object.keys(_FOSSIL_SPECIES).some(fid => bag[fid] > 0);
+      DG.DialogueBox.show(carrying
+        ? ["Your fossil isn't ready yet.", "Keep walking with it — it awakens with every step you take."]
+        : ["Bring me a fossil and walk with it a while.", "Once it stirs with life, I can revive it into a DinoMon!"],
+        () => { _blocked = false; });
+      return;
+    }
+    const fid = ready[0];
+    const species = _FOSSIL_SPECIES[fid];
+    const mon = DG.SaveLoad.createDinoMon(species, 20);
+    const spName = (DG.SPECIES[species] && DG.SPECIES[species].name) || species;
+    let dest;
+    if ((_gs.player.party || []).length < 6) { _gs.player.party.push(mon); dest = 'party'; }
+    else { _gs.player.box = _gs.player.box || []; _gs.player.box.push(mon); dest = 'box'; }
+    DG.SaveLoad.removeItem(_gs, fid, 1);
+    if (_gs.player.flags) delete _gs.player.flags['FOSSIL_READY_' + fid];
+    if (_gs.player.fossilSteps) _gs.player.fossilSteps[fid] = 0;
+    try { DG.SaveLoad.markCaught(_gs, species); } catch(e) {}
+    DG.SaveLoad.save(_gs);
+    DG.DialogueBox.show(
+      ['The fossil glows with primordial light...',
+       'A ' + spName + ' was revived!',
+       dest === 'box' ? (spName + ' was sent to the PC box.') : (spName + ' joined your party!')],
+      () => { _blocked = false; });
   }
 
   // ── Navigation HUD state ──────────────────────────────────
