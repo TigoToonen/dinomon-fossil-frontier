@@ -821,10 +821,26 @@ DG.Renderer = (function () {
       ctx.fillRect(0, 0, W, H);
     }
 
+    // Outdoor towns: building walls (65) are covered by full facades, so render
+    // the bare brick tiles as the town's base ground instead of scattered stones.
+    const _outdoorTown = !mapData.isIndoor && !mapData.isCave;
+    let _baseG = 1;
+    if (_outdoorTown) {
+      if (mapData._baseGround === undefined) {
+        const cnt = {};
+        for (const r of mapData.tiles) for (const t of r) if ([1,4,5,8,9].indexOf(t) >= 0) cnt[t] = (cnt[t] || 0) + 1;
+        let best = 1, bc = -1;
+        for (const k in cnt) if (cnt[k] > bc) { bc = cnt[k]; best = +k; }
+        mapData._baseGround = best;
+      }
+      _baseG = mapData._baseGround;
+    }
+
     // Draw tiles
     for (let ty = startY; ty < endY; ty++) {
       for (let tx = startX; tx < endX; tx++) {
-        const tile = mapData.tiles[ty] ? mapData.tiles[ty][tx] : 0;
+        let tile = mapData.tiles[ty] ? mapData.tiles[ty][tx] : 0;
+        if (tile === 65 && _outdoorTown) tile = _baseG;   // hide bare building bricks
         const px   = tx * T - camX;
         const py   = ty * T - camY;
         // FASE 12: buur-info — water krijgt oever-randen waar het aan
@@ -912,24 +928,26 @@ DG.Renderer = (function () {
 
     // Draw building signs over door warp tiles (one facade per unique target building)
     if (mapData.warps) {
-      const _drawnFacades = new Set();
+      // De-dup by door CLUSTER (adjacent door tiles = one building), not by
+      // targetMap — so two separate buildings each get their own facade and no
+      // building footprint is left as bare ground.
+      const _drawn = [];
       for (const w of mapData.warps) {
         if (!w.targetMap) continue;
-        if (_drawnFacades.has(w.targetMap)) continue;
-        const wpx = w.x * T - camX;
-        const wpy = w.y * T - camY;
-        if (wpx < -T * 4 || wpx > W + T * 3 || wpy < -T * 4 || wpy > H + T) continue;
         let ftype = null;
         if      (w.targetMap.endsWith('_CENTER')) ftype = 'CENTER';
         else if (w.targetMap.endsWith('_GYM'))    ftype = 'GYM';
         else if (w.targetMap.endsWith('_HOUSE'))  ftype = 'HOUSE';
         else if (w.targetMap.endsWith('_LAB'))    ftype = 'LAB';
         else if (w.targetMap.endsWith('_SHOP'))   ftype = 'SHOP';
-        if (ftype) {
-          const _bldSeed = w.x * 7 + w.y * 13;
-          DG.SpriteRenderer.drawBuildingSign(ctx, wpx, wpy, T, ftype, _bldSeed, window.DG_MAP_THEME || 'NORMAL', w.targetMap);
-          _drawnFacades.add(w.targetMap);
-        }
+        if (!ftype) continue;
+        if (_drawn.some(d => Math.abs(d.x - w.x) <= 2 && Math.abs(d.y - w.y) <= 2)) continue;
+        _drawn.push({ x: w.x, y: w.y });
+        const wpx = w.x * T - camX;
+        const wpy = w.y * T - camY;
+        if (wpx < -T * 4 || wpx > W + T * 3 || wpy < -T * 4 || wpy > H + T) continue;
+        const _bldSeed = w.x * 7 + w.y * 13;
+        DG.SpriteRenderer.drawBuildingSign(ctx, wpx, wpy, T, ftype, _bldSeed, window.DG_MAP_THEME || 'NORMAL', w.targetMap);
       }
     }
 
