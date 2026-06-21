@@ -862,6 +862,74 @@ FLOROSAUR: _sp('FLOROSAUR','Florosaur',['FAIRY','GRASS'],
   'A living garden. Poets say its song can make flowers bloom in winter.',
   '#C2185B','#FF80AB'),
 
+// Chain 22b — Fairy (crystal/gem Protoceratops) — Fairy-gym line
+GEMLET: _sp('GEMLET','Gemlet',['FAIRY'],
+  {hp:48,atk:46,def:55,spAtk:58,spDef:60,spd:50},
+  _ls(
+    1,'FAIRY_WIND',1,'TACKLE',5,'DISARMING_VOICE',9,'DRAINING_KISS',
+    13,'CHARM',17,'DAZZLING_GLEAM',22,'PIXIE_STRIKE',28,'PLAY_ROUGH'
+  ),
+  'GEMHORN',18,null,'Cute Charm','30% chance to infatuate foes that make contact',
+  130,52,'MEDIUM',false,false,
+  'Its frill is studded with raw gemstones that chime softly when it is happy.',
+  '#9FE7F5','#5AC8E0'),
+
+GEMHORN: _sp('GEMHORN','Gemhorn',['FAIRY'],
+  {hp:62,atk:58,def:72,spAtk:78,spDef:80,spd:62},
+  _ls(
+    1,'FAIRY_WIND',1,'DISARMING_VOICE',9,'DRAINING_KISS',13,'CHARM',
+    18,'DAZZLING_GLEAM',24,'PIXIE_STRIKE',30,'PLAY_ROUGH',38,'SPIRIT_BREAK'
+  ),
+  'PRISMACERA',36,'GEMLET','Cute Charm','30% chance to infatuate foes that make contact',
+  75,120,'MEDIUM',false,false,
+  'The gems on its crown refract light into dazzling rainbows that mesmerise prey.',
+  '#7FD8EE','#3FB0D8'),
+
+PRISMACERA: _sp('PRISMACERA','Prismacera',['FAIRY'],
+  {hp:80,atk:74,def:95,spAtk:108,spDef:100,spd:70},
+  _ls(
+    1,'FAIRY_WIND',1,'DAZZLING_GLEAM',18,'PIXIE_STRIKE',24,'PLAY_ROUGH',
+    30,'SPIRIT_BREAK',40,['MOONBLAST','FLEUR_CANNON','LIGHT_OF_RUIN','MOONFORCE'],48,'CALM_MIND',54,'DRAGON_DANCE'
+  ),
+  null,null,'GEMHORN','Pixilate','Normal-type moves become Fairy-type and gain 20% power',
+  25,238,'MEDIUM',false,false,
+  'A crystalline titan whose prismatic frill can focus moonlight into a devastating beam.',
+  '#56C6E6','#2E8FC0'),
+
+// Chain 22c — Fairy/Flying (pixie-moth Pterosaur) — Fairy-gym line
+WISPLET: _sp('WISPLET','Wisplet',['FAIRY'],
+  {hp:44,atk:42,def:46,spAtk:60,spDef:54,spd:62},
+  _ls(
+    1,'FAIRY_WIND',1,'GROWL',5,'DISARMING_VOICE',9,'DRAINING_KISS',
+    13,'QUICK_ATTACK',17,'DAZZLING_GLEAM',22,'AIR_SLASH',28,'PIXIE_STRIKE'
+  ),
+  'FLUTTERHORN',18,null,'Cute Charm','30% chance to infatuate foes that make contact',
+  130,54,'FAST',false,false,
+  'A tiny winged sprite that drifts on the breeze like a glowing wisp at dusk.',
+  '#F3C7FF','#D79CFF'),
+
+FLUTTERHORN: _sp('FLUTTERHORN','Flutterhorn',['FAIRY','FLYING'],
+  {hp:58,atk:54,def:58,spAtk:80,spDef:70,spd:84},
+  _ls(
+    1,'FAIRY_WIND',1,'AIR_SLASH',13,'QUICK_ATTACK',18,'DAZZLING_GLEAM',
+    24,'WING_ATTACK',30,'PIXIE_STRIKE',36,'AERIAL_ACE',42,'PLAY_ROUGH'
+  ),
+  'SERAPHWING',36,'WISPLET','Cute Charm','30% chance to infatuate foes that make contact',
+  75,122,'FAST',false,false,
+  'Its luminous wings scatter fairy dust that lulls would-be predators to sleep.',
+  '#E6A8FF','#C77DFF'),
+
+SERAPHWING: _sp('SERAPHWING','Seraphwing',['FAIRY','FLYING'],
+  {hp:76,atk:70,def:74,spAtk:106,spDef:92,spd:104},
+  _ls(
+    1,'FAIRY_WIND',1,'AIR_SLASH',18,'DAZZLING_GLEAM',24,'WING_ATTACK',
+    30,'AERIAL_ACE',38,'PIXIE_STRIKE',44,['MOONBLAST','FLEUR_CANNON','MOONFORCE','DAZZLING_GLEAM'],52,'CALM_MIND',58,'HURRICANE'
+  ),
+  null,null,'FLUTTERHORN','Pixilate','Normal-type moves become Fairy-type and gain 20% power',
+  25,242,'FAST',false,false,
+  'Six radiant wings carry it above the clouds; sailors call it the dawn-herald.',
+  '#D98CFF','#B45CF5'),
+
 // Chain 23 — Rock (heavy Sauropod)
 ROCKLETT: _sp('ROCKLETT','Rocklett',['ROCK'],
   {hp:55,atk:65,def:72,spAtk:28,spDef:52,spd:30},
