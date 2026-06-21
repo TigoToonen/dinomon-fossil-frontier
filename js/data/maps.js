@@ -1514,7 +1514,7 @@ ROUTE_7A: {
     [66,66,66,66,66,66,66,66,66, 2, 2,66,66,66,66,66,66,66,66,66], // 13 CHOKE
     [66, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2,66], // 14 open
     [66, 1, 1, 1, 1,67, 1, 1, 1, 0, 0, 1, 1, 1, 1,67, 1, 1, 1,66], // 15 signs
-    [66, 2, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2,66], // 16 open
+    [66,68, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2,66], // 16 Safari Gate door (left)
     [66, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2,66], // 17 grass
     [66, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2,66], // 18 dense
     [66, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,66], // 19 TRAINER 2 (Dex x:14)
@@ -1532,8 +1532,11 @@ ROUTE_7A: {
     { x:10, y:0,  targetMap:'STONEHAVEN_CITY', targetX:18, targetY:10 },
     { x:9,  y:27, targetMap:'ROUTE_7B',        targetX:9,  targetY:1  },
     { x:10, y:27, targetMap:'ROUTE_7B',        targetX:10, targetY:1  },
+    { x:1,  y:16, targetMap:'SAFARI_GATE',     targetX:5,  targetY:7  }, // Safari Zone gate
   ],
   npcs:[
+    { id:'R7A_SAFARI_SIGN', name:'Park Ranger', x:2, y:15, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:["SAFARI ZONE to the west — a nature reserve where ancient 'living fossil' DinoMon roam.","Enter through the gate door."], onInteract:null },
     { id:'R7A_TRAINER1', name:'Wave', x:5, y:7, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_4'], trainerRef:'SWIMMER_WAVE' },
     { id:'R7A_TRAINER2', name:'Tide', x:14, y:19, facing:'LEFT', spriteKey:'NPC_MAN',
@@ -5070,6 +5073,105 @@ DG.MAPS.COMPOUND_BANK = {
       movementType:'STATIONARY', dialogue:["The DinoFund pays interest for every step you take while money is deposited.","The bigger your balance, the more each step earns. That's compounding!"], onInteract:null },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+// ═══════════════════════════════════════════════════════════════
+// SAFARI ZONE — nature reserve reached from Route 7A (Eastern Cliffs)
+//   Gate building → grass reserve full of "living fossil" DinoMon.
+//   A Strength boulder seals the deepest grove (Gold Teeth quest reward).
+// ═══════════════════════════════════════════════════════════════
+DG.MAPS.SAFARI_GATE = {
+  id:'SAFARI_GATE', name:'Safari Gate', width:11, height:9,
+  music:'TOWN_UPBEAT', isIndoor:true, isCave:false,
+  tiles:[
+    [65,65,65,65,65,68,65,65,65,65,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65,74,74,74, 5, 5, 5,74,74,74,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65,65,65,65,65,68,65,65,65,65,65],
+  ],
+  warps:[
+    { x:5, y:0, targetMap:'SAFARI_ZONE', targetX:9, targetY:13 },
+    { x:5, y:8, targetMap:'ROUTE_7A',    targetX:2, targetY:16 },
+  ],
+  npcs:[
+    { id:'SAFARI_WARDEN', name:'Warden Baxter', x:3, y:2, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', onInteract:'SIDE_QUEST',
+      questFlag:'SAFARI_TEETH_QUEST', questDoneFlag:'SAFARI_TEETH_DONE',
+      questCheck:{ type:'HAS_ITEM', value:'GOLD_TEETH' },
+      questIntro:["Hrmph! ...Oh! A visitor at my Safari Gate!",
+        "I'm the Warden of this reserve. Trouble is — I've gone and lost my GOLD TEETH in the tall grass!",
+        "Find 'em for me and I'll reward you grandly. Mind the great boulder deep in the reserve — only STRENGTH will budge it."],
+      questReminder:["Hrmph! Any sign of my Gold Teeth?",
+        "They're past the heavy boulder in the back grove, I reckon. A DinoMon with Strength could shove it aside."],
+      questSuccess:["My Gold Teeth! You found 'em! *clack clack clack*",
+        "Marvellous! A true ranger, you are. Take these — they're worthy of you!"],
+      questThanks:["*clack clack* Best teeth in the region, all thanks to you!"],
+      reward:{ item:'AMBERBALL', qty:5, money:5000 } },
+    { id:'SAFARI_ATTENDANT', name:'Attendant', x:8, y:2, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:[
+        "Welcome to the Safari Zone! Ancient 'living fossil' DinoMon roam the grass here.",
+        "Through the north door lies the reserve. Step lightly — and good luck catching!"], onInteract:null },
+    { id:'SAFARI_INFO', name:'Ranger', x:6, y:6, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'WANDER', dialogue:[
+        "Fossil DinoMon like Amberlite and Tarclaw are common in here — rare finds anywhere else!",
+        "The deepest grove is walled off by a boulder. You'll need Strength to reach it."], onInteract:null },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+DG.MAPS.SAFARI_ZONE = {
+  id:'SAFARI_ZONE', name:'Safari Zone', width:20, height:16,
+  music:'ROUTE_CALM', isIndoor:false, isCave:false,
+  tiles:[
+    [70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,70, 2, 2, 2, 2, 2,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,70, 2, 2, 2, 2, 2,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,86, 2, 2, 2, 2, 2,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,70, 2, 2, 2, 2, 2,70],
+    [70, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,70,70,70,70,70,70,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2,70],
+    [70, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2,70],
+    [70, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,70],
+    [70,70,70,70,70,70,70,70,70,68,70,70,70,70,70,70,70,70,70,70],
+  ],
+  warps:[
+    { x:9, y:15, targetMap:'SAFARI_GATE', targetX:5, targetY:1 },
+  ],
+  npcs:[
+    { id:'SZ_RANGER', name:'Reserve Ranger', x:4, y:6, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'WANDER', dialogue:[
+        "Shh — Aerolith are skittish. They only show in the deep grass.",
+        "That boulder up north? Push it with Strength to reach the warden's lost grove."], onInteract:null },
+  ],
+  items:[
+    { x:2,  y:2,  id:'FULLHEAL' },
+    { x:17, y:13, id:'SUPERBALL', qty:5 },
+    { x:6,  y:8,  id:'MAX_REPEL', hidden:true },
+    { x:4,  y:12, id:'RARE_CANDY', hidden:true },
+    // Behind the Strength boulder (north-east grove):
+    { x:16, y:2, id:'GOLD_TEETH' },
+    { x:15, y:3, id:'MAXREVIVE' },
+    { x:17, y:1, id:'RARE_CANDY' },
+  ],
+  encounterTable:{ grass:[
+    { speciesId:'AMBERLITE', minLv:30, maxLv:34, rate:28 },
+    { speciesId:'TARCLAW',   minLv:30, maxLv:34, rate:24 },
+    { speciesId:'CRYOSHELL', minLv:31, maxLv:35, rate:20 },
+    { speciesId:'NAUTILON',  minLv:31, maxLv:35, rate:18 },
+    { speciesId:'AEROLITH',  minLv:33, maxLv:37, rate:10 },
+  ], water:[]},
+  events:[],
 };
 
 // ═══════════════════════════════════════════════════════════════

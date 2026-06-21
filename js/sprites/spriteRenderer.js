@@ -38,6 +38,7 @@ DG.SpriteRenderer = (function () {
     [80]: '#c8a882', // BED frame
     [81]: '#5D3A1A', // BOOKSHELF
     [82]: '#2E7D32', // PLANT pot
+    [86]: '#2d5a1b', // STRENGTH_BOULDER (mossy ground base)
   };
 
   // Seeded pseudo-random per tile position (deterministic, no flicker)
@@ -741,6 +742,36 @@ DG.SpriteRenderer = (function () {
       // Bright specular dot
       ctx.fillStyle = 'rgba(255,255,255,0.35)';
       ctx.beginPath(); ctx.arc(rx - 5, ry - 5, 2, 0, Math.PI*2); ctx.fill();
+
+    } else if (tileId === 86) {
+      // ── Strength Boulder — large heavy rock that needs HM Strength ──
+      const bcx = px + T/2, bcy = py + T*0.55;
+      const bw = T * 0.92, bh = T * 0.8;
+      // Ground shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.beginPath(); ctx.ellipse(bcx + 2, bcy + bh/2 - 1, bw/2, 4, 0, 0, Math.PI*2); ctx.fill();
+      // Dark outline
+      ctx.fillStyle = '#3c3a36';
+      ctx.beginPath(); ctx.ellipse(bcx, bcy, bw/2 + 1, bh/2 + 1, 0, 0, Math.PI*2); ctx.fill();
+      // Main body
+      ctx.fillStyle = '#7a756c';
+      ctx.beginPath(); ctx.ellipse(bcx, bcy, bw/2, bh/2, 0, 0, Math.PI*2); ctx.fill();
+      // Shadow side (bottom-right)
+      ctx.fillStyle = 'rgba(60,56,50,0.45)';
+      ctx.beginPath(); ctx.ellipse(bcx + 4, bcy + 3, bw/2 - 3, bh/2 - 3, 0.3, 0, Math.PI*2); ctx.fill();
+      // Cracks
+      ctx.strokeStyle = '#4a463f'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(bcx - 5, bcy - bh/3); ctx.lineTo(bcx - 1, bcy); ctx.lineTo(bcx - 4, bcy + bh/3);
+      ctx.moveTo(bcx + 2, bcy - bh/4); ctx.lineTo(bcx + 6, bcy + 2);
+      ctx.stroke();
+      // Highlight top-left
+      ctx.fillStyle = '#9d978c';
+      ctx.beginPath(); ctx.ellipse(bcx - 6, bcy - 6, bw/5, bh/5, -0.3, 0, Math.PI*2); ctx.fill();
+      // Moss flecks
+      ctx.fillStyle = 'rgba(90,138,60,0.55)';
+      ctx.fillRect(bcx - 8, bcy + 2, 3, 2);
+      ctx.fillRect(bcx + 5, bcy - 4, 2, 2);
 
     } else if (tileId === 68) {
       // ── Door — themed with panels, depth shadow, handle ────────────

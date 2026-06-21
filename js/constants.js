@@ -145,6 +145,7 @@ DG.TILE = {
   WATERFALL:    83, // waterfall (HM Waterfall needed to climb)
   BREAKABLE_ROCK: 84, // smashable rock (HM Rock Smash)
   CUT_TREE:     85, // cuttable small tree (HM Cut)
+  STRENGTH_BOULDER: 86, // heavy boulder (HM Strength needed to push aside)
   DEEP_WATER_TILE: 87, // requires Surf to cross (solid without surfing)
   FISHING_SPOT: 88, // rippling water — higher bite rate
 };
@@ -350,6 +351,7 @@ DG.ITEMS = {
   FULLHEAL:     { name: 'Full Heal',     price: 600, type: 'CURE', cures: 'ALL' },
   AMBERF:       { name: 'Amber Fragment',price: 0,   type: 'KEY' },
   FOSSIL_KEY:   { name: 'Fossil Key',    price: 0,   type: 'KEY' },
+  GOLD_TEETH:   { name: 'Gold Teeth',    price: 0,   type: 'KEY' }, // Safari Warden quest item
   // Repels
   REPEL:        { name: 'Repel',         price: 350, type: 'REPEL', steps: 100 },
   SUPER_REPEL:  { name: 'Super Repel',   price: 500, type: 'REPEL', steps: 200 },

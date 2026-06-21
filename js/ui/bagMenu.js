@@ -64,7 +64,7 @@ DG.BagMenu = (function () {
   ];
   const REPELS    = ['REPEL','SUPER_REPEL','MAX_REPEL'];
   const KEY_ITEMS = ['OLD_ROD','GOOD_ROD','SUPER_ROD','RUNNING_SHOES','BIKE',
-    'AMBER_FOSSIL','TAR_FOSSIL','ICE_FOSSIL','SEA_FOSSIL','SKY_FOSSIL'];
+    'AMBER_FOSSIL','TAR_FOSSIL','ICE_FOSSIL','SEA_FOSSIL','SKY_FOSSIL','GOLD_TEETH'];
 
   // ── Item display metadata ────────────────────────────────────
   const ITEM_DEFS = {
@@ -93,6 +93,7 @@ DG.BagMenu = (function () {
     ICE_FOSSIL:       { name:'Ice Fossil',      desc:'An Ice/Rock fossil. Carry it, then revive it at a Fossil Lab.' },
     SEA_FOSSIL:       { name:'Sea Fossil',      desc:'A Water/Rock fossil. Carry it, then revive it at a Fossil Lab.' },
     SKY_FOSSIL:       { name:'Sky Fossil',      desc:'A Flying/Rock fossil. Carry it, then revive it at a Fossil Lab.' },
+    GOLD_TEETH:       { name:'Gold Teeth',      desc:"The Safari Warden's lost dentures. Return them to him at the Safari Gate." },
     // Repels
     REPEL:       { name:'Repel',        desc:'Repels weak wild DinoMons for 100 steps.' },
     SUPER_REPEL: { name:'Super Repel',  desc:'Repels weak wild DinoMons for 200 steps.' },

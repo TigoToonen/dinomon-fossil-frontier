@@ -354,6 +354,18 @@ DG.Overworld = (function () {
       return;
     }
 
+    // HM: Strength (tile 86=STRENGTH_BOULDER)
+    if (tile === DG.TILE.STRENGTH_BOULDER) {
+      if (typeof DG.FieldMoves !== 'undefined') {
+        DG.FieldMoves.tryStrength(_gs, () => {
+          // Push the boulder aside (replace with FLOOR)
+          if (_mapData.tiles[fy]) _mapData.tiles[fy][fx] = DG.TILE.FLOOR;
+          _blocked = false;
+        }, () => { _blocked = false; });
+      }
+      return;
+    }
+
     // HM: Waterfall (tile 83=WATERFALL)
     if (tile === DG.TILE.WATERFALL) {
       if (typeof DG.FieldMoves !== 'undefined') {
