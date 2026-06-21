@@ -491,6 +491,28 @@ DG.STORY.DIALOGUES = {
     "If you beat the commander, you might be able to free it.",
   ],
 
+  BEACON_KEEPER: [
+    "Welcome to Beacon Hamlet, traveler. I'm the keeper of the old storm-light.",
+    "For a hundred years this beacon has guided lost trainers home through the cliffs.",
+    "Legend says the first keeper sealed her greatest treasure in the tower — behind a boulder no ordinary soul could move.",
+    "If your DinoMons have learned STRENGTH, perhaps the beacon has waited all this time... for you.",
+  ],
+  BEACON_KEEPER_DONE: [
+    "So you reached the old keeper's vault. The beacon chose well.",
+    "Use that ball wisely — some bonds are worth never letting slip away.",
+  ],
+  BEACON_LORE_1: [
+    "On stormy nights you can hear the beacon DinoMon singing the ships home.",
+    "My grandmother swore it was a Seraphwing. I've never seen it myself.",
+  ],
+  BEACON_LORE_2: [
+    "The keeper never leaves the tower. Says the light would go dark without her.",
+    "Strange folk, the keepers. But this hamlet would be lost rocks without them.",
+  ],
+  BEACON_VAULT: [
+    "A dusty alcove, untouched for a century. A single perfect sphere rests on a pedestal...",
+  ],
+
   DIRECTOR_CLADE_1: [
     "...",
     "So you've arrived. I expected you sooner.",

@@ -1741,7 +1741,7 @@ ROUTE_8A: {
     [66,66,66,66,66,66,66,66,66, 2, 2,66,66,66,66,66,66,66,66,66], // 13 CHOKE
     [66, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2,66], // 14 open
     [66, 1, 1, 1, 1,67, 1, 1, 1, 0, 0, 1, 1, 1, 1,67, 1, 1, 1,66], // 15 signs
-    [66, 2, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2,66], // 16 open
+    [66, 2, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1,68,66], // 16 Beacon Hamlet door (right)
     [66, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2,66], // 17 grass
     [66, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2,66], // 18 dense
     [66, 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,66], // 19 denser
@@ -1759,12 +1759,14 @@ ROUTE_8A: {
     [66,66,66,66,66,66,66,66,66, 0, 0,66,66,66,66,66,66,66,66,66], // 31 bottom border
   ],
   warps:[
+    { x:18, y:16, targetMap:'BEACON_HAMLET', targetX:1, targetY:5 }, // Beacon Hamlet (coastal)
     { x:9,  y:0,  targetMap:'CRESTFALL_TOWN', targetX:9,  targetY:1 },
     { x:10, y:0,  targetMap:'CRESTFALL_TOWN', targetX:10, targetY:1 },
     { x:9,  y:31, targetMap:'ROUTE_8B',       targetX:9,  targetY:1  },
     { x:10, y:31, targetMap:'ROUTE_8B',       targetX:10, targetY:1  },
   ],
   npcs:[
+    { id:'R8A_BEACON_SIGN', name:'Signpost', x:16, y:15, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY', dialogue:["BEACON HAMLET to the east - a harbor village with an old lighthouse."], onInteract:null },
     { id:'R8A_TRAINER1', name:'Kai', x:5, y:9, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_4'], trainerRef:'SNOWBOARDER_KAI' },
     { id:'R8A_TRAINER2', name:'Zola', x:14, y:21, facing:'LEFT', spriteKey:'NPC_WOMAN',
@@ -5261,6 +5263,78 @@ DG.MAPS.TE_HIDEOUT_2 = {
     { x:1, y:10, id:'MAXREVIVE' },
     { x:12, y:1, id:'RARE_CANDY', hidden:true },
     { x:1, y:1, id:'DAWN_STONE' },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+// ═══════════════════════════════════════════════════════════════
+// BEACON HAMLET — coastal storytelling town off Route 8A (Storm Cliff)
+//   A lighthouse whose vault holds a MasterBall, sealed behind a
+//   Strength boulder. Lore-heavy little harbor village.
+// ═══════════════════════════════════════════════════════════════
+DG.MAPS.BEACON_HAMLET = {
+  id:'BEACON_HAMLET', name:'Beacon Hamlet', width:18, height:13,
+  music:'TOWN_CALM', isIndoor:false, isCave:false,
+  tiles:[
+    [66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66, 5, 5,65,65,65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66, 5, 5,65,65,65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66, 5, 5,65,68,65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
+    [68, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
+    [66,71,71,71,71,71,71,71,71,71,71,71,71,71,71,71,71,66],
+    [66, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,66],
+  ],
+  warps:[
+    { x:0, y:5, targetMap:'ROUTE_8A',         targetX:17, targetY:16 },
+    { x:4, y:4, targetMap:'BEACON_LIGHTHOUSE', targetX:5, targetY:9 },
+  ],
+  npcs:[
+    { id:'BH_HEAL', name:'Innkeeper', x:10, y:7, facing:'DOWN', spriteKey:'NPC_HEALER',
+      movementType:'STATIONARY', dialogue:['HEALER_GREET'], onInteract:'HEAL_PARTY' },
+    { id:'BH_LORE1', name:'Fisher', x:7, y:3, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'WANDER', dialogue:['BEACON_LORE_1'], onInteract:null },
+    { id:'BH_LORE2', name:'Old Sailor', x:13, y:9, facing:'LEFT', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:['BEACON_LORE_2'], onInteract:null },
+    { id:'BH_SIGN', name:'Sign', x:2, y:6, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:["BEACON HAMLET — last harbor before the open cliffs.","Climb the lighthouse and speak with the Keeper."], onInteract:null },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+DG.MAPS.BEACON_LIGHTHOUSE = {
+  id:'BEACON_LIGHTHOUSE', name:'Beacon Lighthouse', width:12, height:11,
+  music:'CENTER_THEME', isIndoor:true, isCave:false,
+  tiles:[
+    [65,65,65,65,65,65,65,65,65,65,65,65],
+    [65, 5, 5, 5, 5, 5,65, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5,65, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5,65, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5,86, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5,65, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5,65, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5,65, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5,65, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5,65, 5, 5, 5, 5,65],
+    [65,65,65,65,65,68,65,65,65,65,65,65],
+  ],
+  warps:[
+    { x:5, y:10, targetMap:'BEACON_HAMLET', targetX:4, targetY:5 },
+  ],
+  npcs:[
+    { id:'BL_KEEPER', name:'Beacon Keeper', x:3, y:2, facing:'DOWN', spriteKey:'NPC_PROF',
+      movementType:'STATIONARY', dialogue:['BEACON_KEEPER'], onInteract:null },
+    { id:'BL_APPRENTICE', name:'Apprentice', x:3, y:8, facing:'DOWN', spriteKey:'NPC_KID',
+      movementType:'STATIONARY', dialogue:["The keeper's vault is sealed by that boulder.","Only a DinoMon with STRENGTH could ever shift it. We gave up generations ago."], onInteract:null },
+  ],
+  items:[
+    { x:9, y:2, id:'MASTERBALL' },
+    { x:9, y:8, id:'LIFE_ORB' },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 };
