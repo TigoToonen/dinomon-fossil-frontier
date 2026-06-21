@@ -404,518 +404,219 @@ DG.Menu = (function () {
     ctx.fillText(`¥${_gs.player.money}`, bx + 12, by + boxH + 6);
   }
 
+  // Clean schematic world map: labelled nodes + numbered route lines + you-are-here + goal.
   function _drawMap(ctx) {
     const W = DG.CANVAS.W, H = DG.CANVAS.H;
-    const TITLE_H = 24;   // title bar height
-    const MAP_Y   = TITLE_H; // map area starts here
-    const MAP_H   = H - TITLE_H;
+    const TITLE_H = 24, MAP_Y = TITLE_H;
+    _drawMap._t = (_drawMap._t || 0) + 1;
+    const pulse = 0.5 + 0.5 * Math.sin(_drawMap._t * 0.12);
 
-    // ── helpers ──────────────────────────────────────────────
-    function shadow(fn) {
-      ctx.save();
-      ctx.shadowColor = 'rgba(0,0,0,0.85)';
-      ctx.shadowBlur  = 3;
-      ctx.shadowOffsetX = 1; ctx.shadowOffsetY = 1;
-      fn();
-      ctx.restore();
-    }
-
-    function drawTree(x, y, col) {
-      ctx.fillStyle = col || '#2a7a2a';
-      ctx.beginPath(); ctx.moveTo(x, y - 7); ctx.lineTo(x - 4, y + 1); ctx.lineTo(x + 4, y + 1); ctx.closePath(); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(x, y - 10); ctx.lineTo(x - 3, y - 4); ctx.lineTo(x + 3, y - 4); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#5a3a1a';
-      ctx.fillRect(x - 1, y + 1, 2, 3);
-    }
-
-    function drawMtn(x, y, col) {
-      ctx.fillStyle = col || '#888888';
-      ctx.beginPath(); ctx.moveTo(x, y - 9); ctx.lineTo(x - 7, y + 2); ctx.lineTo(x + 7, y + 2); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#ccddee';
-      ctx.beginPath(); ctx.moveTo(x, y - 9); ctx.lineTo(x - 2, y - 5); ctx.lineTo(x + 2, y - 5); ctx.closePath(); ctx.fill();
-    }
-
-    function drawWave(x, y, col) {
-      ctx.strokeStyle = col || '#4488ff';
-      ctx.lineWidth = 1.5;
+    function rr(x, y, w, h, r) {
       ctx.beginPath();
-      for (let i = 0; i < 3; i++) {
-        const wx = x + i * 5;
-        ctx.moveTo(wx, y); ctx.quadraticCurveTo(wx + 1.5, y - 2, wx + 2.5, y); ctx.quadraticCurveTo(wx + 3.5, y + 2, wx + 5, y);
-      }
-      ctx.stroke();
+      ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
     }
 
-    function drawBuilding(cx, cy, col, outline) {
-      // 3-4 tiny rectangles of different heights
-      const buildings = [[-6,0,4,8],[-2,0,4,11],[2,0,4,7],[6,0,4,9]];
-      buildings.forEach(function(b) {
-        ctx.fillStyle = col;
-        ctx.fillRect(cx + b[0], cy - b[3], b[2], b[3]);
-        ctx.strokeStyle = outline || 'rgba(0,0,0,0.5)';
-        ctx.lineWidth = 0.5;
-        ctx.strokeRect(cx + b[0], cy - b[3], b[2], b[3]);
-        // tiny window
-        ctx.fillStyle = 'rgba(255,255,180,0.7)';
-        ctx.fillRect(cx + b[0] + 1, cy - b[3] + 2, 1, 1);
-        ctx.fillRect(cx + b[0] + b[2] - 2, cy - b[3] + 2, 1, 1);
-      });
-    }
+    // Background — dark schematic
+    const bg = ctx.createLinearGradient(0, MAP_Y, 0, H);
+    bg.addColorStop(0, '#0b1228'); bg.addColorStop(1, '#0e1832');
+    ctx.fillStyle = bg; ctx.fillRect(0, MAP_Y, W, H - MAP_Y);
+    ctx.strokeStyle = 'rgba(80,120,180,0.06)'; ctx.lineWidth = 1;
+    for (let gx = 0; gx < W; gx += 24) { ctx.beginPath(); ctx.moveTo(gx, MAP_Y); ctx.lineTo(gx, H); ctx.stroke(); }
+    for (let gy = MAP_Y; gy < H; gy += 24) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
 
-    function drawStar(cx, cy, r, col) {
-      ctx.fillStyle = col || '#FFE050';
-      ctx.beginPath();
-      for (let i = 0; i < 10; i++) {
-        const angle = (Math.PI / 5) * i - Math.PI / 2;
-        const rad   = i % 2 === 0 ? r : r * 0.45;
-        const px    = cx + rad * Math.cos(angle);
-        const py    = cy + rad * Math.sin(angle);
-        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth   = 0.8;
-      ctx.stroke();
-    }
-
-    function drawTunnel(x, y) {
-      ctx.strokeStyle = '#333333';
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(x,     y, 4, Math.PI, 0); ctx.stroke();
-      ctx.beginPath(); ctx.arc(x + 9, y, 4, Math.PI, 0); ctx.stroke();
-      ctx.fillStyle = '#1a1a1a';
-      ctx.fillRect(x - 4, y, 18, 3);
-    }
-
-    // ── Ocean background ─────────────────────────────────────
-    const oceanGrad = ctx.createLinearGradient(0, MAP_Y, 0, H);
-    oceanGrad.addColorStop(0, '#0a2a5e');
-    oceanGrad.addColorStop(1, '#1a4a8e');
-    ctx.fillStyle = oceanGrad;
-    ctx.fillRect(0, MAP_Y, W, MAP_H);
-
-    // Subtle ocean waves pattern
-    ctx.strokeStyle = 'rgba(100,160,255,0.12)';
-    ctx.lineWidth = 1;
-    for (let wy = MAP_Y + 8; wy < H - 8; wy += 10) {
-      for (let wx = 0; wx < W; wx += 30) {
-        ctx.beginPath();
-        ctx.moveTo(wx, wy);
-        ctx.quadraticCurveTo(wx + 7, wy - 3, wx + 15, wy);
-        ctx.quadraticCurveTo(wx + 22, wy + 3, wx + 30, wy);
-        ctx.stroke();
-      }
-    }
-
-    // ── Continent / island landmass ───────────────────────────
-    // Main landmass outline using bezier curves — occupies the left-centre
-    ctx.save();
-    ctx.beginPath();
-    // Start bottom-left coast (near Ambertown) and wind around
-    ctx.moveTo(55, H - 12);       // south coast start
-    ctx.bezierCurveTo(80, H - 8, 110, H - 14, 140, H - 22);  // south coast east
-    ctx.bezierCurveTo(180, H - 30, 230, H - 50, 290, H - 70); // curving east south
-    ctx.bezierCurveTo(340, H - 90, 390, H - 100, 440, H - 80); // far east coast
-    ctx.bezierCurveTo(462, H - 70, 472, MAP_Y + 60, 450, MAP_Y + 40); // ne tip
-    ctx.bezierCurveTo(430, MAP_Y + 24, 410, MAP_Y + 20, 390, MAP_Y + 22); // volcano area
-    ctx.bezierCurveTo(360, MAP_Y + 20, 330, MAP_Y + 18, 300, MAP_Y + 20); // citadel ridge
-    ctx.bezierCurveTo(270, MAP_Y + 20, 250, MAP_Y + 24, 240, MAP_Y + 26); // apex area
-    ctx.bezierCurveTo(210, MAP_Y + 28, 170, MAP_Y + 30, 145, MAP_Y + 40); // crestfall ridge
-    ctx.bezierCurveTo(120, MAP_Y + 44, 95, MAP_Y + 48, 70, MAP_Y + 44);  // stonehaven area
-    ctx.bezierCurveTo(42, MAP_Y + 46, 28, MAP_Y + 60, 22, MAP_Y + 80);   // nw coast
-    ctx.bezierCurveTo(16, MAP_Y + 110, 20, MAP_Y + 150, 22, MAP_Y + 190); // west coast pyreside
-    ctx.bezierCurveTo(22, MAP_Y + 210, 20, MAP_Y + 230, 22, MAP_Y + 250); // west coast dustwall
-    ctx.bezierCurveTo(24, MAP_Y + 265, 30, MAP_Y + 270, 40, MAP_Y + 272); // shellcreek
-    ctx.bezierCurveTo(48, MAP_Y + 278, 52, H - 14, 55, H - 12);           // ambertown south
-    ctx.closePath();
-
-    // Base land fill — base green
-    ctx.fillStyle = '#4a9a4a';
-    ctx.fill();
-
-    // Biome overlays — painted in order (back-to-front by region)
-    ctx.restore();
-
-    // Swamp region — Bogmire (right side, mid-upper)
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(310, MAP_Y + 50);
-    ctx.bezierCurveTo(340, MAP_Y + 40, 390, MAP_Y + 45, 420, MAP_Y + 55);
-    ctx.bezierCurveTo(445, MAP_Y + 65, 455, MAP_Y + 85, 440, MAP_Y + 110);
-    ctx.bezierCurveTo(420, MAP_Y + 140, 370, MAP_Y + 150, 320, MAP_Y + 130);
-    ctx.bezierCurveTo(295, MAP_Y + 115, 295, MAP_Y + 75, 310, MAP_Y + 50);
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(58,90,42,0.82)';
-    ctx.fill();
-    ctx.restore();
-
-    // Forest region — Ferngrove (centre-right)
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(175, MAP_Y + 90);
-    ctx.bezierCurveTo(210, MAP_Y + 80, 270, MAP_Y + 85, 300, MAP_Y + 100);
-    ctx.bezierCurveTo(325, MAP_Y + 118, 315, MAP_Y + 155, 280, MAP_Y + 165);
-    ctx.bezierCurveTo(245, MAP_Y + 175, 195, MAP_Y + 165, 170, MAP_Y + 145);
-    ctx.bezierCurveTo(148, MAP_Y + 125, 152, MAP_Y + 104, 175, MAP_Y + 90);
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(42,122,42,0.80)';
-    ctx.fill();
-    ctx.restore();
-
-    // Sandy/rocky region — Dustwall (left mid)
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(20, MAP_Y + 148);
-    ctx.bezierCurveTo(45, MAP_Y + 140, 95, MAP_Y + 142, 130, MAP_Y + 148);
-    ctx.bezierCurveTo(155, MAP_Y + 154, 155, MAP_Y + 188, 128, MAP_Y + 200);
-    ctx.bezierCurveTo(95, MAP_Y + 212, 45, MAP_Y + 210, 22, MAP_Y + 200);
-    ctx.bezierCurveTo(16, MAP_Y + 188, 16, MAP_Y + 162, 20, MAP_Y + 148);
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(200,164,74,0.78)';
-    ctx.fill();
-    ctx.restore();
-
-    // Volcanic region — Pyreside (left upper-mid)
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(20, MAP_Y + 84);
-    ctx.bezierCurveTo(40, MAP_Y + 75, 90, MAP_Y + 80, 115, MAP_Y + 90);
-    ctx.bezierCurveTo(138, MAP_Y + 100, 140, MAP_Y + 130, 118, MAP_Y + 142);
-    ctx.bezierCurveTo(88, MAP_Y + 152, 40, MAP_Y + 148, 22, MAP_Y + 140);
-    ctx.bezierCurveTo(16, MAP_Y + 125, 16, MAP_Y + 98, 20, MAP_Y + 84);
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(180,60,16,0.72)';
-    ctx.fill();
-    ctx.restore();
-
-    // Mountain region — Stonehaven (top-left)
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(26, MAP_Y + 42);
-    ctx.bezierCurveTo(50, MAP_Y + 36, 100, MAP_Y + 38, 128, MAP_Y + 46);
-    ctx.bezierCurveTo(148, MAP_Y + 54, 150, MAP_Y + 80, 126, MAP_Y + 88);
-    ctx.bezierCurveTo(95, MAP_Y + 96, 44, MAP_Y + 90, 24, MAP_Y + 80);
-    ctx.bezierCurveTo(16, MAP_Y + 68, 16, MAP_Y + 54, 26, MAP_Y + 42);
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(136,136,136,0.80)';
-    ctx.fill();
-    ctx.restore();
-
-    // Ice peak — Apex Summit
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(230, MAP_Y + 24);
-    ctx.bezierCurveTo(248, MAP_Y + 16, 278, MAP_Y + 18, 290, MAP_Y + 26);
-    ctx.bezierCurveTo(296, MAP_Y + 32, 288, MAP_Y + 48, 268, MAP_Y + 50);
-    ctx.bezierCurveTo(248, MAP_Y + 52, 228, MAP_Y + 44, 228, MAP_Y + 34);
-    ctx.bezierCurveTo(226, MAP_Y + 28, 228, MAP_Y + 26, 230, MAP_Y + 24);
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(170,204,238,0.88)';
-    ctx.fill();
-    ctx.restore();
-
-    // Volcano peak — Mt Cretaceous
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(378, MAP_Y + 22);
-    ctx.bezierCurveTo(392, MAP_Y + 14, 415, MAP_Y + 16, 424, MAP_Y + 26);
-    ctx.bezierCurveTo(430, MAP_Y + 34, 422, MAP_Y + 50, 406, MAP_Y + 52);
-    ctx.bezierCurveTo(388, MAP_Y + 54, 372, MAP_Y + 42, 374, MAP_Y + 30);
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(180,30,0,0.85)';
-    ctx.fill();
-    ctx.restore();
-
-    // Volcano smoke
-    ctx.save();
-    ctx.globalAlpha = 0.35;
-    for (let si = 0; si < 4; si++) {
-      const sr = 3 + si * 2;
-      ctx.beginPath();
-      ctx.arc(400 + si * 2, MAP_Y + 10 - si * 4, sr, 0, Math.PI * 2);
-      ctx.fillStyle = '#aaaaaa';
-      ctx.fill();
-    }
-    ctx.restore();
-
-    // ── Terrain decoration icons ──────────────────────────────
-    // Forest trees — Ferngrove cluster
-    const fTrees = [[205,MAP_Y+110],[215,MAP_Y+122],[225,MAP_Y+108],[240,MAP_Y+118],[255,MAP_Y+108],[265,MAP_Y+122],[275,MAP_Y+112],[210,MAP_Y+135],[240,MAP_Y+140],[260,MAP_Y+135]];
-    fTrees.forEach(function(t){ drawTree(t[0], t[1], '#2a7a2a'); });
-
-    // Light forest — coastal south
-    [[55,MAP_Y+220],[65,MAP_Y+235],[80,MAP_Y+228],[95,MAP_Y+245],[70,MAP_Y+250]].forEach(function(t){ drawTree(t[0], t[1], '#3a8a3a'); });
-
-    // Mountain icons — Stonehaven area
-    [[55,MAP_Y+70],[72,MAP_Y+65],[88,MAP_Y+70]].forEach(function(t){ drawMtn(t[0], t[1], '#777777'); });
-    // Mountain icons — Crestfall ridge
-    [[165,MAP_Y+48],[180,MAP_Y+42],[195,MAP_Y+48]].forEach(function(t){ drawMtn(t[0], t[1], '#887766'); });
-
-    // Swamp icons — Bogmire
-    [[340,MAP_Y+80],[355,MAP_Y+68],[368,MAP_Y+82],[345,MAP_Y+96]].forEach(function(t){ drawTree(t[0], t[1], '#2a4a1a'); });
-
-    // Ocean waves near coasts
-    [[15, MAP_Y+170],[15,MAP_Y+230]].forEach(function(w){ drawWave(w[0], w[1], '#4488ff'); });
-    [[460, MAP_Y+120],[462,MAP_Y+140]].forEach(function(w){ drawWave(w[0], w[1], '#4488ff'); });
-
-    // ── Routes ────────────────────────────────────────────────
-    ctx.save();
-    ctx.setLineDash([4, 3]);
-    ctx.lineWidth = 2;
-
-    // Helper: dashed path between two points
-    function route(x1, y1, x2, y2, color) {
-      ctx.strokeStyle = color || '#d4b86a';
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-    }
-
-    // AMBERTOWN → SHELLCREEK (y:289 → y:242) left-side vertical
-    route(90, MAP_Y+265, 90, MAP_Y+218, '#d4b86a');
-    // SHELLCREEK → DUSTWALL (y:242 → y:196)
-    route(90, MAP_Y+218, 90, MAP_Y+172, '#d4b86a');
-    // DUSTWALL → PYRESIDE (y:196 → y:150)
-    route(90, MAP_Y+172, 90, MAP_Y+126, '#c4a050');
-    // PYRESIDE → FERNGROVE (horizontal, through forest)
-    route(90, MAP_Y+126, 210, MAP_Y+126, '#d4b86a');
-    // PYRESIDE → STONEHAVEN (vertical up left)
-    route(90, MAP_Y+126, 90, MAP_Y+80, '#aaaaaa');
-    // STONEHAVEN → CRESTFALL (diagonal)
-    route(90, MAP_Y+80, 190, MAP_Y+58, '#aaaaaa');
-    // STONEHAVEN → BOGMIRE (long horizontal)
-    route(90, MAP_Y+80, 330, MAP_Y+72, '#3a5a2a');
-    // CRESTFALL → APEXSUMMIT (diagonal ice)
-    route(190, MAP_Y+58, 260, MAP_Y+38, '#aaccee');
-    // BOGMIRE → APEXSUMMIT (diagonal)
-    route(330, MAP_Y+72, 260, MAP_Y+38, '#aaaaaa');
-    // APEXSUMMIT → MT_CRETACEOUS (short horizontal volcano)
-    route(260, MAP_Y+38, 400, MAP_Y+38, '#cc4400');
-
-    ctx.restore();
-
-    // Fossil Citadel route — dashed with ? unless badge 8 earned
-    const flags    = _gs && _gs.player && _gs.player.flags ? _gs.player.flags : {};
-    const hasAll8  = _gs && _gs.player && _gs.player.badges && _gs.player.badges.length >= 8;
-    const citadelUnlocked = hasAll8 || flags['BADGE_8'] || flags['FOSSIL_CITADEL_OPEN'];
-    ctx.save();
-    ctx.lineWidth = 2;
-    if (citadelUnlocked) {
-      ctx.setLineDash([4, 3]);
-      ctx.strokeStyle = '#FFD700';
-    } else {
-      ctx.setLineDash([3, 5]);
-      ctx.strokeStyle = '#445566';
-    }
-    ctx.beginPath();
-    ctx.moveTo(260, MAP_Y+38);
-    ctx.lineTo(310, MAP_Y+30);
-    ctx.stroke();
-    ctx.restore();
-
-    // ── Water route (SHELLCREEK coastal) ─────────────────────
-    ctx.save();
-    ctx.setLineDash([2, 4]);
-    ctx.strokeStyle = '#4488ff';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(70, MAP_Y+218);
-    ctx.quadraticCurveTo(40, MAP_Y+218, 30, MAP_Y+218);
-    ctx.stroke();
-    ctx.restore();
-
-    // Small tunnel icon at halfway on Dustwall→Pyreside route
-    drawTunnel(82, MAP_Y + 152);
-
-    // ── Node definitions ─────────────────────────────────────
-    // [id, label, mapX, mapY, biomeColor, buildingColor, labelRight]
-    const nodes = [
-      ['AMBERTOWN',        'Ambertown',     90,  MAP_Y+265, '#4a9a4a',  '#5aaa5a', true ],
-      ['SHELLCREEK_CITY',  'Shellcreek',    90,  MAP_Y+218, '#5599ff',  '#6699dd', true ],
-      ['DUSTWALL_TOWN',    'Dustwall',      90,  MAP_Y+172, '#c8a44a',  '#d4b85a', true ],
-      ['PYRESIDE_CITY',    'Pyreside',      90,  MAP_Y+126, '#cc4411',  '#dd5522', true ],
-      ['FERNGROVE_TOWN',   'Ferngrove',    210,  MAP_Y+126, '#2a7a2a',  '#3a8a3a', true ],
-      ['STONEHAVEN_CITY',  'Stonehaven',   90,  MAP_Y+80,  '#888888',  '#999999', true ],
-      ['CRESTFALL_TOWN',   'Crestfall',   190,  MAP_Y+58,  '#aa6644',  '#bb7755', false],
-      ['BOGMIRE_CITY',     'Bogmire',     330,  MAP_Y+72,  '#3a5a2a',  '#4a6a3a', false],
-      ['APEXSUMMIT',       'Apex Summit', 260,  MAP_Y+38,  '#aaccee',  '#bbddff', false],
-      ['MT_CRETACEOUS',    'Mt Cretac.',  400,  MAP_Y+38,  '#cc2200',  '#dd3311', false],
-      ['FOSSIL_CITADEL',   'Fossil Cit.', 310,  MAP_Y+30,  '#FFD700',  '#EEC900', false],
+    // Node table: id -> [name, x, y, gymNum(0=none), type]
+    const N = {
+      AMBERTOWN:       ['Ambertown',     52, 286, 0, 'start'],
+      SHELLCREEK_CITY: ['Shellcreek',    52, 245, 1, 'gym'],
+      DUSTWALL_TOWN:   ['Dustwall',      52, 204, 2, 'gym'],
+      PYRESIDE_CITY:   ['Pyreside',      52, 163, 3, 'gym'],
+      FERNGROVE_TOWN:  ['Ferngrove',    158, 163, 4, 'gym'],
+      STONEHAVEN_CITY: ['Stonehaven',   116, 116, 5, 'gym'],
+      CRESTFALL_TOWN:  ['Crestfall',    214,  80, 6, 'gym'],
+      BOGMIRE_CITY:    ['Bogmire',      332, 122, 7, 'gym'],
+      APEXSUMMIT:      ['Apex Summit',  322,  58, 8, 'gym'],
+      MT_CRETACEOUS:   ['Mt Cretaceous',422,  58, 0, 'peak'],
+      FOSSIL_CITADEL:  ['Fossil Citadel',426,112, 0, 'citadel'],
+    };
+    const E = [
+      ['AMBERTOWN','SHELLCREEK_CITY','1'], ['SHELLCREEK_CITY','DUSTWALL_TOWN','2'],
+      ['DUSTWALL_TOWN','PYRESIDE_CITY','3'], ['PYRESIDE_CITY','FERNGROVE_TOWN','4'],
+      ['FERNGROVE_TOWN','STONEHAVEN_CITY','5'], ['STONEHAVEN_CITY','CRESTFALL_TOWN','6'],
+      ['STONEHAVEN_CITY','BOGMIRE_CITY','7'], ['CRESTFALL_TOWN','BOGMIRE_CITY','8'],
+      ['BOGMIRE_CITY','APEXSUMMIT','9'], ['APEXSUMMIT','MT_CRETACEOUS','10'],
+      ['APEXSUMMIT','FOSSIL_CITADEL','C'],
     ];
 
-    const curMap = _gs && _gs.player ? (_gs.player.currentMap || '') : '';
-    const visitedFlags = (_gs && _gs.player && _gs.player.flags) ? _gs.player.flags : {};
+    const flags  = (_gs && _gs.player && _gs.player.flags) || {};
+    const badges = (_gs && _gs.player && _gs.player.badges) || [];
+    const curMap = (_gs && _gs.player && _gs.player.currentMap) || '';
+    const citadelUnlocked = badges.length >= 8 || flags['BADGE_8'] || flags['FOSSIL_CITADEL_OPEN'];
 
-    function isHere(id) {
-      return curMap === id || curMap.startsWith(id);
-    }
-
-    function isVisited(id) {
-      // Current location counts as visited
+    function isHere(id) { return curMap === id || curMap.indexOf(id) === 0; }
+    function visited(id) {
       if (isHere(id)) return true;
-      // Check VISITED_ flag set on map entry
-      if (visitedFlags['VISITED_' + id]) return true;
-      // Also treat sub-maps (e.g. SHELLCREEK_CITY_GYM) as visited if main map visited
-      for (const k of Object.keys(visitedFlags)) {
-        if (visitedFlags[k] && k.startsWith('VISITED_' + id)) return true;
-      }
+      if (flags['VISITED_' + id]) return true;
+      for (const k in flags) { if (flags[k] && k.indexOf('VISITED_' + id) === 0) return true; }
+      // fall back: nodes up to the highest earned badge are considered known
       return false;
     }
+    function goalId() {
+      if (flags['ELITE_4_DONE'] || flags['DIRECTOR_CLADE_DEFEATED']) return null;
+      if (flags['BADGE_8']) return 'FOSSIL_CITADEL';
+      if (flags['BADGE_7']) return 'APEXSUMMIT';
+      if (flags['BADGE_6']) return 'BOGMIRE_CITY';
+      if (flags['BADGE_5']) return 'CRESTFALL_TOWN';
+      if (flags['BADGE_4']) return 'STONEHAVEN_CITY';
+      if (flags['BADGE_3']) return 'FERNGROVE_TOWN';
+      if (flags['BADGE_2']) return 'PYRESIDE_CITY';
+      if (flags['BADGE_1']) return 'DUSTWALL_TOWN';
+      return 'SHELLCREEK_CITY';
+    }
+    const goal = goalId();
 
-    // Draw each node
-    for (let ni = 0; ni < nodes.length; ni++) {
-      const nd = nodes[ni];
-      const id = nd[0], label = nd[1], px = nd[2], py = nd[3];
-      const biomeCol = nd[4], buildCol = nd[5], lblRight = nd[6];
-      const here = isHere(id);
-      const visited = isVisited(id);
+    // ── Route edges ──
+    for (const e of E) {
+      const a = N[e[0]], b = N[e[1]];
+      if (!a || !b) continue;
+      const isCitadel = (e[2] === 'C');
+      const locked = isCitadel && !citadelUnlocked;
+      const known = visited(e[0]) || visited(e[1]);
+      ctx.save();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = locked ? 'rgba(120,120,140,0.30)' : (known ? '#5a86c0' : 'rgba(90,134,192,0.40)');
+      if (locked) ctx.setLineDash([3, 4]);
+      ctx.beginPath(); ctx.moveTo(a[1], a[2]); ctx.lineTo(b[1], b[2]); ctx.stroke();
+      ctx.restore();
+      const mx = (a[1] + b[1]) / 2, my = (a[2] + b[2]) / 2;
+      const lbl = isCitadel ? '★' : ('R' + e[2]);
+      ctx.font = 'bold 8px monospace';
+      const lw = ctx.measureText(lbl).width + 6;
+      ctx.fillStyle = locked ? 'rgba(40,44,60,0.92)' : 'rgba(12,24,52,0.95)';
+      ctx.strokeStyle = locked ? '#666' : '#5a86c0'; ctx.lineWidth = 1;
+      rr(mx - lw / 2, my - 7, lw, 14, 4); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = locked ? '#888' : '#bfe0ff';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(lbl, mx, my + 0.5);
+    }
 
-      // Skip Fossil Citadel rendering if locked
+    // ── Nodes ──
+    for (const id in N) {
+      const nd = N[id], name = nd[0], x = nd[1], y = nd[2], gym = nd[3], type = nd[4];
+      const here = isHere(id), vis = visited(id), isGoal = (id === goal);
+
       if (id === 'FOSSIL_CITADEL' && !citadelUnlocked) {
-        // Draw locked ? marker instead
-        ctx.save();
-        ctx.globalAlpha = 0.55;
-        ctx.fillStyle = '#aaaaaa';
-        ctx.font = 'bold 12px monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('?', px, py);
-        ctx.restore();
+        ctx.fillStyle = 'rgba(60,66,90,0.92)';
+        ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#888'; ctx.lineWidth = 1; ctx.setLineDash([2, 2]); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = '#aab'; ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', x, y + 0.5);
         continue;
       }
 
-      // Unvisited nodes are drawn very dark/faded
-      if (!visited && !here) {
-        ctx.save();
-        ctx.globalAlpha = 0.30;
-        drawBuilding(px, py, '#334455', null);
-        ctx.globalAlpha = 0.25;
-        ctx.fillStyle = '#334455';
-        ctx.font = '8px monospace';
-        ctx.textBaseline = 'middle';
-        if (lblRight) {
-          ctx.textAlign = 'left';
-          ctx.fillText(label, px + 13, py - 4);
-        } else {
-          ctx.textAlign = 'right';
-          ctx.fillText(label, px - 13, py - 4);
-        }
-        ctx.restore();
-        continue;
+      if (isGoal && !here) {
+        ctx.save(); ctx.globalAlpha = 0.35 + 0.45 * pulse;
+        ctx.strokeStyle = '#ffd23a'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       }
-
       if (here) {
-        // Pulsing glow ring
-        ctx.save();
-        const glowGrad = ctx.createRadialGradient(px, py, 4, px, py, 16);
-        glowGrad.addColorStop(0,   'rgba(255,220,0,0.55)');
-        glowGrad.addColorStop(1,   'rgba(255,220,0,0)');
-        ctx.fillStyle = glowGrad;
-        ctx.beginPath(); ctx.arc(px, py, 16, 0, Math.PI * 2); ctx.fill();
-        ctx.restore();
+        const g = ctx.createRadialGradient(x, y, 2, x, y, 17);
+        g.addColorStop(0, 'rgba(255,220,0,' + (0.45 + 0.3 * pulse) + ')');
+        g.addColorStop(1, 'rgba(255,220,0,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 17, 0, Math.PI * 2); ctx.fill();
       }
 
-      // Building cluster icon — visited but not current uses light-blue tint
-      const nodeBuildCol = here ? '#FFE878' : '#88aacc';
-      const nodeBuildOutline = here ? '#ffffff' : null;
-      shadow(function(){
-        drawBuilding(px, py, nodeBuildCol, nodeBuildOutline);
-      });
-
-      // Star for current location, on top of building
-      if (here) {
-        shadow(function(){ drawStar(px, py - 14, 5, '#FFE050'); });
+      let col = here ? '#ffe050' : isGoal ? '#ffd23a' : vis ? '#7fb0e6' : '#3a4763';
+      if (type === 'peak')    col = vis ? '#e07050' : '#3a4763';
+      if (type === 'citadel') col = '#ffd700';
+      if (type === 'start')   col = vis ? '#6ad06a' : '#5a86c0';
+      ctx.fillStyle = col; ctx.strokeStyle = here ? '#ffffff' : 'rgba(0,0,0,0.5)'; ctx.lineWidth = here ? 2 : 1;
+      if (type === 'peak') {
+        ctx.beginPath(); ctx.moveTo(x, y - 8); ctx.lineTo(x - 7, y + 6); ctx.lineTo(x + 7, y + 6); ctx.closePath(); ctx.fill(); ctx.stroke();
+      } else {
+        ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       }
 
-      // Label
-      shadow(function(){
-        ctx.fillStyle = here ? '#FFE050' : (id === 'FOSSIL_CITADEL' ? '#FFD700' : '#88aacc');
-        ctx.font = here ? 'bold 9px monospace' : '9px monospace';
-        ctx.textBaseline = 'middle';
-        if (lblRight) {
-          ctx.textAlign = 'left';
-          ctx.fillText(label, px + 13, py - 4);
-        } else {
-          ctx.textAlign = 'right';
-          ctx.fillText(label, px - 13, py - 4);
-        }
-      });
+      if (gym > 0) {
+        const beaten = badges.length >= gym || flags['BADGE_' + gym];
+        ctx.fillStyle = beaten ? '#ffcf33' : '#55607a';
+        ctx.beginPath(); ctx.arc(x + 6, y - 6, 4.5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.8; ctx.stroke();
+        ctx.fillStyle = beaten ? '#5a3a00' : '#cdd6e6'; ctx.font = 'bold 7px monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(gym), x + 6, y - 5.5);
+      }
+
+      // Name label below the node (always shown so you can plan ahead)
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.95)'; ctx.shadowBlur = 3;
+      ctx.fillStyle = here ? '#ffe87a' : isGoal ? '#ffd23a' : vis ? '#cdd6e6' : 'rgba(150,165,195,0.6)';
+      ctx.font = here ? 'bold 9px monospace' : '9px monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText(name, x, y + 9);
+      ctx.restore();
+
+      // YOU / GOAL tags above the node
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.font = 'bold 8px monospace';
+      if (here)       { ctx.fillStyle = '#ffe050'; ctx.fillText('YOU ▾', x, y - 12); }
+      else if (isGoal){ ctx.fillStyle = '#ffd23a'; ctx.fillText('GOAL ▾', x, y - 12); }
     }
 
-    // ── Title bar ─────────────────────────────────────────────
-    const titleGrad = ctx.createLinearGradient(0, 0, 0, TITLE_H);
-    titleGrad.addColorStop(0, 'rgba(8,16,48,0.97)');
-    titleGrad.addColorStop(1, 'rgba(10,22,58,0.95)');
-    ctx.fillStyle = titleGrad;
-    ctx.fillRect(0, 0, W, TITLE_H);
-    ctx.strokeStyle = '#3a6a9a';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(0, 0, W, TITLE_H);
-
-    shadow(function(){
-      ctx.font = 'bold 12px monospace';
-      ctx.textBaseline = 'middle';
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#8ed8f8';
-      ctx.fillText('WORLD MAP', 10, TITLE_H / 2);
-      ctx.fillStyle = '#6699bb';
-      ctx.font = '10px monospace';
-      ctx.fillText('Pangaea Archipelago', 98, TITLE_H / 2);
-    });
-
-    // Current location label in title
-    if (curMap) {
-      const curNode = nodes.find(function(n){ return isHere(n[0]); });
-      if (curNode) {
-        shadow(function(){
-          ctx.fillStyle = '#FFE050';
-          ctx.font = 'bold 9px monospace';
-          ctx.textAlign = 'right';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('★ ' + curNode[1], W - 8, TITLE_H / 2);
-        });
+    // ── "You are here" on a ROUTE (not a town node): mark the matching edge ──
+    const onTownNode = (function () { for (const id in N) if (isHere(id)) return true; return false; })();
+    if (!onTownNode && /^ROUTE_(\d+)/.test(curMap)) {
+      const rn = curMap.match(/^ROUTE_(\d+)/)[1];
+      const edge = E.find(function (e) { return e[2] === rn; });
+      if (edge) {
+        const a = N[edge[0]], b = N[edge[1]];
+        const mx = (a[1] + b[1]) / 2, my = (a[2] + b[2]) / 2;
+        const g = ctx.createRadialGradient(mx, my, 2, mx, my, 14);
+        g.addColorStop(0, 'rgba(255,220,0,' + (0.5 + 0.3 * pulse) + ')'); g.addColorStop(1, 'rgba(255,220,0,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, my, 14, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ffe050'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(mx, my, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#ffe050'; ctx.font = 'bold 8px monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText('YOU ▾', mx, my - 8);
       }
     }
 
-    // ── Legend box (bottom-right) ─────────────────────────────
-    const LX = W - 92, LY = H - 68, LW = 88, LH = 62;
-    ctx.save();
-    ctx.fillStyle = 'rgba(6,14,40,0.88)';
-    ctx.strokeStyle = '#3a6a9a';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(LX, LY, LW, LH, 3) : ctx.rect(LX, LY, LW, LH);
-    ctx.fill(); ctx.stroke();
-    ctx.restore();
+    // ── Title bar ──
+    const tg = ctx.createLinearGradient(0, 0, 0, TITLE_H);
+    tg.addColorStop(0, 'rgba(8,16,48,0.97)'); tg.addColorStop(1, 'rgba(10,22,58,0.95)');
+    ctx.fillStyle = tg; ctx.fillRect(0, 0, W, TITLE_H);
+    ctx.strokeStyle = '#3a6a9a'; ctx.lineWidth = 1; ctx.strokeRect(0, 0, W, TITLE_H);
+    ctx.fillStyle = '#8ed8f8'; ctx.font = 'bold 12px monospace'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText('WORLD MAP', 10, TITLE_H / 2);
+    const curNode = N[curMap] || (function () { for (const id in N) if (isHere(id)) return N[id]; return null; })();
+    if (curNode) {
+      ctx.fillStyle = '#ffe050'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'right';
+      ctx.fillText('★ ' + curNode[0], W - 8, TITLE_H / 2);
+    }
 
-    ctx.font = 'bold 8px monospace';
-    ctx.fillStyle = '#8ed8f8';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillText('LEGEND', LX + 4, LY + 3);
-
-    const legendItems = [
-      { draw: function(x,y){ drawBuilding(x+6,y+7,'#9999bb'); }, label: 'City/Town' },
-      { draw: function(x,y){ drawMtn(x+6,y+6,'#888888'); },      label: 'Mountains' },
-      { draw: function(x,y){ drawTree(x+6,y+7,'#2a7a2a'); },     label: 'Forest' },
-      { draw: function(x,y){ drawWave(x,y+6,'#4488ff'); },        label: 'Water route' },
+    // ── Legend (bottom-left) ──
+    const LX = 4, LY = H - 56, LW = 150, LH = 52;
+    ctx.fillStyle = 'rgba(6,14,40,0.9)'; ctx.strokeStyle = '#3a6a9a'; ctx.lineWidth = 1;
+    rr(LX, LY, LW, LH, 3); ctx.fill(); ctx.stroke();
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#8ed8f8'; ctx.font = 'bold 8px monospace'; ctx.fillText('LEGEND', LX + 5, LY + 8);
+    const leg = [
+      ['#ffe050', 'You are here'],
+      ['#ffd23a', 'Your next goal'],
+      ['#ffcf33', 'Gym (gold = beaten)'],
+      ['#bfe0ff', 'R# = route (wild grass)'],
     ];
-    legendItems.forEach(function(item, i) {
-      const iy = LY + 14 + i * 12;
-      item.draw(LX + 4, iy);
-      ctx.fillStyle = '#aabbcc';
-      ctx.font = '8px monospace';
-      ctx.textBaseline = 'top';
-      ctx.fillText(item.label, LX + 20, iy + 1);
+    ctx.font = '8px monospace';
+    leg.forEach(function (it, i) {
+      const ly = LY + 20 + i * 9;
+      ctx.fillStyle = it[0]; ctx.beginPath(); ctx.arc(LX + 9, ly, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#aabbcc'; ctx.fillText(it[1], LX + 17, ly);
     });
 
-    // ── Nav hint ──────────────────────────────────────────────
-    ctx.fillStyle = 'rgba(6,14,40,0.78)';
-    ctx.fillRect(4, H - 14, 90, 12);
-    ctx.fillStyle = '#556688';
-    ctx.font = '9px monospace';
-    ctx.textBaseline = 'top';
-    ctx.textAlign = 'left';
-    ctx.fillText('[B/ESC] Close', 8, H - 13);
+    // ── Close hint (bottom-right) ──
+    ctx.fillStyle = 'rgba(6,14,40,0.8)'; rr(W - 96, H - 16, 92, 13, 3); ctx.fill();
+    ctx.fillStyle = '#7088aa'; ctx.font = '9px monospace'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText('[B/ESC] Close', W - 90, H - 9);
   }
 
   function _drawBadges(ctx) {
