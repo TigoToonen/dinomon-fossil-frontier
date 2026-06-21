@@ -1,0 +1,22 @@
+APEXSUMMIT warps:
+  ->MT_CRETACEOUS (9,0) req=BADGE_8 lock=-
+  ->FOSSIL_GATEWAY (9,1) req=BADGE_8 lock=-
+  ->FOSSIL_GATEWAY (10,1) req=BADGE_8 lock=-
+  ->ROUTE_10E (9,14) req=- lock=-
+  ->ROUTE_10E (10,14) req=- lock=-
+  ->APEXSUMMIT_GYM (3,4) req=- lock=-
+  ->APEXSUMMIT_CENTER (17,3) req=- lock=-
+  ->APEXSUMMIT_SHOP (14,8) req=- lock=-
+  ->APEXSUMMIT_GYM (3,8) req=- lock=-
+  ->APEXSUMMIT_WILD (12,5) req=- lock=-
+  ->APEXSUMMIT_WILD (12,6) req=- lock=-
+  ->APEX_NORTH_HOUSE (22,4) req=- lock=-
+  ->APEX_PEAK_HOUSE (26,4) req=- lock=-
+  ->APEX_SOUTH_HOUSE (22,8) req=- lock=-
+MT_CRETACEOUS warps:
+  ->ROUTE_9C (9,14) req=- lock=-
+  ->ROUTE_9C (10,14) req=- lock=-
+  ->DIRECTOR_CLADE_CHAMBER (9,0) req=TRAINER_CMD_CRETACEOUS_DEFEATED lock=-
+FOSSIL_CITADEL warps:
+  ->FOSSIL_GATEWAY (9,19) req=- lock=-
+  ->FOSSIL_GATEWAY (10,19) req=- lock=-

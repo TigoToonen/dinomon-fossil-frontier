@@ -1150,7 +1150,7 @@ DG.TRAINERS.GRAND_ARCHON_CORVUS = {
   spriteKey:          'NPC_LEADER',
   party: [
     { speciesId: 'SKYFANG',      level: 62, moves: ['DRAGON_PULSE','AERIAL_ACE','DRAGON_CLAW','PSYCHIC'] },
-    { speciesId: 'TITANOSAUR',   level: 64, moves: ['IRON_HEAD','BODY_SLAM','EARTHQUAKE','PROTECT'] },
+    { speciesId: 'TITANOSAUR',   level: 64, moves: ['IRON_HEAD','BODY_SLAM','EARTHQUAKE','IRON_DEFENSE'] },
     { speciesId: 'OBSIDIUDON',   level: 64, moves: ['SHADOW_BALL','CRUNCH','DRAGON_PULSE','DARK_PULSE'] },
     { speciesId: 'PYROCERATH',   level: 66, moves: ['FLAMETHROWER','DRAGON_CLAW','FLARE_BLITZ','CRUNCH'] },
     { speciesId: 'GLACIODON',    level: 66, moves: ['SURF','PSYCHIC','ICE_BEAM','BLIZZARD'] },
