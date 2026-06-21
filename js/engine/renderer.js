@@ -145,6 +145,11 @@ DG.Renderer = (function () {
     // Evolution animation — full-screen overlay, drawn before dialogue
     _drawEvoOverlay(ctx);
 
+    // Field-move (HM/TM) reward showcase — full-screen overlay
+    if (typeof DG.TmReward !== 'undefined' && DG.TmReward.isActive()) {
+      DG.TmReward.draw(ctx);
+    }
+
     // ── Knockout fade-to-black overlay ───────────────────────
     // FASE 9: echt blackout-moment — volledig zwart met gefaseerde tekst
     if (window._KNOCKOUT_FADE > 0) {

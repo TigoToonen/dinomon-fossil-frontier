@@ -1304,10 +1304,25 @@ DG.Overworld = (function () {
     const fmLines = fieldMoveLines[badgeCount] || null;
     // Chain: ceremony → field-move lines (if any) → onDone
     DG.DialogueBox.show(lines, () => {
-      if (fmLines) {
-        DG.DialogueBox.show(fmLines, () => { if (typeof onDone === 'function') onDone(); });
+      // HM/field-move per badge → drives the prominent TmReward showcase
+      const GYM_HM = {
+        2:{hmId:'HM_ROCK_SMASH',moveId:'ROCK_SMASH'}, 3:{hmId:'HM_FLASH',moveId:'FLASH'},
+        4:{hmId:'HM_CUT',moveId:'CUT'},               5:{hmId:'HM_STRENGTH',moveId:'STRENGTH'},
+        6:{hmId:'HM_FLY',moveId:'FLY'},               7:{hmId:'HM_SURF',moveId:'SURF'},
+        8:{hmId:'HM_DIVE',moveId:'DIVE'},
+      };
+      const hmMove = GYM_HM[badgeCount] || null;
+      const afterReward = () => {
+        if (fmLines) {
+          DG.DialogueBox.show(fmLines, () => { if (typeof onDone === 'function') onDone(); });
+        } else {
+          if (typeof onDone === 'function') onDone();
+        }
+      };
+      if (hmMove && typeof DG.TmReward !== 'undefined') {
+        DG.TmReward.start(hmMove.hmId, hmMove.moveId, afterReward);
       } else {
-        if (typeof onDone === 'function') onDone();
+        afterReward();
       }
     });
   }
