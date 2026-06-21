@@ -4543,6 +4543,84 @@ DG.SpriteRenderer = (function () {
     return step === 0 ? 0 : step === 2 ? 1 : 0.5;
   }
 
+  // ── FASE 4.1: dramatic evolution glow-up ──────────────────────
+  // Applied on TOP of every archetype so each evolution stage looks markedly
+  // stronger: mid forms gain a spiked back-ridge; final forms add energy wings,
+  // an aura halo and shoulder spikes. Drawn in the same 0..36 local space.
+  function _drawEvoBehind(ctx, col, col2, accent, stage, variant) {
+    if (stage < 2) return;
+    // Aura halo behind the body
+    ctx.save();
+    ctx.globalAlpha = 0.20;
+    const g = ctx.createRadialGradient(16, 21, 3, 16, 21, 25);
+    g.addColorStop(0, _lighten(accent, 45));
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(-10, -6, 56, 48);
+    ctx.restore();
+    // Energy wings (mirrored), behind the body
+    const wcol = _lighten(accent, 18), edge = _lighten(accent, 40);
+    for (const s of [-1, 1]) {
+      ctx.save();
+      ctx.translate(16, 16);
+      ctx.scale(s, 1);
+      ctx.globalAlpha = 0.82;
+      ctx.fillStyle = wcol;
+      ctx.beginPath();
+      ctx.moveTo(2, 1);
+      ctx.lineTo(19, -15);
+      ctx.lineTo(23, -4);
+      ctx.lineTo(20, 2);
+      ctx.lineTo(25, 9);
+      ctx.lineTo(16, 8);
+      ctx.lineTo(9, 12);
+      ctx.closePath();
+      ctx.fill();
+      ctx.globalAlpha = 0.9;
+      ctx.strokeStyle = edge; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(2, 1); ctx.lineTo(19, -15); ctx.stroke();
+      ctx.globalAlpha = 0.45;
+      ctx.strokeStyle = col2; ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(5, 2); ctx.lineTo(19, -13);
+      ctx.moveTo(7, 5); ctx.lineTo(21, -1);
+      ctx.moveTo(9, 9); ctx.lineTo(18, 7);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function _drawEvoFront(ctx, col, col2, accent, stage, variant) {
+    if (stage < 1) return;
+    // Spiked back-ridge (taller/more numerous at final stage)
+    const n = stage >= 2 ? 6 : 4;
+    const baseY = 14, x0 = 9, x1 = 24;
+    const body = _darken(accent, 8), edge = _lighten(accent, 32);
+    for (let i = 0; i < n; i++) {
+      const t = i / (n - 1);
+      const sx = x0 + (x1 - x0) * t;
+      const h = (stage >= 2 ? 6.5 : 4) + Math.sin(t * Math.PI) * (stage >= 2 ? 4 : 2);
+      ctx.fillStyle = body;
+      ctx.beginPath();
+      ctx.moveTo(sx - 2.2, baseY); ctx.lineTo(sx, baseY - h); ctx.lineTo(sx + 2.2, baseY);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = edge;
+      ctx.beginPath();
+      ctx.moveTo(sx - 0.7, baseY); ctx.lineTo(sx, baseY - h); ctx.lineTo(sx + 0.7, baseY);
+      ctx.closePath(); ctx.fill();
+    }
+    // Shoulder spikes (final only)
+    if (stage >= 2) {
+      ctx.fillStyle = _lighten(accent, 12);
+      for (const sx of [7, 26]) {
+        const out = sx < 16 ? -4 : 4;
+        ctx.beginPath();
+        ctx.moveTo(sx - 2, 21); ctx.lineTo(sx + out, 14); ctx.lineTo(sx + 2, 21);
+        ctx.closePath(); ctx.fill();
+      }
+    }
+  }
+
   function drawMon(ctx, speciesId, x, y, scale) {
     const sp      = (window.DG && DG.SPECIES) ? DG.SPECIES[speciesId] : null;
     const col     = sp ? (sp.color  || '#FF6600') : '#FF6600';
@@ -4595,7 +4673,9 @@ DG.SpriteRenderer = (function () {
         }
         bctx.save();
         try {
+          _drawEvoBehind(bctx, col, col2, accent, stage, variant);
           fn(bctx, col, col2, accent, stage, variant);
+          _drawEvoFront(bctx, col, col2, accent, stage, variant);
         } catch (e) {
           console.warn('[DinoMon] sprite error for', speciesId, e);
           _drawGeneric(bctx, col, col2, accent, stage, variant);
@@ -4639,7 +4719,9 @@ DG.SpriteRenderer = (function () {
       ctx.translate(x, y + stageOffY);
       ctx.scale(eff, eff);
       try {
+        _drawEvoBehind(ctx, col, col2, accent, stage, variant);
         fn(ctx, col, col2, accent, stage, variant);
+        _drawEvoFront(ctx, col, col2, accent, stage, variant);
       } catch (e) {
         _drawGeneric(ctx, col, col2, accent, stage, variant);
       }
