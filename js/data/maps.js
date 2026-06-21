@@ -1085,8 +1085,8 @@ ROUTE_4C: {
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_4B', targetX:9,  targetY:20 },
     { x:10, y:0,  targetMap:'ROUTE_4B', targetX:10, targetY:20 },
-    { x:9,  y:21, targetMap:'FERNGROVE_TOWN', targetX:7, targetY:7 },
-    { x:10, y:21, targetMap:'FERNGROVE_TOWN', targetX:7, targetY:7 },
+    { x:9,  y:21, targetMap:'FERNGROVE_TOWN', targetX:9,  targetY:13 },
+    { x:10, y:21, targetMap:'FERNGROVE_TOWN', targetX:10, targetY:13 },
   ],
   npcs:[
     { id:'R4C_TRAINER1', name:'Sylvan', x:5, y:9, facing:'RIGHT', spriteKey:'NPC_MAN',
@@ -1245,8 +1245,8 @@ ROUTE_5C: {
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_5B', targetX:9,  targetY:23 },
     { x:10, y:0,  targetMap:'ROUTE_5B', targetX:10, targetY:23 },
-    { x:9,  y:24, targetMap:'FERNGROVE_TOWN', targetX:7, targetY:7 },
-    { x:10, y:24, targetMap:'FERNGROVE_TOWN', targetX:7, targetY:7 },
+    { x:9,  y:24, targetMap:'FERNGROVE_TOWN', targetX:9,  targetY:1 },
+    { x:10, y:24, targetMap:'FERNGROVE_TOWN', targetX:10, targetY:1 },
   ],
   npcs:[
     { id:'R5C_TRAINER1', name:'Dusty', x:5, y:11, facing:'RIGHT', spriteKey:'NPC_MAN',
@@ -1468,8 +1468,8 @@ ROUTE_6D: {
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_6C',       targetX:9,  targetY:26 },
     { x:10, y:0,  targetMap:'ROUTE_6C',       targetX:10, targetY:26 },
-    { x:9,  y:27, targetMap:'CRESTFALL_TOWN', targetX:7,  targetY:7  },
-    { x:10, y:27, targetMap:'CRESTFALL_TOWN', targetX:7,  targetY:7  },
+    { x:9,  y:27, targetMap:'CRESTFALL_TOWN', targetX:9,  targetY:13 },
+    { x:10, y:27, targetMap:'CRESTFALL_TOWN', targetX:10, targetY:13 },
   ],
   npcs:[
     { id:'R6D_TRAINER1', name:'Hank', x:5, y:9, facing:'RIGHT', spriteKey:'NPC_MAN',
@@ -1689,8 +1689,8 @@ ROUTE_7D: {
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_7C',    targetX:9,  targetY:26 },
     { x:10, y:0,  targetMap:'ROUTE_7C',    targetX:10, targetY:26 },
-    { x:9,  y:27, targetMap:'BOGMIRE_CITY', targetX:7,  targetY:7  },
-    { x:10, y:27, targetMap:'BOGMIRE_CITY', targetX:7,  targetY:7  },
+    { x:9,  y:27, targetMap:'BOGMIRE_CITY', targetX:9,  targetY:13 },
+    { x:10, y:27, targetMap:'BOGMIRE_CITY', targetX:10, targetY:13 },
   ],
   npcs:[
     { id:'R7D_TRAINER1', name:'Wave', x:5, y:9, facing:'RIGHT', spriteKey:'NPC_MAN',
@@ -1746,8 +1746,8 @@ ROUTE_8A: {
     [66,66,66,66,66,66,66,66,66, 0, 0,66,66,66,66,66,66,66,66,66], // 31 bottom border
   ],
   warps:[
-    { x:9,  y:0,  targetMap:'CRESTFALL_TOWN', targetX:7,  targetY:7  },
-    { x:10, y:0,  targetMap:'CRESTFALL_TOWN', targetX:7,  targetY:7  },
+    { x:9,  y:0,  targetMap:'CRESTFALL_TOWN', targetX:9,  targetY:1 },
+    { x:10, y:0,  targetMap:'CRESTFALL_TOWN', targetX:10, targetY:1 },
     { x:9,  y:31, targetMap:'ROUTE_8B',       targetX:9,  targetY:1  },
     { x:10, y:31, targetMap:'ROUTE_8B',       targetX:10, targetY:1  },
   ],
@@ -1989,8 +1989,8 @@ ROUTE_9A: {
     [64,64,64,64,64,64,64,64,64, 0, 0,64,64,64,64,64,64,64,64,64], // 34 bottom border
   ],
   warps:[
-    { x:9,  y:0,  targetMap:'BOGMIRE_CITY', targetX:7,  targetY:7  },
-    { x:10, y:0,  targetMap:'BOGMIRE_CITY', targetX:7,  targetY:7  },
+    { x:9,  y:0,  targetMap:'BOGMIRE_CITY', targetX:9,  targetY:1 },
+    { x:10, y:0,  targetMap:'BOGMIRE_CITY', targetX:10, targetY:1 },
     { x:9,  y:34, targetMap:'ROUTE_9B',    targetX:9,  targetY:1  },
     { x:10, y:34, targetMap:'ROUTE_9B',    targetX:10, targetY:1  },
   ],
@@ -2887,7 +2887,7 @@ SHELLCREEK_WILD: {
     [71,71,71,71,71,71,71,71,71,71,71,71,71,71,71,71],
   ],
   warps:[
-    { x:0, y:6, targetMap:'SHELLCREEK_CITY', targetX:18, targetY:11 },
+    { x:0, y:6, targetMap:'SHELLCREEK_CITY', targetX:18, targetY:10 },
     { x:0, y:7, targetMap:'SHELLCREEK_CITY', targetX:18, targetY:12 },
   ],
   npcs:[
@@ -3044,7 +3044,7 @@ DG.MAPS.FERNGROVE_WILD = {
   ],
   warps:[
     { x:0, y:6, targetMap:'FERNGROVE_TOWN', targetX:12, targetY:5 },
-    { x:0, y:7, targetMap:'FERNGROVE_TOWN', targetX:12, targetY:6 },
+    { x:0, y:7, targetMap:'FERNGROVE_TOWN', targetX:11, targetY:5 },
   ],
   npcs:[
     { id:'FNW_SIGN', name:'Sign', x:4, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -3118,7 +3118,7 @@ DG.MAPS.BOGMIRE_WILD = {
   ],
   warps:[
     { x:0, y:6, targetMap:'BOGMIRE_CITY', targetX:12, targetY:5 },
-    { x:0, y:7, targetMap:'BOGMIRE_CITY', targetX:12, targetY:6 },
+    { x:0, y:7, targetMap:'BOGMIRE_CITY', targetX:11, targetY:5 },
   ],
   npcs:[
     { id:'BGW_SIGN', name:'Sign', x:4, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -4595,7 +4595,7 @@ DG.MAPS.FERNGROVE_TOWN = {
     { x:17, y:3,  targetMap:'FERNGROVE_CENTER', targetX:7, targetY:8 },
     { x:13, y:8,  targetMap:'FERNGROVE_CENTER', targetX:7, targetY:8 },
     { x:12, y:5,  targetMap:'FERNGROVE_WILD', targetX:1, targetY:6 },
-    { x:12, y:6,  targetMap:'FERNGROVE_WILD', targetX:1, targetY:7 },
+    { x:11, y:5,  targetMap:'FERNGROVE_WILD', targetX:1, targetY:7 },
     { x:21, y:4,  targetMap:'FERNGROVE_EAST_HOUSE', targetX:3, targetY:6 },
   ],
   npcs:[
@@ -4603,6 +4603,10 @@ DG.MAPS.FERNGROVE_TOWN = {
       movementType:'WANDER', dialogue:['NPC_FERNGROVE_1'], onInteract:null },
     { id:'FN_NPC2', name:'Herbalist', x:13, y:5, facing:'LEFT', spriteKey:'NPC_WOMAN',
       movementType:'STATIONARY', dialogue:['NPC_FERNGROVE_2'], onInteract:null },
+    // Market stall (counter at row 7, cols 20-21) — keeper behind it
+    { id:'FN_SHOP', name:'Shopkeeper', x:20, y:6, facing:'DOWN', spriteKey:'NPC_SHOPKEEPER',
+      movementType:'STATIONARY', dialogue:['SHOP_GREET'], onInteract:'OPEN_SHOP',
+      shopItems:['SUPERBALL','SUPERPOTION','HYPERPOTION','REVIVE','ANTIDOTE','PARALYHEAL','BURNHEAL','AWAKENING'] },
     { id:'FN_GUARD', name:'Officer', x:6, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
       dialogue:["The road to Stonehaven is blocked. Defeat Sylva at the Ferngrove Gym first — you need the Canopy Badge!"],
@@ -4684,9 +4688,9 @@ DG.MAPS.CRESTFALL_TOWN = {
       dialogue:["The Static Badge — Volt's mark. Route 8 toward Bogmire lies ahead — good luck!"],
       requiresFlag:'BADGE_6', onInteract:null },
     // ── Storm / energy quarter (right side) ──
-    { id:'CF_VENDOR', name:'Gear Vendor', x:21, y:9, facing:'DOWN', spriteKey:'NPC_WOMAN',
-      movementType:'STATIONARY',
-      dialogue:["Storm-charged gear here! Lightning-proof boots, today only!","Volt's gym keeps these stalls humming with power."], onInteract:null },
+    { id:'CF_VENDOR', name:'Gear Vendor', x:21, y:9, facing:'DOWN', spriteKey:'NPC_SHOPKEEPER',
+      movementType:'STATIONARY', dialogue:['SHOP_GREET'], onInteract:'OPEN_SHOP',
+      shopItems:['ULTRABALL','HYPERPOTION','REVIVE','FULLHEAL','ANTIDOTE','PARALYHEAL'] },
     { id:'CF_ENGINEER', name:'Engineer', x:24, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
       dialogue:["The whole east quarter runs on Volt's lightning grid.","One good storm could light the town for a month."], onInteract:null },
@@ -4734,7 +4738,7 @@ DG.MAPS.BOGMIRE_CITY = {
     { x:17, y:3,  targetMap:'BOGMIRE_CENTER',  targetX:7,  targetY:8 },
     { x:13, y:8,  targetMap:'BOGMIRE_CENTER',  targetX:7,  targetY:8 },
     { x:12, y:5,  targetMap:'BOGMIRE_WILD', targetX:1, targetY:6 },
-    { x:12, y:6,  targetMap:'BOGMIRE_WILD', targetX:1, targetY:7 },
+    { x:11, y:5,  targetMap:'BOGMIRE_WILD', targetX:1, targetY:7 },
     { x:22, y:4,  targetMap:'BOGMIRE_EAST_HOUSE', targetX:3, targetY:6 },
     { x:22, y:8,  targetMap:'BOGMIRE_DOCK_HOUSE', targetX:3, targetY:6 },
   ],
@@ -4760,9 +4764,9 @@ DG.MAPS.BOGMIRE_CITY = {
       movementType:'STATIONARY', dialogue:['DOUBLE_BATTLE_PRE'], onInteract:'TRIGGER_DOUBLE_BATTLE',
       requiresFlag:'BADGE_6', flagToHide:'DOUBLE_BATTLE_DONE' },
     // ── Market / dock district (right side) ──
-    { id:'BG_VENDOR', name:'Market Vendor', x:21, y:9, facing:'DOWN', spriteKey:'NPC_WOMAN',
-      movementType:'STATIONARY',
-      dialogue:["Fresh swamp catch and rare berries — finest stall in Bogmire!","The marsh provides, if you know where to look."], onInteract:null },
+    { id:'BG_VENDOR', name:'Market Vendor', x:21, y:9, facing:'DOWN', spriteKey:'NPC_SHOPKEEPER',
+      movementType:'STATIONARY', dialogue:['SHOP_GREET'], onInteract:'OPEN_SHOP',
+      shopItems:['ULTRABALL','HYPERPOTION','MAXPOTION','REVIVE','FULLHEAL'] },
     { id:'BG_DOCKHAND', name:'Dockhand', x:25, y:12, facing:'UP', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
       dialogue:["Once you've got Surf, these waterways open right up.","Boats used to run from this dock all the way to Apex."], onInteract:null },

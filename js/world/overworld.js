@@ -1724,7 +1724,7 @@ DG.Overworld = (function () {
     let signY, openRow;
     if (topCity)      { signY = 1; openRow = 0; }
     else if (botCity) { signY = m.height - 2; openRow = m.height - 1; }
-    else return;                            // mid-segment with no city entrance
+    else              { signY = 1; openRow = 0; } // mid-segment: sign near the top opening
     const oc = openCol(openRow);
     if (oc < 1) return;
     const rowTiles = m.tiles[signY] || [];

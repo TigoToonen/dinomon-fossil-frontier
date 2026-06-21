@@ -44,3 +44,37 @@ for (const id in MAPS) {
   }
 }
 console.log(`\nChecked ${checked} outdoor edge-warps. Issues: ${issues}`);
+
+// ── Entrance reachability: a warp only triggers when the player can STEP onto
+// its (x,y) tile. Tiles >=64 are solid except DOOR(68). A warp sitting on a
+// wall/counter/statue can never fire — that's the "ingang werkt niet" bug.
+const isSolid = t => (t >= 64 && t !== 68);
+const tileAt = (m, x, y) => (m.tiles && m.tiles[y]) ? m.tiles[y][x] : undefined;
+let entranceIssues = 0, entChecked = 0;
+for (const id in MAPS) {
+  const m = MAPS[id];
+  if (!m.warps || !m.tiles) continue;
+  for (const w of m.warps) {
+    entChecked++;
+    const t = tileAt(m, w.x, w.y);
+    if (t === undefined) {
+      console.log(`[ENTRANCE] ${id} warp at (${w.x},${w.y}) is OUT OF BOUNDS`);
+      entranceIssues++;
+    } else if (isSolid(t)) {
+      console.log(`[ENTRANCE] ${id} warp at (${w.x},${w.y}) sits on SOLID tile ${t} -> ${w.targetMap} (can't be stepped on)`);
+      entranceIssues++;
+    }
+    // Destination spawn reachability (nudge saves it, but flag for awareness)
+    const dst = MAPS[w.targetMap];
+    if (dst && dst.tiles) {
+      const tx = w.targetX !== undefined ? w.targetX : w.destX;
+      const ty = w.targetY !== undefined ? w.targetY : w.destY;
+      const dt = tileAt(dst, tx, ty);
+      if (dt !== undefined && isSolid(dt)) {
+        console.log(`[SPAWN] ${id} -> ${w.targetMap} spawn (${tx},${ty}) is SOLID tile ${dt} (nudge will relocate)`);
+        entranceIssues++;
+      }
+    }
+  }
+}
+console.log(`\nChecked ${entChecked} warp entrances. Entrance/spawn issues: ${entranceIssues}`);
