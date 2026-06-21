@@ -1803,9 +1803,12 @@ DG.Overworld = (function () {
   var _GROUND_ITEMS = {
     ROUTE_1A: [{x:2,y:7,id:'POTION'},      {x:19,y:9,id:'DINOBALL',qty:3}],
     ROUTE_1B: [{x:3,y:9,id:'SUPERPOTION'}, {x:17,y:11,id:'ANTIDOTE',hidden:true}],
-    ROUTE_2A: [{x:2,y:2,id:'SUPERBALL',qty:2}],
+    ROUTE_2A: [{x:2,y:2,id:'SUPERBALL',qty:2}, {x:17,y:17,id:'RARE_CANDY',hidden:true}],
     ROUTE_3A: [{x:2,y:2,id:'REVIVE'},      {x:17,y:8,id:'SUPERBALL'}],
+    ROUTE_4A: [{x:2,y:2,id:'HYPERPOTION'}, {x:16,y:8,id:'RARE_CANDY',hidden:true}],
     ROUTE_5A: [{x:2,y:2,id:'ULTRABALL'},   {x:16,y:17,id:'FIRE_STONE',hidden:true}],
+    ROUTE_6A: [{x:2,y:2,id:'RARE_CANDY'},  {x:17,y:8,id:'ULTRABALL'}],
+    ROUTE_7A: [{x:2,y:2,id:'HYPERPOTION'}, {x:9,y:8,id:'THUNDER_STONE',hidden:true}],
   };
   function _injectGroundItems(m) {
     if (!m || !m.id || m._grounded) return;

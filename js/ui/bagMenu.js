@@ -86,6 +86,7 @@ DG.BagMenu = (function () {
     MASTERBALL:       { name:'MasterBall',      desc:'Always catches.' },
     DINOMASTERBALL:   { name:'DinoMasterBall',  desc:'Never fails — catches any DinoMon!' },
     AMBERF:           { name:'Amber Frag.',     desc:'Rare crafting material.' },
+    RARE_CANDY:       { name:'Rare Candy',      desc:'Raises a DinoMon’s level by 1.' },
     // Repels
     REPEL:       { name:'Repel',        desc:'Repels weak wild DinoMons for 100 steps.' },
     SUPER_REPEL: { name:'Super Repel',  desc:'Repels weak wild DinoMons for 200 steps.' },
@@ -330,6 +331,13 @@ DG.BagMenu = (function () {
       _mode        = 'SELECT_MON';
       return;
     }
+    // Rare Candy — pick a DinoMon to level up
+    if (itemId === 'RARE_CANDY') {
+      _pendingItem = itemId;
+      _monCursor   = 0;
+      _mode        = 'SELECT_MON';
+      return;
+    }
     // Evolution stones
     if (STONES.includes(itemId)) {
       _pendingItem = itemId;
@@ -375,6 +383,22 @@ DG.BagMenu = (function () {
       _mode = 'ITEMS'; _pendingItem = null;
       if (typeof closeCb === 'function') closeCb();
       cb(itemId, idx);
+      return;
+    }
+
+    // ── Rare Candy: raise level by 1 ──
+    if (itemId === 'RARE_CANDY') {
+      if (mon.isEgg) { DG.DialogueBox.show(["An egg can't use that!"], () => {}); return; }
+      if ((mon.level || 1) >= 100) {
+        DG.DialogueBox.show([`${monName} is already at Lv.100!`], () => {});
+        return;
+      }
+      mon.level = (mon.level || 1) + 1;
+      DG.SaveLoad.recalcStats(mon);
+      DG.SaveLoad.removeItem(_gs, itemId, 1);
+      DG.SaveLoad.save(_gs);
+      _mode = 'ITEMS'; _pendingItem = null;
+      DG.DialogueBox.show([`${monName} grew to Lv.${mon.level}!`], () => {});
       return;
     }
 
