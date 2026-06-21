@@ -639,14 +639,14 @@ DG.Menu = (function () {
     ctx.textAlign = 'left';
 
     const ALL_BADGES = [
-      { name:'Herd Badge',    gym:'Rex · Shellcreek',     type:'NORMAL',   col:'#aaaaaa' },
-      { name:'Fossil Badge',  gym:'Ridley · Dustwall',    type:'ROCK',     col:'#aa8833' },
-      { name:'Magma Badge',   gym:'Ignis · Pyreside',     type:'FIRE',     col:'#ff4411' },
-      { name:'Canopy Badge',  gym:'Sylva · Ferngrove',    type:'GRASS',    col:'#33aa33' },
-      { name:'Bedrock Badge', gym:'Terra · Stonehaven',   type:'GROUND',   col:'#cc8833' },
-      { name:'Static Badge',  gym:'Volt · Crestfall',     type:'ELECTRIC', col:'#ffcc00' },
-      { name:'Tide Badge',    gym:'Marina · Bogmire',     type:'WATER',    col:'#3377ff' },
-      { name:'Scale Badge',   gym:'Valdez · Apex Summit', type:'DRAGON',   col:'#6644cc' },
+      { name:'Herd Badge',    gym:'Normal Normi · Shellcreek',     type:'NORMAL',   col:'#aaaaaa' },
+      { name:'Fossil Badge',  gym:'Jam Sennings · Dustwall',    type:'ROCK',     col:'#aa8833' },
+      { name:'Magma Badge',   gym:'Asset Toverdijk · Pyreside',     type:'FIRE',     col:'#ff4411' },
+      { name:'Canopy Badge',  gym:'PuKing Maarten · Ferngrove',    type:'GRASS',    col:'#33aa33' },
+      { name:'Bedrock Badge', gym:'Rock Hard Toonen · Stonehaven',   type:'GROUND',   col:'#cc8833' },
+      { name:'Static Badge',  gym:'Beyblade Luuk · Crestfall',     type:'ELECTRIC', col:'#ffcc00' },
+      { name:'Tide Badge',    gym:'Surfing Peter · Bogmire',     type:'WATER',    col:'#3377ff' },
+      { name:'Scale Badge',   gym:'Bipolar Fieke · Apex Summit', type:'DRAGON',   col:'#6644cc' },
     ];
 
     ALL_BADGES.forEach(function(b, i) {

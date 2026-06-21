@@ -1242,19 +1242,19 @@ DG.Overworld = (function () {
     const ceremonies = {
       1: [
         '\u2605 Herd Badge obtained! \u2605',
-        "Rex's badge proves your DinoMons have mastered raw power.",
+        "Normal Normi's badge proves your DinoMons have mastered raw power.",
         "The Officer blocking Route 2 has stepped aside!",
         "Head WEST through Shellcreek City to reach Route 2 \u2192 Dustwall Town.",
       ],
       2: [
         '\u2605 Fossil Badge obtained! \u2605',
-        "Ridley's mark — proof you can crack any formation.",
+        "Jam Sennings' mark — proof you can crack any formation.",
         "The Officer on Route 3 has stepped aside!",
         "Head SOUTH from Dustwall Town via Route 3 \u2192 Pyreside City.",
       ],
       3: [
         '\u2605 Magma Badge obtained! \u2605',
-        "The volcanic spirit of Ignis fuels your DinoMons' fire.",
+        "The volcanic spirit of Asset Toverdijk fuels your DinoMons' fire.",
         "The Officer on Route 4 has stepped aside!",
         "Head SOUTH via Route 4 \u2192 Ferngrove Town.",
       ],
@@ -1266,13 +1266,13 @@ DG.Overworld = (function () {
       ],
       5: [
         '\u2605 Bedrock Badge obtained! \u2605',
-        "Terra's ancient power runs as deep as the earth itself.",
+        "Rock Hard Toonen's ancient power runs as deep as the earth itself.",
         "Routes 6 and 7 are now open!",
         "Head WEST on Route 6 for Crestfall Town, or EAST on Route 7 for Bogmire City.",
       ],
       6: [
         '\u2605 Static Badge obtained! \u2605',
-        "Volt's electric fury could not stop you — the Static Badge is yours!",
+        "Beyblade Luuk's electric fury could not stop you — the Static Badge is yours!",
         "The Officer on Route 8 has stepped aside!",
         "Head SOUTH via Route 8 \u2192 Bogmire City.",
       ],

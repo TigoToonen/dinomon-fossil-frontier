@@ -12,7 +12,7 @@ DG.TRAINERS = {};
 
 DG.TRAINERS.GYM_REX = {
   id:                 'GYM_REX',
-  name:               'Rex',
+  name:               'Normal Normi',
   class:              'Gym Leader',
   isGymLeader:        true,
   isStoryBoss:        false,
@@ -46,7 +46,7 @@ DG.TRAINERS.GYM_REX = {
 
 DG.TRAINERS.GYM_RIDLEY = {
   id:                 'GYM_RIDLEY',
-  name:               'Ridley',
+  name:               'Jam Sennings',
   class:              'Gym Leader',
   isGymLeader:        true,
   isStoryBoss:        false,
@@ -80,7 +80,7 @@ DG.TRAINERS.GYM_RIDLEY = {
 
 DG.TRAINERS.GYM_IGNIS = {
   id:                 'GYM_IGNIS',
-  name:               'Ignis',
+  name:               'Asset Toverdijk',
   class:              'Gym Leader',
   isGymLeader:        true,
   isStoryBoss:        false,
@@ -114,7 +114,7 @@ DG.TRAINERS.GYM_IGNIS = {
 
 DG.TRAINERS.GYM_SYLVA = {
   id:                 'GYM_SYLVA',
-  name:               'Sylva',
+  name:               'PuKing Maarten',
   class:              'Gym Leader',
   isGymLeader:        true,
   isStoryBoss:        false,
@@ -148,7 +148,7 @@ DG.TRAINERS.GYM_SYLVA = {
 
 DG.TRAINERS.GYM_TERRA = {
   id:                 'GYM_TERRA',
-  name:               'Terra',
+  name:               'Rock Hard Toonen',
   class:              'Gym Leader',
   isGymLeader:        true,
   isStoryBoss:        false,
@@ -182,7 +182,7 @@ DG.TRAINERS.GYM_TERRA = {
 
 DG.TRAINERS.GYM_VOLT = {
   id:                 'GYM_VOLT',
-  name:               'Volt',
+  name:               'Beyblade Luuk',
   class:              'Gym Leader',
   isGymLeader:        true,
   isStoryBoss:        false,
@@ -216,7 +216,7 @@ DG.TRAINERS.GYM_VOLT = {
 
 DG.TRAINERS.GYM_MARINA = {
   id:                 'GYM_MARINA',
-  name:               'Marina',
+  name:               'Surfing Peter',
   class:              'Gym Leader',
   isGymLeader:        true,
   isStoryBoss:        false,
@@ -250,7 +250,7 @@ DG.TRAINERS.GYM_MARINA = {
 
 DG.TRAINERS.GYM_VALDEZ = {
   id:                 'GYM_VALDEZ',
-  name:               'Valdez',
+  name:               'Bipolar Fieke',
   class:              'Gym Leader',
   isGymLeader:        true,
   isStoryBoss:        false,

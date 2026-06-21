@@ -74,7 +74,7 @@ DG.STORY.DIALOGUES = {
 
   RIVAL_INTRO: [
     "Hey! So the professor gave YOU a DinoMon too?",
-    "I'm Rex. And I'm not about to let some rookie outshine me.",
+    "I'm Normal Normi. And I'm not about to let some rookie outshine me.",
     "I've been waiting for a real challenge — and you'll have to do for now.",
     "Show me what you and that DinoMon are made of!",
   ],
@@ -143,7 +143,7 @@ DG.STORY.DIALOGUES = {
   // Shellcreek
   NPC_SHELLCREEK_1: [
     "Shellcreek's waters run clear all the way to the ocean.",
-    "Rex's gym is right in the town square — he's a tough Normal-type specialist.",
+    "Normal Normi's gym is right in the town square — a tough Normal-type specialist.",
   ],
   NPC_SHELLCREEK_2: [
     "Fishermen here say they've spotted something massive in the deep waters.",
@@ -157,7 +157,7 @@ DG.STORY.DIALOGUES = {
   // Dustwall
   NPC_DUSTWALL_1: [
     "These canyon walls have been carved by wind and time for millions of years.",
-    "Ridley says the rock strata here tell the whole history of DinoMons.",
+    "Jam Sennings says the rock strata here tell the whole history of DinoMons.",
   ],
   NPC_DUSTWALL_2: [
     "My grandfather found a Boneback fossil right at the base of the main cliff!",
@@ -171,7 +171,7 @@ DG.STORY.DIALOGUES = {
   // Pyreside
   NPC_PYRESIDE_1: [
     "The volcano hasn't erupted in a hundred years, but you can still feel the heat.",
-    "Ignis says it keeps her DinoMons strong — I believe it!",
+    "Asset Toverdijk says it keeps his DinoMons strong — I believe it!",
   ],
   NPC_PYRESIDE_2: [
     "Don't touch the obsidian formations on Route 5 — they're sharper than they look.",
@@ -181,7 +181,7 @@ DG.STORY.DIALOGUES = {
   // Ferngrove
   NPC_FERNGROVE_1: [
     "The canopy here is so thick it blocks out the sun at midday.",
-    "Sylva's gym is built right into a living tree — it's absolutely beautiful.",
+    "PuKing Maarten's gym is built right into a living tree — it's absolutely beautiful.",
   ],
   NPC_FERNGROVE_2: [
     "We found strange markings carved into the ancient trees deep in the grove.",
@@ -191,7 +191,7 @@ DG.STORY.DIALOGUES = {
   // Stonehaven
   NPC_STONEHAVEN_1: [
     "Stonehaven sits at the crossroads of three mountain passes.",
-    "Terra's gym is carved right into the bedrock — a Ground-type specialist through and through.",
+    "Rock Hard Toonen's gym is carved right into the bedrock — a Ground-type specialist through and through.",
   ],
   NPC_STONEHAVEN_2: [
     "Team Extinction hit the DinoMon museum here last month.",
@@ -199,23 +199,23 @@ DG.STORY.DIALOGUES = {
   ],
   NPC_STONEHAVEN_3: [
     "The Ground-type DinoMons that nest in these peaks are ancient beyond measure.",
-    "Terra says they remember the tremors from before humans walked the earth.",
+    "Rock Hard Toonen says they remember the tremors from before humans walked the earth.",
   ],
 
   // Crestfall
   NPC_CRESTFALL_1: [
     "The lightning storms here are unlike anything else in the Frontier.",
-    "Volt says it charges her Electric-type DinoMons to peak power. I believe it.",
+    "Beyblade Luuk says it charges his Electric-type DinoMons to peak power. I believe it.",
   ],
   NPC_CRESTFALL_2: [
     "There's a network of underground tunnels beneath Crestfall.",
-    "Team Extinction has been trying to access them. Volt and her DinoMons are holding them off.",
+    "Team Extinction has been trying to access them. Beyblade Luuk and his DinoMons are holding them off.",
   ],
 
   // Bogmire
   NPC_BOGMIRE_1: [
     "The fog here never truly lifts. Even on a clear day, Bogmire sits in its own mist.",
-    "Marina says it helps her DinoMons focus. I just find it creepy.",
+    "Surfing Peter says it helps his DinoMons focus. I just find it creepy.",
   ],
   NPC_BOGMIRE_2: [
     "Don't stray from the lantern-lit paths at night.",
@@ -225,11 +225,11 @@ DG.STORY.DIALOGUES = {
   // Apexsummit
   NPC_APEXSUMMIT_1: [
     "You made it to Apexsummit. Not many Trainers reach this far.",
-    "Valdez has seen thousands of challengers. Hundreds never made it past his first DinoMon.",
+    "Bipolar Fieke has seen thousands of challengers. Hundreds never made it past his first DinoMon.",
   ],
   NPC_APEXSUMMIT_2: [
     "The air is thin up here, but the view of the whole Fossil Frontier is worth it.",
-    "Once you beat Valdez, they say the world feels different — like you've truly earned your place in it.",
+    "Once you beat Bipolar Fieke, they say the world feels different — like you've truly earned your place in it.",
   ],
 
   // ----------------------------------------------------------
@@ -640,40 +640,40 @@ DG.STORY.DIALOGUES = {
   GUARD_NEED_HERD_BADGE: [
     "GUARD: Hold it right there!",
     "The path to Dustwall is restricted until you've proven yourself.",
-    "Defeat Rex at the Shellcreek Gym and earn the Herd Badge first.",
+    "Defeat Normal Normi at the Shellcreek Gym and earn the Herd Badge first.",
   ],
 
   GUARD_NEED_FOSSIL_BADGE: [
     "GUARD: I can't let you through yet.",
     "The route to Pyreside runs through dangerous cave systems.",
-    "Earn the Fossil Badge from Ridley at Dustwall first.",
+    "Earn the Fossil Badge from Jam Sennings at Dustwall first.",
   ],
 
   GUARD_NEED_MAGMA_BADGE: [
     "GUARD: Stop right there.",
     "The path to Ferngrove winds through a dark cave.",
-    "You'll need the Magma Badge from Ignis at Pyreside to pass.",
+    "You'll need the Magma Badge from Asset Toverdijk at Pyreside to pass.",
   ],
 
   GUARD_NEED_CANOPY_BADGE: [
     "GUARD: Entry denied.",
     "The forest trail to Stonehaven is overgrown.",
-    "Earn the Canopy Badge from Sylva at Ferngrove — then your DinoMon can Cut the way through.",
+    "Earn the Canopy Badge from PuKing Maarten at Ferngrove — then your DinoMon can Cut the way through.",
   ],
 
   GUARD_NEED_BEDROCK_BADGE: [
     "GUARD: The mountain passes are sealed.",
-    "Defeat Terra at Stonehaven Gym and earn the Bedrock Badge before proceeding.",
+    "Defeat Rock Hard Toonen at Stonehaven Gym and earn the Bedrock Badge before proceeding.",
   ],
 
   GUARD_NEED_STATIC_BADGE: [
     "GUARD: Bogmire's wetland routes are not safe for inexperienced Trainers.",
-    "Earn the Static Badge from Volt at Crestfall first.",
+    "Earn the Static Badge from Beyblade Luuk at Crestfall first.",
   ],
 
   GUARD_NEED_TIDE_BADGE: [
     "GUARD: You can't reach Apex Summit without crossing the open water.",
-    "Earn the Tide Badge from Marina at Bogmire and teach a DinoMon Surf.",
+    "Earn the Tide Badge from Surfing Peter at Bogmire and teach a DinoMon Surf.",
   ],
 
   GUARD_NEED_SURF: [
@@ -812,7 +812,7 @@ DG.STORY.DIALOGUES = {
   SIGN_DW_2: [
     "GEOLOGICAL SURVEY BOARD",
     "Rock strata rule: the DEEPER the layer, the OLDER the fossil.",
-    "Ridley's strongest DinoMon came from the deepest Cretaceous stratum.",
+    "Jam Sennings' strongest DinoMon came from the deepest Cretaceous stratum.",
     "Seek the path that goes DEEPER — the upper tunnels lead only to guards.",
   ],
   SIGN_PY_1: [
@@ -860,7 +860,7 @@ DG.STORY.DIALOGUES = {
   SIGN_CF_2: [
     "GENERATOR ROOM NOTICE",
     "Electric-type moves are SPECIAL attacks — lightning does not punch.",
-    "Volt's DinoMons use Special Electric moves. Counter with Ground-types.",
+    "Beyblade Luuk's DinoMons use Special Electric moves. Counter with Ground-types.",
     "Trainers who do not know their type chart must face the storm chaser.",
   ],
   SIGN_BG_1: [
@@ -906,7 +906,7 @@ DG.STORY.DIALOGUES = {
   ],
   SIGN_DW_RIGHT: [
     "FOSSIL CHAMBER — RIGHT ROUTE",
-    "Enter the eastern fossil chamber toward Ridley's arena.",
+    "Enter the eastern fossil chamber toward Jam Sennings' arena.",
     "Granite Gal and Geologist Fen study this chamber. Their knowledge is dangerous!",
   ],
   SIGN_PY_LEFT: [
@@ -917,7 +917,7 @@ DG.STORY.DIALOGUES = {
   SIGN_PY_RIGHT: [
     "EMBER RUN — RIGHT ROUTE",
     "Race the ember current along the eastern lava bank.",
-    "Flint and Cinder hold the ember route. Survive the fire to reach Ignis!",
+    "Flint and Cinder hold the ember route. Survive the fire to reach Asset Toverdijk!",
   ],
   SIGN_FN_LEFT: [
     "BLOSSOM WALK — LEFT ROUTE",
@@ -926,12 +926,12 @@ DG.STORY.DIALOGUES = {
   ],
   SIGN_FN_RIGHT: [
     "THORN PASS — RIGHT ROUTE",
-    "Push through the thorny eastern hedgerows toward Sylva.",
+    "Push through the thorny eastern hedgerows toward PuKing Maarten.",
     "Bramble Jr and Vine Bramble defend this thorny route. Proceed with care!",
   ],
   SIGN_SH_LEFT: [
     "DUST TRAIL — LEFT ROUTE",
-    "Trek the dusty western canyon ridgepath toward Terra.",
+    "Trek the dusty western canyon ridgepath toward Rock Hard Toonen.",
     "Hiker Dustin and Scout Drake patrol the dust trail. Earn your canyon badge!",
   ],
   SIGN_SH_RIGHT: [
@@ -946,7 +946,7 @@ DG.STORY.DIALOGUES = {
   ],
   SIGN_CF_RIGHT: [
     "VOLT ROW — RIGHT ROUTE",
-    "Navigate the eastern high-voltage corridor to Volt.",
+    "Navigate the eastern high-voltage corridor to Beyblade Luuk.",
     "Volt Jr and Sparky guard Volt Row. High voltage — approach with caution!",
   ],
   SIGN_BG_LEFT: [
@@ -956,7 +956,7 @@ DG.STORY.DIALOGUES = {
   ],
   SIGN_BG_RIGHT: [
     "DEEP CHANNEL — RIGHT ROUTE",
-    "Wade through the deep eastern swamp channel toward Marina.",
+    "Wade through the deep eastern swamp channel toward Surfing Peter.",
     "Diver Oracle and Oracle Tide haunt the deep channel. Mysterious dangers!",
   ],
   SIGN_AP_LEFT: [
@@ -966,7 +966,7 @@ DG.STORY.DIALOGUES = {
   ],
   SIGN_AP_RIGHT: [
     "STORM WING — RIGHT ROUTE",
-    "Brave the storm-swept eastern battlements toward Valdez.",
+    "Brave the storm-swept eastern battlements toward Bipolar Fieke.",
     "Storm and Dragon Knight guard the Storm Wing. The strongest route!",
   ],
 

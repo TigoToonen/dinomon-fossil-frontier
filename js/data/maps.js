@@ -264,7 +264,7 @@ SHELLCREEK_CITY: {
     // Guard blocks western exit until Herd Badge (BADGE_1) earned from Rex
     { id:'SC_GUARD', name:'Officer', x:1, y:10, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The route ahead is blocked. Defeat Rex at the Shellcreek Gym first!"],
+      dialogue:["The route ahead is blocked. Defeat Normal Normi at the Shellcreek Gym first!"],
       flagToHide:'BADGE_1',
       onInteract: null },
     // Guard stepped aside (one tile north) after badge earned — no longer blocks the path
@@ -338,7 +338,7 @@ DUSTWALL_TOWN: {
       onInteract:null },
     { id:'DW_GUARD', name:'Officer', x:9, y:13, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The southern route is blocked. Defeat Ridley at the Dustwall Gym first — you need the Fossil Badge!"],
+      dialogue:["The southern route is blocked. Defeat Jam Sennings at the Dustwall Gym first — you need the Fossil Badge!"],
       flagToHide:'BADGE_2',
       onInteract: null },
     // Guard stepped aside (one tile right) after badge earned — no longer blocks the path
@@ -408,13 +408,13 @@ PYRESIDE_CITY: {
       onInteract:null },
     { id:'PY_GUARD', name:'Officer', x:9, y:13, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The southern route is blocked. Defeat Ignis at the Pyreside Gym first — you need the Magma Badge!"],
+      dialogue:["The southern route is blocked. Defeat Asset Toverdijk at the Pyreside Gym first — you need the Magma Badge!"],
       flagToHide:'BADGE_3',
       onInteract: null },
     // Second guard blocks x:10 (player could slip past on that column without badge)
     { id:'PY_GUARD_2', name:'Officer', x:10, y:13, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The southern route is blocked. Defeat Ignis at the Pyreside Gym first — you need the Magma Badge!"],
+      dialogue:["The southern route is blocked. Defeat Asset Toverdijk at the Pyreside Gym first — you need the Magma Badge!"],
       flagToHide:'BADGE_3',
       onInteract: null },
     // Guard stepped aside (one tile right) after badge earned — no longer blocks the path
@@ -3805,7 +3805,7 @@ DG.MAPS.BOGMIRE_GYM = {
   sh.npcs.push(
     { id:'SH_GUARD_W', name:'Officer', x:1, y:10, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The western route is blocked. Defeat Terra at the Stonehaven Gym first — you need the Bedrock Badge!"],
+      dialogue:["The western route is blocked. Defeat Rock Hard Toonen at the Stonehaven Gym first — you need the Bedrock Badge!"],
       flagToHide:'BADGE_5',
       onInteract: null },
     // Guard stepped aside (one tile north) after badge earned — no longer blocks the path
@@ -4609,7 +4609,7 @@ DG.MAPS.FERNGROVE_TOWN = {
       shopItems:['SUPERBALL','SUPERPOTION','HYPERPOTION','REVIVE','ANTIDOTE','PARALYHEAL','BURNHEAL','AWAKENING'] },
     { id:'FN_GUARD', name:'Officer', x:6, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The road to Stonehaven is blocked. Defeat Sylva at the Ferngrove Gym first — you need the Canopy Badge!"],
+      dialogue:["The road to Stonehaven is blocked. Defeat PuKing Maarten at the Ferngrove Gym first — you need the Canopy Badge!"],
       flagToHide:'BADGE_4', onInteract:null },
     // Guard stepped aside (one tile right) after badge earned — no longer blocks the path
     { id:'FN_GUARD_DONE', name:'Officer', x:7, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -4680,7 +4680,7 @@ DG.MAPS.CRESTFALL_TOWN = {
       movementType:'STATIONARY', dialogue:['NPC_CRESTFALL_2'], onInteract:null },
     { id:'CF_GUARD', name:'Officer', x:6, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The road ahead is blocked. Defeat Volt at the Crestfall Gym first — you need the Static Badge!"],
+      dialogue:["The road ahead is blocked. Defeat Beyblade Luuk at the Crestfall Gym first — you need the Static Badge!"],
       flagToHide:'BADGE_6', onInteract:null },
     // Guard stepped aside (one tile right) after badge earned — no longer blocks the path
     { id:'CF_GUARD_DONE', name:'Officer', x:7, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -4749,7 +4749,7 @@ DG.MAPS.BOGMIRE_CITY = {
       movementType:'STATIONARY', dialogue:['NPC_BOGMIRE_2'], onInteract:null },
     { id:'BG_GUARD', name:'Officer', x:6, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The road to Apex Summit is blocked. Defeat Marina at the Bogmire Gym first — you'll need the Tide Badge!"],
+      dialogue:["The road to Apex Summit is blocked. Defeat Surfing Peter at the Bogmire Gym first — you'll need the Tide Badge!"],
       flagToHide:'BADGE_7', onInteract:null },
     // Guard stepped aside (one tile right) after badge earned — no longer blocks the path
     { id:'BG_GUARD_DONE', name:'Officer', x:7, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -4758,7 +4758,7 @@ DG.MAPS.BOGMIRE_CITY = {
       requiresFlag:'BADGE_7', onInteract:null },
     { id:'BG_GYM_SIGN', name:'Sign', x:5, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["Bogmire City Gym — Marina, Water-type specialist.", "Defeat her to earn the Tide Badge and unlock Surf on the open sea!"],
+      dialogue:["Bogmire City Gym — Surfing Peter, Water-type specialist.", "Defeat her to earn the Tide Badge and unlock Surf on the open sea!"],
       onInteract:null },
     { id:'FLINT_BOGMIRE', name:'Flint', x:9, y:6, facing:'DOWN', spriteKey:'NPC_RIVAL',
       movementType:'STATIONARY', dialogue:['DOUBLE_BATTLE_PRE'], onInteract:'TRIGGER_DOUBLE_BATTLE',
