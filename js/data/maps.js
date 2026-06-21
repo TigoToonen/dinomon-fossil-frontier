@@ -987,8 +987,12 @@ ROUTE_4A: {
     { x:10, y:0,  targetMap:'PYRESIDE_CITY', targetX:10, targetY:13 },
     { x:9,  y:21, targetMap:'ROUTE_4B', targetX:9,  targetY:1  },
     { x:10, y:21, targetMap:'ROUTE_4B', targetX:10, targetY:1  },
+    { x:1,  y:20, targetMap:'SECRET_TUNNEL', targetX:6, targetY:10 }, // hidden grotto in the deep grass
   ],
   npcs:[
+    { id:'R4A_HINT', name:'Wanderer', x:3, y:16, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'WANDER',
+      dialogue:["They say the deep grass in the far southwest hides a forgotten passage.","I never found it myself... maybe you'll have better luck."], onInteract:null },
     { id:'R4A_TRAINER1', name:'Sylvan', x:5, y:7, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'RANGER_SYLVAN' },
     { id:'R4A_TRAINER2', name:'Ivy', x:14, y:16, facing:'LEFT', spriteKey:'NPC_WOMAN',
@@ -4954,6 +4958,50 @@ DG.MAPS.FAIRYDELL_GYM = {
       dialogue:['GYM_AFKJORN_POST'], onInteract:null, requiresFlag:'TRAINER_GYM_AFKJORN_DEFEATED' },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+// ═══════════════════════════════════════════════════════════════
+// SECRET TUNNEL — hidden grotto reached from Route 4A's deep grass
+// ═══════════════════════════════════════════════════════════════
+DG.MAPS.SECRET_TUNNEL = {
+  id:'SECRET_TUNNEL', name:'Hidden Grotto', width:14, height:12,
+  music:'ROUTE_CALM', isIndoor:false, isCave:true,
+  tiles:[
+    [72,72,72,72,72,72,72,72,72,72,72,72,72,72],
+    [72, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2,72],
+    [72, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2,72],
+    [72, 0, 0, 0, 2, 2, 0, 2, 2, 0, 0, 0, 0,72],
+    [72, 0, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 0,72],
+    [72, 0, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2,72],
+    [72, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2,72],
+    [72, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2,72],
+    [72, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2,72],
+    [72,72,72,72,72,72,68,68,72,72,72,72,72,72],
+  ],
+  warps:[
+    { x:6, y:11, targetMap:'ROUTE_4A', targetX:1, targetY:19 },
+    { x:7, y:11, targetMap:'ROUTE_4A', targetX:1, targetY:19 },
+  ],
+  npcs:[
+    { id:'GROTTO_NOTE', name:'Old Note', x:6, y:6, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["(A weathered note.) 'Few find this grotto. Take the Master Ball — you'll know when to use it.'",
+        "'The DinoMon here are old and rare. Tread softly.'"], onInteract:null },
+  ],
+  items:[
+    { x:6, y:1, id:'MASTERBALL' },
+    { x:1, y:3, id:'RARE_CANDY' },
+    { x:12, y:3, id:'DAWN_STONE' },
+  ],
+  encounterTable:{ grass:[
+    { speciesId:'SHADOWLET', minLv:28, maxLv:32, rate:34 },
+    { speciesId:'GHOSTBONE', minLv:28, maxLv:32, rate:30 },
+    { speciesId:'DARKSCALE', minLv:29, maxLv:33, rate:26 },
+    { speciesId:'NIGHTREX',  minLv:33, maxLv:35, rate:10 },
+  ], water:[]},
+  events:[],
 };
 
 // ── FASE 12: hekken langs de weg ────────────────────────────────────────────
