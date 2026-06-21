@@ -2103,6 +2103,15 @@ DG.Overworld = (function () {
       DG.DialogueBox.show(_msg);
       return null;
     }
+    // Check Dive gate — deep-water dive points need HM Dive to descend
+    if (w.dive && _gs && (typeof DG.FieldMoves === 'undefined' || !DG.FieldMoves.canDive(_gs))) {
+      _blocked = true;
+      DG.DialogueBox.show([
+        "The water here plunges down into darkness.",
+        "A DinoMon that knows Dive could take you beneath the surface!"
+      ], () => { _blocked = false; });
+      return null;
+    }
     // Check gym lock — exit is blocked until the leader is defeated
     if (w.gymLock && _gs && !_gs.player.flags[w.gymLock]) {
       _blocked = true;

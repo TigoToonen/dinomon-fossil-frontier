@@ -112,6 +112,7 @@ DG.TILE = {
   LAVA:         7,  // lava (damages)
   SWAMP:        8,  // swamp (encounter zone)
   FLOWER:       9,  // flower patch (no encounter)
+  DIVE_SPOT:    10, // walkable dark-water dive point (HM Dive warps under/up)
   // Aliases for world/encounter/overworld modules
   PATH:         0,  // = FLOOR
   INDOOR_FLOOR: 0,  // = FLOOR

@@ -5289,14 +5289,17 @@ DG.MAPS.BEACON_HAMLET = {
     [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
     [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
     [66, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,66],
-    [66,71,71,71,71,71,71,71,71,71,71,71,71,71,71,71,71,66],
-    [66, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,66],
+    [66,71,71,71,71,71,71,71, 5,71,71,71,71,71,71,71,71,66],
+    [66, 3, 3, 3, 3, 3, 3, 3,10, 3, 3, 3, 3, 3, 3, 3, 3,66],
   ],
   warps:[
     { x:0, y:5, targetMap:'ROUTE_8A',         targetX:17, targetY:16 },
     { x:4, y:4, targetMap:'BEACON_LIGHTHOUSE', targetX:5, targetY:9 },
+    { x:8, y:12, targetMap:'UNDERSEA_GROTTO',  targetX:5, targetY:5, dive:true }, // dive into the bay
   ],
   npcs:[
+    { id:'BH_PIER', name:'Diver', x:9, y:10, facing:'LEFT', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["The bay drops off sharp past this old pier.","They say a grotto full of sea-treasure lies below — but only a DinoMon with DIVE can reach it."], onInteract:null },
     { id:'BH_HEAL', name:'Innkeeper', x:10, y:7, facing:'DOWN', spriteKey:'NPC_HEALER',
       movementType:'STATIONARY', dialogue:['HEALER_GREET'], onInteract:'HEAL_PARTY' },
     { id:'BH_LORE1', name:'Fisher', x:7, y:3, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -5337,6 +5340,41 @@ DG.MAPS.BEACON_LIGHTHOUSE = {
   items:[
     { x:9, y:2, id:'MASTERBALL' },
     { x:9, y:8, id:'LIFE_ORB' },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+// ═══════════════════════════════════════════════════════════════
+// UNDERSEA GROTTO — underwater cavern beneath Beacon Hamlet's bay.
+//   Reached only via HM Dive from the pier; resurface from the centre.
+// ═══════════════════════════════════════════════════════════════
+DG.MAPS.UNDERSEA_GROTTO = {
+  id:'UNDERSEA_GROTTO', name:'Undersea Grotto', width:12, height:10,
+  music:'ROUTE_CALM', isIndoor:false, isCave:true,
+  tiles:[
+    [72,72,72,72,72,72,72,72,72,72,72,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0, 0,72,72, 0, 0,72,72, 0, 0,72],
+    [72, 0, 0,72, 0, 0, 0, 0,72, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0, 0,72, 0, 0, 0, 0,72, 0, 0,72],
+    [72, 0, 0,72,72, 0,10, 0,72,72, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72,72,72,72,72,72,72,72,72,72,72,72],
+  ],
+  warps:[
+    { x:6, y:7, targetMap:'BEACON_HAMLET', targetX:8, targetY:11 }, // resurface to the pier
+  ],
+  npcs:[
+    { id:'UG_NOTE', name:'Sunken Plaque', x:6, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["(A barnacled plaque glints in the gloom.)","'To the diver who reached this depth: the sea keeps its promises. — The First Keeper.'"], onInteract:null },
+  ],
+  items:[
+    { x:1,  y:1, id:'DEEP_SEA_TOOTH' },
+    { x:10, y:1, id:'DEEP_SEA_SCALE' },
+    { x:1,  y:8, id:'RARE_CANDY' },
+    { x:10, y:8, id:'WATER_STONE', hidden:true },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 };

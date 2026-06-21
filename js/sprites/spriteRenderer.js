@@ -19,6 +19,7 @@ DG.SpriteRenderer = (function () {
     [7]:  '#cc5520', // LAVA
     [8]:  '#3a5e40', // SWAMP / CAVE_FLOOR
     [9]:  '#a5d6a7', // FLOWER
+    [10]: '#0a2a4a', // DIVE_SPOT (dark deep water)
     [64]: '#2e7d32', // TREE
     [65]: '#a08060', // WALL (building brick)
     [66]: '#555555', // MOUNTAIN
@@ -61,6 +62,23 @@ DG.SpriteRenderer = (function () {
     // Tile pixel coords used as seed
     const tileX = Math.round(px / T), tileY = Math.round(py / T);
     const seed = tileX * 31 + tileY * 17;
+
+    if (tileId === 10) {
+      // ── Dive spot — dark swirling deep water (HM Dive) ─────────
+      ctx.fillStyle = '#0a2a4a'; ctx.fillRect(px, py, T, T);
+      const dcx = px + T/2, dcy = py + T/2;
+      // concentric swirl rings
+      ctx.strokeStyle = 'rgba(80,150,210,0.55)'; ctx.lineWidth = 1.5;
+      for (let ri = 0; ri < 3; ri++) {
+        const rr = 4 + ri * 4 + (anim ? Math.sin((anim/14) + ri) * 1.2 : 0);
+        ctx.beginPath(); ctx.arc(dcx, dcy, rr, 0, Math.PI * 2); ctx.stroke();
+      }
+      // dark centre + glints
+      ctx.fillStyle = '#06182e'; ctx.beginPath(); ctx.arc(dcx, dcy, 3, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = 'rgba(180,220,255,0.5)';
+      ctx.fillRect(px + 6, py + 7, 2, 1); ctx.fillRect(px + T - 9, py + T - 9, 2, 1);
+      return;
+    }
 
     if (tileId === 67) {
       // ── Wooden signpost (route direction sign) ─────────────────
