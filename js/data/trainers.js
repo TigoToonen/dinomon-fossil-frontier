@@ -30,11 +30,6 @@ DG.TRAINERS.GYM_REX = {
       moves:     ['TACKLE', 'GROWL', 'QUICK_ATTACK', 'TAIL_WHIP'],
     },
     {
-      speciesId: 'PACKDINO',
-      level:     12,
-      moves:     ['TACKLE', 'HEADBUTT', 'QUICK_ATTACK', 'LEER'],
-    },
-    {
       speciesId: 'HERDSAUR',
       level:     14,
       moves:     ['HEADBUTT', 'BODY_SLAM', 'TACKLE', 'GROWL'],
@@ -62,11 +57,6 @@ DG.TRAINERS.GYM_RIDLEY = {
       speciesId: 'BONEBACK',
       level:     16,
       moves:     ['ROCK_THROW', 'TACKLE', 'HARDEN', 'HEADBUTT'],
-    },
-    {
-      speciesId: 'ROCKLETT',
-      level:     18,
-      moves:     ['ROCK_THROW', 'HEADBUTT', 'HARDEN', 'ROCK_BLAST'],
     },
     {
       speciesId: 'STONESKULL',
@@ -171,6 +161,11 @@ DG.TRAINERS.GYM_TERRA = {
       moves:     ['EARTHQUAKE', 'CRUNCH', 'BULLDOZE', 'SANDSTORM'],
     },
     {
+      speciesId: 'MIDDODON',
+      level:     42,
+      moves:     ['BULLDOZE', 'CLUB_SMASH', 'EARTHQUAKE', 'SAND_ATTACK'],
+    },
+    {
       speciesId: 'TERRADON',
       level:     44,
       moves:     ['EARTHQUAKE', 'STONE_EDGE', 'CLUB_SMASH', 'STEALTH_ROCK'],
@@ -203,6 +198,16 @@ DG.TRAINERS.GYM_VOLT = {
       speciesId: 'STORMWING',
       level:     46,
       moves:     ['THUNDERBOLT', 'WING_ATTACK', 'SPARK', 'THUNDER_WAVE'],
+    },
+    {
+      speciesId: 'VOLTHORN',
+      level:     47,
+      moves:     ['THUNDERBOLT', 'SPARK', 'THUNDER_WAVE', 'QUICK_ATTACK'],
+    },
+    {
+      speciesId: 'TEMPESTFANG',
+      level:     48,
+      moves:     ['THUNDERBOLT', 'WING_ATTACK', 'SPARK', 'AIR_SLASH'],
     },
     {
       speciesId: 'THUNDERSAUR',
@@ -239,6 +244,16 @@ DG.TRAINERS.GYM_MARINA = {
       moves:     ['HYDRO_PUMP', 'EARTHQUAKE', 'SURF', 'TOXIC'],
     },
     {
+      speciesId: 'MARSHFIN',
+      level:     53,
+      moves:     ['SURF', 'WATER_GUN', 'MUD_SLAP', 'TOXIC'],
+    },
+    {
+      speciesId: 'SEAFANG',
+      level:     56,
+      moves:     ['HYDRO_PUMP', 'SURF', 'CRUNCH', 'TOXIC'],
+    },
+    {
       speciesId: 'TIDANOSAURUS',
       level:     58,
       moves:     ['HYDRO_PUMP', 'DRAGON_PULSE', 'SURF', 'ANCIENT_TORRENT'],
@@ -271,6 +286,21 @@ DG.TRAINERS.GYM_VALDEZ = {
       speciesId: 'GLIDEREX',
       level:     64,
       moves:     ['DRAGON_CLAW', 'DIVE_BOMB', 'AERIAL_ACE', 'DRAGON_BREATH'],
+    },
+    {
+      speciesId: 'SKYMASTER',
+      level:     65,
+      moves:     ['AIR_SLASH', 'DRAGON_CLAW', 'AERIAL_ACE', 'DRAGON_BREATH'],
+    },
+    {
+      speciesId: 'RAMPASAUR',
+      level:     66,
+      moves:     ['STONE_EDGE', 'EARTHQUAKE', 'DRAGON_CLAW', 'CLUB_SMASH'],
+    },
+    {
+      speciesId: 'TEMPESTFANG',
+      level:     67,
+      moves:     ['THUNDERBOLT', 'AIR_SLASH', 'WING_ATTACK', 'SPARK'],
     },
     {
       speciesId: 'SKYFANG',
