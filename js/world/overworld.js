@@ -183,6 +183,12 @@ DG.Overworld = (function () {
     // Fossil incubation: carried fossils awaken after enough steps
     try { _incubateFossils(); } catch(e) {}
 
+    // DinoFund: deposited money compounds ~2% every 32 steps
+    if (_gs.player.fund && _gs.player.fund.balance > 0 && _gs.player.steps % 32 === 0) {
+      const f = _gs.player.fund;
+      f.balance = Math.min(9999999, f.balance + Math.max(1, Math.floor(f.balance * 0.02)));
+    }
+
     // Terrain footstep SFX — play every step (audio.js throttles volume)
     try {
       if (typeof DG.Audio !== 'undefined' && DG.Audio.playFootstep) {
@@ -417,6 +423,12 @@ DG.Overworld = (function () {
     // onInteract: REVIVE_FOSSIL (Fossil Lab scientist)
     if (npc.onInteract === 'REVIVE_FOSSIL') {
       _reviveFossils();
+      return;
+    }
+
+    // onInteract: DINO_FUND (Daytrader Niels)
+    if (npc.onInteract === 'DINO_FUND') {
+      _dinoFund();
       return;
     }
 
@@ -1925,6 +1937,40 @@ DG.Overworld = (function () {
        'A ' + spName + ' was revived!',
        dest === 'box' ? (spName + ' was sent to the PC box.') : (spName + ' joined your party!')],
       () => { _blocked = false; });
+  }
+
+  // ── Compound City: Daytrader Niels' DinoFund (compounding savings) ──
+  function _dinoFund() {
+    const p = _gs.player;
+    p.fund = p.fund || { balance: 0 };
+    const bal = p.fund.balance, cash = p.money || 0;
+    DG.DialogueBox.show(
+      ['Daytrader Niels: Your DinoFund balance is ¥' + bal + '.',
+       'You hold ¥' + cash + ' in cash. It grows ~2% every 32 steps while deposited!'],
+      () => {
+        const opts = [];
+        if (cash >= 500)   opts.push('Deposit ¥500');
+        if (cash >= 2000)  opts.push('Deposit ¥2000');
+        if (cash >= 10000) opts.push('Deposit ¥10000');
+        if (bal > 0)       opts.push('Withdraw all (¥' + bal + ')');
+        opts.push('Leave');
+        if (typeof DG.Menu !== 'undefined' && DG.Menu.showChoiceMenu) {
+          DG.Menu.showChoiceMenu('DinoFund', opts, (idx) => {
+            const choice = opts[idx];
+            if (choice && choice.indexOf('Deposit') === 0) {
+              const amt = parseInt(choice.replace(/[^0-9]/g, ''), 10) || 0;
+              p.money = Math.max(0, (p.money || 0) - amt);
+              p.fund.balance += amt;
+              DG.SaveLoad.save(_gs);
+              DG.DialogueBox.show(['Deposited ¥' + amt + '!', 'Take a walk — compounding does the rest.'], () => { _blocked = false; });
+            } else if (choice && choice.indexOf('Withdraw') === 0) {
+              const w = p.fund.balance; p.money = (p.money || 0) + w; p.fund.balance = 0;
+              DG.SaveLoad.save(_gs);
+              DG.DialogueBox.show(['Withdrew ¥' + w + ' from the DinoFund!', 'Pleasure doing business.'], () => { _blocked = false; });
+            } else { _blocked = false; }
+          });
+        } else { _blocked = false; }
+      });
   }
 
   // ── Navigation HUD state ──────────────────────────────────

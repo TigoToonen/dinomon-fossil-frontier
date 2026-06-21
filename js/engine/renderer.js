@@ -940,6 +940,7 @@ DG.Renderer = (function () {
         else if (w.targetMap.endsWith('_HOUSE'))  ftype = 'HOUSE';
         else if (w.targetMap.endsWith('_LAB'))    ftype = 'LAB';
         else if (w.targetMap.endsWith('_SHOP'))   ftype = 'SHOP';
+        else if (w.targetMap.endsWith('_BANK'))   ftype = 'SHOP';   // DinoExchange
         if (!ftype) continue;
         if (_drawn.some(d => Math.abs(d.x - w.x) <= 2 && Math.abs(d.y - w.y) <= 2)) continue;
         _drawn.push({ x: w.x, y: w.y });

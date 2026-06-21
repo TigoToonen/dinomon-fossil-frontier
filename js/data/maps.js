@@ -778,8 +778,11 @@ ROUTE_2A: {
     { x:10, y:0,  targetMap:'SHELLCREEK_CITY', targetX:2, targetY:10 },
     { x:9,  y:17, targetMap:'ROUTE_2B', targetX:9,  targetY:1  },
     { x:10, y:17, targetMap:'ROUTE_2B', targetX:10, targetY:1  },
+    { x:1,  y:16, targetMap:'COMPOUND_CITY', targetX:9, targetY:13 }, // side path to Compound City
   ],
   npcs:[
+    { id:'R2A_CC_SIGN', name:'Sign', x:2, y:15, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["◄ Side path: COMPOUND CITY","Home of the DinoFund — grow your money as you walk!"], onInteract:null },
     { id:'R2A_TRAINER1', name:'Brett', x:5, y:7, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_1'], trainerRef:'HIKER_BRETT' },
     { id:'R2A_TRAINER2', name:'Stone', x:14, y:14, facing:'LEFT', spriteKey:'NPC_MAN',
@@ -4956,6 +4959,115 @@ DG.MAPS.FAIRYDELL_GYM = {
       dialogue:['GYM_AFKJORN_PRE'], onInteract:'TRIGGER_GYM', trainerRef:'GYM_AFKJORN', flagToHide:'TRAINER_GYM_AFKJORN_DEFEATED' },
     { id:'GYM_LEADER_AFKJORN_DONE', name:'AFK Jorn', x:6, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_AFKJORN_POST'], onInteract:null, requiresFlag:'TRAINER_GYM_AFKJORN_DEFEATED' },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+// ═══════════════════════════════════════════════════════════════
+// COMPOUND CITY — finance town (Daytrader Niels + DinoFund), side-town
+// off Route 2A. Not a gym; no badge gating.
+// ═══════════════════════════════════════════════════════════════
+DG.MAPS.COMPOUND_CITY = {
+  id:'COMPOUND_CITY', name:'Compound City', width:20, height:15,
+  music:'TOWN_UPBEAT', isIndoor:false, isCave:false,
+  tiles:[
+    [64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 1,65,65,65,65,65, 1, 1, 1, 1, 1, 1,65,65,65,65,65, 1,64],
+    [64, 1,65,65,65,65,65, 1, 1, 1, 1, 1, 1,65,65,65,65,65, 1,64],
+    [64, 1,65,65,68,65,65, 1, 1, 1, 1, 1, 1,65,68,65,65,65, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 1, 1, 1, 1,74,74, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64,64, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,64,64,64],
+    [64,64,64,64,64,64,64,64,64, 0, 0,64,64,64,64,64,64,64,64,64],
+  ],
+  warps:[
+    { x:9,  y:14, targetMap:'ROUTE_2A', targetX:1, targetY:15 },
+    { x:10, y:14, targetMap:'ROUTE_2A', targetX:1, targetY:15 },
+    { x:4,  y:4,  targetMap:'COMPOUND_BANK',  targetX:6, targetY:9 },
+    { x:14, y:4,  targetMap:'COMPOUND_CENTER', targetX:7, targetY:10 },
+  ],
+  npcs:[
+    { id:'NIELS', name:'Daytrader Niels', x:10, y:6, facing:'DOWN', spriteKey:'NPC_PROF',
+      movementType:'STATIONARY', dialogue:['NIELS_GREET'], onInteract:'DINO_FUND' },
+    { id:'CC_SHOP', name:'Broker', x:5, y:6, facing:'DOWN', spriteKey:'NPC_SHOPKEEPER',
+      movementType:'STATIONARY', dialogue:['SHOP_GREET'], onInteract:'OPEN_SHOP',
+      shopItems:['SUPERBALL','SUPERPOTION','REVIVE','ANTIDOTE','RARE_CANDY'] },
+    { id:'CC_NURSE', name:'Nurse', x:14, y:5, facing:'DOWN', spriteKey:'NPC_HEALER',
+      movementType:'STATIONARY', dialogue:['HEALER_GREET'], onInteract:'HEAL_PARTY' },
+    { id:'CC_T1', name:'Intern Bull', x:6, y:10, facing:'DOWN', spriteKey:'NPC_KID',
+      movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'NIELS_INTERN1', flagToHide:'TRAINER_NIELS_INTERN1_DEFEATED' },
+    { id:'CC_T2', name:'Intern Bear', x:13, y:10, facing:'DOWN', spriteKey:'NPC_KID',
+      movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'NIELS_INTERN2', flagToHide:'TRAINER_NIELS_INTERN2_DEFEATED' },
+    { id:'CC_NPC1', name:'Investor', x:3, y:9, facing:'RIGHT', spriteKey:'NPC_MAN',
+      movementType:'WANDER', dialogue:["Niels' DinoFund grows the longer your money sits — every step earns interest!","Compounding: small gains, repeated, become huge."], onInteract:null },
+    { id:'CC_NPC2', name:'Analyst', x:16, y:9, facing:'LEFT', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:["Bull Market Boulevard never sleeps.","Deposit, walk, withdraw richer. That's the Compound City way."], onInteract:null },
+    { id:'CC_SIGN', name:'Sign', x:11, y:12, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["Welcome to Compound City — home of the DinoFund.","Daytrader Niels invests in rising trainers. Battle his interns, then talk to Niels!"], onInteract:null },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+DG.MAPS.COMPOUND_CENTER = {
+  id:'COMPOUND_CENTER', name:'DinoCenter — Compound City', width:16, height:12,
+  music:'CENTER_THEME', isIndoor:true, isCave:false,
+  tiles:[
+    [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
+    [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
+    [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
+    [65,74,74,74,74,74,74,76,76,74,74,74,74,74,74,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5,77, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,77, 5,65],
+    [65, 5,78,78, 5, 5, 5, 5, 5, 5, 5,78,78, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65,75, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,82, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65,65,65,65,65,65,65,68,68,65,65,65,65,65,65,65],
+  ],
+  warps:[
+    { x:7, y:11, targetMap:'COMPOUND_CITY', targetX:14, targetY:5 },
+    { x:8, y:11, targetMap:'COMPOUND_CITY', targetX:14, targetY:5 },
+  ],
+  npcs:[
+    { id:'HEALER_CC',  name:'Nurse', x:7, y:2, facing:'DOWN', spriteKey:'NPC_HEALER', movementType:'STATIONARY', dialogue:['HEALER_GREET'], onInteract:'HEAL_PARTY' },
+    { id:'HEALER_CC2', name:'Nurse', x:8, y:2, facing:'DOWN', spriteKey:'NPC_HEALER', movementType:'STATIONARY', dialogue:['HEALER_GREET'], onInteract:'HEAL_PARTY' },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+DG.MAPS.COMPOUND_BANK = {
+  id:'COMPOUND_BANK', name:'DinoExchange', width:14, height:11,
+  music:'SHOP_THEME', isIndoor:true, isCave:false,
+  tiles:[
+    [65,65,65,65,65,65,65,65,65,65,65,65,65,65],
+    [65,81,81,81,81,81,81,81,81,81,81,81,81,65],
+    [65,74,74,74,74,74,74,74,74,74,74,74,74,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5,68,68, 5, 5, 5, 5, 5,65],
+    [65,65,65,65,65,65,68,68,65,65,65,65,65,65],
+  ],
+  warps:[
+    { x:6, y:10, targetMap:'COMPOUND_CITY', targetX:4, targetY:5 },
+    { x:7, y:10, targetMap:'COMPOUND_CITY', targetX:4, targetY:5 },
+  ],
+  npcs:[
+    { id:'NIELS_BANK', name:'Daytrader Niels', x:6, y:1, facing:'DOWN', spriteKey:'NPC_PROF',
+      movementType:'STATIONARY', dialogue:['NIELS_GREET'], onInteract:'DINO_FUND' },
+    { id:'CB_TELLER', name:'Teller', x:9, y:1, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:["The DinoFund pays interest for every step you take while money is deposited.","The bigger your balance, the more each step earns. That's compounding!"], onInteract:null },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 };

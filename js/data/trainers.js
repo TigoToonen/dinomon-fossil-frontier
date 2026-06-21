@@ -345,6 +345,24 @@ DG.TRAINERS.AFKJORN_T2 = {
   aiTier:2, location:'FAIRYDELL',
 };
 
+// Compound City — Daytrader Niels' interns (pay well — it's a finance town)
+DG.TRAINERS.NIELS_INTERN1 = {
+  id:'NIELS_INTERN1', name:'Intern Bull', class:'Analyst', isGymLeader:false,
+  badge:null, winDialogue:"Buy low, battle high!", loseDialogue:"Bearish outcome...",
+  reward:1500, party:[
+    { speciesId:'NORMLET', level:13, moves:['TACKLE','QUICK_ATTACK','HEADBUTT','GROWL'] },
+    { speciesId:'BUGLING', level:14, moves:['TACKLE','BUG_BITE','HARDEN','QUICK_ATTACK'] },
+  ], aiTier:2, location:'COMPOUND_CITY',
+};
+DG.TRAINERS.NIELS_INTERN2 = {
+  id:'NIELS_INTERN2', name:'Intern Bear', class:'Analyst', isGymLeader:false,
+  badge:null, winDialogue:"Short the competition!", loseDialogue:"Market correction...",
+  reward:1500, party:[
+    { speciesId:'ROCKLETT', level:14, moves:['ROCK_THROW','TACKLE','HARDEN','HEADBUTT'] },
+    { speciesId:'QUAKELING', level:15, moves:['BULLDOZE','SAND_ATTACK','HEADBUTT','TACKLE'] },
+  ], aiTier:2, location:'COMPOUND_CITY',
+};
+
 // ============================================================
 // STORY BOSSES (5)
 // ============================================================

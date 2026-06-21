@@ -540,6 +540,12 @@ DG.STORY.DIALOGUES = {
     "Shall I heal your DinoMons?",
   ],
 
+  NIELS_GREET: [
+    "Daytrader Niels here — welcome to the DinoFund!",
+    "Deposit your DinoDollars and they earn interest with every step you take.",
+    "Compounding is the eighth wonder of the world, kid. Let's make you rich.",
+  ],
+
   HEALER_DONE: [
     "Your DinoMons are fully healed!",
     "They're restored to perfect health and raring to go!",
