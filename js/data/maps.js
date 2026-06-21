@@ -1946,8 +1946,8 @@ ROUTE_8D: {
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_8C',   targetX:9,  targetY:30 },
     { x:10, y:0,  targetMap:'ROUTE_8C',   targetX:10, targetY:30 },
-    { x:9,  y:31, targetMap:'ROUTE_10A',  targetX:9,  targetY:1  },
-    { x:10, y:31, targetMap:'ROUTE_10A',  targetX:10, targetY:1  },
+    { x:9,  y:31, targetMap:'BOGMIRE_CITY', targetX:16, targetY:13 }, // Route 8 now leads into Bogmire (water gym)
+    { x:10, y:31, targetMap:'BOGMIRE_CITY', targetX:17, targetY:13 },
   ],
   npcs:[
     { id:'R8D_TRAINER1', name:'Zola', x:5, y:9, facing:'RIGHT', spriteKey:'NPC_WOMAN',
@@ -2316,8 +2316,8 @@ ROUTE_10A: {
     [66,66,66,66,66,66,66,66,66, 0, 0,66,66,66,66,66,66,66,66,66], // 37 bottom border
   ],
   warps:[
-    { x:9,  y:0,  targetMap:'ROUTE_8D',  targetX:9,  targetY:30 },
-    { x:10, y:0,  targetMap:'ROUTE_8D',  targetX:10, targetY:30 },
+    { x:9,  y:0,  targetMap:'ROUTE_9E',  targetX:9,  targetY:33 }, // back down the Bogmire approach
+    { x:10, y:0,  targetMap:'ROUTE_9E',  targetX:10, targetY:33 },
     { x:9,  y:37, targetMap:'ROUTE_10B', targetX:9,  targetY:1  },
     { x:10, y:37, targetMap:'ROUTE_10B', targetX:10, targetY:1  },
   ],
@@ -4747,11 +4747,13 @@ DG.MAPS.BOGMIRE_CITY = {
     [64, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8,  8, 8, 8, 8, 8, 8, 8, 8,64],
     [64, 3, 3, 3, 3, 3, 3, 8, 0, 0, 0, 0, 8, 3, 3, 3, 3, 3, 3,  8, 3, 3, 3, 3, 3, 3, 3,64],
     [64,64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,64, 64,64,64,64,64,64,64,64,64],
-    [64,64,64,64,64,64,64,64,64, 8, 8,64,64,64,64,64,64,64,64, 64,64,64,64,64,64,64,64,64],
+    [64,64,64,64,64,64,64,64,64, 8, 8,64,64,64,64,64, 8, 8,64, 64,64,64,64,64,64,64,64,64],
   ],
   warps:[
     { x:9,  y:0,  targetMap:'ROUTE_9A',    targetX:9,  targetY:1, requiresFlag:'BADGE_8'  },
     { x:10, y:0,  targetMap:'ROUTE_9A',    targetX:10, targetY:1, requiresFlag:'BADGE_8'  },
+    { x:16, y:14, targetMap:'ROUTE_8D',    targetX:9,  targetY:30 }, // south path to/from Route 8 (Storm Cliff)
+    { x:17, y:14, targetMap:'ROUTE_8D',    targetX:10, targetY:30 },
     { x:3,  y:8,  targetMap:'BOGMIRE_HOUSE', targetX:3, targetY:6 },
     { x:9,  y:14, targetMap:'ROUTE_7D',    targetX:9,  targetY:26 },
     { x:10, y:14, targetMap:'ROUTE_7D',    targetX:10, targetY:26 },
