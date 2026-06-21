@@ -38,7 +38,10 @@ DG.BoxUI = (function () {
     const party = _gs.player.party;
 
     if (_panel === 'BOX') {
-      const maxCursor = Math.max(0, Math.min(BOX_CAP - 1, box.length)); // can point to one empty slot
+      // _cursor is a GLOBAL index into the box array; the page shown is derived
+      // from it. maxCursor allows pointing at one empty slot past the last mon.
+      const maxCursor = box.length;
+      if (_cursor > maxCursor) _cursor = maxCursor;   // re-clamp after mutations
       if (DG.Input.isPressed('UP'))    _cursor = Math.max(0, _cursor - BOX_COLS);
       if (DG.Input.isPressed('DOWN'))  _cursor = Math.min(maxCursor, _cursor + BOX_COLS);
       if (DG.Input.isPressed('LEFT'))  {
@@ -46,6 +49,12 @@ DG.BoxUI = (function () {
         else _cursor = Math.max(0, _cursor - 1);
       }
       if (DG.Input.isPressed('RIGHT')) _cursor = Math.min(maxCursor, _cursor + 1);
+      // SELECT cycles to the next box page (wraps to the first)
+      if (DG.Input.isPressed('SELECT')) {
+        const pageCount = Math.max(1, Math.ceil((box.length + 1) / BOX_CAP));
+        const nextPage = (Math.floor(_cursor / BOX_CAP) + 1) % pageCount;
+        _cursor = Math.min(maxCursor, nextPage * BOX_CAP);
+      }
 
       if (DG.Input.isPressed('A')) {
         if (_held) {
@@ -212,7 +221,9 @@ DG.BoxUI = (function () {
     ctx.fillStyle = '#aaa';
     ctx.font = '10px monospace';
     const boxCount = box.filter(Boolean).length;
-    ctx.fillText(`${boxCount}/30 stored  |  Party: ${party.length}/6`, 90, 6);
+    const _page = Math.floor(_cursor / BOX_CAP);
+    const _pageCount = Math.max(1, Math.ceil((box.length + 1) / BOX_CAP));
+    ctx.fillText(`${boxCount} stored  |  Box ${_page + 1}/${_pageCount}  [SEL]  |  Party ${party.length}/6`, 90, 6);
 
     // ── PARTY panel (left, 150px) ─────────────────────────
     const PAX = 4, PAY = 26, PAW = 148, SLOT_H = 43;
@@ -286,9 +297,10 @@ DG.BoxUI = (function () {
     ctx.font = 'bold 10px monospace';
     ctx.fillText('BOX  (←switch to Party)', BX + 4, BY + 2);
 
+    const _pageBase = Math.floor(_cursor / BOX_CAP) * BOX_CAP;
     for (let row = 0; row < BOX_ROWS; row++) {
       for (let col = 0; col < BOX_COLS; col++) {
-        const idx  = row * BOX_COLS + col;
+        const idx  = _pageBase + row * BOX_COLS + col;  // GLOBAL box index
         const mon  = box[idx] || null;
         const cx   = BX + col * CELL_W + 2;
         const cy   = BY + 14 + row * CELL_H;
