@@ -2563,6 +2563,10 @@ DG.Battle = (function () {
       const _lost = Math.floor((gs.player.money || 0) / 2);
       gs.player.money = Math.max(0, (gs.player.money || 0) - _lost);
       window._BLACKOUT_LOST = _lost;
+      // Lifetime stats (shown in Options): blackout count + total money lost
+      gs.player.stats = gs.player.stats || {};
+      gs.player.stats.blackouts = (gs.player.stats.blackouts || 0) + 1;
+      gs.player.stats.moneyLost = (gs.player.stats.moneyLost || 0) + _lost;
 
       // FASE 9: gym-reset — verlies je in een gym (trainer óf leider), dan gaan
       // de quiz-vlaggen en gym-trainer-vlaggen van díe gym terug naar af.

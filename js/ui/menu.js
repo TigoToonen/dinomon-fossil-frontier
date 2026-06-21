@@ -724,7 +724,7 @@ DG.Menu = (function () {
 
   function _drawOptions(ctx) {
     const W = DG.CANVAS.W, H = DG.CANVAS.H;
-    const boxW = 290, boxH = OPTIONS_LIST.length * 28 + 46;
+    const boxW = 290, boxH = OPTIONS_LIST.length * 28 + 46 + 42; // +42 for stats block
     const bx = Math.floor((W - boxW) / 2);
     const by = Math.floor((H - boxH) / 2);
     _drawWindow(ctx, bx, by, boxW, boxH);
@@ -758,6 +758,23 @@ DG.Menu = (function () {
         ctx.textAlign = 'left';
       }
     });
+
+    // ── Lifetime stats (blackouts + money lost) ──
+    const stats = (_gs && _gs.player && _gs.player.stats) || {};
+    const sy = by + 36 + OPTIONS_LIST.length * 28 + 4;
+    ctx.strokeStyle = '#2a4a6a'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(bx + 12, sy); ctx.lineTo(bx + boxW - 12, sy); ctx.stroke();
+    ctx.font = '11px monospace'; ctx.textBaseline = 'top';
+    ctx.fillStyle = '#cc8888';
+    ctx.fillText('Black-outs:', bx + 12, sy + 6);
+    ctx.fillStyle = '#ffbbbb'; ctx.textAlign = 'right';
+    ctx.fillText(String(stats.blackouts || 0), bx + boxW - 12, sy + 6);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#cc8888';
+    ctx.fillText('Money lost:', bx + 12, sy + 20);
+    ctx.fillStyle = '#ffbbbb'; ctx.textAlign = 'right';
+    ctx.fillText('¥' + (stats.moneyLost || 0), bx + boxW - 12, sy + 20);
+    ctx.textAlign = 'left';
 
     // Hint
     ctx.fillStyle = '#555577';
