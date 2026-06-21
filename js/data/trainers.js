@@ -543,6 +543,74 @@ DG.TRAINERS.DIRECTOR_CLADE = {
 };
 
 // ============================================================
+// TEAM EXTINCTION HIDEOUT (grunts + admin) — under Crestfall
+// ============================================================
+DG.TRAINERS.TE_GRUNT_1 = {
+  id:'TE_GRUNT_1', name:'Grunt', class:'Team Extinction Grunt',
+  isGymLeader:false, isStoryBoss:false, badge:null,
+  winDialogue:"Team Extinction doesn't lose to kids!",
+  loseDialogue:"Tch! You got past me, but the others won't go so easy.",
+  reward:1480,
+  party:[
+    { speciesId:'SHADOWLET', level:36, moves:['SHADOW_BALL','NIGHT_SHADE','LICK','CONFUSE_RAY'] },
+    { speciesId:'DUSKFANG',  level:37, moves:['CRUNCH','SHADOW_CLAW','NIGHT_SLASH','SCARY_FACE'] },
+  ],
+  aiTier:2, location:'TE_HIDEOUT_1',
+};
+DG.TRAINERS.TE_GRUNT_2 = {
+  id:'TE_GRUNT_2', name:'Grunt', class:'Team Extinction Grunt',
+  isGymLeader:false, isStoryBoss:false, badge:null,
+  winDialogue:"Stay out of our excavation!",
+  loseDialogue:"You think a fossil dig is your business? Get lost!",
+  reward:1520,
+  party:[
+    { speciesId:'EMBRIX',   level:37, moves:['EMBER','TACKLE','SMOKESCREEN','FLAME_CHARGE'] },
+    { speciesId:'PACKDINO', level:37, moves:['BITE','HOWL','TAKE_DOWN','WORK_UP'] },
+  ],
+  aiTier:2, location:'TE_HIDEOUT_1',
+};
+DG.TRAINERS.TE_GRUNT_3 = {
+  id:'TE_GRUNT_3', name:'Grunt', class:'Team Extinction Grunt',
+  isGymLeader:false, isStoryBoss:false, badge:null,
+  winDialogue:"The Permian Core will end you all anyway!",
+  loseDialogue:"How are you this strong?! Director Clade should hear of you.",
+  reward:1560,
+  party:[
+    { speciesId:'SHADOWLET', level:37, moves:['SHADOW_BALL','NIGHT_SHADE','LICK','CONFUSE_RAY'] },
+    { speciesId:'PACKDINO',  level:38, moves:['BITE','HOWL','TAKE_DOWN','WORK_UP'] },
+    { speciesId:'DUSKFANG',  level:38, moves:['CRUNCH','SHADOW_CLAW','NIGHT_SLASH','SCARY_FACE'] },
+  ],
+  aiTier:2, location:'TE_HIDEOUT_2',
+};
+DG.TRAINERS.TE_GRUNT_4 = {
+  id:'TE_GRUNT_4', name:'Grunt', class:'Team Extinction Grunt',
+  isGymLeader:false, isStoryBoss:false, badge:null,
+  winDialogue:"The specimen stays in its cage. Forever.",
+  loseDialogue:"No! The cage... don't you dare free it!",
+  reward:1600,
+  party:[
+    { speciesId:'SOLARIX',  level:38, moves:['FIRE_BLAST','SOLAR_BEAM','FLAME_CHARGE','SUNNY_DAY'] },
+    { speciesId:'DUSKFANG', level:39, moves:['CRUNCH','SHADOW_CLAW','NIGHT_SLASH','SCARY_FACE'] },
+  ],
+  aiTier:2, location:'TE_HIDEOUT_2',
+};
+DG.TRAINERS.CMD_DEVONIAN = {
+  id:'CMD_DEVONIAN', name:'Commander Devonian', class:'Team Extinction Commander',
+  isGymLeader:false, isStoryBoss:true, badge:null,
+  preBattleDialogue:'CMD_DEVONIAN_1', postBattleDialogue:'CMD_DEVONIAN_2',
+  winDialogue:"This dig site is ours. Crawl back to the surface, child.",
+  loseDialogue:"Impossible... the deepest fossils answered to ME. Take the beast, then — it's already too late for the world.",
+  reward:5200,
+  party:[
+    { speciesId:'SOLARIX',    level:40, moves:['FIRE_BLAST','SOLAR_BEAM','FLAME_CHARGE','SUNNY_DAY'] },
+    { speciesId:'PACKDINO',   level:40, moves:['BITE','HOWL','TAKE_DOWN','WORK_UP'] },
+    { speciesId:'DUSKFANG',   level:41, moves:['CRUNCH','SHADOW_CLAW','NIGHT_SLASH','SCARY_FACE'] },
+    { speciesId:'OBSIDIUDON', level:42, moves:['SHADOW_BALL','DARK_PULSE','ANCIENT_POWER','IRON_DEFENSE'] },
+  ],
+  aiTier:3, location:'TE_HIDEOUT_2',
+};
+
+// ============================================================
 // ROUTE TRAINERS (20)
 // ============================================================
 

@@ -467,6 +467,30 @@ DG.STORY.DIALOGUES = {
     "Go, then. Face him. See how well your bonds hold against sixty-six million years of power.",
   ],
 
+  CMD_DEVONIAN_1: [
+    "Far enough, surface-dweller. This dig is OFF LIMITS.",
+    "I am Commander Devonian. While the others posture above ground, I unearth what truly matters — the oldest fossils, the first beasts.",
+    "We caged a specimen down here that predates your little 'partners' by an age. It's ours now.",
+    "Turn back, or be buried with the rest of history!",
+  ],
+  CMD_DEVONIAN_2: [
+    "Defeated... in my own dig...",
+    "Fine. Take the caged beast — a parting gift before extinction reclaims you all.",
+    "Director Clade has the Permian Core nearly within reach. Nothing you do here changes that.",
+  ],
+  TE_HIDEOUT_SIGN: [
+    "A crude tunnel mouth, freshly dug. Cart tracks lead down into the dark.",
+    "Scrawled on a board: 'TEAM EXTINCTION — EXCAVATION SITE. KEEP OUT.'",
+  ],
+  TE_HIDEOUT_RESCUE: [
+    "The cage hangs open. The frightened DinoMon inside looks up at you...",
+    "It's a TARRASAUR — a confiscated fossil specimen! It steps out and bonds with you in gratitude.",
+  ],
+  TE_HIDEOUT_CAGE: [
+    "A reinforced cage. Something ancient paces inside, eyeing the grunts warily.",
+    "If you beat the commander, you might be able to free it.",
+  ],
+
   DIRECTOR_CLADE_1: [
     "...",
     "So you've arrived. I expected you sooner.",

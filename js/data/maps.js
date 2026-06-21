@@ -1458,7 +1458,7 @@ ROUTE_6D: {
     [64,64,64,64,64,64,64,64,64, 2, 2,64,64,64,64,64,64,64,64,64], // 12 CHOKE
     [64,64,64,64,64,64,64,64,64, 2, 2,64,64,64,64,64,64,64,64,64], // 13 CHOKE
     [64,64,64,64,64,64,64,64,64, 2, 2,64,64,64,64,64,64,64,64,64], // 14 CHOKE (4-row)
-    [64, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2,64], // 15 open
+    [64,68, 2, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2,64], // 15 Extinction dig (left)
     [64, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2,64], // 16 dense
     [64, 3, 3, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 3, 3, 3,64], // 17 water
     [64, 3, 3, 3, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 3, 3, 3, 3,64], // 18 water
@@ -1473,12 +1473,15 @@ ROUTE_6D: {
     [64,64,64,64,64,64,64,64,64, 0, 0,64,64,64,64,64,64,64,64,64], // 27 bottom border
   ],
   warps:[
+    { x:1,  y:15, targetMap:'TE_HIDEOUT_1', targetX:6, targetY:10 }, // Team Extinction hideout
     { x:9,  y:0,  targetMap:'ROUTE_6C',       targetX:9,  targetY:26 },
     { x:10, y:0,  targetMap:'ROUTE_6C',       targetX:10, targetY:26 },
     { x:9,  y:27, targetMap:'CRESTFALL_TOWN', targetX:9,  targetY:13 },
     { x:10, y:27, targetMap:'CRESTFALL_TOWN', targetX:10, targetY:13 },
   ],
   npcs:[
+    { id:'R6D_DIG_SIGN', name:'Worried Local', x:3, y:15, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:["That tunnel to the west? Team Extinction dug it overnight — right under Crestfall!","Someone brave should put a stop to whatever they're doing down there."], onInteract:null },
     { id:'R6D_TRAINER1', name:'Hank', x:5, y:9, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_4'], trainerRef:'ELECTRICIAN_SPARK' },
     { id:'R6D_TRAINER2', name:'Rod', x:14, y:21, facing:'LEFT', spriteKey:'NPC_MAN',
@@ -5172,6 +5175,94 @@ DG.MAPS.SAFARI_ZONE = {
     { speciesId:'AEROLITH',  minLv:33, maxLv:37, rate:10 },
   ], water:[]},
   events:[],
+};
+
+// ═══════════════════════════════════════════════════════════════
+// TEAM EXTINCTION HIDEOUT — dug under Crestfall, entrance on Route 6D
+//   Two levels: grunt-guarded entry hall → admin sanctum with a caged
+//   fossil specimen (rescued as a gift TARRASAUR after beating the boss).
+// ═══════════════════════════════════════════════════════════════
+DG.MAPS.TE_HIDEOUT_1 = {
+  id:'TE_HIDEOUT_1', name:'Extinction Dig — Upper', width:14, height:12,
+  music:'ROUTE_ROCKY', isIndoor:false, isCave:true,
+  tiles:[
+    [72,72,72,72,72,72,72,72,72,72,72,72,72,72],
+    [72, 0, 0, 0, 0, 0,68, 0, 0, 0, 0, 0, 0,72],
+    [72, 0,69, 0, 0, 0, 0, 0, 0, 0,69, 0, 0,72],
+    [72, 0, 0, 0, 0,72,72,72, 0, 0, 0, 0, 0,72],
+    [72, 0, 0, 0, 0,72, 0,72, 0, 0, 0, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0, 0,69, 0, 0, 0, 0, 0,69, 0, 0, 0,72],
+    [72, 0, 0, 0, 0, 0,72,72,72, 0, 0, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72,72,72,72,72,72,68,72,72,72,72,72,72,72],
+  ],
+  warps:[
+    { x:6, y:11, targetMap:'ROUTE_6D',    targetX:2, targetY:15 }, // back to surface
+    { x:6, y:1,  targetMap:'TE_HIDEOUT_2', targetX:6, targetY:10 }, // deeper down
+  ],
+  npcs:[
+    { id:'TEH1_SIGN', name:'Dig Notice', x:8, y:10, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:['TE_HIDEOUT_SIGN'], onInteract:null },
+    { id:'TEH1_G1', name:'Grunt', x:4, y:5, facing:'DOWN', spriteKey:'NPC_GRUNT',
+      movementType:'STATIONARY', dialogue:['GRUNT_1'], trainerRef:'TE_GRUNT_1', flagToHide:'TRAINER_TE_GRUNT_1_DEFEATED' },
+    { id:'TEH1_G2', name:'Grunt', x:9, y:8, facing:'DOWN', spriteKey:'NPC_GRUNT',
+      movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'TE_GRUNT_2', flagToHide:'TRAINER_TE_GRUNT_2_DEFEATED' },
+    { id:'TEH1_FLAVOR', name:'Grunt', x:11, y:2, facing:'LEFT', spriteKey:'NPC_GRUNT',
+      movementType:'STATIONARY', dialogue:["Director Clade pays well for old bones.","The deeper we dig, the older the fossils. Some shouldn't be woken."], onInteract:null },
+  ],
+  items:[
+    { x:1, y:2, id:'HYPERPOTION' },
+    { x:12, y:10, id:'ULTRABALL', qty:2, hidden:true },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+DG.MAPS.TE_HIDEOUT_2 = {
+  id:'TE_HIDEOUT_2', name:'Extinction Dig — Sanctum', width:14, height:12,
+  music:'ROUTE_ROCKY', isIndoor:false, isCave:true,
+  tiles:[
+    [72,72,72,72,72,72,72,72,72,72,72,72,72,72],
+    [72, 0, 0, 0, 0, 0,74,74, 0, 0, 0, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0, 0,69, 0, 0, 0, 0, 0, 0,69, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0,69, 0, 0, 0, 0, 0, 0, 0, 0,69, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72,72,72,72,72,72,68,72,72,72,72,72,72,72],
+  ],
+  warps:[
+    { x:6, y:11, targetMap:'TE_HIDEOUT_1', targetX:6, targetY:2 }, // back up
+  ],
+  npcs:[
+    { id:'TEH2_CAGE', name:'Caged Specimen', x:6, y:2, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:['TE_HIDEOUT_CAGE'], onInteract:null,
+      flagToHide:'TRAINER_CMD_DEVONIAN_DEFEATED' },
+    { id:'TEH2_RESCUE', name:'Caged Specimen', x:7, y:2, facing:'DOWN', spriteKey:'NPC_PROF',
+      movementType:'STATIONARY', onInteract:'GIFT_MON', requiresFlag:'TRAINER_CMD_DEVONIAN_DEFEATED',
+      giftSpecies:'TARRASAUR', giftLevel:35, giftFlag:'TARRASAUR_RESCUED',
+      dialogue:['TE_HIDEOUT_RESCUE'],
+      alreadyGivenDialogue:["The TARRASAUR you freed roams the surface now, far from this place."] },
+    { id:'TEH2_BOSS', name:'Commander Devonian', x:6, y:5, facing:'DOWN', spriteKey:'NPC_GRUNT',
+      movementType:'STATIONARY', dialogue:['CMD_DEVONIAN_1'],
+      trainerRef:'CMD_DEVONIAN', flagToHide:'TRAINER_CMD_DEVONIAN_DEFEATED' },
+    { id:'TEH2_G3', name:'Grunt', x:3, y:8, facing:'DOWN', spriteKey:'NPC_GRUNT',
+      movementType:'STATIONARY', dialogue:['GRUNT_3'], trainerRef:'TE_GRUNT_3', flagToHide:'TRAINER_TE_GRUNT_3_DEFEATED' },
+    { id:'TEH2_G4', name:'Grunt', x:10, y:8, facing:'DOWN', spriteKey:'NPC_GRUNT',
+      movementType:'STATIONARY', dialogue:['GRUNT_5'], trainerRef:'TE_GRUNT_4', flagToHide:'TRAINER_TE_GRUNT_4_DEFEATED' },
+  ],
+  items:[
+    { x:1, y:10, id:'MAXREVIVE' },
+    { x:12, y:1, id:'RARE_CANDY', hidden:true },
+    { x:1, y:1, id:'DAWN_STONE' },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
 };
 
 // ═══════════════════════════════════════════════════════════════
