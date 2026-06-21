@@ -237,7 +237,7 @@ DG.Overworld = (function () {
       const mapId = warp.mapId || warp.targetMap;
       const destX = warp.destX !== undefined ? warp.destX : warp.targetX;
       const destY = warp.destY !== undefined ? warp.destY : warp.targetY;
-      _startTransition(mapId, destX, destY);
+      _startTransition(mapId, destX, destY, warp.facing);
       return;
     }
 
@@ -1597,7 +1597,25 @@ DG.Overworld = (function () {
   // All previous fade-transition code caused persistent black screens due to
   // race conditions between the state machine and the animation counter.
   // Solution: just teleport the player immediately. Clean, simple, reliable.
-  function _startTransition(mapId, x, y) {
+  // Face the player INTO the destination map based on which edge they land on.
+  // Fixes the "fell in from above" feeling: when a warp lands you on an edge
+  // tile, you should look inward (away from the border), not keep your pre-warp
+  // facing (which often pointed off-map). Interior landings keep current facing
+  // (e.g. exiting a building you keep looking down into the town). An explicit
+  // warp.facing always wins.
+  function _resolveFacing(m, x, y) {
+    if (!m) return _gs.player.facing;
+    const W = m.width, H = m.height;
+    const dTop = y, dBot = H - 1 - y, dLeft = x, dRight = W - 1 - x;
+    const min = Math.min(dTop, dBot, dLeft, dRight);
+    if (min > 2) return _gs.player.facing;   // interior — keep facing
+    if (min === dTop)  return 'DOWN';
+    if (min === dBot)  return 'UP';
+    if (min === dLeft) return 'RIGHT';
+    return 'LEFT';
+  }
+
+  function _startTransition(mapId, x, y, facing) {
     // Ensure we're never left in a blocked state if something goes wrong
     _blocked       = false;
     _transitioning = false;
@@ -1629,6 +1647,8 @@ DG.Overworld = (function () {
       _gs.player.x = safe.x;
       _gs.player.y = safe.y;
     } catch(e) {}
+    // Orient the player to face into the new map (or honour an explicit facing).
+    try { _gs.player.facing = facing || _resolveFacing(_mapData, _gs.player.x, _gs.player.y); } catch(e) {}
     try { _updateCamera(); } catch(e) {}
     try { DG.SaveLoad.save(_gs); } catch(e) {}
   }
@@ -1778,8 +1798,8 @@ DG.Overworld = (function () {
   }
 
   // Public warp (called from events)
-  function warp(mapId, x, y) {
-    _startTransition(mapId, x, y);
+  function warp(mapId, x, y, facing) {
+    _startTransition(mapId, x, y, facing);
   }
 
   // ── Map Loading ───────────────────────────────────────────

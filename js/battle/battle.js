@@ -562,7 +562,9 @@ DG.Battle = (function () {
       _notifyUI({ event: 'FORCE_SWITCH' });
       return;
     }
+    _clearLocks(_battle.playerMon);  // outgoing mon drops any multi-turn lock
     _battle.playerMon = newMon;
+    _clearLocks(newMon);
     newMon._seeded = false; // seed clears on switch-in
     _battle.participants.add(act.targetIndex);
     _battle.playerStages = { atk:0, def:0, spAtk:0, spDef:0, spd:0, acc:0, eva:0 };
@@ -848,6 +850,26 @@ DG.Battle = (function () {
     // Fallback: state stays EXECUTE, next frame will re-tick
   }
 
+  // Moves that lock the user into a multi-turn rampage, then cause confusion.
+  const _RAMPAGE_MOVES = { THRASH: 1, OUTRAGE: 1, PETAL_DANCE: 1 };
+
+  // Index of the move the actor is locked into this turn (-1 if free to choose).
+  function lockedMoveIndex(mon) {
+    if (!mon || !mon._lock) return -1;
+    return mon.moves.findIndex(m => m && m.moveId === mon._lock.moveId);
+  }
+
+  // Clear all multi-turn lock state (called on switch / faint so a returning
+  // DinoMon is never stuck mid-Rollout or mid-charge).
+  function _clearLocks(mon) {
+    if (!mon) return;
+    mon._lock = null;
+    mon._charging = false;
+    mon._chargingMoveId = null;
+    mon._rolloutMult = 1;
+    mon._rampageEnded = false;
+  }
+
   // ── MOVE EXECUTION ────────────────────────────────────────
   function _doMove(isPlayer, actor, target, act, actorStages, targetStages) {
     const actorName  = _monName(actor);
@@ -915,6 +937,16 @@ DG.Battle = (function () {
       _pushMessage(`${actorName} overcame infatuation!`);
     }
 
+    // Multi-turn lock: if committed to a move (Rollout / charging two-turn /
+    // Thrash family), force that move regardless of what was chosen, and treat
+    // this as a continuation turn (no extra PP spent).
+    let _lockContinue = false;
+    if (actor._lock) {
+      const li = actor.moves.findIndex(m => m && m.moveId === actor._lock.moveId);
+      if (li >= 0) { act = Object.assign({}, act, { moveIndex: li }); _lockContinue = true; }
+      else actor._lock = null;
+    }
+
     // Determine move (Struggle if no PP or no valid move)
     let moveSlot = act.moveIndex >= 0 ? actor.moves[act.moveIndex] : null;
     let move = moveSlot ? DG.MOVES[moveSlot.moveId] : null;
@@ -922,11 +954,12 @@ DG.Battle = (function () {
 
     // Check if all moves have 0 PP → force Struggle
     const allOut = actor.moves.every(m => (m.ppCurrent || 0) <= 0);
-    if (allOut || !move || (moveSlot && moveSlot.ppCurrent <= 0)) {
+    if (!_lockContinue && (allOut || !move || (moveSlot && moveSlot.ppCurrent <= 0))) {
       move = { id:'STRUGGLE', name:'Struggle', type:'NORMAL', category:'PHYSICAL', power:50,
                accuracy:999, pp:1, priority:0, effect:{ type:'RECOIL', fraction:0.25 }, description:'Desperation move.' };
       isStruggle = true;
-    } else {
+    } else if (!_lockContinue) {
+      // Only spend PP on the FIRST turn of a multi-turn sequence.
       moveSlot.ppCurrent = Math.max(0, (moveSlot.ppCurrent || 0) - 1);
     }
 
@@ -935,6 +968,7 @@ DG.Battle = (function () {
     if (effType === 'TWO_TURN' && !actor._charging) {
       actor._charging = true;
       actor._chargingMoveId = move.id;
+      actor._lock = { moveId: move.id, kind: 'CHARGE' };  // force the release turn
       // FASE 9: visuele charge-status (Fly = omhoog, Dig = ondergronds, vervaagd)
       try { if (DG.BattleAnim.setChargeVisual) DG.BattleAnim.setChargeVisual(isPlayer ? 'player' : 'enemy', move.id); } catch(e) {}
       _pushMessage(`${actorName} ${move.effect.chargeMsg || 'is charging!'}`);
@@ -944,8 +978,28 @@ DG.Battle = (function () {
     if (actor._charging) {
       actor._charging = false;
       actor._chargingMoveId = null;
+      actor._lock = null;   // two-turn sequence complete after the release
       // FASE 9: dino komt terug in beeld voor de aanval
       try { if (DG.BattleAnim.setChargeVisual) DG.BattleAnim.setChargeVisual(isPlayer ? 'player' : 'enemy', null); } catch(e) {}
+    }
+
+    // ── Rollout / Rampage (Thrash, Outrage, Petal Dance) lock ──────────
+    // Rollout: locks for up to 5 turns, power doubles each turn.
+    // Rampage: locks for 2-3 turns, then the user becomes confused.
+    actor._rolloutMult = 1;
+    if (move.id === 'ROLLOUT') {
+      if (!actor._lock) actor._lock = { moveId: 'ROLLOUT', kind: 'ROLLOUT', turnsLeft: 5, count: 0 };
+      actor._rolloutMult = Math.pow(2, actor._lock.count || 0);
+      actor._lock.count = (actor._lock.count || 0) + 1;
+      actor._lock.turnsLeft--;
+      if (actor._lock.turnsLeft <= 0) actor._lock = null;
+    } else if (_RAMPAGE_MOVES[move.id]) {
+      if (!actor._lock) actor._lock = { moveId: move.id, kind: 'RAMPAGE', turnsLeft: (Math.random() < 0.5 ? 2 : 3) };
+      actor._lock.turnsLeft--;
+      if (actor._lock.turnsLeft <= 0) {
+        actor._lock = null;
+        actor._rampageEnded = true;   // become confused after this hit resolves
+      }
     }
 
     _pushMessage(`${actorName} used ${move.name}!`);
@@ -957,6 +1011,13 @@ DG.Battle = (function () {
     }
 
     _resolveMoveEffect(isPlayer, actor, target, move, actorStages, targetStages, isStruggle);
+
+    // Rampage finished (Thrash/Outrage/Petal Dance) — user tires and gets confused.
+    if (actor._rampageEnded) {
+      actor._rampageEnded = false;
+      const cr = DG.StatusEffects.applyConfusion(actor);
+      if (cr.applied) _pushMessage(`${actorName} became confused due to fatigue!`);
+    }
   }
 
   // Common path: accuracy check + apply effect
@@ -1082,7 +1143,7 @@ DG.Battle = (function () {
     if (actor.heldItem === 'CHOICE_BAND' && move.category === 'PHYSICAL') heldMult *= 1.5;
     if (actor.heldItem === 'CHOICE_SPECS' && move.category === 'SPECIAL')  heldMult *= 1.5;
 
-    const totalAtkerMult = abilityMult * heldMult;
+    const totalAtkerMult = abilityMult * heldMult * (actor._rolloutMult || 1);
 
     // ONE_HIT_KO: bypasses damage formula entirely
     if (effType === 'ONE_HIT_KO') {
@@ -1498,7 +1559,9 @@ DG.Battle = (function () {
       return;
     }
     const oldName = _monName(_battle.enemyMon);
+    _clearLocks(_battle.enemyMon);
     _battle.enemyMon = newMon;
+    _clearLocks(newMon);
     DG.SaveLoad.markSeen(_battle.gameState, newMon.speciesId);
     _battle.enemyStages = { atk:0, def:0, spAtk:0, spDef:0, spd:0, acc:0, eva:0 };
     _applyEntryHazards(newMon, false);
@@ -2412,7 +2475,9 @@ DG.Battle = (function () {
       return;
     }
     const oldName = _monName(_battle.playerMon);
+    _clearLocks(_battle.playerMon);  // outgoing mon drops any multi-turn lock
     _battle.playerMon = newMon;
+    _clearLocks(newMon);
     newMon._seeded = false; // seed clears on switch-in
     _battle.participants.add(act.targetIndex); // track XP participation
     _battle.playerStages = { atk:0, def:0, spAtk:0, spDef:0, spd:0, acc:0, eva:0 };
@@ -2697,6 +2762,7 @@ DG.Battle = (function () {
     startDouble,
     update,
     submitPlayerAction,
+    lockedMoveIndex,
     switchDoubleTarget,
     getState,
     getBattle,

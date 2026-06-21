@@ -2509,7 +2509,7 @@ DG.MOVES = {
   PETAL_DANCE: {
     id: 'PETAL_DANCE', name: 'Petal Dance', type: 'GRASS', category: 'SPECIAL',
     power: 120, accuracy: 100, pp: 10, priority: 0, animStyle: 'VORTEX',
-    effect: { type: 'CONFUSE', chance: 100, target: 'self' },
+    effect: { type: 'NONE' },  // rampage lock + post-confusion handled in battle.js
     description: 'The user attacks with a face-up of petals for two to three turns, then falls into confusion.'
   },
 

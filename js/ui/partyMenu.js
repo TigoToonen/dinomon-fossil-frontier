@@ -550,10 +550,11 @@ DG.PartyMenu = (function () {
       ctx.fillStyle = mon.hp.current <= 0 ? '#888' : '#ffffff';
       ctx.fillText(name, nameX, y + 3);
 
-      // Type badge next to name
+      // Type badge(s) next to name — show both for dual-types
       if (sp && sp.types && sp.types[0]) {
         const nameW = ctx.measureText(name).width;
-        _typeBadge(ctx, sp.types[0], nameX + nameW + 4, y + 2);
+        let bx = nameX + nameW + 4;
+        for (const t of sp.types) { _typeBadge(ctx, t, bx, y + 2); bx += 25; }
       }
 
       // Level

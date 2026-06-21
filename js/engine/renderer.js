@@ -2126,6 +2126,18 @@ DG.Renderer = (function () {
     const _battle = DG.Battle.getBattle();
     const _isDouble = _battle && _battle.isDouble;
 
+    // Locked into a multi-turn move (Rollout / charging two-turn / Thrash):
+    // auto-submit it — the player gets no move choice this turn.
+    if (_battle && _battle.playerMon && !_isDouble && DG.Battle.lockedMoveIndex) {
+      const _li = DG.Battle.lockedMoveIndex(_battle.playerMon);
+      if (_li >= 0) {
+        DG.Battle.submitPlayerAction({ type:'MOVE', moveIndex: _li });
+        _battleUIMode = 'MAIN';
+        _moveCursor = 0;
+        return;
+      }
+    }
+
     if (_battleUIMode === 'MAIN') {
       if (_isDouble) {
         // Double battle: only FIGHT and DINOM (2 options)
@@ -2189,7 +2201,7 @@ DG.Renderer = (function () {
     const gs = battle.gameState;
     const BALLS = ['DINOBALL','SUPERBALL','ULTRABALL','AMBERBALL','MASTERBALL','DINOMASTERBALL'];
 
-    DG.BagMenu.openBattle(gs, function(itemId) {
+    DG.BagMenu.openBattle(gs, function(itemId, targetIndex) {
       if (BALLS.includes(itemId)) {
         // Ball — only in wild battles
         if (battle.type !== 'WILD') {
@@ -2199,16 +2211,10 @@ DG.Renderer = (function () {
         DG.Battle.submitPlayerAction({ type:'ITEM', itemId });
         _battleUIMode = 'MAIN';
       } else {
-        // Healing item — apply to active player mon, costs a turn
-        const mon = battle.playerMon;
-        const applied = DG.BagMenu.applyHeal(mon, itemId);
-        if (applied) {
-          DG.SaveLoad.removeItem(gs, itemId, 1);
-          DG.Battle.submitPlayerAction({ type:'ITEM', itemId });
-          _battleUIMode = 'MAIN';
-        } else {
-          DG.DialogueBox.show(["It won't have any effect!"], () => { _battleUIMode = 'MAIN'; });
-        }
+        // Healing item on the chosen party mon — the battle engine applies the
+        // heal and consumes the item exactly once (costs a turn).
+        DG.Battle.submitPlayerAction({ type:'ITEM', itemId, targetIndex });
+        _battleUIMode = 'MAIN';
       }
     }, function() {
       // Closed without selecting

@@ -204,11 +204,16 @@ DG.BagMenu = (function () {
     if (DG.Input.isPressed('A') && items[_cursor]) {
       const itemId = items[_cursor][0];
       if (_battleOnUsed) {
-        if (BALLS.includes(itemId) || _isBattleUsable(itemId)) {
+        if (BALLS.includes(itemId)) {
           const cb = _battleOnUsed; _battleOnUsed = null;
           const closeCb = _onClose; _onClose = null;
           if (typeof closeCb === 'function') closeCb();
           cb(itemId);
+        } else if (_isBattleUsable(itemId)) {
+          // Heal/revive in battle: pick WHICH party mon to use it on first.
+          _pendingItem = itemId;
+          _monCursor   = 0;
+          _mode        = 'SELECT_MON';
         } else {
           DG.DialogueBox.show(["Can't use that here!"], () => {});
         }
@@ -360,6 +365,18 @@ DG.BagMenu = (function () {
   // ── Confirm use of pending item on a party mon ───────────────
   function _confirmItemOnMon(itemId, mon) {
     const monName = mon.nickname || DG.SPECIES[mon.speciesId]?.name || mon.speciesId;
+
+    // Battle context: don't apply/consume here — hand the chosen target back to
+    // the battle engine, which applies the heal and removes the item exactly once.
+    if (_battleOnUsed) {
+      const idx     = _gs.player.party.indexOf(mon);
+      const cb      = _battleOnUsed; _battleOnUsed = null;
+      const closeCb = _onClose;      _onClose      = null;
+      _mode = 'ITEMS'; _pendingItem = null;
+      if (typeof closeCb === 'function') closeCb();
+      cb(itemId, idx);
+      return;
+    }
 
     // ── TM / HM ──
     if (_isTM(itemId)) {
