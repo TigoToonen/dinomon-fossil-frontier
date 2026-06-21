@@ -1817,6 +1817,9 @@ DG.Overworld = (function () {
     _startTransition(mapId, x, y, facing);
   }
 
+  // ── Navigation HUD state ──────────────────────────────────
+  var _navCache   = null;   // cached BFS first-step { fromId, toId, warp }
+
   // ── Map Loading ───────────────────────────────────────────
   function _loadMap(mapId) {
     const newData = DG.MAPS[mapId];
@@ -1824,7 +1827,11 @@ DG.Overworld = (function () {
       console.error('[Overworld] Map not found:', mapId);
       return;  // _mapData is preserved — old map stays visible
     }
+    const _changed = (!_mapData || _mapData.id !== newData.id);
     _mapData = newData;
+
+    // Force navigation recompute for the new map
+    if (_changed) { _navCache = null; }
 
     // Auto-place a route signpost at the city-facing entrance (once per map)
     try { _injectRouteSign(newData); } catch(e) {}
@@ -1995,77 +2002,206 @@ DG.Overworld = (function () {
     });
   }
 
-  // ── Objective HUD ─────────────────────────────────────────
+  // ══ NAVIGATION HUD ════════════════════════════════════════
+  // Everything that tells the player WHERE THEY ARE and WHERE TO GO.
+  var _navTick = 0;
+
+  // Which town is the current main objective (drives goal pill + compass).
+  function _navTargetMap(gs) {
+    const f = gs.player.flags || {};
+    if (f['ELITE_4_DONE'] || f['DIRECTOR_CLADE_DEFEATED']) return null;
+    if (f['BADGE_8']) return null;               // Elite Four — handled as text
+    if (f['BADGE_7']) return 'APEXSUMMIT';
+    if (f['BADGE_6']) return 'BOGMIRE_CITY';
+    if (f['BADGE_5']) return 'CRESTFALL_TOWN';
+    if (f['BADGE_4']) return 'STONEHAVEN_CITY';
+    if (f['BADGE_3']) return 'FERNGROVE_TOWN';
+    if (f['BADGE_2']) return 'PYRESIDE_CITY';
+    if (f['BADGE_1']) return 'DUSTWALL_TOWN';
+    return 'SHELLCREEK_CITY';
+  }
+
+  // BFS over the warp graph: first warp on the CURRENT map on the shortest path
+  // to `toId`. Data-driven, so it auto-adapts to new towns/routes.
+  function _bfsFirstStep(fromId, toId) {
+    if (!fromId || !toId || fromId === toId) return null;
+    const MAPS = DG.MAPS, start = MAPS[fromId];
+    if (!start || !start.warps) return null;
+    const visited = new Set([fromId]);
+    let frontier = [];
+    for (const w of start.warps) { if (w.targetMap) frontier.push({ map: w.targetMap, first: w }); }
+    let guard = 0;
+    while (frontier.length && guard++ < 4000) {
+      const next = [];
+      for (const nd of frontier) {
+        if (nd.map === toId) return nd.first;
+        if (visited.has(nd.map)) continue;
+        visited.add(nd.map);
+        const m = MAPS[nd.map];
+        if (!m || !m.warps) continue;
+        for (const w of m.warps) { if (w.targetMap && !visited.has(w.targetMap)) next.push({ map: w.targetMap, first: nd.first }); }
+      }
+      frontier = next;
+    }
+    return null;
+  }
+
+  function _navStep(gs) {
+    if (!_mapData) return null;
+    const toId = _navTargetMap(gs);
+    if (!toId) return { toId: null };
+    if (!_navCache || _navCache.fromId !== _mapData.id || _navCache.toId !== toId) {
+      _navCache = { fromId: _mapData.id, toId, warp: _bfsFirstStep(_mapData.id, toId) };
+    }
+    return _navCache;
+  }
+
+  function _edgeDir(m, x, y) {
+    const dT = y, dB = m.height - 1 - y, dL = x, dR = m.width - 1 - x;
+    const mn = Math.min(dT, dB, dL, dR);
+    if (mn === dT) return 'N';
+    if (mn === dB) return 'S';
+    if (mn === dL) return 'W';
+    return 'E';
+  }
+  const _DIR_ARROW = { N:'▲', S:'▼', W:'◄', E:'►' };
+  const _DIR_WORD  = { N:'North', S:'South', W:'West', E:'East' };
+
+  // Concise label for what a warp leads to (building doors -> role; else map name).
+  function _exitLabel(targetId) {
+    if (!targetId) return '';
+    if (/_GYM$/.test(targetId))    return 'GYM';
+    if (/_CENTER$/.test(targetId)) return 'DinoCenter';
+    if (/_SHOP$/.test(targetId))   return 'Mart';
+    if (/_WILD$/.test(targetId))   return 'Wild Area';
+    if (/_LAB$/.test(targetId))    return 'Lab';
+    if (/HOUSE|HOME/.test(targetId)) return 'House';
+    const m = DG.MAPS[targetId];
+    return m ? (m.name || targetId) : targetId;
+  }
+
+  function _navRoundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  // ── Master nav-HUD draw (called every overworld frame) ─────
   function drawObjectiveHint(ctx, gs) {
     if (!gs || !gs.player) return;
-    // Don't show if dialogue is open
     if (typeof DG.DialogueBox !== 'undefined' && DG.DialogueBox.isVisible()) return;
+    _navTick++;
+    const W = DG.CANVAS.W, H = DG.CANVAS.H, T = DG.CANVAS.TILE_SIZE;
+    _drawExitLabels(ctx, gs, W, H, T);
+    _drawGoalPill(ctx, gs, W);
+    _drawCompass(ctx, gs, W, H, T);
+    // Area-name banner is already handled by the renderer's "NOW ENTERING" takeover.
+  }
 
-    const flags = gs.player.flags || {};
-    let text = '';
-    if (flags['ELITE_4_DONE'] || flags['DIRECTOR_CLADE_DEFEATED']) {
-      text = '\uD83C\uDFAF Champion! Explore the post-game';
-    } else if (flags['BADGE_8']) {
-      text = '\uD83C\uDFAF Goal: Challenge the Elite Four!';
-    } else if (flags['BADGE_7']) {
-      text = '\uD83C\uDFAF Goal: Reach Apex Summit \u2192 Gym 8: Valdez';
-    } else if (flags['BADGE_6']) {
-      text = '\uD83C\uDFAF Goal: Reach Bogmire \u2192 Gym 7: Marina';
-    } else if (flags['BADGE_5']) {
-      text = '\uD83C\uDFAF Goal: Reach Crestfall \u2192 Gym 6: Volt';
-    } else if (flags['BADGE_4']) {
-      text = '\uD83C\uDFAF Goal: Reach Stonehaven \u2192 Gym 5: Terra';
-    } else if (flags['BADGE_3']) {
-      text = '\uD83C\uDFAF Goal: Reach Ferngrove \u2192 Gym 4: Sylva';
-    } else if (flags['BADGE_2']) {
-      text = '\uD83C\uDFAF Goal: Reach Pyreside \u2192 Gym 3: Ignis';
-    } else if (flags['BADGE_1']) {
-      text = '\uD83C\uDFAF Goal: Reach Dustwall \u2192 Gym 2: Ridley';
-    } else {
-      text = '\uD83C\uDFAF Goal: Defeat Rex at Shellcreek Gym';
-    }
-
-    if (!text) return;
-
-    const W = DG.CANVAS.W;
+  // 1) Labels above every on-screen exit/door: what each opening is.
+  function _drawExitLabels(ctx, gs, W, H, T) {
+    if (!_mapData || !_mapData.warps) return;
+    const step = _navStep(gs);
+    const goalWarp = step && step.warp;
+    const drawn = [];
     ctx.save();
-
-    // Measure text first
-    ctx.font = '9px monospace';
-    const tw = ctx.measureText(text).width;
-
-    // Badge pill dimensions
-    const pillW  = Math.min(tw + 12, 230);
-    const pillH  = 16;
-    const pillX  = W - pillW - 4;
-    const pillY  = 4;
-    const pillR  = 4;
-
-    // Background rounded rect
-    ctx.fillStyle = 'rgba(0,0,20,0.7)';
-    ctx.beginPath();
-    ctx.moveTo(pillX + pillR, pillY);
-    ctx.lineTo(pillX + pillW - pillR, pillY);
-    ctx.quadraticCurveTo(pillX + pillW, pillY, pillX + pillW, pillY + pillR);
-    ctx.lineTo(pillX + pillW, pillY + pillH - pillR);
-    ctx.quadraticCurveTo(pillX + pillW, pillY + pillH, pillX + pillW - pillR, pillY + pillH);
-    ctx.lineTo(pillX + pillR, pillY + pillH);
-    ctx.quadraticCurveTo(pillX, pillY + pillH, pillX, pillY + pillH - pillR);
-    ctx.lineTo(pillX, pillY + pillR);
-    ctx.quadraticCurveTo(pillX, pillY, pillX + pillR, pillY);
-    ctx.closePath();
-    ctx.fill();
-
-    // Text shadow
-    ctx.fillStyle = 'rgba(0,0,60,0.7)';
+    ctx.font = 'bold 8px monospace';
+    ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.textAlign    = 'left';
-    ctx.fillText(text, pillX + 6 + 1, pillY + pillH / 2 + 1);
+    for (const w of _mapData.warps) {
+      const sx = w.x * T - _camX + T / 2;
+      const sy = w.y * T - _camY;
+      if (sx < -20 || sx > W + 20 || sy < -10 || sy > H + 20) continue;
+      if (drawn.some(d => Math.abs(d.x - sx) < 30 && d.t === w.targetMap)) continue;
+      drawn.push({ x: sx, t: w.targetMap });
 
-    // Text
-    ctx.fillStyle = '#ccddff';
-    ctx.fillText(text, pillX + 6, pillY + pillH / 2);
+      const isEdge = (w.x <= 1 || w.y <= 1 || w.x >= _mapData.width - 2 || w.y >= _mapData.height - 2);
+      let label = _exitLabel(w.targetMap);
+      let arrow = '';
+      if (isEdge) { arrow = _DIR_ARROW[_edgeDir(_mapData, w.x, w.y)] + ' '; }
+      const isGoal = goalWarp && goalWarp.x === w.x && goalWarp.y === w.y;
+      const txt = arrow + label + (isGoal ? '  ★' : '');
 
+      const tw = ctx.measureText(txt).width;
+      const lx = sx, ly = Math.max(14, sy - 6);
+      ctx.fillStyle = isGoal ? 'rgba(120,90,0,0.92)' : 'rgba(0,0,25,0.82)';
+      _navRoundRect(ctx, lx - tw / 2 - 4, ly - 7, tw + 8, 13, 3);
+      ctx.fill();
+      if (isGoal) { ctx.strokeStyle = '#ffe050'; ctx.lineWidth = 1; ctx.stroke(); }
+      ctx.fillStyle = isGoal ? '#fff4b0' : '#cfe3ff';
+      ctx.fillText(txt, lx, ly);
+    }
+    ctx.restore();
+  }
+
+  // 2) Always-visible destination tracker (top-right): NEXT town + direction.
+  function _drawGoalPill(ctx, gs, W) {
+    const f = gs.player.flags || {};
+    const step = _navStep(gs);
+    let line1, line2 = '';
+    if (f['ELITE_4_DONE'] || f['DIRECTOR_CLADE_DEFEATED']) {
+      line1 = '🏆 Champion!'; line2 = 'Explore the post-game';
+    } else if (f['BADGE_8']) {
+      line1 = '🎯 Goal: Elite Four'; line2 = 'Enter the Fossil Gateway';
+    } else if (step && step.toId) {
+      const dest = DG.MAPS[step.toId];
+      const destName = dest ? (dest.name || step.toId) : step.toId;
+      const here = (_mapData && _mapData.id === step.toId);
+      line1 = '🎯 Next: ' + destName;
+      if (here) {
+        line2 = 'You are here!';
+      } else if (step.warp) {
+        const d = _edgeDir(_mapData, step.warp.x, step.warp.y);
+        line2 = 'Go ' + _DIR_ARROW[d] + ' ' + _DIR_WORD[d];
+      } else {
+        line2 = 'Find the way there';
+      }
+    } else {
+      return;
+    }
+    ctx.save();
+    ctx.font = 'bold 9px monospace';
+    const w1 = ctx.measureText(line1).width;
+    ctx.font = '8px monospace';
+    const w2 = ctx.measureText(line2).width;
+    const pillW = Math.min(Math.max(w1, w2) + 14, 210);
+    const pillH = line2 ? 28 : 16;
+    const pillX = W - pillW - 4, pillY = 4;
+    ctx.fillStyle = 'rgba(0,0,20,0.80)';
+    _navRoundRect(ctx, pillX, pillY, pillW, pillH, 4); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,224,80,0.55)'; ctx.lineWidth = 1;
+    _navRoundRect(ctx, pillX, pillY, pillW, pillH, 4); ctx.stroke();
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#ffe9a0'; ctx.font = 'bold 9px monospace';
+    ctx.fillText(line1, pillX + 6, pillY + (line2 ? 9 : pillH / 2));
+    if (line2) { ctx.fillStyle = '#bfe0ff'; ctx.font = '8px monospace'; ctx.fillText(line2, pillX + 6, pillY + 20); }
+    ctx.restore();
+  }
+
+  // 3) Bouncing compass arrow pointing to the exit that leads to the goal.
+  function _drawCompass(ctx, gs, W, H, T) {
+    const step = _navStep(gs);
+    if (!step || !step.warp || (_mapData && _mapData.id === step.toId)) return;
+    const w = step.warp;
+    const tx = w.x * T - _camX + T / 2;
+    const ty = w.y * T - _camY + T / 2;
+    const m = 18;
+    const onScreen = (tx > m && tx < W - m && ty > m && ty < H - m);
+    const ang = Math.atan2(ty - H / 2, tx - W / 2);
+    let ax = tx, ay = ty;
+    if (!onScreen) { ax = Math.max(m, Math.min(W - m, tx)); ay = Math.max(m, Math.min(H - m, ty)); }
+    const bob = Math.sin(_navTick * 0.15) * 2;
+    ctx.save();
+    ctx.translate(ax, ay + bob);
+    ctx.rotate(ang);
+    ctx.fillStyle = 'rgba(255,210,40,0.95)';
+    ctx.strokeStyle = '#7a5500'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(11, 0); ctx.lineTo(-6, -7); ctx.lineTo(-2, 0); ctx.lineTo(-6, 7); ctx.closePath();
+    ctx.fill(); ctx.stroke();
     ctx.restore();
   }
 
