@@ -463,10 +463,10 @@ STONEHAVEN_CITY: {
     [66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66],
   ],
   warps:[
-    { x:9,  y:0,  targetMap:'ROUTE_5C',  targetX:9,  targetY:23 },
-    { x:10, y:0,  targetMap:'ROUTE_5C',  targetX:10, targetY:23 },
-    { x:0,  y:10, targetMap:'ROUTE_6A',  targetX:9,  targetY:1, requiresFlag:'BADGE_5'  },
-    { x:19, y:10, targetMap:'ROUTE_7A',  targetX:9,  targetY:1, requiresFlag:'BADGE_5'  },
+    { x:9,  y:0,  targetMap:'FAIRYDELL_CITY', targetX:9,  targetY:1 },
+    { x:10, y:0,  targetMap:'FAIRYDELL_CITY', targetX:10, targetY:1 },
+    { x:0,  y:10, targetMap:'ROUTE_6A',  targetX:9,  targetY:1, requiresFlag:'BADGE_6'  },
+    { x:19, y:10, targetMap:'ROUTE_7A',  targetX:9,  targetY:1, requiresFlag:'BADGE_6'  },
     { x:3,  y:4,  targetMap:'STONEHAVEN_GYM',    targetX:14, targetY:16 },
     { x:17, y:3,  targetMap:'STONEHAVEN_CENTER',  targetX:7, targetY:8  },
     { x:16, y:8,  targetMap:'STONEHAVEN_MUSEUM',  targetX:7, targetY:8  },
@@ -538,9 +538,9 @@ APEXSUMMIT: {
     [66,66,66,66,66,66,66,66,66, 6, 6,66,66,66,66,66,66,66,66, 66,66,66,66,66,66,66,66,66,66,66],
   ],
   warps:[
-    { x:9, y:0, targetMap:'MT_CRETACEOUS', targetX:9, targetY:13, requiresFlag:'BADGE_8' },
-    { x:9,  y:1, targetMap:'FOSSIL_GATEWAY', targetX:9,  targetY:8, requiresFlag:'BADGE_8' },
-    { x:10, y:1, targetMap:'FOSSIL_GATEWAY', targetX:10, targetY:8, requiresFlag:'BADGE_8' },
+    { x:9, y:0, targetMap:'MT_CRETACEOUS', targetX:9, targetY:13, requiresFlag:'BADGE_9' },
+    { x:9,  y:1, targetMap:'FOSSIL_GATEWAY', targetX:9,  targetY:8, requiresFlag:'BADGE_9' },
+    { x:10, y:1, targetMap:'FOSSIL_GATEWAY', targetX:10, targetY:8, requiresFlag:'BADGE_9' },
     { x:9, y:14, targetMap:'ROUTE_10E', targetX:9,  targetY:36 },
     { x:10,y:14, targetMap:'ROUTE_10E', targetX:10, targetY:36 },
     { x:3, y:4, targetMap:'APEXSUMMIT_GYM',    targetX:14, targetY:16 },
@@ -1135,8 +1135,8 @@ ROUTE_5A: {
     [64,64,64,64,64,64,64,64,64, 0, 0,64,64,64,64,64,64,64,64,64], // 24 bottom border
   ],
   warps:[
-    { x:9,  y:0,  targetMap:'STONEHAVEN_CITY', targetX:9,  targetY:13 },
-    { x:10, y:0,  targetMap:'STONEHAVEN_CITY', targetX:10, targetY:13 },
+    { x:9,  y:0,  targetMap:'FAIRYDELL_CITY', targetX:9,  targetY:13 },
+    { x:10, y:0,  targetMap:'FAIRYDELL_CITY', targetX:10, targetY:13 },
     { x:9,  y:24, targetMap:'ROUTE_5B', targetX:9,  targetY:1  },
     { x:10, y:24, targetMap:'ROUTE_5B', targetX:10, targetY:1  },
   ],
@@ -4660,8 +4660,8 @@ DG.MAPS.CRESTFALL_TOWN = {
     [66,66,66,66,66,66,66,66,66, 5, 5,66,66,66,66,66,66,66,66, 66,66,66,66,66,66,66,66,66],
   ],
   warps:[
-    { x:9,  y:0,  targetMap:'ROUTE_8A',       targetX:9,  targetY:1, requiresFlag:'BADGE_6'  },
-    { x:10, y:0,  targetMap:'ROUTE_8A',       targetX:10, targetY:1, requiresFlag:'BADGE_6'  },
+    { x:9,  y:0,  targetMap:'ROUTE_8A',       targetX:9,  targetY:1, requiresFlag:'BADGE_7'  },
+    { x:10, y:0,  targetMap:'ROUTE_8A',       targetX:10, targetY:1, requiresFlag:'BADGE_7'  },
     { x:3,  y:8,  targetMap:'CRESTFALL_HOUSE', targetX:3, targetY:6 },
     { x:9,  y:14, targetMap:'ROUTE_6D',       targetX:9,  targetY:26 },
     { x:10, y:14, targetMap:'ROUTE_6D',       targetX:10, targetY:26 },
@@ -4729,8 +4729,8 @@ DG.MAPS.BOGMIRE_CITY = {
     [64,64,64,64,64,64,64,64,64, 8, 8,64,64,64,64,64,64,64,64, 64,64,64,64,64,64,64,64,64],
   ],
   warps:[
-    { x:9,  y:0,  targetMap:'ROUTE_9A',    targetX:9,  targetY:1, requiresFlag:'BADGE_7'  },
-    { x:10, y:0,  targetMap:'ROUTE_9A',    targetX:10, targetY:1, requiresFlag:'BADGE_7'  },
+    { x:9,  y:0,  targetMap:'ROUTE_9A',    targetX:9,  targetY:1, requiresFlag:'BADGE_8'  },
+    { x:10, y:0,  targetMap:'ROUTE_9A',    targetX:10, targetY:1, requiresFlag:'BADGE_8'  },
     { x:3,  y:8,  targetMap:'BOGMIRE_HOUSE', targetX:3, targetY:6 },
     { x:9,  y:14, targetMap:'ROUTE_7D',    targetX:9,  targetY:26 },
     { x:10, y:14, targetMap:'ROUTE_7D',    targetX:10, targetY:26 },
@@ -4829,6 +4829,128 @@ DG.MAPS.BOGMIRE_CITY = {
     });
   }
 })();
+
+// ═══════════════════════════════════════════════════════════════
+// FAIRY GYM CITY (gym 5) — inserted between Ferngrove and Stonehaven
+// ═══════════════════════════════════════════════════════════════
+DG.MAPS.FAIRYDELL_CITY = {
+  id:'FAIRYDELL_CITY', name:'Fairydell', width:20, height:15,
+  music:'TOWN_CALM', isIndoor:false, isCave:false,
+  tiles:[
+    [64,64,64,64,64,64,64,64,64, 0, 0,64,64,64,64,64,64,64,64,64],
+    [64, 9, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 9,64],
+    [64, 1,65,65,65,65, 1, 1, 1, 0, 0, 1, 1,65,65,65,65, 1, 1,64],
+    [64, 1,65,65,65,65, 1, 9, 1, 0, 0, 1, 9,65,65,65,65, 1, 1,64],
+    [64, 1,65,68,65,65, 1, 1, 1, 0, 0, 1, 1,65,65,68,65, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 1, 9, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 9, 1,64],
+    [64, 1, 1, 1, 1,74,74, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 9, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 9,64],
+    [64, 1, 1, 1, 1, 1, 9, 1, 1, 0, 0, 1, 1, 9, 1, 1, 1, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,64],
+    [64,64, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,64,64,64],
+    [64,64,64,64,64,64,64,64,64, 0, 0,64,64,64,64,64,64,64,64,64],
+  ],
+  warps:[
+    { x:9,  y:0,  targetMap:'STONEHAVEN_CITY', targetX:9,  targetY:13, requiresFlag:'BADGE_5' },
+    { x:10, y:0,  targetMap:'STONEHAVEN_CITY', targetX:10, targetY:13, requiresFlag:'BADGE_5' },
+    { x:9,  y:14, targetMap:'ROUTE_5A', targetX:9,  targetY:1 },
+    { x:10, y:14, targetMap:'ROUTE_5A', targetX:10, targetY:1 },
+    { x:3,  y:4,  targetMap:'FAIRYDELL_GYM',    targetX:6, targetY:10 },
+    { x:15, y:4,  targetMap:'FAIRYDELL_CENTER', targetX:7, targetY:10 },
+  ],
+  npcs:[
+    { id:'FD_SHOP', name:'Pixie Vendor', x:5, y:6, facing:'DOWN', spriteKey:'NPC_SHOPKEEPER',
+      movementType:'STATIONARY', dialogue:['SHOP_GREET'], onInteract:'OPEN_SHOP',
+      shopItems:['SUPERBALL','SUPERPOTION','REVIVE','ANTIDOTE','AWAKENING','DAWN_STONE'] },
+    { id:'FD_NPC1', name:'Flower Child', x:13, y:6, facing:'LEFT', spriteKey:'NPC_KID',
+      movementType:'WANDER', dialogue:["Fairydell blooms all year — even on the bedrock road to Stonehaven!","AFK Jorn runs the gym. He's strong, when he's not AFK."], onInteract:null },
+    { id:'FD_GUARD', name:'Officer', x:9, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["The bedrock road north to Stonehaven is closed. Beat AFK Jorn for the Charm Badge first!"],
+      flagToHide:'BADGE_5', onInteract:null },
+    { id:'FD_GUARD_DONE', name:'Officer', x:8, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["The Charm Badge — nice! Stonehaven and Rock Hard Toonen await to the north."],
+      requiresFlag:'BADGE_5', onInteract:null },
+    { id:'FD_SIGN', name:'Sign', x:11, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["Fairydell — Home of the Charm Badge.","Gym Leader: AFK Jorn (Fairy-type)."], onInteract:null },
+  ],
+  encounterTable:{ grass:[
+    { speciesId:'FAIRYWING', minLv:30, maxLv:34, rate:30 },
+    { speciesId:'GEMLET',    minLv:30, maxLv:34, rate:25 },
+    { speciesId:'WISPLET',   minLv:30, maxLv:34, rate:25 },
+    { speciesId:'GEMHORN',   minLv:33, maxLv:36, rate:20 },
+  ], water:[]},
+  events:[],
+};
+
+DG.MAPS.FAIRYDELL_CENTER = {
+  id:'FAIRYDELL_CENTER', name:'DinoCenter — Fairydell', width:16, height:12,
+  music:'CENTER_THEME', isIndoor:true, isCave:false,
+  tiles:[
+    [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
+    [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
+    [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
+    [65,74,74,74,74,74,74,76,76,74,74,74,74,74,74,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5,77, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,77, 5,65],
+    [65, 5,78,78, 5, 5, 5, 5, 5, 5, 5,78,78, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65,75, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,82, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65,65,65,65,65,65,65,68,68,65,65,65,65,65,65,65],
+  ],
+  warps:[
+    { x:7, y:11, targetMap:'FAIRYDELL_CITY', targetX:15, targetY:5 },
+    { x:8, y:11, targetMap:'FAIRYDELL_CITY', targetX:15, targetY:5 },
+  ],
+  npcs:[
+    { id:'HEALER_FD',  name:'Nurse Lumi', x:7, y:2, facing:'DOWN', spriteKey:'NPC_HEALER', movementType:'STATIONARY', dialogue:['HEALER_GREET'], onInteract:'HEAL_PARTY' },
+    { id:'HEALER_FD2', name:'Nurse Lumi', x:8, y:2, facing:'DOWN', spriteKey:'NPC_HEALER', movementType:'STATIONARY', dialogue:['HEALER_GREET'], onInteract:'HEAL_PARTY' },
+    { id:'FD_C_NPC', name:'Traveler', x:5, y:5, facing:'RIGHT', spriteKey:'NPC_WOMAN', movementType:'STATIONARY', dialogue:['CENTER_TIP_1'], onInteract:null },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+DG.MAPS.FAIRYDELL_GYM = {
+  id:'FAIRYDELL_GYM', name:'Fairydell Gym', width:14, height:12,
+  music:'GYM_THEME', isIndoor:true, isCave:false,
+  tiles:[
+    [65,65,65,65,65,65,65,65,65,65,65,65,65,65],
+    [65, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65,65,65,65,65,65,68,68,65,65,65,65,65,65],
+  ],
+  warps:[
+    { x:6, y:11, targetMap:'FAIRYDELL_CITY', targetX:3, targetY:5, gymLock:'TRAINER_GYM_AFKJORN_DEFEATED' },
+    { x:7, y:11, targetMap:'FAIRYDELL_CITY', targetX:3, targetY:5, gymLock:'TRAINER_GYM_AFKJORN_DEFEATED' },
+  ],
+  npcs:[
+    { id:'FD_GYM_HINT', name:'Acolyte', x:3, y:9, facing:'DOWN', spriteKey:'NPC_KID', movementType:'STATIONARY',
+      dialogue:["Welcome to AFK Jorn's Fairy Gym!","Fairy beats Dragon, Dark and Fighting — but Poison and Steel resist it.","Bring something tough; charm only gets you so far."], onInteract:null },
+    { id:'FD_GYM_T1', name:'Pixie Pim', x:4, y:6, facing:'DOWN', spriteKey:'NPC_KID', movementType:'STATIONARY',
+      dialogue:['GRUNT_2'], trainerRef:'AFKJORN_T1', flagToHide:'TRAINER_AFKJORN_T1_DEFEATED' },
+    { id:'FD_GYM_T2', name:'Wisp Wendy', x:9, y:6, facing:'DOWN', spriteKey:'NPC_WOMAN', movementType:'STATIONARY',
+      dialogue:['GRUNT_2'], trainerRef:'AFKJORN_T2', flagToHide:'TRAINER_AFKJORN_T2_DEFEATED' },
+    { id:'GYM_LEADER_AFKJORN', name:'AFK Jorn', x:6, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+      dialogue:['GYM_AFKJORN_PRE'], onInteract:'TRIGGER_GYM', trainerRef:'GYM_AFKJORN', flagToHide:'TRAINER_GYM_AFKJORN_DEFEATED' },
+    { id:'GYM_LEADER_AFKJORN_DONE', name:'AFK Jorn', x:6, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+      dialogue:['GYM_AFKJORN_POST'], onInteract:null, requiresFlag:'TRAINER_GYM_AFKJORN_DEFEATED' },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
 
 // ── FASE 12: hekken langs de weg ────────────────────────────────────────────
 // Op Route 1 worden boom-blokken (64) die direct naast het pad (0) staan

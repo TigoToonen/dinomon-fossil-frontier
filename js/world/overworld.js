@@ -1235,7 +1235,7 @@ DG.Overworld = (function () {
     // Trigger full-screen badge celebration in renderer
     const badgeNames = {
       1:'Herd Badge',2:'Fossil Badge',3:'Magma Badge',4:'Canopy Badge',
-      5:'Bedrock Badge',6:'Static Badge',7:'Tide Badge',8:'Scale Badge'
+      5:'Charm Badge',6:'Bedrock Badge',7:'Static Badge',8:'Tide Badge',9:'Scale Badge'
     };
     window._BADGE_SCREEN = {
       frames: 240,       // ~4 seconds at 60fps
@@ -1244,52 +1244,51 @@ DG.Overworld = (function () {
     };
     const ceremonies = {
       1: [
-        '\u2605 Herd Badge obtained! \u2605',
+        '★ Herd Badge obtained! ★',
         "Normal Normi's badge proves your DinoMons have mastered raw power.",
         "The Officer blocking Route 2 has stepped aside!",
-        "Head WEST through Shellcreek City to reach Route 2 \u2192 Dustwall Town.",
+        "Head WEST through Shellcreek City to reach Route 2 → Dustwall Town.",
       ],
       2: [
-        '\u2605 Fossil Badge obtained! \u2605',
+        '★ Fossil Badge obtained! ★',
         "Jam Sennings' mark — proof you can crack any formation.",
-        "The Officer on Route 3 has stepped aside!",
-        "Head SOUTH from Dustwall Town via Route 3 \u2192 Pyreside City.",
+        "Head SOUTH from Dustwall Town via Route 3 → Pyreside City.",
       ],
       3: [
-        '\u2605 Magma Badge obtained! \u2605',
+        '★ Magma Badge obtained! ★',
         "The volcanic spirit of Asset Toverdijk fuels your DinoMons' fire.",
-        "The Officer on Route 4 has stepped aside!",
-        "Head SOUTH via Route 4 \u2192 Ferngrove Town.",
+        "Head SOUTH via Route 4 → Ferngrove Town.",
       ],
       4: [
-        '\u2605 Canopy Badge obtained! \u2605',
+        '★ Canopy Badge obtained! ★',
         "The ancient forest recognises your bond with nature.",
-        "The Officer on Route 5 has stepped aside!",
-        "Head NORTH via Route 5 \u2192 Stonehaven City.",
+        "Head NORTH via Route 5 → Fairydell.",
       ],
       5: [
-        '\u2605 Bedrock Badge obtained! \u2605',
+        '★ Charm Badge obtained! ★',
+        "AFK Jorn's fairies adore you — the Charm Badge sparkles in your hand!",
+        "Head NORTH from Fairydell → Stonehaven City.",
+      ],
+      6: [
+        '★ Bedrock Badge obtained! ★',
         "Rock Hard Toonen's ancient power runs as deep as the earth itself.",
         "Routes 6 and 7 are now open!",
         "Head WEST on Route 6 for Crestfall Town, or EAST on Route 7 for Bogmire City.",
       ],
-      6: [
-        '\u2605 Static Badge obtained! \u2605',
-        "Beyblade Luuk's electric fury could not stop you — the Static Badge is yours!",
-        "The Officer on Route 8 has stepped aside!",
-        "Head SOUTH via Route 8 \u2192 Bogmire City.",
-      ],
       7: [
-        '\u2605 Tide Badge obtained! \u2605',
-        "You've calmed the tide. The waterways of the Archipelago are open!",
-        "The Officer on Route 9 has stepped aside!",
-        "Head NORTH via Route 9 \u2192 Apex Summit City.",
+        '★ Static Badge obtained! ★',
+        "Beyblade Luuk's electric fury could not stop you — the Static Badge is yours!",
+        "Head SOUTH via Route 8 → Bogmire City.",
       ],
       8: [
-        '\u2605 Scale Badge obtained! \u2605',
-        "All 8 badges shine! You are ready for the ultimate challenge.",
-        "The Fossil Gateway is now open!",
-        "Head to the FOSSIL GATEWAY \u2192 Elite Four \u2192 Grand Archon Corvus awaits!",
+        '★ Tide Badge obtained! ★',
+        "You've calmed the tide. The waterways of the Archipelago are open!",
+        "Head NORTH via Route 9 → Apex Summit City.",
+      ],
+      9: [
+        '★ Scale Badge obtained! ★',
+        "All 9 badges shine! You are ready for the ultimate challenge.",
+        "Head to the FOSSIL GATEWAY → Elite Four → Grand Archon Corvus awaits!",
       ],
     };
     // Field-move unlock dialogue shown after the badge ceremony
@@ -1297,11 +1296,11 @@ DG.Overworld = (function () {
       2: ["HM Rock Smash received! Teach it to a DinoMon to smash boulders outside battle."],
       3: ["HM Flash received! Teach it to a DinoMon to illuminate dark caves."],
       4: ["HM Cut received! Teach it to a DinoMon to clear overgrown paths."],
-      5: ["HM Strength received! Teach it to a DinoMon to move heavy boulders."],
-      6: ["HM Fly received! Teach it to a DinoMon to soar between visited cities."],
-      7: ["HM Surf received! Teach it to a DinoMon to ride across open water.",
+      6: ["HM Strength received! Teach it to a DinoMon to move heavy boulders."],
+      7: ["HM Fly received! Teach it to a DinoMon to soar between visited cities."],
+      8: ["HM Surf received! Teach it to a DinoMon to ride across open water.",
           "The sea routes of the Pangaea Archipelago are now open to you!"],
-      8: ["HM Dive received! Teach it to a DinoMon to plunge into deep-water caverns."],
+      9: ["HM Dive received! Teach it to a DinoMon to plunge into deep-water caverns."],
     };
     const lines = ceremonies[badgeCount] || ['\u2605 Badge obtained! \u2605'];
     const fmLines = fieldMoveLines[badgeCount] || null;
@@ -1310,9 +1309,9 @@ DG.Overworld = (function () {
       // HM/field-move per badge → drives the prominent TmReward showcase
       const GYM_HM = {
         2:{hmId:'HM_ROCK_SMASH',moveId:'ROCK_SMASH'}, 3:{hmId:'HM_FLASH',moveId:'FLASH'},
-        4:{hmId:'HM_CUT',moveId:'CUT'},               5:{hmId:'HM_STRENGTH',moveId:'STRENGTH'},
-        6:{hmId:'HM_FLY',moveId:'FLY'},               7:{hmId:'HM_SURF',moveId:'SURF'},
-        8:{hmId:'HM_DIVE',moveId:'DIVE'},
+        4:{hmId:'HM_CUT',moveId:'CUT'},               6:{hmId:'HM_STRENGTH',moveId:'STRENGTH'},
+        7:{hmId:'HM_FLY',moveId:'FLY'},               8:{hmId:'HM_SURF',moveId:'SURF'},
+        9:{hmId:'HM_DIVE',moveId:'DIVE'},
       };
       const hmMove = GYM_HM[badgeCount] || null;
       const afterReward = () => {
@@ -1343,14 +1342,15 @@ DG.Overworld = (function () {
            dialogue: "With the Magma Badge, your DinoMons can use Flash to light dark caves!" },
       4: { hmId: 'HM_CUT',        flagKey: 'CUT_UNLOCKED',
            dialogue: "With the Canopy Badge, your DinoMons can use Cut to clear overgrown paths!" },
-      5: { hmId: 'HM_STRENGTH',   flagKey: 'STRENGTH_UNLOCKED',
+      5: null, // Charm Badge (Fairy) — no field move
+      6: { hmId: 'HM_STRENGTH',   flagKey: 'STRENGTH_UNLOCKED',
            dialogue: "With the Bedrock Badge, your DinoMons can use Strength to move boulders!" },
-      6: { hmId: 'HM_FLY',        flagKey: 'FLY_UNLOCKED',
+      7: { hmId: 'HM_FLY',        flagKey: 'FLY_UNLOCKED',
            dialogue: "With the Static Badge, your DinoMons can Fly between cities you've visited!" },
-      7: { hmId: 'HM_SURF',       flagKey: 'SURF_UNLOCKED',
+      8: { hmId: 'HM_SURF',       flagKey: 'SURF_UNLOCKED',
            dialogue: ["With the Tide Badge, your DinoMons can Surf across water! New routes are now open!",
                       "The waterways of the Pangaea Archipelago are now open to you!"] },
-      8: { hmId: 'HM_DIVE',       flagKey: 'DIVE_UNLOCKED',
+      9: { hmId: 'HM_DIVE',       flagKey: 'DIVE_UNLOCKED',
            dialogue: "With the Scale Badge, your DinoMons can Dive into the deep! Seek out hidden underwater caves..." },
     };
 
@@ -2048,11 +2048,12 @@ DG.Overworld = (function () {
   function _navTargetMap(gs) {
     const f = gs.player.flags || {};
     if (f['ELITE_4_DONE'] || f['DIRECTOR_CLADE_DEFEATED']) return null;
-    if (f['BADGE_8']) return null;               // Elite Four — handled as text
-    if (f['BADGE_7']) return 'APEXSUMMIT';
-    if (f['BADGE_6']) return 'BOGMIRE_CITY';
-    if (f['BADGE_5']) return 'CRESTFALL_TOWN';
-    if (f['BADGE_4']) return 'STONEHAVEN_CITY';
+    if (f['BADGE_9']) return null;               // Elite Four — handled as text
+    if (f['BADGE_8']) return 'APEXSUMMIT';
+    if (f['BADGE_7']) return 'BOGMIRE_CITY';
+    if (f['BADGE_6']) return 'CRESTFALL_TOWN';
+    if (f['BADGE_5']) return 'STONEHAVEN_CITY';
+    if (f['BADGE_4']) return 'FAIRYDELL_CITY';
     if (f['BADGE_3']) return 'FERNGROVE_TOWN';
     if (f['BADGE_2']) return 'PYRESIDE_CITY';
     if (f['BADGE_1']) return 'DUSTWALL_TOWN';
@@ -2183,7 +2184,7 @@ DG.Overworld = (function () {
     let line1, line2 = '';
     if (f['ELITE_4_DONE'] || f['DIRECTOR_CLADE_DEFEATED']) {
       line1 = '🏆 Champion!'; line2 = 'Explore the post-game';
-    } else if (f['BADGE_8']) {
+    } else if (f['BADGE_9']) {
       line1 = '🎯 Goal: Elite Four'; line2 = 'Enter the Fossil Gateway';
     } else if (step && step.toId) {
       const dest = DG.MAPS[step.toId];

@@ -313,6 +313,39 @@ DG.TRAINERS.GYM_VALDEZ = {
 };
 
 // ============================================================
+// FAIRY GYM (inserted between gym 4 and 5) — AFK Jorn
+// ============================================================
+
+DG.TRAINERS.GYM_AFKJORN = {
+  id:'GYM_AFKJORN', name:'AFK Jorn', class:'Gym Leader', isGymLeader:true, isStoryBoss:false,
+  gymId:'GYM_FAIRYDELL', badge:'Charm Badge',
+  preBattleDialogue:'GYM_AFKJORN_PRE', postBattleDialogue:'GYM_AFKJORN_POST',
+  winDialogue:"Brb, just one sec... okay I'm back! Let's see if your DinoMons can handle a little charm.",
+  loseDialogue:"GG! You earned the Charm Badge. My fairies are no match for your focus.",
+  reward:3000,
+  party:[
+    { speciesId:'GEMHORN',    level:39, moves:['FAIRY_WIND','DAZZLING_GLEAM','DRAINING_KISS','CHARM'] },
+    { speciesId:'FLUTTERHORN',level:40, moves:['DAZZLING_GLEAM','AIR_SLASH','DRAINING_KISS','PIXIE_STRIKE'] },
+    { speciesId:'BLOOMSAUR',  level:41, moves:['DAZZLING_GLEAM','PLAY_ROUGH','DRAINING_KISS','PIXIE_STRIKE'] },
+    { speciesId:'FLOROSAUR',  level:42, moves:['MOONBLAST','PLAY_ROUGH','DAZZLING_GLEAM','PIXIE_STRIKE'] },
+  ],
+  aiTier:3, location:'FAIRYDELL',
+};
+
+DG.TRAINERS.AFKJORN_T1 = {
+  id:'AFKJORN_T1', name:'Pixie Pim', class:'Fairy Acolyte', isGymLeader:false,
+  badge:null, winDialogue:"Sparkles incoming!", loseDialogue:"Aw, out of magic.",
+  reward:600, party:[{ speciesId:'GEMLET', level:36, moves:['FAIRY_WIND','DISARMING_VOICE','DRAINING_KISS','CHARM'] }],
+  aiTier:2, location:'FAIRYDELL',
+};
+DG.TRAINERS.AFKJORN_T2 = {
+  id:'AFKJORN_T2', name:'Wisp Wendy', class:'Fairy Acolyte', isGymLeader:false,
+  badge:null, winDialogue:"Catch me if you can!", loseDialogue:"So fast...",
+  reward:600, party:[{ speciesId:'WISPLET', level:36, moves:['FAIRY_WIND','DISARMING_VOICE','QUICK_ATTACK','DRAINING_KISS'] }],
+  aiTier:2, location:'FAIRYDELL',
+};
+
+// ============================================================
 // STORY BOSSES (5)
 // ============================================================
 

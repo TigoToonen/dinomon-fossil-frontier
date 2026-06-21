@@ -260,6 +260,16 @@ DG.STORY.DIALOGUES = {
     "And neither do I. Prove you belong in this forest.",
   ],
 
+  GYM_AFKJORN_PRE: [
+    "Oh — sorry, was AFK for a sec! Welcome to Fairydell.",
+    "Don't let the sparkles fool you. Fairy-types hit harder than they look,",
+    "and they laugh at Dragons. Show me your focus!",
+  ],
+  GYM_AFKJORN_POST: [
+    "GG, that was clean! The Charm Badge is yours.",
+    "Head north to Stonehaven next — Rock Hard Toonen is waiting in the bedrock.",
+  ],
+
   GYM_DRAGO_PRE: [
     "Dragons soar above all other creatures — above storms, above mountains, above time.",
     "To challenge me, you must rise to their level.",

@@ -433,18 +433,20 @@ DG.Menu = (function () {
       SHELLCREEK_CITY: ['Shellcreek',    52, 245, 1, 'gym'],
       DUSTWALL_TOWN:   ['Dustwall',      52, 204, 2, 'gym'],
       PYRESIDE_CITY:   ['Pyreside',      52, 163, 3, 'gym'],
-      FERNGROVE_TOWN:  ['Ferngrove',    158, 163, 4, 'gym'],
-      STONEHAVEN_CITY: ['Stonehaven',   116, 116, 5, 'gym'],
-      CRESTFALL_TOWN:  ['Crestfall',    214,  80, 6, 'gym'],
-      BOGMIRE_CITY:    ['Bogmire',      332, 122, 7, 'gym'],
-      APEXSUMMIT:      ['Apex Summit',  322,  58, 8, 'gym'],
-      MT_CRETACEOUS:   ['Mt Cretaceous',422,  58, 0, 'peak'],
-      FOSSIL_CITADEL:  ['Fossil Citadel',426,112, 0, 'citadel'],
+      FERNGROVE_TOWN:  ['Ferngrove',    158, 170, 4, 'gym'],
+      FAIRYDELL_CITY:  ['Fairydell',    100, 150, 5, 'gym'],
+      STONEHAVEN_CITY: ['Stonehaven',   116, 110, 6, 'gym'],
+      CRESTFALL_TOWN:  ['Crestfall',    214,  78, 7, 'gym'],
+      BOGMIRE_CITY:    ['Bogmire',      332, 120, 8, 'gym'],
+      APEXSUMMIT:      ['Apex Summit',  322,  56, 9, 'gym'],
+      MT_CRETACEOUS:   ['Mt Cretaceous',422,  56, 0, 'peak'],
+      FOSSIL_CITADEL:  ['Fossil Citadel',426,110, 0, 'citadel'],
     };
     const E = [
       ['AMBERTOWN','SHELLCREEK_CITY','1'], ['SHELLCREEK_CITY','DUSTWALL_TOWN','2'],
       ['DUSTWALL_TOWN','PYRESIDE_CITY','3'], ['PYRESIDE_CITY','FERNGROVE_TOWN','4'],
-      ['FERNGROVE_TOWN','STONEHAVEN_CITY','5'], ['STONEHAVEN_CITY','CRESTFALL_TOWN','6'],
+      ['FERNGROVE_TOWN','FAIRYDELL_CITY','5'], ['FAIRYDELL_CITY','STONEHAVEN_CITY','5'],
+      ['STONEHAVEN_CITY','CRESTFALL_TOWN','6'],
       ['STONEHAVEN_CITY','BOGMIRE_CITY','7'], ['CRESTFALL_TOWN','BOGMIRE_CITY','8'],
       ['BOGMIRE_CITY','APEXSUMMIT','9'], ['APEXSUMMIT','MT_CRETACEOUS','10'],
       ['APEXSUMMIT','FOSSIL_CITADEL','C'],
@@ -453,7 +455,7 @@ DG.Menu = (function () {
     const flags  = (_gs && _gs.player && _gs.player.flags) || {};
     const badges = (_gs && _gs.player && _gs.player.badges) || [];
     const curMap = (_gs && _gs.player && _gs.player.currentMap) || '';
-    const citadelUnlocked = badges.length >= 8 || flags['BADGE_8'] || flags['FOSSIL_CITADEL_OPEN'];
+    const citadelUnlocked = badges.length >= 9 || flags['BADGE_9'] || flags['FOSSIL_CITADEL_OPEN'];
 
     function isHere(id) { return curMap === id || curMap.indexOf(id) === 0; }
     function visited(id) {
@@ -465,11 +467,12 @@ DG.Menu = (function () {
     }
     function goalId() {
       if (flags['ELITE_4_DONE'] || flags['DIRECTOR_CLADE_DEFEATED']) return null;
-      if (flags['BADGE_8']) return 'FOSSIL_CITADEL';
-      if (flags['BADGE_7']) return 'APEXSUMMIT';
-      if (flags['BADGE_6']) return 'BOGMIRE_CITY';
-      if (flags['BADGE_5']) return 'CRESTFALL_TOWN';
-      if (flags['BADGE_4']) return 'STONEHAVEN_CITY';
+      if (flags['BADGE_9']) return 'FOSSIL_CITADEL';
+      if (flags['BADGE_8']) return 'APEXSUMMIT';
+      if (flags['BADGE_7']) return 'BOGMIRE_CITY';
+      if (flags['BADGE_6']) return 'CRESTFALL_TOWN';
+      if (flags['BADGE_5']) return 'STONEHAVEN_CITY';
+      if (flags['BADGE_4']) return 'FAIRYDELL_CITY';
       if (flags['BADGE_3']) return 'FERNGROVE_TOWN';
       if (flags['BADGE_2']) return 'PYRESIDE_CITY';
       if (flags['BADGE_1']) return 'DUSTWALL_TOWN';
@@ -635,7 +638,7 @@ DG.Menu = (function () {
     ctx.font = '11px monospace';
     ctx.fillStyle = '#aaaaaa';
     ctx.textAlign = 'right';
-    ctx.fillText(`${earnedN} / 8 earned`, W - 10, 10);
+    ctx.fillText(`${earnedN} / 9 earned`, W - 10, 10);
     ctx.textAlign = 'left';
 
     const ALL_BADGES = [
@@ -643,6 +646,7 @@ DG.Menu = (function () {
       { name:'Fossil Badge',  gym:'Jam Sennings · Dustwall',    type:'ROCK',     col:'#aa8833' },
       { name:'Magma Badge',   gym:'Asset Toverdijk · Pyreside',     type:'FIRE',     col:'#ff4411' },
       { name:'Canopy Badge',  gym:'PuKing Maarten · Ferngrove',    type:'GRASS',    col:'#33aa33' },
+      { name:'Charm Badge',   gym:'AFK Jorn · Fairydell',        type:'FAIRY',    col:'#dd77aa' },
       { name:'Bedrock Badge', gym:'Rock Hard Toonen · Stonehaven',   type:'GROUND',   col:'#cc8833' },
       { name:'Static Badge',  gym:'Beyblade Luuk · Crestfall',     type:'ELECTRIC', col:'#ffcc00' },
       { name:'Tide Badge',    gym:'Surfing Peter · Bogmire',     type:'WATER',    col:'#3377ff' },

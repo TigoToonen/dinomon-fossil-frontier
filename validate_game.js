@@ -116,10 +116,11 @@ const GATING = {
   DUSTWALL_TOWN:   { badge: 'BADGE_2', forward: ['ROUTE_3A'] },
   PYRESIDE_CITY:   { badge: 'BADGE_3', forward: ['ROUTE_4A'] },
   FERNGROVE_TOWN:  { badge: 'BADGE_4', forward: ['ROUTE_5A'] },
-  STONEHAVEN_CITY: { badge: 'BADGE_5', forward: ['ROUTE_6A', 'ROUTE_7A'] },
-  CRESTFALL_TOWN:  { badge: 'BADGE_6', forward: ['ROUTE_8A'] },
-  BOGMIRE_CITY:    { badge: 'BADGE_7', forward: ['ROUTE_9A'] },
-  APEXSUMMIT:      { badge: 'BADGE_8', forward: ['MT_CRETACEOUS', 'FOSSIL_GATEWAY'] },
+  FAIRYDELL_CITY:  { badge: 'BADGE_5', forward: ['STONEHAVEN_CITY'] },
+  STONEHAVEN_CITY: { badge: 'BADGE_6', forward: ['ROUTE_6A', 'ROUTE_7A'] },
+  CRESTFALL_TOWN:  { badge: 'BADGE_7', forward: ['ROUTE_8A'] },
+  BOGMIRE_CITY:    { badge: 'BADGE_8', forward: ['ROUTE_9A'] },
+  APEXSUMMIT:      { badge: 'BADGE_9', forward: ['MT_CRETACEOUS', 'FOSSIL_GATEWAY'] },
 };
 for (const town in GATING) {
   const m = MAPS[town];
