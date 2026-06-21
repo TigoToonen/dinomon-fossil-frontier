@@ -862,7 +862,7 @@ ROUTE_3A: {
     [66,66,66,66,66,66,66,66,66, 2, 2,66,66,66,66,66,66,66,66,66], // 5 CHOKE 1
     [66,66,66,66,66,66,66,66,66, 2, 2,66,66,66,66,66,66,66,66,66], // 6 CHOKE 1
     [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,66], // 7 TRAINER 1 row
-    [66, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2,66], // 8 open+grass edge
+    [66, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,68,66], // 8 open+grass edge (Murk Hollow door right)
     [66, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 4,66], // 9 grass sides
     // Boss Commander Triassic patrols this area (x:10,y:10)
     [66, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,66], // 10 boss row
@@ -877,12 +877,14 @@ ROUTE_3A: {
     [66,66,66,66,66,66,66,66,66, 4, 4,66,66,66,66,66,66,66,66,66], // 19 bottom border
   ],
   warps:[
+    { x:18, y:8, targetMap:'MURK_HOLLOW', targetX:5, targetY:8 }, // dark cave (needs Flash)
     { x:9,  y:0,  targetMap:'DUSTWALL_TOWN', targetX:9,  targetY:13 },
     { x:10, y:0,  targetMap:'DUSTWALL_TOWN', targetX:10, targetY:13 },
     { x:9,  y:19, targetMap:'ROUTE_3B', targetX:9,  targetY:1  },
     { x:10, y:19, targetMap:'ROUTE_3B', targetX:10, targetY:1  },
   ],
   npcs:[
+    { id:'R3A_MURK_SIGN', name:'Prospector', x:16, y:8, facing:'RIGHT', spriteKey:'NPC_MAN', movementType:'STATIONARY', dialogue:["That cave east of here is black as pitch. Bring a light - or a DinoMon that knows Flash."], onInteract:null },
     { id:'R3A_TRAINER1', name:'Blaze', x:5, y:7, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'FIREBREATHER_BLAZE' },
     { id:'R3A_BOSS1', name:'Commander Triassic', x:10, y:10, facing:'DOWN', spriteKey:'NPC_GRUNT',
@@ -5335,6 +5337,40 @@ DG.MAPS.BEACON_LIGHTHOUSE = {
   items:[
     { x:9, y:2, id:'MASTERBALL' },
     { x:9, y:8, id:'LIFE_ORB' },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+// ═══════════════════════════════════════════════════════════════
+// MURK HOLLOW — pitch-dark cave off Route 3A. Without HM Flash you can
+// barely see; with Flash the winding hollow lights up to its treasure.
+// ═══════════════════════════════════════════════════════════════
+DG.MAPS.MURK_HOLLOW = {
+  id:'MURK_HOLLOW', name:'Murk Hollow', width:12, height:10,
+  music:'ROUTE_CALM', isIndoor:false, isCave:true, isDark:true,
+  tiles:[
+    [72,72,72,72,72,72,72,72,72,72,72,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0,72,72,72,72,72,72,72,72, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0,72, 0,72],
+    [72,72,72,72,72,72,72,72, 0,72, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0,72, 0,72],
+    [72, 0,72,72,72,72,72,72,72,72, 0,72],
+    [72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,72],
+    [72, 0,72,72,72, 0,72,72,72,72,72,72],
+    [72, 0, 0, 0, 0,68,72,72,72,72,72,72],
+  ],
+  warps:[
+    { x:5, y:9, targetMap:'ROUTE_3A', targetX:17, targetY:8 },
+  ],
+  npcs:[
+    { id:'MH_NOTE', name:'Scratched Wall', x:1, y:7, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["(Words scratched into the rock:) 'Can't see a thing in here without a light...'","'They say a DinoMon that knows FLASH can banish the dark entirely.'"], onInteract:null },
+  ],
+  items:[
+    { x:10, y:1, id:'LEFTOVERS' },
+    { x:1,  y:1, id:'RARE_CANDY' },
+    { x:1,  y:5, id:'HYPERPOTION', hidden:true },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 };

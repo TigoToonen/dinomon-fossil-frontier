@@ -988,6 +988,23 @@ DG.Renderer = (function () {
 
     DG.SpriteRenderer.drawPlayer(ctx, ppX, ppY, p.facing, _animOff);
 
+    // ── Dark cave overlay (HM Flash) ─────────────────────────────
+    // On maps flagged isDark, vision is reduced to a small circle around
+    // the player — until a party DinoMon can use Flash, which lights it up.
+    if (mapData.isDark) {
+      const lit = (typeof DG.FieldMoves !== 'undefined') && DG.FieldMoves.canFlash(_gs);
+      const cx = ppX, cy = ppY - T * 0.4;
+      // Radius: small & claustrophobic without Flash, wide & bright with it.
+      const radius = lit ? T * 5.0 : T * 2.1;
+      const edgeAlpha = lit ? 0.55 : 0.97;
+      const g = ctx.createRadialGradient(cx, cy, radius * 0.45, cx, cy, radius);
+      g.addColorStop(0, 'rgba(0,0,0,0)');
+      g.addColorStop(0.75, 'rgba(0,0,0,' + (edgeAlpha * 0.5).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(0,0,0,' + edgeAlpha.toFixed(3) + ')');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+
     // Directional exit markers (which way to the next route/city)
     _drawExitMarkers(ctx, mapData, camX, camY, T, W, H);
 
