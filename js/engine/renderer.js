@@ -856,6 +856,29 @@ DG.Renderer = (function () {
       }
     }
 
+    // Draw ground items (dinoball pickups) not yet collected
+    if (mapData.items) {
+      const f = _gs && _gs.player && _gs.player.flags;
+      for (const it of mapData.items) {
+        if (it.x < startX - 1 || it.x > endX || it.y < startY - 1 || it.y > endY) continue;
+        if (f && f['ITEM_' + mapData.id + '_' + it.x + '_' + it.y]) continue;
+        const cx = it.x * T - camX + T / 2, cy = it.y * T - camY + T / 2;
+        const bob = Math.sin(_animOff * 0.1 + it.x) * 1.5;
+        const hidden = !!it.hidden;
+        ctx.save();
+        ctx.translate(cx, cy + bob);
+        if (hidden) { ctx.restore(); continue; } // hidden items are invisible
+        ctx.fillStyle = '#e23b3b'; ctx.beginPath(); ctx.arc(0, 0, 7, Math.PI, 0); ctx.fill();
+        ctx.fillStyle = '#f5f5f5'; ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI); ctx.fill();
+        ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(-7, 0); ctx.lineTo(7, 0); ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, 2.4, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#1a1a1a'; ctx.beginPath(); ctx.arc(0, 0, 2.4, 0, Math.PI * 2); ctx.stroke();
+        ctx.restore();
+      }
+    }
+
     // Draw exclamation mark if trainer has spotted player
     const alert = (typeof DG.Overworld.getTrainerAlert === 'function') ? DG.Overworld.getTrainerAlert() : null;
     if (alert && alert.phase === 'ALERT') {

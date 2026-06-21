@@ -241,6 +241,9 @@ DG.Overworld = (function () {
       return;
     }
 
+    // Ground item pickup (dinoball / hidden item)
+    if (_checkItemPickup(nx, ny)) return;
+
     // Tile event check
     DG.Events.checkTile(_mapData, nx, ny, _gs, () => {});
 
@@ -1796,6 +1799,20 @@ DG.Overworld = (function () {
     return out;
   }
 
+  // ── Ground items per map (dinoball pickups; hidden:true = invisible) ──
+  var _GROUND_ITEMS = {
+    ROUTE_1A: [{x:2,y:7,id:'POTION'},      {x:19,y:9,id:'DINOBALL',qty:3}],
+    ROUTE_1B: [{x:3,y:9,id:'SUPERPOTION'}, {x:17,y:11,id:'ANTIDOTE',hidden:true}],
+    ROUTE_2A: [{x:2,y:2,id:'SUPERBALL',qty:2}],
+    ROUTE_3A: [{x:2,y:2,id:'REVIVE'},      {x:17,y:8,id:'SUPERBALL'}],
+    ROUTE_5A: [{x:2,y:2,id:'ULTRABALL'},   {x:16,y:17,id:'FIRE_STONE',hidden:true}],
+  };
+  function _injectGroundItems(m) {
+    if (!m || !m.id || m._grounded) return;
+    m._grounded = true;
+    if (_GROUND_ITEMS[m.id] && !m.items) m.items = _GROUND_ITEMS[m.id].slice();
+  }
+
   function _injectFountain(m) {
     if (!m || !m.id || !m.tiles || m._fountain) return;
     var p = _FOUNTAIN_POS[m.id];
@@ -1815,6 +1832,25 @@ DG.Overworld = (function () {
   // Public warp (called from events)
   function warp(mapId, x, y, facing) {
     _startTransition(mapId, x, y, facing);
+  }
+
+  // ── Ground item pickup (dinoball / hidden items in the wild) ──
+  function _checkItemPickup(x, y) {
+    if (!_mapData || !_mapData.items) return false;
+    const it = _mapData.items.find(o => o.x === x && o.y === y);
+    if (!it) return false;
+    const flag = 'ITEM_' + _mapData.id + '_' + x + '_' + y;
+    if (_gs.player.flags && _gs.player.flags[flag]) return false; // already collected
+    const qty = it.qty || 1;
+    DG.SaveLoad.addItem(_gs, it.id, qty);
+    DG.SaveLoad.setFlag(_gs, flag);
+    const nm = (DG.ITEMS && DG.ITEMS[it.id]) ? DG.ITEMS[it.id].name : it.id;
+    _blocked = true;
+    try { DG.Audio.playSfx && DG.Audio.playSfx('SELECT'); } catch (e) {}
+    const intro = it.hidden ? 'You found a hidden item!' : 'You found an item!';
+    DG.DialogueBox.show([intro, (qty > 1 ? (qty + 'x ') : '') + nm + '!'],
+      () => { _blocked = false; DG.SaveLoad.save(_gs); });
+    return true;
   }
 
   // ── Navigation HUD state ──────────────────────────────────
@@ -1837,6 +1873,8 @@ DG.Overworld = (function () {
     try { _injectRouteSign(newData); } catch(e) {}
     // Auto-place a fountain centrepiece in each town (once per map)
     try { _injectFountain(newData); } catch(e) {}
+    // Auto-place ground-item pickups (once per map)
+    try { _injectGroundItems(newData); } catch(e) {}
 
     // Set map theme for themed tile drawing
     const _GYM_THEMES = {
