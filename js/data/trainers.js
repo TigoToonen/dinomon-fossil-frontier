@@ -362,6 +362,18 @@ DG.TRAINERS.NIELS_INTERN2 = {
     { speciesId:'QUAKELING', level:15, moves:['BULLDOZE','SAND_ATTACK','HEADBUTT','TACKLE'] },
   ], aiTier:2, location:'COMPOUND_CITY',
 };
+DG.TRAINERS.NIELS_BOSS = {
+  id:'NIELS_BOSS', name:'Daytrader Niels', class:'Daytrader', isGymLeader:false, isStoryBoss:true,
+  badge:null,
+  winDialogue:"A dip in your portfolio. Come back when you've diversified.",
+  loseDialogue:"Outperformed! You've got the instincts of a blue-chip trainer.",
+  reward:6000, party:[
+    { speciesId:'NORMLET',   level:17, moves:['TACKLE','QUICK_ATTACK','HEADBUTT','GROWL'] },
+    { speciesId:'BUGLING',   level:18, moves:['TACKLE','BUG_BITE','HARDEN','QUICK_ATTACK'] },
+    { speciesId:'EMBRIX',    level:18, moves:['EMBER','TACKLE','SMOKESCREEN','FLAME_CHARGE'] },
+    { speciesId:'SHADOWLET', level:20, moves:['SHADOW_BALL','NIGHT_SHADE','LICK','CONFUSE_RAY'] },
+  ], aiTier:3, location:'COMPOUND_CITY',
+};
 
 // ============================================================
 // STORY BOSSES (5)

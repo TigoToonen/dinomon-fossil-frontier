@@ -5007,7 +5007,7 @@ DG.MAPS.COMPOUND_CITY = {
   ],
   npcs:[
     { id:'NIELS', name:'Daytrader Niels', x:10, y:6, facing:'DOWN', spriteKey:'NPC_PROF',
-      movementType:'STATIONARY', dialogue:['NIELS_GREET'], onInteract:'DINO_FUND' },
+      movementType:'STATIONARY', dialogue:['NIELS_GREET'], onInteract:'NIELS_CHALLENGE' },
     { id:'CC_SHOP', name:'Broker', x:5, y:6, facing:'DOWN', spriteKey:'NPC_SHOPKEEPER',
       movementType:'STATIONARY', dialogue:['SHOP_GREET'], onInteract:'OPEN_SHOP',
       shopItems:['SUPERBALL','SUPERPOTION','REVIVE','ANTIDOTE','RARE_CANDY'] },

@@ -353,6 +353,7 @@ DG.ITEMS = {
   AMBERF:       { name: 'Amber Fragment',price: 0,   type: 'KEY' },
   FOSSIL_KEY:   { name: 'Fossil Key',    price: 0,   type: 'KEY' },
   GOLD_TEETH:   { name: 'Gold Teeth',    price: 0,   type: 'KEY' }, // Safari Warden quest item
+  COMPOUND_CARD:{ name: 'Compound Card', price: 0,   type: 'KEY' }, // Daytrader Niels — +50% battle prize money
   // Repels
   REPEL:        { name: 'Repel',         price: 350, type: 'REPEL', steps: 100 },
   SUPER_REPEL:  { name: 'Super Repel',   price: 500, type: 'REPEL', steps: 200 },

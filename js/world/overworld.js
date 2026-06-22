@@ -450,6 +450,47 @@ DG.Overworld = (function () {
       return;
     }
 
+    // onInteract: NIELS_CHALLENGE — beat the interns, then battle Niels for the
+    // Compound Card (+50% prize money). After he's beaten he runs the DinoFund.
+    if (npc.onInteract === 'NIELS_CHALLENGE') {
+      const f = _gs.player.flags || {};
+      if (f['TRAINER_NIELS_BOSS_DEFEATED']) { _dinoFund(); return; }
+      const internsDone = f['TRAINER_NIELS_INTERN1_DEFEATED'] && f['TRAINER_NIELS_INTERN2_DEFEATED'];
+      if (!internsDone) {
+        DG.DialogueBox.show([
+          "Daytrader Niels: Ambitious, I like it!",
+          "But first prove your worth — beat my interns, Bull and Bear.",
+          "Then I'll invest a real battle in you."], () => { _blocked = false; });
+        return;
+      }
+      const trainer = DG.TRAINERS.NIELS_BOSS;
+      DG.DialogueBox.show([
+        "Daytrader Niels: You cleared my portfolio. Impressive yield!",
+        "Now face the fund manager himself. Win, and the Compound Card is yours —",
+        "your battle prize money will compound like never before!"], () => {
+        const firstEnemy = DG.SaveLoad.createDinoMon(trainer.party[0].speciesId, trainer.party[0].level);
+        DG.Battle.start({
+          type: 'TRAINER', enemy: firstEnemy, trainerData: trainer, gameState: _gs,
+          onEnd: (result) => {
+            if (result === 'WIN') {
+              DG.SaveLoad.setFlag(_gs, 'TRAINER_NIELS_BOSS_DEFEATED');
+              _gs.player.bag = _gs.player.bag || {};
+              _gs.player.bag.COMPOUND_CARD = (_gs.player.bag.COMPOUND_CARD || 0) + 1;
+              DG.DialogueBox.show([
+                "Daytrader Niels: Outstanding return! You've earned a seat at the big table.",
+                "You received the COMPOUND CARD!",
+                "Battle prize money is now boosted by 50%. Talk to me again to use the DinoFund."],
+                () => { _blocked = false; DG.SaveLoad.save(_gs); });
+            } else {
+              DG.DialogueBox.show([trainer.winDialogue || "A dip in your portfolio. Come back when you've diversified."],
+                () => { _blocked = false; });
+            }
+          }
+        });
+      });
+      return;
+    }
+
     // onInteract: OPEN_SHOP
     if (npc.onInteract === 'OPEN_SHOP' && npc.shopItems) {
       DG.Events.shopMenu(npc.shopItems, _gs, () => { _blocked = false; DG.SaveLoad.save(_gs); });

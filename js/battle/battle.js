@@ -1700,7 +1700,8 @@ DG.Battle = (function () {
     // ── All enemy mons down → victory ────────────────────────
     if (!enemyAlive) {
       if (_battle.type === 'TRAINER') {
-        const reward = _battle.trainerData.reward || 0;
+        const _ccM = (_battle.gameState.player.bag && _battle.gameState.player.bag.COMPOUND_CARD > 0) ? 1.5 : 1;
+        const reward = Math.round((_battle.trainerData.reward || 0) * _ccM);
         _battle.gameState.player.money += reward;
         _pushMessage(`You defeated ${_battle.trainerData.name}! You got ¥${reward}!`);
       }
@@ -2530,7 +2531,8 @@ DG.Battle = (function () {
     // Award prize money for trainer battles
     if (result === 'WIN' && _battle.type === 'TRAINER' && _battle.trainerData) {
       const highestLv = _battle.enemyParty.reduce((mx, m) => Math.max(mx, m ? m.level : 0), 0);
-      const prize = _battle.trainerData.prize || (highestLv * 50);
+      const _ccM2 = (_battle.gameState.player.bag && _battle.gameState.player.bag.COMPOUND_CARD > 0) ? 1.5 : 1;
+      const prize = Math.round((_battle.trainerData.prize || (highestLv * 50)) * _ccM2);
       _battle.gameState.player.money = (_battle.gameState.player.money || 0) + prize;
       _pushMessage(`${_battle.trainerData.name || 'Trainer'} paid ¥${prize}!`);
       // Money pop animation
