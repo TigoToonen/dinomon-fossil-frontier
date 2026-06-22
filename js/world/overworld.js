@@ -59,6 +59,12 @@ DG.Overworld = (function () {
   function update(dt) {
     if (!_gs) return;
 
+    // HM Fly cutscene — runs to completion, blocks all overworld input
+    if (typeof DG.FlyAnim !== 'undefined' && DG.FlyAnim.isActive()) {
+      DG.FlyAnim.update(dt);
+      return;
+    }
+
     // Transition fade — MUST run even if _mapData is null (e.g. loading new map)
     // Previously, the !_mapData guard above would prevent this from running,
     // leaving the transition permanently stuck at black screen.
@@ -1873,6 +1879,66 @@ DG.Overworld = (function () {
     _startTransition(mapId, x, y, facing);
   }
 
+  // ── HM Fly: fast-travel to a visited city, landing in front of its DinoCenter ──
+  // The landing tile is data-driven: it's exactly where exiting that city's
+  // DinoCenter drops you (the CENTER map's return-warp target).
+  function _flyArrival(cityId) {
+    const city = DG.MAPS[cityId];
+    if (!city || !city.warps) return null;
+    const doorWarp = city.warps.find(w => w.targetMap && w.targetMap.endsWith('_CENTER'));
+    if (!doorWarp) return null;
+    const center = DG.MAPS[doorWarp.targetMap];
+    if (center && center.warps) {
+      const back = center.warps.find(w => w.targetMap === cityId);
+      if (back && back.targetX !== undefined) return { x: back.targetX, y: back.targetY };
+    }
+    return { x: doorWarp.x, y: doorWarp.y + 1 }; // fallback: just below the door
+  }
+
+  // Can the player Fly right now? (outdoors, not in a cave/building, not mid-action)
+  function canFlyNow() {
+    if (!_gs || !_mapData) return false;
+    if (_mapData.isIndoor || _mapData.isCave) return false;
+    if (_transitioning || _blocked) return false;
+    return (typeof DG.FieldMoves !== 'undefined') && DG.FieldMoves.canFly(_gs);
+  }
+
+  // List of visited cities (maps with a DinoCenter) you can fly to, minus the
+  // one you're standing in. Returns [{id, name}].
+  function flyDestinations() {
+    const out = [];
+    if (!_gs) return out;
+    for (const id in DG.MAPS) {
+      const m = DG.MAPS[id];
+      if (!m.warps) continue;
+      if (id === (_gs.player.currentMap || '')) continue;
+      if (!m.warps.some(w => w.targetMap && w.targetMap.endsWith('_CENTER'))) continue;
+      if (!DG.SaveLoad.getFlag(_gs, 'VISITED_' + id)) continue;
+      if (!_flyArrival(id)) continue;
+      out.push({ id, name: m.name || id });
+    }
+    return out;
+  }
+
+  function flyTo(cityId) {
+    const arr = _flyArrival(cityId);
+    if (!arr) return false;
+    const destName = (DG.MAPS[cityId] && DG.MAPS[cityId].name) || cityId;
+    const originId = _gs.player.currentMap || '';
+    _blocked = true;
+    if (typeof DG.FlyAnim !== 'undefined') {
+      DG.FlyAnim.start(originId, cityId, destName, function () {
+        _startTransition(cityId, arr.x, arr.y, 'DOWN');
+        try { DG.SaveLoad.setFlag(_gs, 'VISITED_' + cityId); } catch (e) {}
+        _blocked = false;
+      });
+    } else {
+      _startTransition(cityId, arr.x, arr.y, 'DOWN');
+      _blocked = false;
+    }
+    return true;
+  }
+
   // ── Ground item pickup (dinoball / hidden items in the wild) ──
   function _checkItemPickup(x, y) {
     if (!_mapData || !_mapData.items) return false;
@@ -2273,6 +2339,7 @@ DG.Overworld = (function () {
   // ── Master nav-HUD draw (called every overworld frame) ─────
   function drawObjectiveHint(ctx, gs) {
     if (!gs || !gs.player) return;
+    if (typeof DG.FlyAnim !== 'undefined' && DG.FlyAnim.isActive()) return; // hidden during Fly cutscene
     if (typeof DG.DialogueBox !== 'undefined' && DG.DialogueBox.isVisible()) return;
     _navTick++;
     const W = DG.CANVAS.W, H = DG.CANVAS.H, T = DG.CANVAS.TILE_SIZE;
@@ -2469,5 +2536,6 @@ DG.Overworld = (function () {
     isBlocked, setBlocked, getTrainerAlert,
     getEncounterFade, getEncounterFadeAlpha,
     isSurfing, drawObjectiveHint, triggerStarterRival,
+    flyTo, flyDestinations, canFlyNow,
   };
 })();

@@ -15,6 +15,21 @@ DG.Menu = (function () {
   let _gs      = null;
   let _onClose = null;
   let _dirty   = true;
+  let _mapCur  = 0; // selected fly-destination index on the region map
+
+  // Region positions for the Fly cursor (mirror the region-map node coords)
+  const _FLY_POS = {
+    AMBERTOWN:[54,266], SHELLCREEK_CITY:[52,224], DUSTWALL_TOWN:[62,184], PYRESIDE_CITY:[74,142],
+    FERNGROVE_TOWN:[146,182], FAIRYDELL_CITY:[126,138], STONEHAVEN_CITY:[158,104],
+    CRESTFALL_TOWN:[224,64], BOGMIRE_CITY:[336,150], APEXSUMMIT:[352,70],
+    COMPOUND_CITY:[96,206], BEACON_HAMLET:[288,96],
+  };
+  function _flyList() {
+    if (!DG.Overworld || !DG.Overworld.canFlyNow || !DG.Overworld.canFlyNow()) return [];
+    return (DG.Overworld.flyDestinations() || [])
+      .filter(function (d) { return _FLY_POS[d.id]; })
+      .map(function (d) { return { id: d.id, name: d.name, x: _FLY_POS[d.id][0], y: _FLY_POS[d.id][1] }; });
+  }
 
   // Choice menu
   let _choicePrompt  = '';
@@ -121,6 +136,7 @@ DG.Menu = (function () {
         break;
       case 'MAP':
         _screen = SCREEN.MAP;
+        _mapCur = 0;
         _dirty = true;
         break;
       case 'BADGES':
@@ -346,8 +362,23 @@ DG.Menu = (function () {
 
   // ── Map screen ────────────────────────────────────────────
   function _updateMap() {
-    if (DG.Input.isPressed('B') || DG.Input.isPressed('START') || DG.Input.isPressed('A')) {
-      _screen = SCREEN.MAIN; _cursor = 0; _dirty = true;
+    const list = _flyList();
+    if (list.length) {
+      if (_mapCur >= list.length) _mapCur = 0;
+      if (DG.Input.isPressed('DOWN') || DG.Input.isPressed('RIGHT')) { _mapCur = (_mapCur + 1) % list.length; _dirty = true; }
+      if (DG.Input.isPressed('UP')   || DG.Input.isPressed('LEFT'))  { _mapCur = (_mapCur - 1 + list.length) % list.length; _dirty = true; }
+      if (DG.Input.isPressed('A')) {
+        const dest = list[Math.min(_mapCur, list.length - 1)];
+        try { DG.Audio.playSfx('SELECT'); } catch (e) {}
+        close();                          // exit the menu back to the overworld
+        DG.Overworld.flyTo(dest.id);      // …then launch the Fly cutscene
+        return;
+      }
+      if (DG.Input.isPressed('B') || DG.Input.isPressed('START')) { _screen = SCREEN.MAIN; _cursor = 0; _dirty = true; }
+    } else {
+      if (DG.Input.isPressed('B') || DG.Input.isPressed('START') || DG.Input.isPressed('A')) {
+        _screen = SCREEN.MAIN; _cursor = 0; _dirty = true;
+      }
     }
   }
 
@@ -712,10 +743,34 @@ DG.Menu = (function () {
       ctx.fillStyle = '#aabbcc'; ctx.fillText(it[1], lx + 7, ly);
     });
 
-    // Close hint
-    ctx.fillStyle = 'rgba(6,14,40,0.8)'; rr(W - 92, H - 15, 88, 12, 3); ctx.fill();
-    ctx.fillStyle = '#7088aa'; ctx.font = '8px monospace'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    ctx.fillText('[B/ESC] Close', W - 86, H - 9);
+    // ── Fly selection overlay (when you can Fly) ──
+    const fl = _flyList();
+    if (fl.length) {
+      const sel = fl[Math.min(_mapCur, fl.length - 1)];
+      // ring + arrow on the selected destination
+      ctx.save();
+      ctx.strokeStyle = '#7ec2ef'; ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.55 + 0.45 * pulse;
+      ctx.beginPath(); ctx.arc(sel.x, sel.y, 13, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+      ctx.fillStyle = '#7ec2ef'; ctx.font = 'bold 8px monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillText('✈ FLY', sel.x, sel.y - 15);
+      // fly banner (top, under title)
+      ctx.fillStyle = 'rgba(8,20,48,0.9)'; ctx.strokeStyle = '#7ec2ef'; ctx.lineWidth = 1;
+      rr(W / 2 - 96, TITLE_H + 3, 192, 15, 4); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#cdeaff'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('Fly to ' + sel.name + '?', W / 2, TITLE_H + 10.5);
+      // hint
+      ctx.fillStyle = 'rgba(6,14,40,0.85)'; rr(W - 150, H - 15, 146, 12, 3); ctx.fill();
+      ctx.fillStyle = '#9fd0f0'; ctx.font = '8px monospace'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.fillText('◄►: pick   A: Fly   B: Close', W - 144, H - 9);
+    } else {
+      // Close hint
+      ctx.fillStyle = 'rgba(6,14,40,0.8)'; rr(W - 92, H - 15, 88, 12, 3); ctx.fill();
+      ctx.fillStyle = '#7088aa'; ctx.font = '8px monospace'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.fillText('[B/ESC] Close', W - 86, H - 9);
+    }
   }
 
   function _drawBadges(ctx) {

@@ -102,7 +102,10 @@ DG.Renderer = (function () {
       case DG.STATE.RIVAL_NAME_ENTRY:  _drawRivalNameEntry(ctx);   break;
       case DG.STATE.DIFFICULTY_SELECT: _drawDifficultySelect(ctx); break;
       case DG.STATE.NICKNAME_ENTRY:    _drawNicknameEntry(ctx);    break;
-      case DG.STATE.OVERWORLD:      _drawOverworld(ctx);     break;
+      case DG.STATE.OVERWORLD:
+        _drawOverworld(ctx);
+        if (typeof DG.FlyAnim !== 'undefined' && DG.FlyAnim.isActive()) DG.FlyAnim.draw(ctx);
+        break;
       case DG.STATE.BATTLE:    _drawBattle(ctx); break;
       case DG.STATE.MENU: {
         _drawOverworld(ctx);
