@@ -407,9 +407,10 @@ DG.Menu = (function () {
   // Clean schematic world map: labelled nodes + numbered route lines + you-are-here + goal.
   function _drawMap(ctx) {
     const W = DG.CANVAS.W, H = DG.CANVAS.H;
-    const TITLE_H = 24, MAP_Y = TITLE_H;
+    const TITLE_H = 22, MAP_Y = TITLE_H;
     _drawMap._t = (_drawMap._t || 0) + 1;
-    const pulse = 0.5 + 0.5 * Math.sin(_drawMap._t * 0.12);
+    const t = _drawMap._t;
+    const pulse = 0.5 + 0.5 * Math.sin(t * 0.12);
 
     function rr(x, y, w, h, r) {
       ctx.beginPath();
@@ -418,51 +419,69 @@ DG.Menu = (function () {
       ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
       ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
     }
-
-    // Background — dark schematic
-    const bg = ctx.createLinearGradient(0, MAP_Y, 0, H);
-    bg.addColorStop(0, '#0b1228'); bg.addColorStop(1, '#0e1832');
-    ctx.fillStyle = bg; ctx.fillRect(0, MAP_Y, W, H - MAP_Y);
-    ctx.strokeStyle = 'rgba(80,120,180,0.06)'; ctx.lineWidth = 1;
-    for (let gx = 0; gx < W; gx += 24) { ctx.beginPath(); ctx.moveTo(gx, MAP_Y); ctx.lineTo(gx, H); ctx.stroke(); }
-    for (let gy = MAP_Y; gy < H; gy += 24) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
-
-    // Node table: id -> [name, x, y, gymNum(0=none), type]
-    const N = {
-      AMBERTOWN:       ['Ambertown',     52, 286, 0, 'start'],
-      SHELLCREEK_CITY: ['Shellcreek',    52, 245, 1, 'gym'],
-      DUSTWALL_TOWN:   ['Dustwall',      52, 204, 2, 'gym'],
-      PYRESIDE_CITY:   ['Pyreside',      52, 163, 3, 'gym'],
-      FERNGROVE_TOWN:  ['Ferngrove',    158, 170, 4, 'gym'],
-      FAIRYDELL_CITY:  ['Fairydell',    100, 150, 5, 'gym'],
-      STONEHAVEN_CITY: ['Stonehaven',   116, 110, 6, 'gym'],
-      CRESTFALL_TOWN:  ['Crestfall',    214,  78, 7, 'gym'],
-      BOGMIRE_CITY:    ['Bogmire',      332, 120, 8, 'gym'],
-      APEXSUMMIT:      ['Apex Summit',  322,  56, 9, 'gym'],
-      MT_CRETACEOUS:   ['Mt Cretaceous',422,  56, 0, 'peak'],
-      FOSSIL_CITADEL:  ['Fossil Citadel',426,110, 0, 'citadel'],
-    };
-    const E = [
-      ['AMBERTOWN','SHELLCREEK_CITY','1'], ['SHELLCREEK_CITY','DUSTWALL_TOWN','2'],
-      ['DUSTWALL_TOWN','PYRESIDE_CITY','3'], ['PYRESIDE_CITY','FERNGROVE_TOWN','4'],
-      ['FERNGROVE_TOWN','FAIRYDELL_CITY','5'], ['FAIRYDELL_CITY','STONEHAVEN_CITY','5'],
-      ['STONEHAVEN_CITY','CRESTFALL_TOWN','6'],
-      ['STONEHAVEN_CITY','BOGMIRE_CITY','7'], ['CRESTFALL_TOWN','BOGMIRE_CITY','8'],
-      ['BOGMIRE_CITY','APEXSUMMIT','9'], ['APEXSUMMIT','MT_CRETACEOUS','10'],
-      ['APEXSUMMIT','FOSSIL_CITADEL','C'],
-    ];
+    function smoothPoly(pts) {
+      const n = pts.length;
+      ctx.beginPath();
+      ctx.moveTo((pts[0][0] + pts[n - 1][0]) / 2, (pts[0][1] + pts[n - 1][1]) / 2);
+      for (let i = 0; i < n; i++) {
+        const c = pts[i], nx = pts[(i + 1) % n];
+        ctx.quadraticCurveTo(c[0], c[1], (c[0] + nx[0]) / 2, (c[1] + nx[1]) / 2);
+      }
+      ctx.closePath();
+    }
+    function blob(cx, cy, r, col) {
+      const g = ctx.createRadialGradient(cx, cy, 1, cx, cy, r);
+      g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    }
 
     const flags  = (_gs && _gs.player && _gs.player.flags) || {};
     const badges = (_gs && _gs.player && _gs.player.badges) || [];
     const curMap = (_gs && _gs.player && _gs.player.currentMap) || '';
     const citadelUnlocked = badges.length >= 9 || flags['BADGE_9'] || flags['FOSSIL_CITADEL_OPEN'];
 
-    function isHere(id) { return curMap === id || curMap.indexOf(id) === 0; }
+    const GYMCOL = { 1:'#a8a878', 2:'#b8a038', 3:'#f08030', 4:'#78c850',
+                     5:'#ee99ac', 6:'#e0c068', 7:'#f8d030', 8:'#6890f0', 9:'#7038f8' };
+    const GYMTYPE = { 1:'NOR',2:'RCK',3:'FIR',4:'GRS',5:'FAI',6:'GRD',7:'ELE',8:'WTR',9:'DRG' };
+
+    const N = {
+      AMBERTOWN:       { name:'Ambertown',   x:54,  y:266, gym:0, kind:'start' },
+      SHELLCREEK_CITY: { name:'Shellcreek',  x:52,  y:224, gym:1, kind:'gym' },
+      DUSTWALL_TOWN:   { name:'Dustwall',    x:62,  y:184, gym:2, kind:'gym' },
+      PYRESIDE_CITY:   { name:'Pyreside',    x:74,  y:142, gym:3, kind:'gym' },
+      FERNGROVE_TOWN:  { name:'Ferngrove',   x:146, y:182, gym:4, kind:'gym' },
+      FAIRYDELL_CITY:  { name:'Fairydell',   x:126, y:138, gym:5, kind:'gym' },
+      STONEHAVEN_CITY: { name:'Stonehaven',  x:158, y:104, gym:6, kind:'gym' },
+      CRESTFALL_TOWN:  { name:'Crestfall',   x:224, y:64,  gym:7, kind:'gym' },
+      BOGMIRE_CITY:    { name:'Bogmire',     x:336, y:150, gym:8, kind:'gym' },
+      APEXSUMMIT:      { name:'Apex Summit', x:352, y:70,  gym:9, kind:'gym' },
+      MT_CRETACEOUS:   { name:'Mt Cretaceous', x:424, y:62, gym:0, kind:'peak' },
+      FOSSIL_CITADEL:  { name:'Fossil Citadel', x:432, y:122, gym:0, kind:'citadel' },
+    };
+    const E = [
+      ['AMBERTOWN','SHELLCREEK_CITY','1'], ['SHELLCREEK_CITY','DUSTWALL_TOWN','2'],
+      ['DUSTWALL_TOWN','PYRESIDE_CITY','3'], ['PYRESIDE_CITY','FERNGROVE_TOWN','4'],
+      ['FERNGROVE_TOWN','FAIRYDELL_CITY','5'], ['FAIRYDELL_CITY','STONEHAVEN_CITY','x'],
+      ['STONEHAVEN_CITY','CRESTFALL_TOWN','6'], ['CRESTFALL_TOWN','BOGMIRE_CITY','8'],
+      ['STONEHAVEN_CITY','BOGMIRE_CITY','7',true],
+      ['BOGMIRE_CITY','APEXSUMMIT','9'], ['APEXSUMMIT','MT_CRETACEOUS','10'],
+      ['APEXSUMMIT','FOSSIL_CITADEL','C'],
+    ];
+    const SIDE = [
+      { name:'Compound City', x:96,  y:206, short:'$' },
+      { name:'Murk Hollow',   x:104, y:166, short:'F' },
+      { name:'Safari Zone',   x:250, y:120, short:'S' },
+      { name:'Beacon Hamlet', x:288, y:96,  short:'L' },
+      { name:'Extinction Dig',x:196, y:90,  short:'X' },
+    ];
+
+    function isHere(id) { return curMap === id || (curMap.indexOf(id) === 0 && id.length > 4); }
     function visited(id) {
       if (isHere(id)) return true;
       if (flags['VISITED_' + id]) return true;
-      for (const k in flags) { if (flags[k] && k.indexOf('VISITED_' + id) === 0) return true; }
-      // fall back: nodes up to the highest earned badge are considered known
+      const nd = N[id];
+      if (nd && nd.gym > 0 && badges.length >= nd.gym - 1) return true;
+      if (nd && nd.kind === 'start') return true;
       return false;
     }
     function goalId() {
@@ -480,146 +499,223 @@ DG.Menu = (function () {
     }
     const goal = goalId();
 
-    // ── Route edges ──
-    for (const e of E) {
-      const a = N[e[0]], b = N[e[1]];
-      if (!a || !b) continue;
-      const isCitadel = (e[2] === 'C');
-      const locked = isCitadel && !citadelUnlocked;
-      const known = visited(e[0]) || visited(e[1]);
-      ctx.save();
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = locked ? 'rgba(120,120,140,0.30)' : (known ? '#5a86c0' : 'rgba(90,134,192,0.40)');
-      if (locked) ctx.setLineDash([3, 4]);
-      ctx.beginPath(); ctx.moveTo(a[1], a[2]); ctx.lineTo(b[1], b[2]); ctx.stroke();
-      ctx.restore();
-      const mx = (a[1] + b[1]) / 2, my = (a[2] + b[2]) / 2;
-      const lbl = isCitadel ? '★' : ('R' + e[2]);
-      ctx.font = 'bold 8px monospace';
-      const lw = ctx.measureText(lbl).width + 6;
-      ctx.fillStyle = locked ? 'rgba(40,44,60,0.92)' : 'rgba(12,24,52,0.95)';
-      ctx.strokeStyle = locked ? '#666' : '#5a86c0'; ctx.lineWidth = 1;
-      rr(mx - lw / 2, my - 7, lw, 14, 4); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = locked ? '#888' : '#bfe0ff';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(lbl, mx, my + 0.5);
+    // SEA background
+    const sea = ctx.createLinearGradient(0, MAP_Y, 0, H);
+    sea.addColorStop(0, '#1b4a78'); sea.addColorStop(1, '#123a63');
+    ctx.fillStyle = sea; ctx.fillRect(0, MAP_Y, W, H - MAP_Y);
+    ctx.strokeStyle = 'rgba(150,200,235,0.10)'; ctx.lineWidth = 1;
+    for (let wy = MAP_Y + 14; wy < H; wy += 18) {
+      ctx.beginPath();
+      for (let wx = 0; wx <= W; wx += 12) {
+        const yy = wy + Math.sin((wx * 0.08) + t * 0.05 + wy) * 1.6;
+        wx === 0 ? ctx.moveTo(wx, yy) : ctx.lineTo(wx, yy);
+      }
+      ctx.stroke();
     }
 
-    // ── Nodes ──
+    // LANDMASS
+    const land = [
+      [34,78],[120,46],[226,40],[300,50],[360,58],[414,52],[452,86],
+      [456,128],[420,156],[392,184],[376,210],[372,238],[300,250],[250,286],
+      [150,296],[64,282],[26,214],[20,138],[30,98],
+    ];
+    ctx.save(); ctx.translate(3, 4); smoothPoly(land);
+    ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.fill(); ctx.restore();
+    smoothPoly(land);
+    const lg = ctx.createLinearGradient(0, MAP_Y, 0, H);
+    lg.addColorStop(0, '#5fa24a'); lg.addColorStop(1, '#4e8c3e');
+    ctx.fillStyle = lg; ctx.fill();
+    ctx.save(); smoothPoly(land); ctx.clip();
+    blob(70, 175, 72, 'rgba(214,188,120,0.85)');
+    blob(150, 185, 60, 'rgba(40,96,46,0.6)');
+    blob(130, 135, 46, 'rgba(225,150,190,0.30)');
+    blob(330, 165, 80, 'rgba(42,74,60,0.85)');
+    blob(360, 78, 78, 'rgba(232,238,246,0.80)');
+    blob(424, 64, 40, 'rgba(255,255,255,0.85)');
+    blob(214, 70, 50, 'rgba(120,140,170,0.45)');
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    for (let i = 0; i < 90; i++) {
+      const sx = ((i * 53) % 420) + 24, sy = ((i * 97) % 250) + 50;
+      ctx.fillRect(sx, sy, 1, 1);
+    }
+    ctx.restore();
+    smoothPoly(land);
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 4; ctx.stroke();
+    ctx.strokeStyle = 'rgba(240,228,180,0.85)'; ctx.lineWidth = 2; ctx.stroke();
+
+    ctx.fillStyle = 'rgba(110,120,140,0.7)';
+    [[300,66],[316,70],[404,72],[416,66]].forEach(function (m) {
+      ctx.fillStyle = 'rgba(110,120,140,0.7)';
+      ctx.beginPath(); ctx.moveTo(m[0], m[1] - 9); ctx.lineTo(m[0] - 7, m[1] + 3); ctx.lineTo(m[0] + 7, m[1] + 3); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.beginPath(); ctx.moveTo(m[0], m[1] - 9); ctx.lineTo(m[0] - 3, m[1] - 3); ctx.lineTo(m[0] + 3, m[1] - 3); ctx.closePath(); ctx.fill();
+    });
+
+    // ROUTES
+    for (const e of E) {
+      const a = N[e[0]], b = N[e[1]]; if (!a || !b) continue;
+      const isC = (e[2] === 'C'); const sec = e[3];
+      const locked = isC && !citadelUnlocked;
+      const known = visited(e[0]) && visited(e[1]);
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1;
+      const off = sec ? 26 : 14;
+      const cxp = mx + (-dy / len) * off, cyp = my + (dx / len) * off;
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineWidth = sec ? 4 : 6;
+      ctx.strokeStyle = locked ? 'rgba(40,44,60,0.5)' : 'rgba(60,40,24,0.55)';
+      if (locked || sec) ctx.setLineDash(locked ? [4,5] : [7,5]);
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(cxp, cyp, b.x, b.y); ctx.stroke();
+      ctx.lineWidth = sec ? 2 : 3.2;
+      ctx.strokeStyle = locked ? 'rgba(120,120,140,0.4)' : known ? '#e7cf8f' : 'rgba(231,207,143,0.55)';
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(cxp, cyp, b.x, b.y); ctx.stroke();
+      ctx.restore();
+      const lmx = 0.25 * a.x + 0.5 * cxp + 0.25 * b.x;
+      const lmy = 0.25 * a.y + 0.5 * cyp + 0.25 * b.y;
+      const lbl = isC ? 'star' : (e[2] === 'x' ? '' : 'R' + e[2]);
+      if (lbl) {
+        if (lbl === 'star') {
+          ctx.fillStyle = locked ? '#999' : '#ffe9b8'; ctx.font = 'bold 11px monospace';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('★', lmx, lmy);
+        } else {
+          ctx.font = 'bold 8px monospace';
+          const lw = ctx.measureText(lbl).width + 6;
+          ctx.fillStyle = locked ? 'rgba(30,34,48,0.95)' : 'rgba(34,24,12,0.92)';
+          ctx.strokeStyle = locked ? '#666' : '#caa15a'; ctx.lineWidth = 1;
+          rr(lmx - lw / 2, lmy - 6.5, lw, 13, 4); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = locked ? '#999' : '#ffe9b8';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(lbl, lmx, lmy + 0.5);
+        }
+      }
+    }
+
+    // SIDE-AREAS
+    for (const s of SIDE) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(20,30,20,0.85)'; ctx.strokeStyle = '#9fd6a0'; ctx.lineWidth = 1;
+      ctx.translate(s.x, s.y); ctx.rotate(Math.PI / 4);
+      ctx.fillRect(-3.4, -3.4, 6.8, 6.8); ctx.strokeRect(-3.4, -3.4, 6.8, 6.8);
+      ctx.restore();
+      ctx.fillStyle = '#bdeabe'; ctx.font = 'bold 6px monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(s.short, s.x, s.y + 0.5);
+      ctx.fillStyle = 'rgba(190,235,191,0.9)'; ctx.font = '6px monospace';
+      ctx.textBaseline = 'top'; ctx.fillText(s.name, s.x, s.y + 6);
+    }
+
+    // CITY icons
     for (const id in N) {
-      const nd = N[id], name = nd[0], x = nd[1], y = nd[2], gym = nd[3], type = nd[4];
+      const nd = N[id], x = nd.x, y = nd.y;
       const here = isHere(id), vis = visited(id), isGoal = (id === goal);
 
       if (id === 'FOSSIL_CITADEL' && !citadelUnlocked) {
-        ctx.fillStyle = 'rgba(60,66,90,0.92)';
-        ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#888'; ctx.lineWidth = 1; ctx.setLineDash([2, 2]); ctx.stroke(); ctx.setLineDash([]);
-        ctx.fillStyle = '#aab'; ctx.font = 'bold 10px monospace';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', x, y + 0.5);
-        continue;
+        ctx.fillStyle = 'rgba(40,46,66,0.92)'; ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#778'; ctx.lineWidth = 1; ctx.setLineDash([2, 2]); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = '#aab'; ctx.font = 'bold 10px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('?', x, y + 0.5); continue;
       }
 
       if (isGoal && !here) {
-        ctx.save(); ctx.globalAlpha = 0.35 + 0.45 * pulse;
-        ctx.strokeStyle = '#ffd23a'; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.globalAlpha = 0.4 + 0.5 * pulse; ctx.strokeStyle = '#ffd23a'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(x, y, 15, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       }
       if (here) {
-        const g = ctx.createRadialGradient(x, y, 2, x, y, 17);
-        g.addColorStop(0, 'rgba(255,220,0,' + (0.45 + 0.3 * pulse) + ')');
-        g.addColorStop(1, 'rgba(255,220,0,0)');
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 17, 0, Math.PI * 2); ctx.fill();
+        const g = ctx.createRadialGradient(x, y, 2, x, y, 18);
+        g.addColorStop(0, 'rgba(255,225,60,' + (0.5 + 0.3 * pulse) + ')'); g.addColorStop(1, 'rgba(255,225,60,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill();
       }
 
-      let col = here ? '#ffe050' : isGoal ? '#ffd23a' : vis ? '#7fb0e6' : '#3a4763';
-      if (type === 'peak')    col = vis ? '#e07050' : '#3a4763';
-      if (type === 'citadel') col = '#ffd700';
-      if (type === 'start')   col = vis ? '#6ad06a' : '#5a86c0';
-      ctx.fillStyle = col; ctx.strokeStyle = here ? '#ffffff' : 'rgba(0,0,0,0.5)'; ctx.lineWidth = here ? 2 : 1;
-      if (type === 'peak') {
-        ctx.beginPath(); ctx.moveTo(x, y - 8); ctx.lineTo(x - 7, y + 6); ctx.lineTo(x + 7, y + 6); ctx.closePath(); ctx.fill(); ctx.stroke();
+      const dim = !vis && !here && !isGoal;
+      ctx.save(); if (dim) ctx.globalAlpha = 0.5;
+
+      if (nd.kind === 'peak') {
+        ctx.fillStyle = vis ? '#c25a3c' : '#5a6478'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, y - 9); ctx.lineTo(x - 8, y + 6); ctx.lineTo(x + 8, y + 6); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.beginPath(); ctx.moveTo(x, y - 9); ctx.lineTo(x - 3.2, y - 2); ctx.lineTo(x + 3.2, y - 2); ctx.closePath(); ctx.fill();
+      } else if (nd.kind === 'citadel') {
+        ctx.fillStyle = '#ffd700'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2;
+        ctx.save(); ctx.translate(x, y); ctx.rotate(Math.PI / 4);
+        ctx.fillRect(-6, -6, 12, 12); ctx.strokeRect(-6, -6, 12, 12); ctx.restore();
+      } else if (nd.kind === 'start') {
+        ctx.fillStyle = vis ? '#69c569' : '#7aa0c0'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2;
+        rr(x - 6, y - 5, 12, 10, 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.beginPath(); ctx.moveTo(x - 7, y - 5); ctx.lineTo(x, y - 11); ctx.lineTo(x + 7, y - 5); ctx.closePath(); ctx.fill();
       } else {
-        ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      }
-
-      if (gym > 0) {
-        const beaten = badges.length >= gym || flags['BADGE_' + gym];
-        ctx.fillStyle = beaten ? '#ffcf33' : '#55607a';
-        ctx.beginPath(); ctx.arc(x + 6, y - 6, 4.5, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.8; ctx.stroke();
+        const beaten = badges.length >= nd.gym || flags['BADGE_' + nd.gym];
+        const base = (vis || here) ? (GYMCOL[nd.gym] || '#9fb6d6') : '#54607a';
+        ctx.fillStyle = base; ctx.strokeStyle = here ? '#fff' : 'rgba(0,0,0,0.55)'; ctx.lineWidth = here ? 2 : 1.2;
+        rr(x - 7, y - 4, 14, 11, 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.beginPath(); ctx.moveTo(x - 8.5, y - 4); ctx.lineTo(x, y - 12); ctx.lineTo(x + 8.5, y - 4); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = beaten ? '#ffcf33' : '#39425a';
+        ctx.beginPath(); ctx.arc(x + 8, y - 9, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
         ctx.fillStyle = beaten ? '#5a3a00' : '#cdd6e6'; ctx.font = 'bold 7px monospace';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(gym), x + 6, y - 5.5);
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(nd.gym), x + 8, y - 8.5);
       }
-
-      // Name label below the node (always shown so you can plan ahead)
-      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.95)'; ctx.shadowBlur = 3;
-      ctx.fillStyle = here ? '#ffe87a' : isGoal ? '#ffd23a' : vis ? '#cdd6e6' : 'rgba(150,165,195,0.6)';
-      ctx.font = here ? 'bold 9px monospace' : '9px monospace';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-      ctx.fillText(name, x, y + 9);
       ctx.restore();
 
-      // YOU / GOAL tags above the node
-      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-      ctx.font = 'bold 8px monospace';
-      if (here)       { ctx.fillStyle = '#ffe050'; ctx.fillText('YOU ▾', x, y - 12); }
-      else if (isGoal){ ctx.fillStyle = '#ffd23a'; ctx.fillText('GOAL ▾', x, y - 12); }
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.95)'; ctx.shadowBlur = 3;
+      ctx.fillStyle = here ? '#fff07a' : isGoal ? '#ffd23a' : (vis ? '#eef4ff' : 'rgba(210,220,238,0.55)');
+      ctx.font = here ? 'bold 9px monospace' : '8px monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText(nd.name, x, y + 9);
+      if (nd.gym > 0 && (vis || here || isGoal)) {
+        ctx.fillStyle = GYMCOL[nd.gym]; ctx.font = 'bold 6px monospace'; ctx.fillText(GYMTYPE[nd.gym], x, y + 18);
+      }
+      ctx.restore();
+
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.font = 'bold 8px monospace';
+      if (here)        { ctx.fillStyle = '#ffe050'; ctx.fillText('YOU', x, y - 13); }
+      else if (isGoal) { ctx.fillStyle = '#ffd23a'; ctx.fillText('GOAL', x, y - 13); }
     }
 
-    // ── "You are here" on a ROUTE (not a town node): mark the matching edge ──
-    const onTownNode = (function () { for (const id in N) if (isHere(id)) return true; return false; })();
-    if (!onTownNode && /^ROUTE_(\d+)/.test(curMap)) {
+    // YOU on a route
+    const onNode = (function () { for (const id in N) if (isHere(id)) return true; return false; })();
+    if (!onNode && /^ROUTE_(\d+)/.test(curMap)) {
       const rn = curMap.match(/^ROUTE_(\d+)/)[1];
       const edge = E.find(function (e) { return e[2] === rn; });
       if (edge) {
         const a = N[edge[0]], b = N[edge[1]];
-        const mx = (a[1] + b[1]) / 2, my = (a[2] + b[2]) / 2;
+        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
         const g = ctx.createRadialGradient(mx, my, 2, mx, my, 14);
-        g.addColorStop(0, 'rgba(255,220,0,' + (0.5 + 0.3 * pulse) + ')'); g.addColorStop(1, 'rgba(255,220,0,0)');
+        g.addColorStop(0, 'rgba(255,225,60,' + (0.5 + 0.3 * pulse) + ')'); g.addColorStop(1, 'rgba(255,225,60,0)');
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, my, 14, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = '#ffe050'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.arc(mx, my, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = '#ffe050'; ctx.font = 'bold 8px monospace';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText('YOU ▾', mx, my - 8);
+        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText('YOU', mx, my - 8);
       }
     }
 
-    // ── Title bar ──
+    // Title bar
     const tg = ctx.createLinearGradient(0, 0, 0, TITLE_H);
     tg.addColorStop(0, 'rgba(8,16,48,0.97)'); tg.addColorStop(1, 'rgba(10,22,58,0.95)');
     ctx.fillStyle = tg; ctx.fillRect(0, 0, W, TITLE_H);
     ctx.strokeStyle = '#3a6a9a'; ctx.lineWidth = 1; ctx.strokeRect(0, 0, W, TITLE_H);
-    ctx.fillStyle = '#8ed8f8'; ctx.font = 'bold 12px monospace'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    ctx.fillText('WORLD MAP', 10, TITLE_H / 2);
-    const curNode = N[curMap] || (function () { for (const id in N) if (isHere(id)) return N[id]; return null; })();
-    if (curNode) {
-      ctx.fillStyle = '#ffe050'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'right';
-      ctx.fillText('★ ' + curNode[0], W - 8, TITLE_H / 2);
-    }
+    ctx.fillStyle = '#8ed8f8'; ctx.font = 'bold 11px monospace'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText('FOSSIL FRONTIER — REGION MAP', 8, TITLE_H / 2);
+    ctx.fillStyle = '#ffcf33'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'right';
+    ctx.fillText(badges.length + '/9 badges', W - 8, TITLE_H / 2);
 
-    // ── Legend (bottom-left) ──
-    const LX = 4, LY = H - 56, LW = 150, LH = 52;
-    ctx.fillStyle = 'rgba(6,14,40,0.9)'; ctx.strokeStyle = '#3a6a9a'; ctx.lineWidth = 1;
+    // Legend
+    const LX = 4, LY = H - 46, LW = 150, LH = 42;
+    ctx.fillStyle = 'rgba(6,14,40,0.88)'; ctx.strokeStyle = '#3a6a9a'; ctx.lineWidth = 1;
     rr(LX, LY, LW, LH, 3); ctx.fill(); ctx.stroke();
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#8ed8f8'; ctx.font = 'bold 8px monospace'; ctx.fillText('LEGEND', LX + 5, LY + 8);
     const leg = [
-      ['#ffe050', 'You are here'],
-      ['#ffd23a', 'Your next goal'],
-      ['#ffcf33', 'Gym (gold = beaten)'],
-      ['#bfe0ff', 'R# = route (wild grass)'],
+      ['#ffe050', 'YOU = here'], ['#ffd23a', 'GOAL = next gym'],
+      ['#f8d030', 'gym (gold # done)'], ['#9fd6a0', 'diamond = side-area'],
     ];
-    ctx.font = '8px monospace';
+    ctx.font = '7px monospace';
     leg.forEach(function (it, i) {
-      const ly = LY + 20 + i * 9;
-      ctx.fillStyle = it[0]; ctx.beginPath(); ctx.arc(LX + 9, ly, 3, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#aabbcc'; ctx.fillText(it[1], LX + 17, ly);
+      const lx = LX + 6 + (i % 2) * 72, ly = LY + 11 + Math.floor(i / 2) * 16;
+      ctx.fillStyle = it[0]; ctx.beginPath(); ctx.arc(lx, ly, 2.6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#aabbcc'; ctx.fillText(it[1], lx + 7, ly);
     });
 
-    // ── Close hint (bottom-right) ──
-    ctx.fillStyle = 'rgba(6,14,40,0.8)'; rr(W - 96, H - 16, 92, 13, 3); ctx.fill();
-    ctx.fillStyle = '#7088aa'; ctx.font = '9px monospace'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    ctx.fillText('[B/ESC] Close', W - 90, H - 9);
+    // Close hint
+    ctx.fillStyle = 'rgba(6,14,40,0.8)'; rr(W - 92, H - 15, 88, 12, 3); ctx.fill();
+    ctx.fillStyle = '#7088aa'; ctx.font = '8px monospace'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText('[B/ESC] Close', W - 86, H - 9);
   }
 
   function _drawBadges(ctx) {
