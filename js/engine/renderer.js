@@ -2143,6 +2143,50 @@ DG.Renderer = (function () {
       ctx.textBaseline = 'top';
       ctx.globalAlpha = 1;
     }
+
+    // ── Elite Four / Champion — cinematic title flair ──────────
+    const _cls = battle.trainerData && battle.trainerData.class;
+    if (_cls === 'Elite Four' || _cls === 'Champion') {
+      const _champ = _cls === 'Champion';
+      const _accent = _champ ? '#c89cff' : '#ffd24a';
+      // cinematic vignette
+      ctx.save();
+      ctx.globalAlpha = Math.min(0.6, pct * 0.75);
+      const _vg = ctx.createRadialGradient(W/2, H/2, H*0.22, W/2, H/2, H*0.8);
+      _vg.addColorStop(0, 'rgba(0,0,0,0)');
+      _vg.addColorStop(1, _champ ? 'rgba(36,16,58,0.92)' : 'rgba(50,10,28,0.88)');
+      ctx.fillStyle = _vg; ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+      // rising sparks
+      if (pct > 0.25) {
+        ctx.save();
+        for (let sp = 0; sp < 16; sp++) {
+          const sa = (_animOff * 1.6 + sp * 41) % 130;
+          const sx = ((sp * 61 + 17) % 97) / 97 * W;
+          ctx.globalAlpha = (1 - sa / 130) * 0.85 * pct;
+          ctx.fillStyle = _accent;
+          ctx.fillRect(sx, H - sa * 2.4, 2, 2 + (sp % 3));
+        }
+        ctx.restore();
+      }
+      // title banner drops in from the top
+      if (pct > 0.45) {
+        const _ta = Math.min(1, (pct - 0.45) / 0.3);
+        const _title = _champ ? 'WORLD CHAMPION' : 'ELITE FOUR';
+        ctx.save();
+        ctx.globalAlpha = _ta;
+        ctx.fillStyle = 'rgba(8,6,20,0.92)';
+        ctx.fillRect(0, 15, W, 22);
+        ctx.fillStyle = _accent;
+        ctx.fillRect(0, 15, W, 2); ctx.fillRect(0, 35, W, 2);
+        ctx.font = 'bold 14px monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(_title, W / 2, 26);
+        ctx.restore();
+        ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      }
+    }
   }
 
   function _roundRectMenu(ctx, x, y, w, h, r) {
