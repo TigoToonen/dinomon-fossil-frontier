@@ -337,12 +337,13 @@ DG.ITEMS = {
   SUPERPOTION:  { name: 'Super Potion',  heal: 50,  price: 700,  type: 'HEAL' },
   HYPERPOTION:  { name: 'Hyper Potion',  heal: 120, price: 1500, type: 'HEAL' },
   MAXPOTION:    { name: 'Max Potion',    heal: 999, price: 2500, type: 'HEAL' },
+  FULLRESTORE:  { name: 'Full Restore',  heal: 999, price: 3000, type: 'HEAL', cures: 'ALL' }, // full HP + cure all
   REVIVE:       { name: 'Revive',        heal: 0.5, price: 1500, type: 'REVIVE' },
   MAXREVIVE:    { name: 'Max Revive',    heal: 1.0, price: 4000, type: 'REVIVE' },
   DINOBALL:     { name: 'DinoBall',      modifier: 1.0,  price: 200,  type: 'BALL' },
   SUPERBALL:    { name: 'SuperBall',     modifier: 1.5,  price: 600,  type: 'BALL' },
   ULTRABALL:    { name: 'UltraBall',     modifier: 2.0,  price: 1200, type: 'BALL' },
-  AMBERBALL:    { name: 'AmberBall',     modifier: 3.0,  price: 0,    type: 'BALL' }, // story reward
+  AMBERBALL:    { name: 'AmberBall',     modifier: 3.0,  price: 5000, type: 'BALL' }, // premium catch ball (Apex Summit) — also a story reward
   MASTERBALL:      { name: 'DinoMasterBall',modifier: 255,  price: 0,    type: 'BALL' }, // MEGA only
   DINOMASTERBALL:  { name: 'DinoMasterBall',modifier: 255,  price: 0,    type: 'BALL' }, // alias
   ANTIDOTE:     { name: 'Antidote',      price: 100, type: 'CURE', cures: ['POISON','BADPOISON'] },
@@ -350,7 +351,7 @@ DG.ITEMS = {
   PARALYHEAL:   { name: 'Paralyze Heal', price: 200, type: 'CURE', cures: ['PARALYSIS'] },
   AWAKENING:    { name: 'Awakening',     price: 250, type: 'CURE', cures: ['SLEEP'] },
   FULLHEAL:     { name: 'Full Heal',     price: 600, type: 'CURE', cures: 'ALL' },
-  RARE_CANDY:   { name: 'Rare Candy',    price: 4800, type: 'OTHER' }, // premium "growth investment" — Compound City sells it
+  RARE_CANDY:   { name: 'Rare Candy',    price: 6969, type: 'OTHER' }, // premium "growth investment" — Compound City sells it
   AMBERF:       { name: 'Amber Fragment',price: 0,   type: 'KEY' },
   FOSSIL_KEY:   { name: 'Fossil Key',    price: 0,   type: 'KEY' },
   GOLD_TEETH:   { name: 'Gold Teeth',    price: 0,   type: 'KEY' }, // Safari Warden quest item

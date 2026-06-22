@@ -80,6 +80,7 @@ DG.BagMenu = (function () {
     PARALYHEAL:  { name:'Parlyz Heal',  desc:'Cures paralysis.' },
     AWAKENING:   { name:'Awakening',    desc:'Wakes sleeping DinoMon.' },
     FULLHEAL:    { name:'Full Heal',    desc:'Cures all conditions.' },
+    FULLRESTORE: { name:'Full Restore', desc:'Fully restores HP and cures all conditions.' },
     DINOBALL:    { name:'DinoBall',     desc:'Catches wild DinoMons.' },
     SUPERBALL:   { name:'SuperBall',    desc:'Higher catch rate.' },
     ULTRABALL:   { name:'UltraBall',    desc:'Even higher catch rate.' },
