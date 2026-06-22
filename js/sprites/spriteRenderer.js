@@ -4496,17 +4496,18 @@ DG.SpriteRenderer = (function () {
     let minY = h, maxY = 0;
     for (let p = 0, i = 0; p < n; p++, i += 4) {
       const a = d[i + 3];
-      if (a < 24) { d[i + 3] = 0; continue; }
-      d[i + 3] = a >= 140 ? 255 : a >= 90 ? 150 : a >= 50 ? 95 : 45;
-      if (d[i + 3] === 255) {
+      if (a < 12) { d[i + 3] = 0; continue; }
+      // Keep the soft (anti-aliased) alpha so edges stay smooth, not blocky.
+      if (a >= 160) {
         solid[p] = 1;
         const yy = (p / w) | 0;
         if (yy < minY) minY = yy;
         if (yy > maxY) maxY = yy;
       }
-      d[i]     = Math.min(255, Math.round(d[i]     / 36) * 36);
-      d[i + 1] = Math.min(255, Math.round(d[i + 1] / 36) * 36);
-      d[i + 2] = Math.min(255, Math.round(d[i + 2] / 36) * 36);
+      // Gentle colour grade (24 levels/channel) — far smoother than the old /36 banding.
+      d[i]     = Math.min(255, Math.round(d[i]     / 11) * 11);
+      d[i + 1] = Math.min(255, Math.round(d[i + 1] / 11) * 11);
+      d[i + 2] = Math.min(255, Math.round(d[i + 2] / 11) * 11);
     }
 
     // FASE 12: counter-shading (rug donker → buik licht) + patroon-overlay
@@ -4556,19 +4557,19 @@ DG.SpriteRenderer = (function () {
       const openLeft2  = px <= 1       || !solid[p - 2];
       const openDown2  = p >= n - 2*w  || !solid[p + 2 * w];
       const openRight2 = px >= w - 2   || !solid[p + 2];
-      const checker = (px + py2) % 2 === 0;
+      // Smooth cel-shading rings (no checkerboard dither → cleaner, clearer shading)
       if (openUp || openLeft) {
         d[i]     = Math.min(255, d[i]     + (255 - d[i])     * 0.34);
         d[i + 1] = Math.min(255, d[i + 1] + (255 - d[i + 1]) * 0.34);
         d[i + 2] = Math.min(255, d[i + 2] + (255 - d[i + 2]) * 0.32);
-      } else if ((openUp2 || openLeft2) && checker) {
-        d[i]     = Math.min(255, d[i]     + (255 - d[i])     * 0.16);
-        d[i + 1] = Math.min(255, d[i + 1] + (255 - d[i + 1]) * 0.16);
-        d[i + 2] = Math.min(255, d[i + 2] + (255 - d[i + 2]) * 0.15);
+      } else if (openUp2 || openLeft2) {
+        d[i]     = Math.min(255, d[i]     + (255 - d[i])     * 0.15);
+        d[i + 1] = Math.min(255, d[i + 1] + (255 - d[i + 1]) * 0.15);
+        d[i + 2] = Math.min(255, d[i + 2] + (255 - d[i + 2]) * 0.14);
       } else if (openDown || openRight) {
         d[i] = d[i] * 0.62; d[i + 1] = d[i + 1] * 0.62; d[i + 2] = d[i + 2] * 0.68;
-      } else if ((openDown2 || openRight2) && !checker) {
-        d[i] = d[i] * 0.8; d[i + 1] = d[i + 1] * 0.8; d[i + 2] = d[i + 2] * 0.85;
+      } else if (openDown2 || openRight2) {
+        d[i] = d[i] * 0.82; d[i + 1] = d[i + 1] * 0.82; d[i + 2] = d[i + 2] * 0.86;
       }
     }
 
@@ -4608,22 +4609,14 @@ DG.SpriteRenderer = (function () {
   // an aura halo and shoulder spikes. Drawn in the same 0..36 local space.
   function _drawEvoBehind(ctx, col, col2, accent, stage, variant) {
     if (stage < 2) return;
-    // Aura halo behind the body
-    ctx.save();
-    ctx.globalAlpha = 0.20;
-    const g = ctx.createRadialGradient(16, 21, 3, 16, 21, 25);
-    g.addColorStop(0, _lighten(accent, 45));
-    g.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(-10, -6, 56, 48);
-    ctx.restore();
+    // (fuzzy aura halo removed for clarity — only the solid wings remain)
     // Energy wings (mirrored), behind the body
     const wcol = _lighten(accent, 18), edge = _lighten(accent, 40);
     for (const s of [-1, 1]) {
       ctx.save();
       ctx.translate(16, 16);
       ctx.scale(s, 1);
-      ctx.globalAlpha = 0.82;
+      ctx.globalAlpha = 1.0;
       ctx.fillStyle = wcol;
       ctx.beginPath();
       ctx.moveTo(2, 1);
@@ -4711,18 +4704,21 @@ DG.SpriteRenderer = (function () {
 
     // Grote weergaves (battle, detail-views): ×2 pixelblokken + idle-animatie.
     // Kleine lijst-sprites: 1:1 rasterisatie (wel posterize+outline, geen chunks).
-    const chunk   = screenEff >= 1.1 ? 2 : 1;
+    // Render at full effective resolution (chunk=1) instead of the old half-res
+    // ×2 pixel-blocks, then blit with smoothing → crisp, non-pixelated sprites.
+    const big     = screenEff >= 1.1;
+    const chunk   = 1;
     const density = screenEff / chunk;
     const bw = Math.ceil(_PIX.W * density), bh = Math.ceil(_PIX.H * density);
 
     let baked = false;
-    if (bw > 0 && bh > 0 && bw < 600 && bh < 600) {
+    if (bw > 0 && bh > 0 && bw < 820 && bh < 820) {
       try {
         const bctx = _bakeCtx(bw, bh);
         bctx.setTransform(1, 0, 0, 1, 0, 0);
         bctx.clearRect(0, 0, bw, bh);
         bctx.setTransform(density, 0, 0, density, _PIX.PAD_X * density, _PIX.PAD_T * density);
-        if (chunk === 2) {
+        if (big) {
           const br = _idlePhase(speciesId);
           if (br > 0) {
             bctx.translate(16, 36);
@@ -4741,7 +4737,7 @@ DG.SpriteRenderer = (function () {
         }
         bctx.restore();
         bctx.save();
-        try { _drawTypeAmbient(bctx, type, accent, stage); } catch (e) {}
+        // (type-ambient particle clouds removed — they read as fuzzy clutter around the sprite)
         bctx.restore();
         bctx.setTransform(1, 0, 0, 1, 0, 0);
         // FASE 12: patroon-config — type bepaalt het soort, de species-hash
@@ -4769,6 +4765,7 @@ DG.SpriteRenderer = (function () {
       const dw = bw * chunk / tfScale, dh = bh * chunk / tfScale;
       const dx = x - _PIX.PAD_X * unitPer;
       const dy = (y + stageOffY + 36 * eff) - (36 + _PIX.PAD_T) * unitPer;
+      // Crisp blit — full-res bake gives the extra pixels/detail without blur.
       ctx.imageSmoothingEnabled = false;
       ctx.drawImage(_PIX.canvas, 0, 0, bw, bh,
         (tfScale === 1) ? Math.round(dx) : dx,
@@ -4784,7 +4781,6 @@ DG.SpriteRenderer = (function () {
       } catch (e) {
         _drawGeneric(ctx, col, col2, accent, stage, variant);
       }
-      try { _drawTypeAmbient(ctx, type, accent, stage); } catch (e) {}
     }
     ctx.restore();
   }
