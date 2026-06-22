@@ -1899,7 +1899,9 @@ DG.Overworld = (function () {
   function canFlyNow() {
     if (!_gs || !_mapData) return false;
     if (_mapData.isIndoor || _mapData.isCave) return false;
-    if (_transitioning || _blocked) return false;
+    // NB: _blocked is intentionally NOT checked — the world map is opened from
+    // the menu, which sets _blocked=true; gating on it would hide Fly entirely.
+    if (_transitioning) return false;
     return (typeof DG.FieldMoves !== 'undefined') && DG.FieldMoves.canFly(_gs);
   }
 
