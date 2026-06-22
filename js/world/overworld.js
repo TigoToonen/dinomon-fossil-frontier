@@ -1893,10 +1893,96 @@ DG.Overworld = (function () {
     ROUTE_9A: [{x:3,y:3,id:'ICE_FOSSIL'},  {x:16,y:16,id:'RARE_CANDY',hidden:true}],
     ROUTE_10E:[{x:3,y:3,id:'SKY_FOSSIL'}],
   };
+  // Loot pools by route progression tier (parsed from ROUTE_<n>)
+  var _LOOT_TIERS = {
+    early: ['POTION','POTION','DINOBALL','SUPERPOTION','ANTIDOTE','DINOBALL'],
+    mid:   ['SUPERPOTION','SUPERBALL','HYPERPOTION','REVIVE','SUPERBALL','RARE_CANDY'],
+    late:  ['HYPERPOTION','ULTRABALL','HYPERPOTION','MAXREVIVE','ULTRABALL','RARE_CANDY','FULLHEAL'],
+  };
+  function _routeTier(id) {
+    var m = id.match(/ROUTE_(\d+)/); var n = m ? parseInt(m[1], 10) : 1;
+    return n <= 3 ? 'early' : n <= 6 ? 'mid' : 'late';
+  }
+  function _tileSolidOrWater(m, x, y) {
+    var row = m.tiles[y]; if (!row) return true;
+    var t = row[x];
+    if (t === undefined) return true;
+    if (t === DG.TILE.WATER || t === DG.TILE.DEEP_WATER_TILE) return true;
+    return _isSolid(t);
+  }
+  // BFS from (x,y) on map m to the nearest walkable, non-water tile.
+  function _nudgeItemOnMap(m, sx, sy) {
+    var W = m.width || (m.tiles[0] ? m.tiles[0].length : 0), H = m.height || m.tiles.length;
+    sx = Math.max(0, Math.min(W - 1, sx)); sy = Math.max(0, Math.min(H - 1, sy));
+    if (!_tileSolidOrWater(m, sx, sy)) return { x: sx, y: sy };
+    var seen = {}; seen[sx + ',' + sy] = 1; var q = [[sx, sy]], guard = 0;
+    while (q.length && guard++ < 2000) {
+      var c = q.shift();
+      var nb = [[c[0],c[1]-1],[c[0],c[1]+1],[c[0]-1,c[1]],[c[0]+1,c[1]]];
+      for (var i = 0; i < 4; i++) {
+        var nx = nb[i][0], ny = nb[i][1];
+        if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+        var k = nx + ',' + ny; if (seen[k]) continue; seen[k] = 1;
+        if (!_tileSolidOrWater(m, nx, ny)) return { x: nx, y: ny };
+        q.push([nx, ny]);
+      }
+    }
+    return { x: sx, y: sy };
+  }
+  function _hashCoord(id, x, y) {
+    var v = 0, s = id + ':' + x + ',' + y;
+    for (var i = 0; i < s.length; i++) v = (v * 31 + s.charCodeAt(i)) | 0;
+    return Math.abs(v);
+  }
+  // Scatter a few reachable items on a route's PATH tiles (not on warps/borders).
+  function _routeScatter(m, existing) {
+    var tier = _LOOT_TIERS[_routeTier(m.id)];
+    var H = m.tiles.length;
+    var warpSet = {};
+    (m.warps || []).forEach(function (w) { warpSet[w.x + ',' + w.y] = 1; });
+    var taken = {};
+    (existing || []).forEach(function (it) { taken[it.x + ',' + it.y] = 1; });
+    var spots = [];
+    for (var y = 2; y < H - 2; y++) {
+      var row = m.tiles[y]; if (!row) continue;
+      for (var x = 1; x < row.length - 1; x++) {
+        var tv = row[x];
+        // connected walkway materials: floor(0), sand(4), swamp/cave-floor(8)
+        if (tv !== 0 && tv !== 4 && tv !== 8) continue;
+        var key = x + ',' + y;
+        if (warpSet[key] || taken[key]) continue;
+        spots.push([x, y]);
+      }
+    }
+    // pick up to 3 spread-out spots deterministically
+    var out = [], want = Math.min(3, Math.floor(spots.length / 6) + 1);
+    var stride = Math.max(1, Math.floor(spots.length / want));
+    for (var s = 0; s < want; s++) {
+      var idx = (s * stride + (_hashCoord(m.id, s, 0) % Math.max(1, stride))) % spots.length;
+      var sp = spots[idx]; if (!sp) continue;
+      var h = _hashCoord(m.id, sp[0], sp[1]);
+      var item = tier[h % tier.length];
+      var hidden = (h % 5 === 0);          // ~20% hidden
+      out.push({ x: sp[0], y: sp[1], id: item, hidden: hidden });
+    }
+    return out;
+  }
   function _injectGroundItems(m) {
     if (!m || !m.id || m._grounded) return;
     m._grounded = true;
-    if (_GROUND_ITEMS[m.id] && !m.items) m.items = _GROUND_ITEMS[m.id].slice();
+    var items = [];
+    if (_GROUND_ITEMS[m.id]) items = _GROUND_ITEMS[m.id].map(function (it) { return Object.assign({}, it); });
+    if (m.id.indexOf('ROUTE_') === 0 && m.tiles) {
+      try { items = items.concat(_routeScatter(m, items)); } catch (e) {}
+    }
+    // Safety: never leave an item on a solid/water tile — nudge to nearest walkable.
+    for (var i = 0; i < items.length; i++) {
+      if (_tileSolidOrWater(m, items[i].x, items[i].y)) {
+        var nu = _nudgeItemOnMap(m, items[i].x, items[i].y);
+        items[i].x = nu.x; items[i].y = nu.y;
+      }
+    }
+    if (items.length && !m.items) m.items = items;
   }
 
   function _injectFountain(m) {
