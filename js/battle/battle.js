@@ -1700,10 +1700,8 @@ DG.Battle = (function () {
     // ── All enemy mons down → victory ────────────────────────
     if (!enemyAlive) {
       if (_battle.type === 'TRAINER') {
-        const _ccM = (_battle.gameState.player.bag && _battle.gameState.player.bag.COMPOUND_CARD > 0) ? 1.5 : 1;
-        const reward = Math.round((_battle.trainerData.reward || 0) * _ccM);
-        _battle.gameState.player.money += reward;
-        _pushMessage(`You defeated ${_battle.trainerData.name}! You got ¥${reward}!`);
+        // Prize money is paid once, in _endBattle (covers single AND double battles).
+        _pushMessage(`You defeated ${_battle.trainerData.name}!`);
       }
       _endBattle('WIN');
       return;
@@ -2532,7 +2530,9 @@ DG.Battle = (function () {
     if (result === 'WIN' && _battle.type === 'TRAINER' && _battle.trainerData) {
       const highestLv = _battle.enemyParty.reduce((mx, m) => Math.max(mx, m ? m.level : 0), 0);
       const _ccM2 = (_battle.gameState.player.bag && _battle.gameState.player.bag.COMPOUND_CARD > 0) ? 1.5 : 1;
-      const prize = Math.round((_battle.trainerData.prize || (highestLv * 50)) * _ccM2);
+      // Single source of truth for prize money: use trainerData.reward (all 136 trainers
+      // define it), with a level-based fallback for any trainer that doesn't.
+      const prize = Math.round((_battle.trainerData.reward || (highestLv * 50)) * _ccM2);
       _battle.gameState.player.money = (_battle.gameState.player.money || 0) + prize;
       _pushMessage(`${_battle.trainerData.name || 'Trainer'} paid ¥${prize}!`);
       // Money pop animation
