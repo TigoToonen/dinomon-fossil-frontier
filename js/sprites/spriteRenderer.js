@@ -5511,6 +5511,30 @@ DG.SpriteRenderer = (function () {
         ctx.fill();
         ctx.restore();
       }
+      // ── Legendary aura — unmistakably mark a Legendary foe ─────
+      var _eSp = (window.DG && DG.SPECIES) ? DG.SPECIES[enemyMon.speciesId] : null;
+      if (_eSp && _eSp.isLegendary && !(introState.active && introState.silhouette)) {
+        var _lcx = epX2 + 84 + enemyOffset.x, _lcy = epY2 - 31 + enemyOffset.y - 26;
+        var _pul = 0.6 + 0.4 * Math.sin(anim * 0.12);
+        ctx.save();
+        var _lg = ctx.createRadialGradient(_lcx, _lcy, 6, _lcx, _lcy, 62);
+        _lg.addColorStop(0, 'rgba(255,228,128,' + (0.5 * _pul).toFixed(3) + ')');
+        _lg.addColorStop(0.5, 'rgba(255,170,60,' + (0.22 * _pul).toFixed(3) + ')');
+        _lg.addColorStop(1, 'rgba(255,150,40,0)');
+        ctx.fillStyle = _lg; ctx.beginPath(); ctx.arc(_lcx, _lcy, 62, 0, Math.PI * 2); ctx.fill();
+        for (var _o = 0; _o < 7; _o++) {
+          var _oa = anim * 0.05 + _o * (Math.PI * 2 / 7);
+          ctx.globalAlpha = 0.45 + 0.45 * Math.sin(anim * 0.2 + _o);
+          ctx.fillStyle = '#fff2c0';
+          ctx.fillRect(_lcx + Math.cos(_oa) * 44 - 1.5, _lcy + Math.sin(_oa) * 27 - 1.5, 3, 3);
+        }
+        ctx.globalAlpha = 0.82 + 0.18 * Math.sin(anim * 0.15);
+        ctx.fillStyle = '#ffe27a'; ctx.font = 'bold 9px monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+        ctx.fillText('✦ LEGENDARY ✦', _lcx, _lcy - 50);
+        ctx.textAlign = 'left';
+        ctx.restore();
+      }
       ctx.save();
       if (eFaint) { ctx.globalAlpha = Math.max(0, eFaint.alpha); ctx.translate(0, eFaint.offsetY); }
       if (introState.active && introState.frame >= 30) ctx.globalAlpha = (ctx.globalAlpha || 1) * introAlpha;
