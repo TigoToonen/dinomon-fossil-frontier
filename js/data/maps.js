@@ -5477,5 +5477,41 @@ DG.MAPS.SECRET_TUNNEL = {
   });
 })();
 
+// ── Route beautification: break up the monotonous routes with biome flowers
+// and boulder accents. Deterministic (position hash) so it never shimmers, and
+// only touches cosmetic tiles — plain grass (1)→flower (9) and mountain-edge
+// (66)→boulder (69) — so walkability, encounters, warps and NPCs are unchanged.
+(function _beautifyRoutes() {
+  function h(id, x, y) {
+    let v = 0; const s = id + ':' + x + ',' + y;
+    for (let i = 0; i < s.length; i++) v = (v * 31 + s.charCodeAt(i)) | 0;
+    return Math.abs(v);
+  }
+  const walk = (t) => t !== undefined && t < 64; // walkable ground
+  for (const id in DG.MAPS) {
+    if (id.indexOf('ROUTE_') !== 0) continue;
+    const m = DG.MAPS[id];
+    if (!m || !m.tiles || m._beautified) continue;
+    m._beautified = true;
+    const tl = m.tiles, H = tl.length;
+    for (let y = 0; y < H; y++) {
+      const row = tl[y]; if (!row) continue;
+      for (let x = 0; x < row.length; x++) {
+        const t = row[x];
+        if (t === 1) {
+          // ~13% of plain short grass becomes flowers (occasional twin clusters)
+          const r = h(id, x, y) % 100;
+          if (r < 13) row[x] = 9;
+        } else if (t === 66) {
+          // sparse boulders along visible mountain edges (next to walkable tiles)
+          const edge = walk(row[x - 1]) || walk(row[x + 1]) ||
+                       walk(tl[y - 1] && tl[y - 1][x]) || walk(tl[y + 1] && tl[y + 1][x]);
+          if (edge && (h(id, x, y) % 100) < 9) row[x] = 69;
+        }
+      }
+    }
+  }
+})();
+
 DG.MAP_LIST = Object.keys(DG.MAPS);
 console.log('[DinoMon] Maps loaded: ' + DG.MAP_LIST.length);
