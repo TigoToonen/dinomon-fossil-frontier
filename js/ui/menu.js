@@ -19,10 +19,10 @@ DG.Menu = (function () {
 
   // Region positions for the Fly cursor (mirror the region-map node coords)
   const _FLY_POS = {
-    AMBERTOWN:[54,266], SHELLCREEK_CITY:[52,224], DUSTWALL_TOWN:[62,184], PYRESIDE_CITY:[74,142],
-    FERNGROVE_TOWN:[146,182], FAIRYDELL_CITY:[126,138], STONEHAVEN_CITY:[158,104],
-    CRESTFALL_TOWN:[224,64], BOGMIRE_CITY:[336,150], APEXSUMMIT:[352,70],
-    COMPOUND_CITY:[96,206], BEACON_HAMLET:[288,96],
+    AMBERTOWN:[54,280], SHELLCREEK_CITY:[50,236], DUSTWALL_TOWN:[46,188], PYRESIDE_CITY:[78,140],
+    FERNGROVE_TOWN:[148,170], FAIRYDELL_CITY:[132,112], STONEHAVEN_CITY:[206,144],
+    CRESTFALL_TOWN:[244,72], BOGMIRE_CITY:[330,170], APEXSUMMIT:[388,92],
+    COMPOUND_CITY:[92,210], BEACON_HAMLET:[300,118],
   };
   function _flyList() {
     if (!DG.Overworld || !DG.Overworld.canFlyNow || !DG.Overworld.canFlyNow()) return [];
@@ -476,18 +476,18 @@ DG.Menu = (function () {
     const GYMTYPE = { 1:'NOR',2:'RCK',3:'FIR',4:'GRS',5:'FAI',6:'GRD',7:'ELE',8:'WTR',9:'DRG' };
 
     const N = {
-      AMBERTOWN:       { name:'Ambertown',   x:54,  y:266, gym:0, kind:'start' },
-      SHELLCREEK_CITY: { name:'Shellcreek',  x:52,  y:224, gym:1, kind:'gym' },
-      DUSTWALL_TOWN:   { name:'Dustwall',    x:62,  y:184, gym:2, kind:'gym' },
-      PYRESIDE_CITY:   { name:'Pyreside',    x:74,  y:142, gym:3, kind:'gym' },
-      FERNGROVE_TOWN:  { name:'Ferngrove',   x:146, y:182, gym:4, kind:'gym' },
-      FAIRYDELL_CITY:  { name:'Fairydell',   x:126, y:138, gym:5, kind:'gym' },
-      STONEHAVEN_CITY: { name:'Stonehaven',  x:158, y:104, gym:6, kind:'gym' },
-      CRESTFALL_TOWN:  { name:'Crestfall',   x:224, y:64,  gym:7, kind:'gym' },
-      BOGMIRE_CITY:    { name:'Bogmire',     x:336, y:150, gym:8, kind:'gym' },
-      APEXSUMMIT:      { name:'Apex Summit', x:352, y:70,  gym:9, kind:'gym' },
-      MT_CRETACEOUS:   { name:'Mt Cretaceous', x:424, y:62, gym:0, kind:'peak' },
-      FOSSIL_CITADEL:  { name:'Fossil Citadel', x:432, y:122, gym:0, kind:'citadel' },
+      AMBERTOWN:       { name:'Ambertown',   x:54,  y:280, gym:0, kind:'start' },
+      SHELLCREEK_CITY: { name:'Shellcreek',  x:50,  y:236, gym:1, kind:'gym' },
+      DUSTWALL_TOWN:   { name:'Dustwall',    x:46,  y:188, gym:2, kind:'gym' },
+      PYRESIDE_CITY:   { name:'Pyreside',    x:78,  y:140, gym:3, kind:'gym' },
+      FERNGROVE_TOWN:  { name:'Ferngrove',   x:148, y:170, gym:4, kind:'gym' },
+      FAIRYDELL_CITY:  { name:'Fairydell',   x:132, y:112, gym:5, kind:'gym' },
+      STONEHAVEN_CITY: { name:'Stonehaven',  x:206, y:144, gym:6, kind:'gym' },
+      CRESTFALL_TOWN:  { name:'Crestfall',   x:244, y:72,  gym:7, kind:'gym' },
+      BOGMIRE_CITY:    { name:'Bogmire',     x:330, y:170, gym:8, kind:'gym' },
+      APEXSUMMIT:      { name:'Apex Summit', x:388, y:92,  gym:9, kind:'gym' },
+      MT_CRETACEOUS:   { name:'Mt Cretaceous', x:448, y:86, gym:0, kind:'peak' },
+      FOSSIL_CITADEL:  { name:'Fossil Citadel', x:450, y:150, gym:0, kind:'citadel' },
     };
     const E = [
       ['AMBERTOWN','SHELLCREEK_CITY','1'], ['SHELLCREEK_CITY','DUSTWALL_TOWN','2'],
@@ -499,11 +499,11 @@ DG.Menu = (function () {
       ['APEXSUMMIT','FOSSIL_CITADEL','C'],
     ];
     const SIDE = [
-      { name:'Compound City', x:96,  y:206, short:'$' },
-      { name:'Murk Hollow',   x:104, y:166, short:'F' },
-      { name:'Safari Zone',   x:250, y:120, short:'S' },
-      { name:'Beacon Hamlet', x:288, y:96,  short:'L' },
-      { name:'Extinction Dig',x:196, y:90,  short:'X' },
+      { name:'Compound City', x:92,  y:210, short:'$' },
+      { name:'Murk Hollow',   x:100, y:176, short:'F' },
+      { name:'Safari Zone',   x:262, y:132, short:'S' },
+      { name:'Beacon Hamlet', x:300, y:118, short:'L' },
+      { name:'Extinction Dig',x:208, y:104, short:'X' },
     ];
 
     function isHere(id) { return curMap === id || (curMap.indexOf(id) === 0 && id.length > 4); }

@@ -203,7 +203,7 @@ DG.Events = (function () {
 
     if (typeof DG.Menu !== 'undefined') {
       DG.Menu.showChoiceMenu(
-        "Professor Stratum:\nChoose your partner DinoMon!",
+        "Dokter Timo:\nChoose your partner DinoMon!",
         starters.map(s => s.label),
         function(choiceIdx) {
           const chosen = starters[choiceIdx];

@@ -497,7 +497,7 @@ DG.Overworld = (function () {
       return;
     }
 
-    // onInteract: TRIGGER_STARTER (Professor Stratum gives starter DinoMon)
+    // onInteract: TRIGGER_STARTER (Dokter Timo gives starter DinoMon)
     if (npc.onInteract === 'TRIGGER_STARTER') {
       const dialogue = _getDialogue(npc);
       DG.DialogueBox.show(dialogue, () => {
@@ -2005,8 +2005,8 @@ DG.Overworld = (function () {
         spots.push([x, y]);
       }
     }
-    // pick up to 3 spread-out spots deterministically
-    var out = [], want = Math.min(3, Math.floor(spots.length / 6) + 1);
+    // ~25% of the old density: most routes get 0-1 scattered item (deterministic)
+    var out = [], want = (spots.length >= 6 && (_hashCoord(m.id, 3, 3) % 100) < 35) ? 1 : 0;
     var stride = Math.max(1, Math.floor(spots.length / want));
     for (var s = 0; s < want; s++) {
       var idx = (s * stride + (_hashCoord(m.id, s, 0) % Math.max(1, stride))) % spots.length;
@@ -2653,7 +2653,7 @@ DG.Overworld = (function () {
        _gs.player.rivalName.trim().toLowerCase() !== 'flint');
     if (alreadyNamed || typeof window.DG_ASK_RIVAL_NAME !== 'function') { done(); return; }
     const askLines = (DG.STORY && DG.STORY.DIALOGUES && DG.STORY.DIALOGUES['RIVAL_NAME_ASK'])
-      || ["PROF. STRATUM: 'What was his name again?'"];
+      || ["DOKTER TIMO: 'What was his name again?'"];
     DG.DialogueBox.show(askLines, function() {
       window.DG_ASK_RIVAL_NAME(function() {
         DG.SaveLoad.save(_gs); // naam direct persistent

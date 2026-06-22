@@ -485,7 +485,7 @@ DG.Renderer = (function () {
     }
     ctx.restore();
 
-    // Prof. Stratum speech bubble at top
+    // Dokter Timo speech bubble at top
     const bubbleW = 300, bubbleH = 44, bubbleX = (W - bubbleW) / 2, bubbleY = H * 0.06;
     ctx.fillStyle = 'rgba(255,255,255,0.94)';
     if (ctx.roundRect) ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, 8);
@@ -508,7 +508,7 @@ DG.Renderer = (function () {
     ctx.textBaseline = 'top';
     ctx.fillStyle = '#1a2a4a';
     ctx.font = '10px monospace';
-    ctx.fillText('Prof. Stratum:', W / 2, bubbleY + 5);
+    ctx.fillText('Dokter Timo:', W / 2, bubbleY + 5);
     ctx.fillStyle = '#0a1a3a';
     ctx.font = 'bold 12px monospace';
     ctx.fillText(`And your rival, ${playerName}?`, W / 2, bubbleY + 19);

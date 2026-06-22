@@ -1537,13 +1537,13 @@ TITANREX: _sp('TITANREX','Titanrex',['ROCK','FIRE'],
 (function() {
   const _dex = {
     // Starters
-    TINDREL:      { desc: 'A young ceratopsian whose frill radiates heat when excited. Its Primordial Aura smolders like a coal waiting to ignite.', habitat: 'Given by Prof. Stratum (starter)' },
+    TINDREL:      { desc: 'A young ceratopsian whose frill radiates heat when excited. Its Primordial Aura smolders like a coal waiting to ignite.', habitat: 'Given by Dokter Timo (starter)' },
     TINDRAK:      { desc: 'As it matures, Tindrak\'s frill blazes with dragonfire. Rivals flee from its battle cry.', habitat: 'Evolves from Tindrel at Lv.16' },
     PYROCERATH:   { desc: 'The mightiest fire-ceratopsian, Pyrocerath scorches the earth with every charge. Volcanic mountains are its home.', habitat: 'Evolves from Tindrak at Lv.32' },
-    LEAFAWN:      { desc: 'A gentle stegosaur whose back-plates photosynthesize sunlight. It calms wild DinoMons with its soothing aura.', habitat: 'Given by Prof. Stratum (starter)' },
+    LEAFAWN:      { desc: 'A gentle stegosaur whose back-plates photosynthesize sunlight. It calms wild DinoMons with its soothing aura.', habitat: 'Given by Dokter Timo (starter)' },
     FERNASAUR:    { desc: 'Fernasaur\'s plates grow mossy and broad, storing enough solar energy to fuel days of travel through dense forest.', habitat: 'Evolves from Leafawn at Lv.16' },
     VERDANTHORN:  { desc: 'Its enormous back-plates can channel storms. Verdanthorn is said to call the rains in times of drought.', habitat: 'Evolves from Fernasaur at Lv.32' },
-    AQUEEL:       { desc: 'A nimble young plesiosaur that skims the surface of calm bays. Its paddling speed is startling for its small size.', habitat: 'Given by Prof. Stratum (starter)' },
+    AQUEEL:       { desc: 'A nimble young plesiosaur that skims the surface of calm bays. Its paddling speed is startling for its small size.', habitat: 'Given by Dokter Timo (starter)' },
     PLESIWAVE:    { desc: 'Plesiwave\'s long neck lets it scout above the waves while its body stays submerged. Sailors consider it a good omen.', habitat: 'Evolves from Aqueel at Lv.16' },
     TIDANOSAURUS: { desc: 'Ancient sailors worshipped Tidanosaurus as a sea deity. It commands ocean currents with a sweep of its massive flippers.', habitat: 'Evolves from Plesiwave at Lv.32' },
     // Early route

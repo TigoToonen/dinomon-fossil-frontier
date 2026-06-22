@@ -6413,7 +6413,7 @@ DG.SpriteRenderer = (function () {
 
     ctx.fillStyle = '#aaccff';
     ctx.font = '11px monospace';
-    ctx.fillText('Prof. Stratum asks:', W/2, H * 0.27);
+    ctx.fillText('Dokter Timo asks:', W/2, H * 0.27);
 
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 14px monospace';

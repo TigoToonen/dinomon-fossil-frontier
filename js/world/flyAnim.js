@@ -9,11 +9,11 @@ DG.FlyAnim = (function () {
 
   // Region positions (mirror the menu region map so the arc feels consistent)
   const NODES = {
-    AMBERTOWN:       [54, 266], SHELLCREEK_CITY: [52, 224], DUSTWALL_TOWN: [62, 184],
-    PYRESIDE_CITY:   [74, 142], FERNGROVE_TOWN: [146, 182], FAIRYDELL_CITY: [126, 138],
-    STONEHAVEN_CITY: [158, 104], CRESTFALL_TOWN: [224, 64], BOGMIRE_CITY: [336, 150],
-    APEXSUMMIT:      [352, 70],
-    COMPOUND_CITY:   [96, 206],  BEACON_HAMLET: [288, 96],  SAFARI_GATE: [250, 120],
+    AMBERTOWN:       [54, 280], SHELLCREEK_CITY: [50, 236], DUSTWALL_TOWN: [46, 188],
+    PYRESIDE_CITY:   [78, 140], FERNGROVE_TOWN: [148, 170], FAIRYDELL_CITY: [132, 112],
+    STONEHAVEN_CITY: [206, 144], CRESTFALL_TOWN: [244, 72], BOGMIRE_CITY: [330, 170],
+    APEXSUMMIT:      [388, 92],
+    COMPOUND_CITY:   [92, 210],  BEACON_HAMLET: [300, 118],  SAFARI_GATE: [262, 132],
   };
   // A soft landmass silhouette (same shape language as the region map)
   const LAND = [

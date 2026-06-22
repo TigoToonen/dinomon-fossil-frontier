@@ -21,7 +21,7 @@ DG.STORY.DIALOGUES = {
   // ----------------------------------------------------------
 
   PROF_INTRO_1: [
-    "Ah, welcome! I am Professor Stratum, a researcher who studies prehistoric creatures called DinoMons.",
+    "Ah, welcome! I am Dokter Timo, a researcher who studies prehistoric creatures called DinoMons.",
     "DinoMons are extraordinary beings awakened from fossils by a mysterious energy known as Primordial Aura.",
     "This aura pulses deep within the earth — ancient, powerful, and not fully understood.",
     "Humans and DinoMons have lived in harmony for generations, bonded by trust and adventure.",
@@ -84,8 +84,8 @@ DG.STORY.DIALOGUES = {
   // ----------------------------------------------------------
 
   FLINT_INTRO: [
-    "PROF. STRATUM: 'Ah, before you go — let me introduce someone.'",
-    "PROF. STRATUM: 'This is Flint. His grandfather and I worked together for decades.'",
+    "DOKTER TIMO: 'Ah, before you go — let me introduce someone.'",
+    "DOKTER TIMO: 'This is Flint. His grandfather and I worked together for decades.'",
     "FLINT: 'So you're the one the Professor's been going on about. Hm.'",
     "FLINT: 'Don't get used to having a DinoMon. Let's settle this now.'",
   ],
@@ -94,12 +94,12 @@ DG.STORY.DIALOGUES = {
   // Na RIVAL_NAME_ASK opent het naam-invoerscherm; RIVAL_NAME_CONFIRM toont
   // daarna de gekozen naam (de 'Flint' hieronder wordt automatisch vervangen).
   RIVAL_NAME_ASK: [
-    "PROF. STRATUM: 'Ah — before you two square off, let me introduce my old colleague's grandson.'",
-    "PROF. STRATUM: 'This is... er... goodness, my memory these days.'",
-    "PROF. STRATUM: 'What was his name again?'",
+    "DOKTER TIMO: 'Ah — before you two square off, let me introduce my old colleague's grandson.'",
+    "DOKTER TIMO: 'This is... er... goodness, my memory these days.'",
+    "DOKTER TIMO: 'What was his name again?'",
   ],
   RIVAL_NAME_CONFIRM: [
-    "PROF. STRATUM: 'Flint! Of course. How could I forget.'",
+    "DOKTER TIMO: 'Flint! Of course. How could I forget.'",
   ],
 
   RIVAL_PRE_1: ["FLINT: 'Don't get used to that starter. This'll be over before you know it.'"],
@@ -132,7 +132,7 @@ DG.STORY.DIALOGUES = {
     "Legend says a DinoMon as old as time itself sleeps beneath these streets.",
   ],
   NPC_AMBERTOWN_2: [
-    "Professor Stratum's research has brought a lot of attention to our little town.",
+    "Dokter Timo's research has brought a lot of attention to our little town.",
     "Some of it... not the kind we wanted.",
   ],
   NPC_AMBERTOWN_3: [

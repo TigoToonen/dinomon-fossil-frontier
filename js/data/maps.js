@@ -70,7 +70,7 @@ AMBERTOWN: {
 },
 
 AMBERTOWN_LAB: {
-  id:'AMBERTOWN_LAB', name:'Professor Stratum\'s Lab', width:20, height:12,
+  id:'AMBERTOWN_LAB', name:'Dokter Timo\'s Lab', width:20, height:12,
   music:'LAB_THEME', isIndoor:true, isCave:false,
   tiles: [
     [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
@@ -102,7 +102,7 @@ AMBERTOWN_LAB: {
     { x:9,  y:11, targetMap:'AMBERTOWN', targetX:4, targetY:6 },
   ],
   npcs: [
-    { id:'PROF_STRATUM', name:'Prof. Stratum', x:9, y:4, facing:'DOWN', spriteKey:'NPC_PROF',
+    { id:'PROF_STRATUM', name:'Dokter Timo', x:9, y:4, facing:'DOWN', spriteKey:'NPC_PROF',
       movementType:'STATIONARY', dialogue:['PROF_INTRO_1','PROF_INTRO_2'],
       onInteract:'TRIGGER_STARTER', shopItems:null, trainerRef:null },
     { id:'LAB_ASSISTANT', name:'Assistant', x:3, y:3, facing:'RIGHT', spriteKey:'NPC_WOMAN',
@@ -118,7 +118,7 @@ AMBERTOWN_LAB: {
       onInteract:null },
     { id:'LAB_RESEARCH_TABLE', name:'Research Notes', x:7, y:6, facing:'DOWN', spriteKey:'NPC_PROF',
       movementType:'STATIONARY',
-      dialogue:["Prof. Stratum's notes: 'Primordial Aura may be the key to everything...'", "'If the Permian Core activates, no DinoMon will be safe.'"],
+      dialogue:["Dokter Timo's notes: 'Primordial Aura may be the key to everything...'", "'If the Permian Core activates, no DinoMon will be safe.'"],
       onInteract:null },
     { id:'LAB_SECOND_RESEARCHER', name:'Researcher', x:16, y:3, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
@@ -5667,6 +5667,52 @@ DG.MAPS.SECRET_TUNNEL = {
     q.npc.x = pos.x; q.npc.y = pos.y;
     m.npcs.push(q.npc);
   });
+})();
+
+// ── Warp-arrival sanitizer: guarantee every warp lands you on a walkable,
+// unoccupied, in-bounds tile. Fixes warps that arrived on a wall/water/edge or
+// on top of a guard/NPC (which made the engine relocate you to a random spot).
+// Runs LAST so it accounts for all NPCs (incl. guards + quest NPCs).
+(function _sanitizeWarpArrivals() {
+  function blocked(m, x, y) {
+    const t = (m.tiles[y] || [])[x];
+    if (t === undefined) return true;            // out of bounds
+    if (t === 3 || t === 87 || t === 7) return true; // water / lava
+    if (t >= 64 && t !== 68) return true;        // solid (door is ok)
+    if ((m.npcs || []).some((n) => n.x === x && n.y === y && !n.requiresFlag)) return true;
+    return false;
+  }
+  function nearestFree(m, sx, sy) {
+    const W = m.width || (m.tiles[0] ? m.tiles[0].length : 0), H = m.height || m.tiles.length;
+    sx = Math.max(0, Math.min(W - 1, sx)); sy = Math.max(0, Math.min(H - 1, sy));
+    if (!blocked(m, sx, sy)) return { x: sx, y: sy };
+    const seen = {}; seen[sx + ',' + sy] = 1; const q = [[sx, sy]]; let g = 0;
+    while (q.length && g++ < 4000) {
+      const c = q.shift();
+      const nb = [[c[0],c[1]+1],[c[0],c[1]-1],[c[0]+1,c[1]],[c[0]-1,c[1]]];
+      for (let i = 0; i < 4; i++) {
+        const nx = nb[i][0], ny = nb[i][1];
+        if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+        const k = nx + ',' + ny; if (seen[k]) continue; seen[k] = 1;
+        if (!blocked(m, nx, ny)) return { x: nx, y: ny };
+        q.push([nx, ny]);
+      }
+    }
+    return { x: sx, y: sy };
+  }
+  let fixed = 0;
+  for (const id in DG.MAPS) {
+    const m = DG.MAPS[id];
+    (m.warps || []).forEach((w) => {
+      if (!w.targetMap || w.targetX === undefined || w.targetY === undefined) return;
+      const tm = DG.MAPS[w.targetMap]; if (!tm || !tm.tiles) return;
+      if (blocked(tm, w.targetX, w.targetY)) {
+        const f = nearestFree(tm, w.targetX, w.targetY);
+        w.targetX = f.x; w.targetY = f.y; fixed++;
+      }
+    });
+  }
+  if (fixed) console.log('[DinoMon] Warp arrivals sanitized: ' + fixed);
 })();
 
 DG.MAP_LIST = Object.keys(DG.MAPS);
