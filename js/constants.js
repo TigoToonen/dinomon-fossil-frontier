@@ -350,6 +350,7 @@ DG.ITEMS = {
   PARALYHEAL:   { name: 'Paralyze Heal', price: 200, type: 'CURE', cures: ['PARALYSIS'] },
   AWAKENING:    { name: 'Awakening',     price: 250, type: 'CURE', cures: ['SLEEP'] },
   FULLHEAL:     { name: 'Full Heal',     price: 600, type: 'CURE', cures: 'ALL' },
+  RARE_CANDY:   { name: 'Rare Candy',    price: 0,   type: 'OTHER' }, // +1 level (handled in bagMenu)
   AMBERF:       { name: 'Amber Fragment',price: 0,   type: 'KEY' },
   FOSSIL_KEY:   { name: 'Fossil Key',    price: 0,   type: 'KEY' },
   GOLD_TEETH:   { name: 'Gold Teeth',    price: 0,   type: 'KEY' }, // Safari Warden quest item

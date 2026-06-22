@@ -5595,5 +5595,79 @@ DG.MAPS.SECRET_TUNNEL = {
   });
 })();
 
+// ── Extra sidequests across the cities (uses the SIDE_QUEST framework).
+// Each NPC: talk once to start, meet the condition, talk again to claim.
+(function _placeSideQuests() {
+  function freeTile(m, px, py) {
+    if (!m || !m.tiles) return null;
+    const occ = {};
+    (m.npcs || []).forEach((n) => { occ[n.x + ',' + n.y] = 1; });
+    (m.warps || []).forEach((w) => { occ[w.x + ',' + w.y] = 1; });
+    const walkable = (t) => t !== undefined && t < 64 && t !== 3 && t !== 7 && t !== 87;
+    let best = null, bestD = 1e9;
+    for (let y = 1; y < m.tiles.length - 1; y++) {
+      const row = m.tiles[y]; if (!row) continue;
+      for (let x = 1; x < row.length - 1; x++) {
+        if (!walkable(row[x]) || occ[x + ',' + y]) continue;
+        const d = Math.abs(x - px) + Math.abs(y - py);
+        if (d < bestD) { bestD = d; best = { x: x, y: y }; }
+      }
+    }
+    return best;
+  }
+  const Q = (map, px, py, id, name, sprite, check, reward, intro, reminder, success) => ({
+    map, px, py,
+    npc: { id, name, facing: 'DOWN', spriteKey: sprite, movementType: 'STATIONARY', onInteract: 'SIDE_QUEST',
+      questFlag: 'SQ_' + id + '_START', questDoneFlag: 'SQ_' + id + '_DONE',
+      questCheck: check, reward,
+      questIntro: intro, questReminder: reminder, questSuccess: success,
+      questThanks: ["Thanks again, friend!"] },
+  });
+  const QUESTS = [
+    Q('SHELLCREEK_CITY', 6, 8, 'TIDEFAN', 'Tide Fan', 'NPC_WOMAN',
+      { type:'HAS_TYPE', value:'WATER' }, { item:'SUPERBALL', qty:3, money:800 },
+      ["I adore Water-types! Show me one in your party and I'll reward you."],
+      ["Come back once a Water-type is in your team!"],
+      ["A real Water-type! Wonderful — here, take these!"]),
+    Q('PYRESIDE_CITY', 6, 8, 'FORGE', 'Forge Master', 'NPC_MAN',
+      { type:'HAS_TYPE', value:'FIRE' }, { item:'FIRE_STONE', qty:1, money:0 },
+      ["Only a trainer with a Fire-type understands the forge.","Bring one and this Fire Stone is yours."],
+      ["No Fire-type yet? The forge stays cold."],
+      ["Ah, a true flame-keeper! Take the Fire Stone."]),
+    Q('FERNGROVE_TOWN', 6, 8, 'BOTANIST', 'Botanist', 'NPC_WOMAN',
+      { type:'HAS_TYPE', value:'GRASS' }, { item:'LEAF_STONE', qty:1, money:0 },
+      ["I'm studying Grass-types. Travel with one and I'll share a Leaf Stone."],
+      ["Find a Grass-type partner first!"],
+      ["Splendid specimen! This Leaf Stone is for you."]),
+    Q('DUSTWALL_TOWN', 6, 8, 'RECRUIT', 'Recruiter', 'NPC_MAN',
+      { type:'PARTY_FULL', value:6 }, { item:'RARE_CANDY', qty:1, money:3000 },
+      ["A full team of six shows real dedication. Fill your party and see me."],
+      ["Come back with a full party of six!"],
+      ["Six strong! That's commitment — here's your bonus."]),
+    Q('STONEHAVEN_CITY', 6, 8, 'TYCOON', 'Tycoon', 'NPC_MAN',
+      { type:'MONEY', value:25000 }, { item:'LEFTOVERS', qty:1, money:0 },
+      ["Wealth attracts wealth. Show me you carry ¥25000 and I'll gift you something rare."],
+      ["Come back when you're carrying ¥25000."],
+      ["A fellow magnate! These Leftovers never run out — fitting."]),
+    Q('CRESTFALL_TOWN', 6, 8, 'VETERAN', 'Old Champion', 'NPC_MAN',
+      { type:'LEVEL', value:42 }, { item:'RARE_CANDY', qty:3, money:0 },
+      ["Back in my day we trained hard. Raise a DinoMon to Lv.42 and prove it."],
+      ["Get a DinoMon to Lv.42 and return!"],
+      ["Now THAT'S a battler! Take these Rare Candies, kid."]),
+    Q('BOGMIRE_CITY', 6, 8, 'MYSTIC', 'Bog Mystic', 'NPC_WOMAN',
+      { type:'SHINY', value:1 }, { item:'AMBERBALL', qty:3, money:0 },
+      ["The mists whisper of a shimmering DinoMon. Show me a shiny and be blessed."],
+      ["A shiny DinoMon... bring one to me."],
+      ["It glimmers! The bog smiles on you — take these AmberBalls."]),
+  ];
+  QUESTS.forEach((q) => {
+    const m = DG.MAPS[q.map]; if (!m) return;
+    m.npcs = m.npcs || [];
+    const pos = freeTile(m, q.px, q.py) || { x: q.px, y: q.py };
+    q.npc.x = pos.x; q.npc.y = pos.y;
+    m.npcs.push(q.npc);
+  });
+})();
+
 DG.MAP_LIST = Object.keys(DG.MAPS);
 console.log('[DinoMon] Maps loaded: ' + DG.MAP_LIST.length);
