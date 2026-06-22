@@ -5011,7 +5011,7 @@ DG.MAPS.COMPOUND_CITY = {
     { id:'CC_SHOP', name:'Broker', x:5, y:6, facing:'DOWN', spriteKey:'NPC_SHOPKEEPER',
       movementType:'STATIONARY', dialogue:['SHOP_GREET'], onInteract:'OPEN_SHOP',
       shopItems:['SUPERBALL','SUPERPOTION','REVIVE','ANTIDOTE','RARE_CANDY'] },
-    { id:'CC_NURSE', name:'Nurse', x:14, y:5, facing:'DOWN', spriteKey:'NPC_HEALER',
+    { id:'CC_NURSE', name:'Nurse', x:12, y:6, facing:'DOWN', spriteKey:'NPC_HEALER',
       movementType:'STATIONARY', dialogue:['HEALER_GREET'], onInteract:'HEAL_PARTY' },
     { id:'CC_T1', name:'Intern Bull', x:6, y:10, facing:'DOWN', spriteKey:'NPC_KID',
       movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'NIELS_INTERN1', flagToHide:'TRAINER_NIELS_INTERN1_DEFEATED' },
@@ -5531,16 +5531,29 @@ DG.MAPS.SECRET_TUNNEL = {
     (m.warps || []).forEach((w) => { occ[w.x + ',' + w.y] = 1; });
     // any non-solid, non-hazard ground (floor/grass/sand/dirt/swamp/flower/ice…)
     const walkable = (t) => t !== undefined && t < 64 && t !== 3 && t !== 7 && t !== 87;
-    let best = null, bestD = 1e9;
+    const isDoor = (x, y) => ((m.tiles[y] || [])[x]) === 68;
+    const doorAdj = (x, y) => isDoor(x - 1, y) || isDoor(x + 1, y) || isDoor(x, y - 1) || isDoor(x, y + 1);
+    const wf = (x, y) => { const tt = (m.tiles[y] || [])[x]; return tt !== undefined && tt < 64 && tt !== 3 && tt !== 7 && tt !== 87 && !occ[x + ',' + y]; };
+    // Non-blocking test: occupying (x,y) must not disconnect its free neighbours
+    // (rejects chokepoints/corridor-necks so an NPC never seals off an area).
+    const safe = (x, y) => {
+      const nb = [[x-1,y],[x+1,y],[x,y-1],[x,y+1]].filter(([a,b]) => wf(a, b));
+      if (nb.length <= 1) return true;
+      const blk = x + ',' + y, seen = {}; seen[nb[0][0] + ',' + nb[0][1]] = 1; const q = [nb[0]]; let g = 0;
+      while (q.length && g++ < 1500) { const c = q.shift(); for (const [dx,dy] of [[0,1],[0,-1],[1,0],[-1,0]]) { const ax=c[0]+dx, ay=c[1]+dy, k=ax+','+ay; if (k===blk||seen[k]||!wf(ax,ay)) continue; seen[k]=1; q.push([ax,ay]); } }
+      return nb.every(([a,b]) => seen[a + ',' + b]);
+    };
+    let best = null, bestD = 1e9, fb = null, fbD = 1e9;
     for (let y = 1; y < m.tiles.length - 1; y++) {
       const row = m.tiles[y]; if (!row) continue;
       for (let x = 1; x < row.length - 1; x++) {
-        if (!walkable(row[x]) || occ[x + ',' + y]) continue;
+        if (!walkable(row[x]) || occ[x + ',' + y] || doorAdj(x, y)) continue;
         const d = Math.abs(x - px) + Math.abs(y - py);
-        if (d < bestD) { bestD = d; best = { x: x, y: y }; }
+        if (safe(x, y)) { if (d < bestD) { bestD = d; best = { x: x, y: y }; } }   // never seal a passage
+        else if (d < fbD) { fbD = d; fb = { x: x, y: y }; }
       }
     }
-    return best;
+    return best || fb;
   }
   const LEGINFO = {
     GLACIO: { name: 'Glaciodon', hint: 'Wake it at the Frost shrine on Route 10 (the Frost Ascent), beyond Bogmire.' },
@@ -5621,16 +5634,29 @@ DG.MAPS.SECRET_TUNNEL = {
     (m.npcs || []).forEach((n) => { occ[n.x + ',' + n.y] = 1; });
     (m.warps || []).forEach((w) => { occ[w.x + ',' + w.y] = 1; });
     const walkable = (t) => t !== undefined && t < 64 && t !== 3 && t !== 7 && t !== 87;
-    let best = null, bestD = 1e9;
+    const isDoor = (x, y) => ((m.tiles[y] || [])[x]) === 68;
+    const doorAdj = (x, y) => isDoor(x - 1, y) || isDoor(x + 1, y) || isDoor(x, y - 1) || isDoor(x, y + 1);
+    const wf = (x, y) => { const tt = (m.tiles[y] || [])[x]; return tt !== undefined && tt < 64 && tt !== 3 && tt !== 7 && tt !== 87 && !occ[x + ',' + y]; };
+    // Non-blocking test: occupying (x,y) must not disconnect its free neighbours
+    // (rejects chokepoints/corridor-necks so an NPC never seals off an area).
+    const safe = (x, y) => {
+      const nb = [[x-1,y],[x+1,y],[x,y-1],[x,y+1]].filter(([a,b]) => wf(a, b));
+      if (nb.length <= 1) return true;
+      const blk = x + ',' + y, seen = {}; seen[nb[0][0] + ',' + nb[0][1]] = 1; const q = [nb[0]]; let g = 0;
+      while (q.length && g++ < 1500) { const c = q.shift(); for (const [dx,dy] of [[0,1],[0,-1],[1,0],[-1,0]]) { const ax=c[0]+dx, ay=c[1]+dy, k=ax+','+ay; if (k===blk||seen[k]||!wf(ax,ay)) continue; seen[k]=1; q.push([ax,ay]); } }
+      return nb.every(([a,b]) => seen[a + ',' + b]);
+    };
+    let best = null, bestD = 1e9, fb = null, fbD = 1e9;
     for (let y = 1; y < m.tiles.length - 1; y++) {
       const row = m.tiles[y]; if (!row) continue;
       for (let x = 1; x < row.length - 1; x++) {
-        if (!walkable(row[x]) || occ[x + ',' + y]) continue;
+        if (!walkable(row[x]) || occ[x + ',' + y] || doorAdj(x, y)) continue;
         const d = Math.abs(x - px) + Math.abs(y - py);
-        if (d < bestD) { bestD = d; best = { x: x, y: y }; }
+        if (safe(x, y)) { if (d < bestD) { bestD = d; best = { x: x, y: y }; } }   // never seal a passage
+        else if (d < fbD) { fbD = d; fb = { x: x, y: y }; }
       }
     }
-    return best;
+    return best || fb;
   }
   const Q = (map, px, py, id, name, sprite, check, reward, intro, reminder, success) => ({
     map, px, py,
