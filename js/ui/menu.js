@@ -630,7 +630,12 @@ DG.Menu = (function () {
       ctx.restore();
       ctx.fillStyle = '#bdeabe'; ctx.font = 'bold 6px monospace';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(s.short, s.x, s.y + 0.5);
-      ctx.fillStyle = 'rgba(190,235,191,0.9)'; ctx.font = '6px monospace';
+      // small dim name with a faint pill — clearly secondary to the city labels
+      ctx.font = '6px monospace';
+      const slw = ctx.measureText(s.name).width;
+      ctx.fillStyle = 'rgba(6,18,12,0.5)';
+      rr(s.x - slw / 2 - 2, s.y + 5, slw + 4, 8, 2); ctx.fill();
+      ctx.fillStyle = 'rgba(170,220,175,0.7)';
       ctx.textBaseline = 'top'; ctx.fillText(s.name, s.x, s.y + 6);
     }
 
@@ -647,12 +652,16 @@ DG.Menu = (function () {
       }
 
       if (isGoal && !here) {
-        ctx.save(); ctx.globalAlpha = 0.4 + 0.5 * pulse; ctx.strokeStyle = '#ffd23a'; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.arc(x, y, 15, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+        // GOAL = red, double pulsing ring (clearly distinct from cyan YOU / gold badges)
+        ctx.save(); ctx.globalAlpha = 0.5 + 0.5 * pulse; ctx.strokeStyle = '#ff4632'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(x, y, 15, 0, Math.PI * 2); ctx.stroke();
+        ctx.globalAlpha = 0.3 + 0.3 * pulse;
+        ctx.beginPath(); ctx.arc(x, y, 19, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       }
       if (here) {
+        // YOU = cyan glow
         const g = ctx.createRadialGradient(x, y, 2, x, y, 18);
-        g.addColorStop(0, 'rgba(255,225,60,' + (0.5 + 0.3 * pulse) + ')'); g.addColorStop(1, 'rgba(255,225,60,0)');
+        g.addColorStop(0, 'rgba(46,230,255,' + (0.55 + 0.3 * pulse) + ')'); g.addColorStop(1, 'rgba(46,230,255,0)');
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill();
       }
 
@@ -674,7 +683,7 @@ DG.Menu = (function () {
       } else {
         const beaten = badges.length >= nd.gym || flags['BADGE_' + nd.gym];
         const base = (vis || here) ? (GYMCOL[nd.gym] || '#9fb6d6') : '#54607a';
-        ctx.fillStyle = base; ctx.strokeStyle = here ? '#fff' : 'rgba(0,0,0,0.55)'; ctx.lineWidth = here ? 2 : 1.2;
+        ctx.fillStyle = base; ctx.strokeStyle = here ? '#2ee6ff' : isGoal ? '#ff4632' : 'rgba(0,0,0,0.55)'; ctx.lineWidth = (here || isGoal) ? 2.5 : 1.2;
         rr(x - 7, y - 4, 14, 11, 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.beginPath(); ctx.moveTo(x - 8.5, y - 4); ctx.lineTo(x, y - 12); ctx.lineTo(x + 8.5, y - 4); ctx.closePath(); ctx.fill();
         ctx.fillStyle = beaten ? '#ffcf33' : '#39425a';
@@ -685,18 +694,26 @@ DG.Menu = (function () {
       }
       ctx.restore();
 
-      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.95)'; ctx.shadowBlur = 3;
-      ctx.fillStyle = here ? '#fff07a' : isGoal ? '#ffd23a' : (vis ? '#eef4ff' : 'rgba(210,220,238,0.55)');
-      ctx.font = here ? 'bold 9px monospace' : '8px monospace';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText(nd.name, x, y + 9);
-      if (nd.gym > 0 && (vis || here || isGoal)) {
-        ctx.fillStyle = GYMCOL[nd.gym]; ctx.font = 'bold 6px monospace'; ctx.fillText(GYMTYPE[nd.gym], x, y + 18);
+      // City name with a dark pill behind it for readability over the busy terrain
+      ctx.save();
+      ctx.font = (here || isGoal) ? 'bold 9px monospace' : '8px monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      if (!dim) {
+        const lw = ctx.measureText(nd.name).width;
+        ctx.fillStyle = 'rgba(6,14,30,0.66)';
+        rr(x - lw / 2 - 3, y + 8, lw + 6, 12, 3); ctx.fill();
       }
+      ctx.fillStyle = here ? '#5cf0ff' : isGoal ? '#ff8a6a' : (vis ? '#eef4ff' : 'rgba(210,220,238,0.5)');
+      ctx.fillText(nd.name, x, y + 9);
       ctx.restore();
+      // (gym-type 3-letter tags removed — they cluttered the names; the icon colour conveys type)
 
-      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.font = 'bold 8px monospace';
-      if (here)        { ctx.fillStyle = '#ffe050'; ctx.fillText('YOU', x, y - 13); }
-      else if (isGoal) { ctx.fillStyle = '#ffd23a'; ctx.fillText('GOAL', x, y - 13); }
+      // YOU / GOAL pennant above the node — distinct colours + symbols
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.font = 'bold 9px monospace';
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 3;
+      if (here)        { ctx.fillStyle = '#34e6ff'; ctx.fillText('▼YOU', x, y - 12); }
+      else if (isGoal) { ctx.fillStyle = '#ff4632'; ctx.fillText('▼GOAL', x, y - 12); }
+      ctx.restore();
     }
 
     // YOU on a route
@@ -708,12 +725,13 @@ DG.Menu = (function () {
         const a = N[edge[0]], b = N[edge[1]];
         const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
         const g = ctx.createRadialGradient(mx, my, 2, mx, my, 14);
-        g.addColorStop(0, 'rgba(255,225,60,' + (0.5 + 0.3 * pulse) + ')'); g.addColorStop(1, 'rgba(255,225,60,0)');
+        g.addColorStop(0, 'rgba(46,230,255,' + (0.5 + 0.3 * pulse) + ')'); g.addColorStop(1, 'rgba(46,230,255,0)');
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, my, 14, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#ffe050'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+        ctx.fillStyle = '#2ee6ff'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.arc(mx, my, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#ffe050'; ctx.font = 'bold 8px monospace';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText('YOU', mx, my - 8);
+        ctx.fillStyle = '#34e6ff'; ctx.font = 'bold 9px monospace';
+        ctx.save(); ctx.shadowColor='rgba(0,0,0,0.9)'; ctx.shadowBlur=3;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText('▼YOU', mx, my - 8); ctx.restore();
       }
     }
 
@@ -733,8 +751,8 @@ DG.Menu = (function () {
     rr(LX, LY, LW, LH, 3); ctx.fill(); ctx.stroke();
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
     const leg = [
-      ['#ffe050', 'YOU = here'], ['#ffd23a', 'GOAL = next gym'],
-      ['#f8d030', 'gym (gold # done)'], ['#9fd6a0', 'diamond = side-area'],
+      ['#34e6ff', 'YOU = here'], ['#ff4632', 'GOAL = next gym'],
+      ['#ffcf33', 'gym (gold # done)'], ['#9fd6a0', 'diamond = side-area'],
     ];
     ctx.font = '7px monospace';
     leg.forEach(function (it, i) {
