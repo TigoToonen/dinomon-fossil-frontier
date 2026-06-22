@@ -5513,5 +5513,87 @@ DG.MAPS.SECRET_TUNNEL = {
   }
 })();
 
+// ── Legendary quest NPCs: clue-givers spread across many cities + a shrine
+// guardian per legendary. Auto-placed on a free walkable tile so they never
+// land on a wall, warp or another NPC. Three quests: GLACIODON, MEGAVORE,
+// TITANREX — each needs 3 clues gathered before its shrine awakens.
+(function _placeLegendNPCs() {
+  function freeTile(m, px, py) {
+    if (!m || !m.tiles) return null;
+    const occ = {};
+    (m.npcs || []).forEach((n) => { occ[n.x + ',' + n.y] = 1; });
+    (m.warps || []).forEach((w) => { occ[w.x + ',' + w.y] = 1; });
+    // any non-solid, non-hazard ground (floor/grass/sand/dirt/swamp/flower/ice…)
+    const walkable = (t) => t !== undefined && t < 64 && t !== 3 && t !== 7 && t !== 87;
+    let best = null, bestD = 1e9;
+    for (let y = 1; y < m.tiles.length - 1; y++) {
+      const row = m.tiles[y]; if (!row) continue;
+      for (let x = 1; x < row.length - 1; x++) {
+        if (!walkable(row[x]) || occ[x + ',' + y]) continue;
+        const d = Math.abs(x - px) + Math.abs(y - py);
+        if (d < bestD) { bestD = d; best = { x: x, y: y }; }
+      }
+    }
+    return best;
+  }
+  const clue = (id, name, mapId, px, py, clueFlag, lines, sprite) => ({
+    map: mapId, px: px, py: py,
+    npc: { id: id, name: name, facing: 'DOWN', spriteKey: sprite || 'NPC_MAN',
+           movementType: 'STATIONARY', onInteract: 'LEGEND_CLUE', clueFlag: clueFlag, dialogue: lines },
+  });
+  const shrine = (id, name, mapId, px, py, species, lvl, clueFlags, caughtFlag, lines) => ({
+    map: mapId, px: px, py: py,
+    npc: { id: id, name: name, facing: 'DOWN', spriteKey: 'NPC_PROF', movementType: 'STATIONARY',
+           onInteract: 'LEGEND_SHRINE', legendSpecies: species, legendLevel: lvl,
+           clueFlags: clueFlags, caughtFlag: caughtFlag,
+           dormantLine: lines.dormant, awakenDialogue: lines.awaken, restDialogue: lines.rest },
+  });
+  const SPECS = [
+    // ── GLACIODON — the Frozen Sovereign ──
+    clue('LEG_GLACIO_1','Old Sailor','BEACON_HAMLET',8,7,'GLACIO_CLUE_1',
+      ["On the coldest nights, something vast and white surfaces beyond the bay.","Sailors call it the Frozen Sovereign — GLACIODON. It drifts ever northward."],'NPC_MAN'),
+    clue('LEG_GLACIO_2','Mist Reader','BOGMIRE_CITY',6,6,'GLACIO_CLUE_2',
+      ["When the swamp mist turns to frost, GLACIODON is stirring far to the north.","Its breath freezes whole mountains. Follow the cold and you'll find its shrine."],'NPC_WOMAN'),
+    clue('LEG_GLACIO_3','Curator','STONEHAVEN_CITY',6,6,'GLACIO_CLUE_3',
+      ["Our museum keeps a Frost Relic — it always points north, to the Frost Ascent.","They say only a trainer who has heard all the old tales can wake the Sovereign."],'NPC_WOMAN'),
+    shrine('SHRINE_GLACIO','Frost Sage','ROUTE_10A',9,3,'GLACIODON',55,
+      ['GLACIO_CLUE_1','GLACIO_CLUE_2','GLACIO_CLUE_3'],'GLACIODON_CAUGHT',
+      { dormant:'A frost-rimed altar hums faintly under the snow.',
+        awaken:["The Frost Sage bows. 'You carry every legend of the Sovereign.'","Ice splinters into a roar — GLACIODON descends!"],
+        rest:'The frost altar is calm. GLACIODON walks with you now.' }),
+    // ── MEGAVORE — the Endless Hunger ──
+    clue('LEG_MEGA_1','Old Digger','DUSTWALL_TOWN',6,6,'MEGA_CLUE_1',
+      ["Deep in the quarry we found claw-marks bigger than a man.","MEGAVORE, the Endless Hunger, slumbers in the dark places of the world."],'NPC_MAN'),
+    clue('LEG_MEGA_2','Storm Watcher','CRESTFALL_TOWN',6,6,'MEGA_CLUE_2',
+      ["When the storms rage hardest, the beast hunts.","One thing keeps it at bay: light. It loathes the light. Seek it in the dark hollow."],'NPC_MAN'),
+    clue('LEG_MEGA_3','Analyst','COMPOUND_CITY',6,8,'MEGA_CLUE_3',
+      ["Niels says MEGAVORE's appetite is like compound interest — it never, ever stops.","Last sighting? A pitch-black cave off Route 3. Bring a light."],'NPC_WOMAN'),
+    shrine('SHRINE_MEGA','Bone Warden','MURK_HOLLOW',6,5,'MEGAVORE',55,
+      ['MEGA_CLUE_1','MEGA_CLUE_2','MEGA_CLUE_3'],'MEGAVORE_CAUGHT',
+      { dormant:'A pit of ancient bones. Something enormous breathes in the dark.',
+        awaken:["The bones rattle. 'You know its legend in full,' rasps the Warden.","From the black, MEGAVORE lunges — the Endless Hunger wakes!"],
+        rest:'The bone pit is still. The Hunger answers to you now.' }),
+    // ── TITANREX — the First King ──
+    clue('LEG_TITAN_1','Fossil Researcher','AMBERTOWN',6,6,'TITAN_CLUE_1',
+      ["Before every DinoMon there was one king: TITANREX.","Its fossils started our whole science. Its throne waits at the highest peak."],'NPC_PROF'),
+    clue('LEG_TITAN_2','Grove Elder','FERNGROVE_TOWN',6,6,'TITAN_CLUE_2',
+      ["The old grove still remembers the King's roar — it shook the canopy bare.","Gather the legends, child, and the throne at Apex Summit will know you."],'NPC_MAN'),
+    clue('LEG_TITAN_3','Summit Hermit','APEXSUMMIT',6,6,'TITAN_CLUE_3',
+      ["At the peak stands the King's throne, cold for a million years.","Only one who carries every legend may wake the First King."],'NPC_MAN'),
+    shrine('SHRINE_TITAN','Throne Keeper','APEXSUMMIT',9,4,'TITANREX',58,
+      ['TITAN_CLUE_1','TITAN_CLUE_2','TITAN_CLUE_3'],'TITANREX_CAUGHT',
+      { dormant:'A weathered stone throne, vast and empty. It thrums with old power.',
+        awaken:["The Throne Keeper kneels. 'The legends are whole. Rise, King.'","The mountain shakes — TITANREX takes its throne before you!"],
+        rest:'The throne is claimed. The First King fights at your side.' }),
+  ];
+  SPECS.forEach((s) => {
+    const m = DG.MAPS[s.map]; if (!m) return;
+    m.npcs = m.npcs || [];
+    const pos = freeTile(m, s.px, s.py) || { x: s.px, y: s.py };
+    s.npc.x = pos.x; s.npc.y = pos.y;
+    m.npcs.push(s.npc);
+  });
+})();
+
 DG.MAP_LIST = Object.keys(DG.MAPS);
 console.log('[DinoMon] Maps loaded: ' + DG.MAP_LIST.length);

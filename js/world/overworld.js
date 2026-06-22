@@ -893,6 +893,57 @@ DG.Overworld = (function () {
       return;
     }
 
+    // onInteract: LEGEND_CLUE — a lore NPC that records one clue toward a legendary.
+    if (npc.onInteract === 'LEGEND_CLUE') {
+      const lines = _getDialogue(npc);
+      DG.DialogueBox.show(lines, () => {
+        if (npc.clueFlag && !DG.SaveLoad.getFlag(_gs, npc.clueFlag)) {
+          DG.SaveLoad.setFlag(_gs, npc.clueFlag);
+          try { DG.SaveLoad.save(_gs); } catch (e) {}
+        }
+        _blocked = false;
+      });
+      return;
+    }
+
+    // onInteract: LEGEND_SHRINE — wakes a legendary once all its clues are gathered.
+    // Fields: legendSpecies, legendLevel, clueFlags[], caughtFlag, *Dialogue lines.
+    if (npc.onInteract === 'LEGEND_SHRINE') {
+      const f = _gs.player.flags || {};
+      if (npc.caughtFlag && f[npc.caughtFlag]) {
+        DG.DialogueBox.show(npc.restDialogue || ['The shrine is silent. Its guardian already walks beside you.'], () => { _blocked = false; });
+        return;
+      }
+      const clues = npc.clueFlags || [];
+      const have = clues.filter((c) => f[c]).length;
+      if (have < clues.length) {
+        DG.DialogueBox.show([
+          npc.dormantLine || 'Ancient carvings cover the shrine, but it lies dormant.',
+          'Legends gathered: ' + have + ' of ' + clues.length + '. Seek the rest across the cities.'
+        ], () => { _blocked = false; });
+        return;
+      }
+      DG.DialogueBox.show(npc.awakenDialogue || ['The shrine blazes to life — its guardian answers your call!'], () => {
+        const sid = npc.legendSpecies;
+        const mon = DG.SaveLoad.createDinoMon(sid, npc.legendLevel || 55);
+        if (!mon) { _blocked = false; return; }
+        try { DG.SaveLoad.markSeen(_gs, sid); } catch (e) {}
+        DG.Battle.start({
+          type: 'WILD', enemy: mon, gameState: _gs,
+          onEnd: (result) => {
+            if (result === 'CAUGHT') {
+              if (npc.caughtFlag) DG.SaveLoad.setFlag(_gs, npc.caughtFlag);
+              const nm = (DG.SPECIES[sid] && DG.SPECIES[sid].name) || 'The legend';
+              DG.DialogueBox.show([nm + ' has joined you!', 'A legend now answers to your bond.'], () => { _blocked = false; DG.SaveLoad.save(_gs); });
+            } else {
+              DG.DialogueBox.show(['It slipped away into legend once more...', 'The shrine still hums — it will return.'], () => { _blocked = false; });
+            }
+          }
+        });
+      });
+      return;
+    }
+
     // onInteract: TRIGGER_PRIMORDIA (post-game legendary encounter)
     if (npc.onInteract === 'TRIGGER_PRIMORDIA') {
       const dialogue = _getDialogue(npc);
