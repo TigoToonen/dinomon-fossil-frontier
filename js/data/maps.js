@@ -465,8 +465,8 @@ STONEHAVEN_CITY: {
   warps:[
     { x:9,  y:0,  targetMap:'FAIRYDELL_CITY', targetX:9,  targetY:1 },
     { x:10, y:0,  targetMap:'FAIRYDELL_CITY', targetX:10, targetY:1 },
-    { x:0,  y:10, targetMap:'ROUTE_6A',  targetX:9,  targetY:1, requiresFlag:'BADGE_6'  },
-    { x:19, y:10, targetMap:'ROUTE_7A',  targetX:9,  targetY:1, requiresFlag:'BADGE_6'  },
+    { x:0,  y:10, targetMap:'ROUTE_6A',  targetX:9,  targetY:1, requiresFlag:'BADGE_6'  }, // West → Crestfall (Gym 7, Volt)
+    { x:19, y:10, targetMap:'ROUTE_7A',  targetX:9,  targetY:1, requiresFlag:'BADGE_7'  }, // East → Bogmire (Gym 8, Marina) — locked until Gym 7 done
     { x:3,  y:4,  targetMap:'STONEHAVEN_GYM',    targetX:14, targetY:16 },
     { x:17, y:3,  targetMap:'STONEHAVEN_CENTER',  targetX:7, targetY:8  },
     { x:16, y:8,  targetMap:'STONEHAVEN_MUSEUM',  targetX:7, targetY:8  },

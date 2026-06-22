@@ -117,7 +117,10 @@ const GATING = {
   PYRESIDE_CITY:   { badge: 'BADGE_3', forward: ['ROUTE_4A'] },
   FERNGROVE_TOWN:  { badge: 'BADGE_4', forward: ['ROUTE_5A'] },
   FAIRYDELL_CITY:  { badge: 'BADGE_5', forward: ['STONEHAVEN_CITY'] },
-  STONEHAVEN_CITY: { badge: 'BADGE_6', forward: ['ROUTE_6A', 'ROUTE_7A'] },
+  // Gym 6 (Terra). Forward to Gym 7 (Crestfall/Volt) is Route 6A @ BADGE_6.
+  // Route 7A (→ Bogmire / Gym 8) is now BADGE_7-gated so Gym 7 can't be skipped,
+  // so it is intentionally NOT a BADGE_6 forward here.
+  STONEHAVEN_CITY: { badge: 'BADGE_6', forward: ['ROUTE_6A'] },
   CRESTFALL_TOWN:  { badge: 'BADGE_7', forward: ['ROUTE_8A'] },
   BOGMIRE_CITY:    { badge: 'BADGE_8', forward: ['ROUTE_9A'] },
   APEXSUMMIT:      { badge: 'BADGE_9', forward: ['MT_CRETACEOUS', 'FOSSIL_GATEWAY'] },
