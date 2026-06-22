@@ -894,14 +894,24 @@ DG.Overworld = (function () {
     }
 
     // onInteract: LEGEND_CLUE — a lore NPC that records one clue toward a legendary.
+    // After the lore, shows clear progress: "<Legend>: 2/3 clues gathered".
     if (npc.onInteract === 'LEGEND_CLUE') {
       const lines = _getDialogue(npc);
+      const group = npc.clueGroup || (npc.clueFlag ? [npc.clueFlag] : []);
+      const already = npc.clueFlag && DG.SaveLoad.getFlag(_gs, npc.clueFlag);
       DG.DialogueBox.show(lines, () => {
-        if (npc.clueFlag && !DG.SaveLoad.getFlag(_gs, npc.clueFlag)) {
+        if (npc.clueFlag && !already) {
           DG.SaveLoad.setFlag(_gs, npc.clueFlag);
           try { DG.SaveLoad.save(_gs); } catch (e) {}
         }
-        _blocked = false;
+        const have = group.filter((f) => DG.SaveLoad.getFlag(_gs, f)).length;
+        const total = group.length || 1;
+        const nm = npc.legendName || 'a legendary';
+        const tail = [];
+        tail.push('★ ' + nm + ' — clue ' + have + ' of ' + total + ' gathered.' + (already ? ' (already known)' : ''));
+        if (have >= total) tail.push('All clues found! ' + (npc.shrineHint || 'Seek its shrine.'));
+        else tail.push('Find the other clues in nearby towns.');
+        DG.DialogueBox.show(tail, () => { _blocked = false; });
       });
       return;
     }

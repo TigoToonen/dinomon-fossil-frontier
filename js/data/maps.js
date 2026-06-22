@@ -5023,6 +5023,12 @@ DG.MAPS.COMPOUND_CITY = {
       movementType:'STATIONARY', dialogue:["Bull Market Boulevard never sleeps.","Deposit, walk, withdraw richer. That's the Compound City way."], onInteract:null },
     { id:'CC_SIGN', name:'Sign', x:11, y:12, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:["Welcome to Compound City — home of the DinoFund.","Daytrader Niels invests in rising trainers. Battle his interns, then talk to Niels!"], onInteract:null },
+    { id:'CC_FOSSIL_LAB', name:'Fossil Lab', x:8, y:7, facing:'DOWN', spriteKey:'NPC_PROF',
+      movementType:'STATIONARY',
+      dialogue:["Welcome to the Compound City Fossil Lab!","Carrying a fossil? Walk with it until it stirs with life, then bring it here and I'll revive it into a DinoMon."],
+      onInteract:'REVIVE_FOSSIL' },
+    { id:'CC_FOSSIL_SIGN', name:'Sign', x:9, y:7, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:["★ FOSSIL LAB ★","Revive your awakened fossils into rare DinoMon here."], onInteract:null },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 };
@@ -5536,11 +5542,22 @@ DG.MAPS.SECRET_TUNNEL = {
     }
     return best;
   }
-  const clue = (id, name, mapId, px, py, clueFlag, lines, sprite) => ({
-    map: mapId, px: px, py: py,
-    npc: { id: id, name: name, facing: 'DOWN', spriteKey: sprite || 'NPC_MAN',
-           movementType: 'STATIONARY', onInteract: 'LEGEND_CLUE', clueFlag: clueFlag, dialogue: lines },
-  });
+  const LEGINFO = {
+    GLACIO: { name: 'Glaciodon', hint: 'Wake it at the Frost shrine on Route 10 (the Frost Ascent), beyond Bogmire.' },
+    MEGA:   { name: 'Megavore',  hint: 'Wake it in the pitch-dark Murk Hollow cave off Route 3 (bring a Flash user).' },
+    TITAN:  { name: 'Titanrex',  hint: "Wake it at the King's throne high on Apex Summit." },
+  };
+  const clue = (id, name, mapId, px, py, clueFlag, lines, sprite) => {
+    const pre = clueFlag.replace(/_CLUE_\d+$/, '');           // GLACIO / MEGA / TITAN
+    const info = LEGINFO[pre] || {};
+    const group = [pre + '_CLUE_1', pre + '_CLUE_2', pre + '_CLUE_3'];
+    return {
+      map: mapId, px: px, py: py,
+      npc: { id: id, name: name, facing: 'DOWN', spriteKey: sprite || 'NPC_MAN',
+             movementType: 'STATIONARY', onInteract: 'LEGEND_CLUE', clueFlag: clueFlag, dialogue: lines,
+             legendName: info.name, clueGroup: group, shrineHint: info.hint },
+    };
+  };
   const shrine = (id, name, mapId, px, py, species, lvl, clueFlags, caughtFlag, lines) => ({
     map: mapId, px: px, py: py,
     npc: { id: id, name: name, facing: 'DOWN', spriteKey: 'NPC_PROF', movementType: 'STATIONARY',
