@@ -1533,6 +1533,7 @@ DG.Renderer = (function () {
     _drawPartyBalls(ctx, battle);
     _drawBattleWeather(ctx, battle);
     _drawStatStages(ctx, battle);
+    _drawEpicBattleOverlay(ctx, battle);
 
     // Message box for pending battle text
     const msg = DG.Battle.currentMessage();
@@ -1927,6 +1928,100 @@ DG.Renderer = (function () {
         const shortStat = { atk:'ATK', def:'DEF', spAtk:'SPA', spDef:'SPD', spd:'SPE', acc:'ACC', eva:'EVA' }[stat] || stat;
         ctx.fillText(`${shortStat}${lbl.text}`, px, py + i * 10);
       });
+    }
+  }
+
+  // ── Epic battle overlays: legendary reveal splash + Elite Four atmosphere ──
+  let _legBanner = 0;     // countdown for the legendary reveal banner
+  let _lastLegId = null;  // which legendary already triggered the banner
+  function _hexRGBA(hex, a) {
+    hex = hex.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16),
+          g = parseInt(hex.substr(2, 2), 16),
+          b = parseInt(hex.substr(4, 2), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  }
+  function _drawEpicBattleOverlay(ctx, battle) {
+    if (!battle || battle.introPhase === 'TRAINER_INTRO') return;
+    const W = DG.CANVAS.W, H = DG.CANVAS.H;
+    const inIntro = (DG.BattleAnim && DG.BattleAnim.isBattleIntro)
+      ? DG.BattleAnim.isBattleIntro() : false;
+
+    // ── Elite Four / Champion: persistent themed atmosphere ──
+    const cls = battle.trainerData && battle.trainerData.class;
+    if (cls === 'Elite Four' || cls === 'Champion') {
+      const nm = battle.trainerData.name || '';
+      const ECOL = { Aurora: '#7ec8ff', Ember: '#ff7a3a', Garnet: '#e0b060', Phantom: '#b070e0' };
+      const col = ECOL[nm] || (cls === 'Champion' ? '#c89cff' : '#ffd24a');
+      ctx.save();
+      // breathing themed vignette hugging the edges
+      const pulse = 0.14 + 0.05 * Math.sin(_animOff * 0.06);
+      const vg = ctx.createRadialGradient(W / 2, H * 0.42, H * 0.34, W / 2, H * 0.42, H * 0.95);
+      vg.addColorStop(0, 'rgba(0,0,0,0)');
+      vg.addColorStop(1, _hexRGBA(col, pulse));
+      ctx.fillStyle = vg;
+      ctx.fillRect(0, 0, W, Math.floor(H * 0.66));
+      // floating element motes drifting upward
+      for (let i = 0; i < 12; i++) {
+        const px = ((i * 71 + 17) % 100) / 100 * W;
+        const py = (H * 0.62) - ((_animOff * 0.45 + i * 33) % (H * 0.62 + 16));
+        ctx.globalAlpha = 0.18 + 0.22 * (0.5 + 0.5 * Math.sin(_animOff * 0.1 + i));
+        ctx.fillStyle = col;
+        const s = (i % 3 === 0) ? 3 : 2;
+        ctx.fillRect(px, py, s, s);
+      }
+      ctx.restore();
+    }
+
+    // ── Legendary reveal: flash + giant name banner once the silhouette clears ──
+    const sp = battle.enemyMon && DG.SPECIES ? DG.SPECIES[battle.enemyMon.speciesId] : null;
+    if (sp && sp.isLegendary) {
+      if (!inIntro && _lastLegId !== battle.enemyMon.speciesId) {
+        _lastLegId = battle.enemyMon.speciesId;
+        _legBanner = 165;
+      }
+      if (_legBanner > 0) {
+        const t = _legBanner;
+        // opening white-gold flash
+        if (t > 140) {
+          ctx.save();
+          ctx.globalAlpha = (t - 140) / 25 * 0.85;
+          ctx.fillStyle = '#fff2c8';
+          ctx.fillRect(0, 0, W, H);
+          ctx.restore();
+        }
+        // fade-in / hold / fade-out envelope
+        const fIn = Math.min(1, (165 - t) / 18);
+        const fOut = t < 32 ? t / 32 : 1;
+        const a = Math.max(0, Math.min(fIn, fOut));
+        const by = Math.floor(H * 0.34);
+        ctx.save();
+        ctx.globalAlpha = a;
+        const bg = ctx.createLinearGradient(0, by, 0, by + 50);
+        bg.addColorStop(0, 'rgba(10,7,22,0.92)');
+        bg.addColorStop(1, 'rgba(20,12,4,0.92)');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, by, W, 50);
+        ctx.fillStyle = '#ffd24a';
+        ctx.fillRect(0, by, W, 2);
+        ctx.fillRect(0, by + 48, W, 2);
+        ctx.shadowColor = '#ffcf4a';
+        ctx.shadowBlur = 12;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillStyle = '#ffe27a';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText('✦   L E G E N D A R Y   ✦', W / 2, by + 16);
+        ctx.shadowBlur = 14;
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 20px monospace';
+        ctx.fillText((sp.name || battle.enemyMon.speciesId).toUpperCase(), W / 2, by + 40);
+        ctx.restore();
+        ctx.textAlign = 'left';
+        _legBanner--;
+      }
+    } else {
+      _lastLegId = null;
     }
   }
 

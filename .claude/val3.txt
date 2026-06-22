@@ -1,0 +1,17 @@
+[DinoMon] Constants loaded.
+[DinoMon] Species loaded: 121
+[DinoMon] Trainers loaded: 145
+[DinoMon] Warp arrivals sanitized: 12
+[DinoMon] Maps loaded: 117
+═══ DinoMon game validation ═══
+Maps:117 Species:121 Moves:1000 Trainers:145
+
+[ONE_WAY] 6
+  - APEXSUMMIT -> MT_CRETACEOUS has no return warp
+  - ROUTE_1 -> SHELLCREEK_CITY has no return warp
+  - ROUTE_1 -> AMBERTOWN has no return warp
+  - ROUTE_5C -> FERNGROVE_TOWN has no return warp
+  - MT_CRETACEOUS -> ROUTE_9C has no return warp
+  - FERNGROVE_TOWN -> ROUTE_5A has no return warp
+
+TOTAL issues: 6 (blocking: 0, info ONE_WAY: 6)

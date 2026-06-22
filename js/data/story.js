@@ -431,7 +431,7 @@ DG.STORY.DIALOGUES = {
   CMD_TRIASSIC_2: [
     "Defeated... again? Impossible!",
     "Don't think this is over, child. This is barely a chapter.",
-    "The Permian Core will awaken — and when it does, no eight badges will save you!",
+    "The Permian Core will awaken — and when it does, not even all nine badges will save you!",
   ],
 
   CMD_TRIASSIC_3: [
@@ -694,8 +694,8 @@ DG.STORY.DIALOGUES = {
   FOSSIL_GATE_BLOCKED: [
     "GATE WARDEN: Halt, Trainer.",
     "Beyond this gate lies the Fossil Citadel — seat of the Grand Archon.",
-    "Only those who have mastered all eight Gyms of the Pangaea Archipelago may enter.",
-    "Collect all eight Gym Badges and return when you are ready.",
+    "Only those who have mastered all nine Gyms of the Pangaea Archipelago may enter.",
+    "Collect all nine Gym Badges and return when you are ready.",
   ],
 
   // ── Route guard dialogues (updated for new gym order) ─────
@@ -759,14 +759,14 @@ DG.STORY.DIALOGUES = {
   ],
 
   FOSSIL_GATE_OPEN: [
-    "GATE WARDEN: All eight badges... You truly have surpassed every Gym in the land.",
+    "GATE WARDEN: All nine badges... You truly have surpassed every Gym in the land.",
     "Then pass, Trainer. The Grand Archon awaits you inside the Fossil Citadel.",
     "May the Primordial Aura guide your path.",
   ],
 
   GRAND_ARCHON_PRE: [
     "...",
-    "So. A Trainer bearing all eight badges stands before me at last.",
+    "So. A Trainer bearing all nine badges stands before me at last.",
     "I am Grand Archon Corvus — champion of the Fossil Citadel and keeper of the Primordial League.",
     "For twenty years no challenger has bested me.",
     "Your DinoMons have come far. But this ends here.",

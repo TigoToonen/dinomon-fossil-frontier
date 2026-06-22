@@ -868,7 +868,7 @@ DG.Menu = (function () {
     });
 
     // Footer: Fossil Citadel status
-    const hasAll = earnedN >= 8;
+    const hasAll = earnedN >= 9;
     const fby    = H - 38;
     ctx.fillStyle   = hasAll ? 'rgba(80,60,0,0.8)' : 'rgba(10,10,25,0.8)';
     ctx.fillRect(10, fby, W - 20, 26);
@@ -881,7 +881,7 @@ DG.Menu = (function () {
     ctx.fillText(
       hasAll
         ? '★ All badges collected! Fossil Citadel is now open!'
-        : `[ Collect all 8 badges to reach the Fossil Citadel ]`,
+        : `[ Collect all 9 badges to reach the Fossil Citadel ]`,
       16, fby + 8
     );
 

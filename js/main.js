@@ -644,7 +644,7 @@ window.DG = window.DG || {};
   // ── Start ─────────────────────────────────────────────────
   // ── Debug helpers (call from browser console) ─────────────────
   // DG_BOOST_PARTY()  — evolves all party DinoMons to final form at Lv.80 with max IVs
-  // DG_ALL_BADGES()   — grants all 8 badges and unlocks all route gates
+  // DG_ALL_BADGES()   — grants all 9 badges and unlocks all route gates + the Fossil Citadel
   window.DG_BOOST_PARTY = function() {
     if (!_gs || !_gs.player || !_gs.player.party || !_gs.player.party.length) {
       console.warn('[DG_BOOST] No active game state. Load a save first.');
@@ -693,16 +693,16 @@ window.DG = window.DG || {};
 
   window.DG_ALL_BADGES = function() {
     if (!_gs || !_gs.player) { console.warn('[DG_BOOST] No active game state.'); return; }
-    const badges = ['BADGE_1','BADGE_2','BADGE_3','BADGE_4','BADGE_5','BADGE_6','BADGE_7','BADGE_8'];
+    const badges = ['BADGE_1','BADGE_2','BADGE_3','BADGE_4','BADGE_5','BADGE_6','BADGE_7','BADGE_8','BADGE_9'];
     badges.forEach(b => {
       DG.SaveLoad.setFlag(_gs, b);
       if (!_gs.player.badges.includes(b)) _gs.player.badges.push(b);
     });
-    _gs.player.badgeCount = 8;
+    _gs.player.badgeCount = 9;
     _gs.player.flags['SURF_UNLOCKED'] = true;
     _gs.player.flags['CUT_UNLOCKED']  = true;
     DG.SaveLoad.save(_gs);
-    try { DG.DialogueBox.show(['⚡ DEBUG: All 8 badges granted!', 'All route gates are now open.'], ()=>{}); } catch(e) {}
+    try { DG.DialogueBox.show(['⚡ DEBUG: All 9 badges granted!', 'All route gates + the Fossil Citadel are now open.'], ()=>{}); } catch(e) {}
     console.log('[DG_BOOST] All badges + field moves unlocked.');
   };
 
