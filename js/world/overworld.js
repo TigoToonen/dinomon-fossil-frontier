@@ -451,32 +451,29 @@ DG.Overworld = (function () {
     // Compound Card (+50% prize money). After he's beaten he runs the Beachcoin exchange.
     if (npc.onInteract === 'NIELS_CHALLENGE') {
       const f = _gs.player.flags || {};
-      if (f['TRAINER_NIELS_BOSS_DEFEATED']) { _beachcoin(); return; }
       const internsDone = f['TRAINER_NIELS_INTERN1_DEFEATED'] && f['TRAINER_NIELS_INTERN2_DEFEATED'];
-      if (!internsDone) {
-        DG.DialogueBox.show([
-          "Daytrader Niels: Ambitious, I like it!",
-          "But first prove your worth — beat my interns, Bull and Bear.",
-          "Then I'll invest a real battle in you."], () => { _blocked = false; });
-        return;
-      }
-      const trainer = DG.TRAINERS.NIELS_BOSS;
-      DG.DialogueBox.show([
-        "Daytrader Niels: You cleared my portfolio. Impressive yield!",
-        "Now face the fund manager himself. Win, and the Compound Card is yours —",
-        "your battle prize money will compound like never before!"], () => {
+
+      // Start the (all-shiny) Niels battle. isRematch=false the first time (awards the
+      // Compound Card); true on every later rematch.
+      const _startNielsBattle = (isRematch) => {
+        const trainer = DG.TRAINERS.NIELS_BOSS;
         const firstEnemy = DG.SaveLoad.createDinoMon(trainer.party[0].speciesId, trainer.party[0].level);
         DG.Battle.start({
           type: 'TRAINER', enemy: firstEnemy, trainerData: trainer, gameState: _gs,
           onEnd: (result) => {
-            if (result === 'WIN') {
+            if (result === 'WIN' && !isRematch) {
               DG.SaveLoad.setFlag(_gs, 'TRAINER_NIELS_BOSS_DEFEATED');
               _gs.player.bag = _gs.player.bag || {};
               _gs.player.bag.COMPOUND_CARD = (_gs.player.bag.COMPOUND_CARD || 0) + 1;
               DG.DialogueBox.show([
                 "Daytrader Niels: Outstanding return! You've earned a seat at the big table.",
                 "You received the COMPOUND CARD!",
-                "Battle prize money is now boosted by 50%. Talk to me again to trade Beachcoin!"],
+                "Battle prize money is now boosted by 50%. Talk to me again to trade Beachcoin — or for a rematch!"],
+                () => { _blocked = false; DG.SaveLoad.save(_gs); });
+            } else if (result === 'WIN') {
+              DG.DialogueBox.show([
+                "Daytrader Niels: Beat my shinies AGAIN? Diamond hands, kid.",
+                "The market's always open for a rematch."],
                 () => { _blocked = false; DG.SaveLoad.save(_gs); });
             } else {
               DG.DialogueBox.show([trainer.winDialogue || "A dip in your portfolio. Come back when you've diversified."],
@@ -484,6 +481,37 @@ DG.Overworld = (function () {
             }
           }
         });
+      };
+
+      // Already beaten once → menu: rematch his shiny team, trade Beachcoin, or leave.
+      if (f['TRAINER_NIELS_BOSS_DEFEATED']) {
+        DG.DialogueBox.show(["Daytrader Niels: Back at the big table, I see. What'll it be?"], () => {
+          if (typeof DG.Menu !== 'undefined' && DG.Menu.showChoiceMenu) {
+            DG.Menu.showChoiceMenu('Daytrader Niels', ['Rematch (his shiny team!)', 'Trade Beachcoin', 'Leave'], (idx) => {
+              if (idx === 0) {
+                DG.DialogueBox.show(["Daytrader Niels: Think you can beat my shinies twice? Let's make a market!"],
+                  () => { _startNielsBattle(true); });
+              } else if (idx === 1) { _beachcoin(); }
+              else { _blocked = false; }
+            });
+          } else { _beachcoin(); }
+        });
+        return;
+      }
+
+      if (!internsDone) {
+        DG.DialogueBox.show([
+          "Daytrader Niels: Ambitious, I like it!",
+          "But first prove your worth — beat my interns, Bull and Bear.",
+          "Then I'll invest a real battle in you."], () => { _blocked = false; });
+        return;
+      }
+      // First challenge
+      DG.DialogueBox.show([
+        "Daytrader Niels: You cleared my portfolio. Impressive yield!",
+        "Now face the fund manager himself — and feast your eyes on my all-shiny portfolio.",
+        "Win, and the Compound Card is yours: prize money compounds +50%!"], () => {
+        _startNielsBattle(false);
       });
       return;
     }
