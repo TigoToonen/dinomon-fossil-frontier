@@ -1,0 +1,11 @@
+[DinoMon] Constants loaded.
+[DinoMon] Species loaded: 121
+[DinoMon] Trainers loaded: 149
+[DinoMon] Warp arrivals sanitized: 11
+[DinoMon] Maps loaded: 118
+ROUTE_2 (none)
+ROUTE_2A grass: SANDCLAW, QUAKELING, BONEBACK, DIGCLAW
+ROUTE_2B grass: SANDCLAW, QUAKELING, BONEBACK, DIGCLAW
+FRONDLET fields: id,name,types,baseStats,learnset,evolvesTo,evolvesAt,prevForm,ability,abilityDesc,catchRate,expYield,expCurve,isLegendary,isMega,description,color,color2,desc,habitat
+FRONDLET dex habitat:  Route 3, Route 4
+FRONDLET appears in encounter tables: ROUTE_4A.grass, ROUTE_4B.grass, ROUTE_4C.grass, FERNGROVE_WILD.grass, FERNGROVE_TOWN.grass

@@ -113,6 +113,13 @@ DG.TILE = {
   SWAMP:        8,  // swamp (encounter zone)
   FLOWER:       9,  // flower patch (no encounter)
   DIVE_SPOT:    10, // walkable dark-water dive point (HM Dive warps under/up)
+  // ── Gold-metropolis dressing (Compound City) — walkable IDs 12-19 ───────
+  GOLD_LAMPPOST:   12, // ornate gold lamppost (solid)
+  BEACHCOIN_COIN:  13, // giant Beachcoin monument on a plinth (solid)
+  GOLD_PLAZA:      14, // gilded marble pavement / boulevard (walkable)
+  TICKER_BOARD:    15, // wall-mounted LED Beachcoin price ticker (solid)
+  GOLD_PLANTER:    16, // gold pot + topiary (solid)
+  SKYLINE:         19, // distant gold-skyscraper backdrop band (solid, decorative)
   // Aliases for world/encounter/overworld modules
   PATH:         0,  // = FLOOR
   INDOOR_FLOOR: 0,  // = FLOOR
@@ -162,6 +169,7 @@ DG.TILE = {
   MUSEUM_CASE:         96, // glass display case with an amber specimen
   FOSSIL_WALL:         97, // wall embedded with fossil bones / ammonite relief
   AMBER_PILLAR:        98, // grand glowing amber column
+  NIELS_STATUE:        99, // golden statue of Daytrader Niels, of himself (solid)
 };
 
 // ── Canvas Config ─────────────────────────────────────────────

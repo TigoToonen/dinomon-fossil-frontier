@@ -1,0 +1,13 @@
+[DinoMon] Constants loaded.
+[DinoMon] Species loaded: 121
+[DinoMon] Trainers loaded: 149
+[DinoMon] Warp arrivals sanitized: 11
+[DinoMon] Maps loaded: 118
+ROUTE_3A grass: EMBRIX, BONEBACK, QUAKELING, VIPERFANG
+ROUTE_3B grass: EMBRIX, BONEBACK, QUAKELING, VIPERFANG
+ROUTE_4A grass: FRONDLET, BUGLING, SOARWING, FAIRYWING
+ROUTE_4B grass: FRONDLET, BUGLING, SOARWING, FAIRYWING
+ROUTE_4C grass: FRONDLET, BUGLING, SOARWING, FAIRYWING
+LEAFAWN -> (none)
+SPRIGDON -> (none)
+LEAFCUB -> ROUTE_1A.grass, ROUTE_1.grass

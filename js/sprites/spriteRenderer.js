@@ -167,14 +167,33 @@ DG.SpriteRenderer = (function () {
 
     if (tileId === 89) {
       // ── Plaza fountain centerpiece ─────────────────────────────
+      var _gold89 = (window.DG_MAP_THEME === 'GOLD');
       var fcx = px + T/2, fcy = py + T/2;
+      var ph = anim || 0;                                          // animated ripples
+      if (_gold89) {
+        // Golden fountain spouting liquid gold + coins
+        ctx.fillStyle='#caa12e'; ctx.fillRect(px,py,T,T);          // gilded plaza base
+        ctx.fillStyle='#7a5410'; ctx.beginPath(); ctx.arc(fcx,fcy+2,14,0,Math.PI*2); ctx.fill(); // shadow
+        ctx.fillStyle='#e8c24a'; ctx.beginPath(); ctx.arc(fcx,fcy,13,0,Math.PI*2); ctx.fill();    // gold rim
+        ctx.strokeStyle='#fff0bf'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(fcx,fcy,13,0,Math.PI*2); ctx.stroke();
+        ctx.fillStyle='#d99a1e'; ctx.beginPath(); ctx.arc(fcx,fcy,10,0,Math.PI*2); ctx.fill();    // molten gold
+        ctx.fillStyle='#f6c842'; ctx.beginPath(); ctx.arc(fcx,fcy-1,10,0,Math.PI*2); ctx.fill();
+        ctx.strokeStyle='rgba(255,250,210,0.7)'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.arc(fcx,fcy,3+((ph*0.06)%6),0,Math.PI*2); ctx.stroke();
+        ctx.fillStyle='#fff0b8'; ctx.fillRect(fcx-2,fcy-9,4,9);    // gold central pillar
+        ctx.fillStyle='#ffe27a'; ctx.fillRect(fcx-3,fcy-11,6,2);
+        // spouting gold coins
+        for (var fi=0;fi<5;fi++){ var a=ph*0.12+fi*1.45; var cxk=fcx+Math.cos(a)*5, cyk=fcy-8+Math.abs(Math.sin(a))*5;
+          ctx.fillStyle='#ffd34d'; ctx.beginPath(); ctx.arc(cxk,cyk,1.6,0,Math.PI*2); ctx.fill();
+          ctx.fillStyle='#fff4c0'; ctx.fillRect(cxk-0.5,cyk-0.5,1,1); }
+        return;
+      }
       ctx.fillStyle='#9a948a'; ctx.fillRect(px,py,T,T);            // plaza base
       ctx.fillStyle='#857d72'; ctx.beginPath(); ctx.arc(fcx,fcy+2,14,0,Math.PI*2); ctx.fill(); // shadow
       ctx.fillStyle='#a8a096'; ctx.beginPath(); ctx.arc(fcx,fcy,13,0,Math.PI*2); ctx.fill();    // stone rim
       ctx.strokeStyle='#5e574c'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(fcx,fcy,13,0,Math.PI*2); ctx.stroke();
       ctx.fillStyle='#2f7fd0'; ctx.beginPath(); ctx.arc(fcx,fcy,10,0,Math.PI*2); ctx.fill();     // water
       ctx.fillStyle='#4a9be0'; ctx.beginPath(); ctx.arc(fcx,fcy-1,10,0,Math.PI*2); ctx.fill();
-      var ph = anim || 0;                                          // animated ripples
       ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=1;
       ctx.beginPath(); ctx.arc(fcx,fcy,3+((ph*0.06)%6),0,Math.PI*2); ctx.stroke();
       ctx.globalAlpha=0.5; ctx.beginPath(); ctx.arc(fcx,fcy,3+(((ph*0.06)+3)%6),0,Math.PI*2); ctx.stroke(); ctx.globalAlpha=1;
@@ -201,6 +220,7 @@ DG.SpriteRenderer = (function () {
         SUMMIT:   { base:'#888090', blade:'#686070', hi:'#a8a0a8', accent:'#d8d0e0', dots:false, frost:true },
         MOUNTAIN: { base:'#5a7040', blade:'#3a5030', hi:'#6a8050', accent:'#8a9860', dots:false },
         GRANITE:  { base:'#4a6038', blade:'#303820', hi:'#5a7048', accent:'#708060', dots:false },
+        GOLD:     { base:'#3c7838', blade:'#27561f', hi:'#d8b94a', accent:'#ffd84d', dots:true  }, // manicured "moneyed garden" with gold flecks
         DEFAULT:  { base:'#5a8a3c', blade:'#2d6e2d', hi:'#4aac4a', accent:'#4aac4a', dots:false },
       };
       const _gc1 = _GC1[_thG1] || _GC1.DEFAULT;
@@ -325,10 +345,10 @@ DG.SpriteRenderer = (function () {
         // GROUND (not a wall). Lighter, warmer per-biome palette than before.
         const _cbB0={AMBER:'#b89a64',COASTAL:'#9fa49a',DESERT:'#caa862',VOLCANIC:'#5c4c44',
           FOREST:'#8c7048',GRANITE:'#8a8a8c',MOUNTAIN:'#8c8478',SWAMP:'#5e6c4a',
-          TUNDRA:'#aeb8c4',SUMMIT:'#d4d0c6',DEFAULT:'#9c968c'};   // seam/base colour
+          TUNDRA:'#aeb8c4',SUMMIT:'#d4d0c6',GOLD:'#a8801f',DEFAULT:'#9c968c'};   // seam/base colour
         const _cbS0={AMBER:'#cdb084',COASTAL:'#c2c6bc',DESERT:'#e2c684',VOLCANIC:'#705e54',
           FOREST:'#a4825a',GRANITE:'#a6a6a8',MOUNTAIN:'#a29888',SWAMP:'#76845a',
-          TUNDRA:'#cad6e0',SUMMIT:'#ece8de',DEFAULT:'#b6b0a4'};   // slab face
+          TUNDRA:'#cad6e0',SUMMIT:'#ece8de',GOLD:'#e8cf86',DEFAULT:'#b6b0a4'};   // slab face (gilded marble)
         const _base0=_cbB0[_th0]||_cbB0.DEFAULT;
         const _slab0=_cbS0[_th0]||_cbS0.DEFAULT;
         ctx.fillStyle=_base0; ctx.fillRect(px,py,T,T);
@@ -354,6 +374,15 @@ DG.SpriteRenderer = (function () {
         } else if (_dv0 < 0.10) {
           ctx.strokeStyle = 'rgba(0,0,0,0.16)'; ctx.lineWidth = 1;
           ctx.beginPath(); ctx.moveTo(px + 5 + _rv0[10]*16, py + 5); ctx.lineTo(px + 7 + _rv0[9]*14, py + T - 5); ctx.stroke();
+        }
+        // GOLD theme: gilded seams + an occasional bright glint on the marble
+        if (_th0 === 'GOLD') {
+          ctx.fillStyle = 'rgba(255,225,140,0.5)'; ctx.fillRect(px+15,py,2,T); ctx.fillRect(px,py+15,T,2);
+          if (_rv0[12] > 0.78) {
+            const _gx0 = px + 4 + _rv0[8]*20, _gy0 = py + 4 + _rv0[7]*20;
+            ctx.fillStyle = 'rgba(255,248,210,0.9)';
+            ctx.fillRect(_gx0-0.5, _gy0-2, 1, 4); ctx.fillRect(_gx0-2, _gy0-0.5, 4, 1);
+          }
         }
         // FASE 12: padrand waar gras grenst — routes lezen als routes
         if (edges) {
@@ -1517,6 +1546,220 @@ DG.SpriteRenderer = (function () {
       ctx.beginPath(); ctx.ellipse(px + T/2 + 5, py + T - 22, 7, 5, 0.4, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = '#388e3c';
       ctx.beginPath(); ctx.ellipse(px + T/2 - 5, py + T - 20, 6, 5, -0.5, 0, Math.PI*2); ctx.fill();
+    }
+
+    // ══ Compound City — gold-metropolis dressing (tiles 12-19, 99) ══
+    else if (tileId === 14) {
+      // Gilded marble boulevard pavement (walkable)
+      ctx.fillStyle = '#b8902a'; ctx.fillRect(px, py, T, T);              // gold grout
+      const _gp = _tileRand(seed, 6);
+      ctx.fillStyle = '#ecd28a'; ctx.fillRect(px+1, py+1, T-2, T-2);      // gilded slab
+      ctx.fillStyle = 'rgba(255,250,210,0.55)'; ctx.fillRect(px+1, py+1, T-2, 2); ctx.fillRect(px+1, py+1, 2, T-2);
+      ctx.fillStyle = 'rgba(120,84,16,0.5)';    ctx.fillRect(px+1, py+T-3, T-2, 2); ctx.fillRect(px+T-3, py+1, 2, T-2);
+      // inlaid diamond + sheen
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(px+T/2,py+5); ctx.lineTo(px+T-5,py+T/2); ctx.lineTo(px+T/2,py+T-5); ctx.lineTo(px+5,py+T/2); ctx.closePath(); ctx.stroke();
+      if (_gp[2] > 0.7) { ctx.fillStyle='rgba(255,252,225,0.9)'; ctx.fillRect(px+6+_gp[3]*18, py+6+_gp[4]*18, 1.5, 1.5); }
+    }
+
+    else if (tileId === 19) {
+      // Distant gold-skyscraper skyline against a dusk-gold sky (decorative backdrop)
+      const tX = Math.round(px / T), tY = Math.round(py / T);
+      const sg = ctx.createLinearGradient(px, py, px, py + T);
+      sg.addColorStop(0, '#3a2c52'); sg.addColorStop(0.55, '#7a4f5a'); sg.addColorStop(1, '#caa14e');
+      ctx.fillStyle = sg; ctx.fillRect(px, py, T, T);
+      // two seeded towers per tile, aligned by world column so the band reads continuously
+      const a19 = (typeof anim !== 'undefined' ? anim : 0);
+      for (let b = 0; b < 2; b++) {
+        const sd = _tileRand(tX * 17 + b * 101 + tY, 6);
+        const bw = 9 + Math.floor(sd[0] * 8);
+        const bx = px + (b === 0 ? 2 : T - bw - 2) + Math.floor(sd[1] * 3);
+        const bh = T * (0.5 + sd[2] * 0.5);
+        const by = py + T - bh;
+        // gold silhouette with a lit edge
+        ctx.fillStyle = '#8a6a2e'; ctx.fillRect(bx, by, bw, bh);
+        ctx.fillStyle = '#caa14e'; ctx.fillRect(bx, by, 2, bh);
+        ctx.fillStyle = '#5a4420'; ctx.fillRect(bx + bw - 2, by, 2, bh);
+        // antenna / spire
+        ctx.fillStyle = '#e8c24a'; ctx.fillRect(bx + bw / 2 - 0.5, by - 4 - sd[3] * 4, 1, 4 + sd[3] * 4);
+        // lit windows (a couple twinkle)
+        for (let wy = by + 3; wy < py + T - 2; wy += 4) {
+          for (let wx = bx + 2; wx < bx + bw - 2; wx += 3) {
+            const lit = ((wx * 7 + wy * 13) % 5) > 1;
+            const tw = (Math.sin(a19 * 0.05 + wx + wy) > 0.92);
+            ctx.fillStyle = (lit || tw) ? 'rgba(255,225,130,0.95)' : 'rgba(60,46,24,0.6)';
+            ctx.fillRect(wx, wy, 1.5, 2);
+          }
+        }
+      }
+    }
+
+    else if (tileId === 12) {
+      // Ornate gold lamppost with a glowing lantern (rises above the tile)
+      ctx.fillStyle = '#3c7838'; ctx.fillRect(px, py, T, T);             // grass base (matches GOLD grass)
+      const lx = px + T / 2, baseY = py + T - 2;
+      const flick = 0.78 + 0.22 * Math.sin((anim || 0) * 0.18 + px);
+      // glow pool
+      const gp = ctx.createRadialGradient(lx, py + 4, 1, lx, py + 4, T * 0.7);
+      gp.addColorStop(0, 'rgba(255,220,120,' + (0.25 * flick) + ')'); gp.addColorStop(1, 'rgba(255,200,80,0)');
+      ctx.fillStyle = gp; ctx.fillRect(px - T * 0.5, py - T, T * 2, T * 1.6);
+      // base + post
+      ctx.fillStyle = '#7a5410'; ctx.fillRect(lx - 4, baseY - 3, 8, 3);
+      ctx.fillStyle = '#caa12e'; ctx.fillRect(lx - 2, py - T * 0.5, 4, T * 1.4);
+      ctx.fillStyle = '#fff0bf'; ctx.fillRect(lx - 2, py - T * 0.5, 1.4, T * 1.4);
+      // cross-arm + scrollwork
+      ctx.fillStyle = '#caa12e'; ctx.fillRect(lx - 9, py - T * 0.5, 18, 2);
+      // two lanterns
+      [lx - 8, lx + 6].forEach(function (hx) {
+        ctx.fillStyle = '#7a5410'; ctx.fillRect(hx, py - T * 0.5, 3, 3);
+        ctx.fillStyle = 'rgba(255,232,150,' + flick + ')';
+        ctx.beginPath(); ctx.ellipse(hx + 1.5, py - T * 0.5 + 7, 3, 4, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#e8c24a'; ctx.lineWidth = 1; ctx.strokeRect(hx - 1, py - T * 0.5 + 3, 5, 8);
+      });
+    }
+
+    else if (tileId === 16) {
+      // Gold planter with topiary
+      ctx.fillStyle = '#3c7838'; ctx.fillRect(px, py, T, T);
+      const cx = px + T / 2;
+      // topiary
+      ctx.fillStyle = '#1f5a1c'; ctx.beginPath(); ctx.arc(cx, py + T - 16, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#2e7d32'; ctx.beginPath(); ctx.arc(cx - 2, py + T - 18, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffd84d'; // gold berries
+      ctx.beginPath(); ctx.arc(cx + 3, py + T - 17, 1.4, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx - 4, py + T - 14, 1.4, 0, Math.PI*2); ctx.fill();
+      // gold pot
+      ctx.fillStyle = '#caa12e'; ctx.fillRect(cx - 7, py + T - 9, 14, 8);
+      ctx.fillStyle = '#e8c24a'; ctx.fillRect(cx - 8, py + T - 10, 16, 3);
+      ctx.fillStyle = '#fff0bf'; ctx.fillRect(cx - 8, py + T - 10, 16, 1);
+      ctx.fillStyle = '#7a5410'; ctx.fillRect(cx - 7, py + T - 2, 14, 1);
+    }
+
+    else if (tileId === 15) {
+      // Wall-mounted LED Beachcoin ticker (solid; mounted on a building wall)
+      ctx.fillStyle = '#caa12e'; ctx.fillRect(px, py, T, T);            // gilded wall behind
+      ctx.fillStyle = '#fff0bf'; ctx.fillRect(px, py, T, 1);
+      // black LED panel with gold frame
+      const pX = px + 2, pY = py + 6, pW = T - 4, pH = T - 14;
+      ctx.fillStyle = '#7a5410'; ctx.fillRect(pX - 1, pY - 1, pW + 2, pH + 2);
+      ctx.fillStyle = '#0a0c08'; ctx.fillRect(pX, pY, pW, pH);
+      // scrolling crawl: green up-arrow + red dip, moving with anim
+      const a15 = (anim || 0);
+      const scroll = (a15 * 0.6) % (pW + 10);
+      ctx.save(); ctx.beginPath(); ctx.rect(pX, pY, pW, pH); ctx.clip();
+      // moving price bars + arrows
+      for (let i = -1; i < 3; i++) {
+        const bxp = pX + ((i * 14 + pW) - scroll);
+        const up = ((i + 99) % 2) === 0;
+        ctx.fillStyle = up ? '#39e08a' : '#e0533a';
+        // arrow
+        ctx.beginPath();
+        if (up) { ctx.moveTo(bxp+3, pY+3); ctx.lineTo(bxp+6, pY+8); ctx.lineTo(bxp, pY+8); }
+        else    { ctx.moveTo(bxp+3, pY+8); ctx.lineTo(bxp+6, pY+3); ctx.lineTo(bxp, pY+3); }
+        ctx.closePath(); ctx.fill();
+        // little digit blips
+        ctx.fillRect(bxp + 1, pY + pH - 5, 1.5, 3); ctx.fillRect(bxp + 4, pY + pH - 6, 1.5, 4);
+      }
+      ctx.restore();
+      // scanline sheen
+      ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fillRect(pX, pY, pW, 1);
+    }
+
+    else if (tileId === 13) {
+      // Giant Beachcoin monument on a plinth (rises above the tile)
+      ctx.fillStyle = '#3c7838'; ctx.fillRect(px, py, T, T);
+      const cx = px + T / 2, a13 = (anim || 0);
+      // plinth
+      ctx.fillStyle = '#5a4420'; ctx.fillRect(cx - 9, py + T - 10, 18, 10);
+      ctx.fillStyle = '#caa12e'; ctx.fillRect(cx - 9, py + T - 10, 18, 2);
+      // glow
+      const cg = ctx.createRadialGradient(cx, py + 2, 2, cx, py + 2, T * 0.9);
+      cg.addColorStop(0, 'rgba(255,210,90,0.30)'); cg.addColorStop(1, 'rgba(255,180,40,0)');
+      ctx.fillStyle = cg; ctx.fillRect(px - T, py - T, T * 3, T * 2);
+      // the coin — face width oscillates to fake a slow spin
+      const spin = 0.55 + 0.45 * Math.abs(Math.sin(a13 * 0.03));
+      const cy = py + 2;
+      ctx.save(); ctx.translate(cx, cy);
+      ctx.fillStyle = '#b8901f';                          // edge
+      ctx.beginPath(); ctx.ellipse(0, 0, 13 * spin + 1.5, 14, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#f6c842';                          // face
+      ctx.beginPath(); ctx.ellipse(0, 0, 13 * spin, 13, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff0b0';                          // top sheen
+      ctx.beginPath(); ctx.ellipse(-3 * spin, -4, 4 * spin, 5, -0.4, 0, Math.PI * 2); ctx.fill();
+      // ₿ emblem
+      ctx.strokeStyle = '#7a5410'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(-2 * spin, -7); ctx.lineTo(-2 * spin, 7); ctx.stroke();
+      if (spin > 0.4) {
+        ctx.beginPath(); ctx.arc(0, -3.5, 4 * spin, -1.4, 1.4); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0,  3.5, 4 * spin, -1.4, 1.4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(-2*spin, -10); ctx.lineTo(-2*spin, -7); ctx.moveTo(-2*spin, 7); ctx.lineTo(-2*spin, 10); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    else if (tileId === 99) {
+      // ── Golden statue of Daytrader Niels, of himself ──────────────
+      ctx.fillStyle = '#3c7838'; ctx.fillRect(px, py, T, T);
+      const cx = px + T / 2, a99 = (anim || 0);
+      const pulse = 0.5 + 0.5 * Math.sin(a99 * 0.05);
+      // hero up-light + glow
+      const ug = ctx.createRadialGradient(cx, py - T * 0.2, 2, cx, py - T * 0.2, T * 1.3);
+      ug.addColorStop(0, 'rgba(255,205,90,' + (0.26 + pulse * 0.14) + ')');
+      ug.addColorStop(1, 'rgba(255,170,40,0)');
+      ctx.fillStyle = ug; ctx.fillRect(px - T, py - T * 2, T * 3, T * 3);
+      // marble + gold pedestal
+      const pw = T * 0.86, ph = T * 0.5, plx = cx - pw / 2, ply = py + T - ph;
+      ctx.fillStyle = '#4a4150'; ctx.fillRect(plx, ply, pw, ph);
+      ctx.fillStyle = '#5d5366'; ctx.fillRect(plx, ply, pw, 3);
+      ctx.fillStyle = '#241f30'; ctx.fillRect(plx, ply + ph - 4, pw, 4);
+      ctx.fillStyle = '#caa24a'; ctx.fillRect(cx - pw * 0.36, ply + ph * 0.34, pw * 0.72, ph * 0.34); // plaque
+      ctx.fillStyle = 'rgba(255,245,200,0.7)'; ctx.fillRect(cx - pw * 0.36, ply + ph * 0.34, pw * 0.72, 1);
+      // ── the golden Niels figure (drawn above the pedestal) ──
+      const G = { dk:'#9a721c', md:'#d9a83a', lt:'#f4cf72', hi:'#fff0bf' };
+      const fy = ply - 2;                  // feet line (just above pedestal top)
+      ctx.save();
+      ctx.shadowColor = 'rgba(255,190,80,0.6)'; ctx.shadowBlur = 7;
+      // legs
+      ctx.fillStyle = G.md; ctx.fillRect(cx - 5, fy - 14, 4, 14); ctx.fillRect(cx + 1, fy - 14, 4, 14);
+      ctx.fillStyle = G.dk; ctx.fillRect(cx - 1, fy - 14, 2, 14);   // trouser crease
+      ctx.fillStyle = G.lt; ctx.fillRect(cx - 5, fy - 14, 1.4, 14);
+      // torso (suit jacket)
+      ctx.fillStyle = G.md; ctx.fillRect(cx - 7, fy - 28, 14, 15);
+      ctx.fillStyle = G.lt; ctx.fillRect(cx - 7, fy - 28, 2, 15);   // lit lapel
+      ctx.fillStyle = G.dk; ctx.fillRect(cx + 5, fy - 28, 2, 15);
+      // open jacket V + tie
+      ctx.fillStyle = G.hi; ctx.beginPath(); ctx.moveTo(cx, fy - 27); ctx.lineTo(cx - 3, fy - 18); ctx.lineTo(cx + 3, fy - 18); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = G.dk; ctx.fillRect(cx - 1, fy - 24, 2, 8);    // tie
+      // left arm down, hand on hip; right arm raised holding a coin aloft
+      ctx.fillStyle = G.md;
+      ctx.fillRect(cx - 9, fy - 27, 3, 11);                          // left upper arm
+      ctx.fillRect(cx - 10, fy - 18, 4, 4);                          // left forearm to hip
+      // raised right arm
+      ctx.save(); ctx.translate(cx + 6, fy - 26); ctx.rotate(-0.9);
+      ctx.fillStyle = G.md; ctx.fillRect(0, -3, 13, 4);
+      ctx.fillStyle = G.lt; ctx.fillRect(0, -3, 13, 1.2);
+      ctx.restore();
+      // raised hand position (compute end of arm)
+      const handX = cx + 6 + Math.cos(-0.9) * 13, handY = fy - 26 + Math.sin(-0.9) * 13;
+      // head
+      ctx.fillStyle = G.lt; ctx.beginPath(); ctx.arc(cx, fy - 33, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = G.hi; ctx.beginPath(); ctx.arc(cx - 1.6, fy - 34, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = G.dk; ctx.fillRect(cx - 5, fy - 37, 10, 3);    // hair sweep
+      ctx.fillStyle = G.dk; ctx.fillRect(cx - 4, fy - 33, 8, 1.4);   // sunglasses
+      // held Beachcoin aloft (glinting)
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#f6c842'; ctx.beginPath(); ctx.arc(handX, handY - 3, 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff0b0'; ctx.beginPath(); ctx.arc(handX - 1.4, handY - 4.4, 1.6, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#7a5410'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(handX, handY - 6.5); ctx.lineTo(handX, handY + 0.5); ctx.stroke();
+      ctx.restore();
+      // gleam sweep across the statue
+      const gxs = cx - 14 + ((a99 * 0.9) % 36);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.5;
+      const gg = ctx.createLinearGradient(gxs - 4, 0, gxs + 4, 0);
+      gg.addColorStop(0, 'rgba(255,255,255,0)'); gg.addColorStop(0.5, 'rgba(255,255,240,0.8)'); gg.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = gg; ctx.fillRect(gxs - 4, fy - 40, 8, 42); ctx.restore();
+      // sparkle twinkle near the coin
+      if (pulse > 0.85) { ctx.fillStyle = 'rgba(255,252,220,0.95)'; ctx.fillRect(handX + 4, handY - 8, 1.5, 1.5); ctx.fillRect(handX + 5, handY - 9, 1, 1); }
     }
 
     // ══ Museum marble floor (tile 11) + fossil-lab decoration set ══
@@ -6867,10 +7110,12 @@ DG.SpriteRenderer = (function () {
     var isLab    = type === 'LAB';
     var isShop   = type === 'SHOP';
     var isFossil = type === 'FOSSIL';
-    if (!isCenter && !isGym && !isHouse && !isLab && !isShop && !isFossil) return;
+    var isTower  = type === 'TOWER';
+    if (!isCenter && !isGym && !isHouse && !isLab && !isShop && !isFossil && !isTower) return;
 
     var THEMES = {
       AMBER:    { wall:'#ede0c4', roof:'#8b4513', acc:'#d4a04a', dark:'#5a2e0a' },
+      GOLD:     { wall:'#fff3cf', roof:'#caa12e', acc:'#e8c24a', dark:'#7a5410' },
       COASTAL:  { wall:'#e8f0f8', roof:'#3a5a8a', acc:'#5599cc', dark:'#1a2a4a' },
       VOLCANIC: { wall:'#d8c8b0', roof:'#3a2010', acc:'#cc4400', dark:'#1a0a00' },
       GRASS:    { wall:'#eaf0e0', roof:'#3a6a20', acc:'#66aa44', dark:'#1a3a10' },
@@ -7132,6 +7377,60 @@ DG.SpriteRenderer = (function () {
       ctx.fillStyle=ivoryD; ctx.fillRect(dx-T*0.2,fy+fh-T*0.12,dw+T*0.4,T*0.12);
       ctx.fillStyle=stone;  ctx.fillRect(dx-T*0.08,fy+fh-T*0.24,dw+T*0.16,T*0.12);
       _outline(fx,fy+fh*0.30,fw,fh*0.70);
+    }
+
+    // TOWER (2.6T x ~6.5T) — the DinoExchange gold skyscraper, Niels' HQ
+    else if (isTower) {
+      var fw=T*2.6, fh=T*6.3, fx=px-T*0.8, fy=py+T-fh;   // rises high above the door
+      var gWall='#e8c24a', gDark='#9a721c', gGlass='#caa14e', gGlassD='#7a5410', gLit='#fff3cf';
+      _shadow(fx,fy,fw,fh);
+      // mirrored gold-glass body
+      ctx.fillStyle=gGlassD; ctx.fillRect(fx,fy,fw,fh);
+      ctx.fillStyle=gGlass;  ctx.fillRect(fx+2,fy,fw-4,fh);
+      // gold corner pilasters
+      ctx.fillStyle=gWall; ctx.fillRect(fx,fy,3,fh); ctx.fillRect(fx+fw-3,fy,3,fh);
+      ctx.fillStyle=gLit;  ctx.fillRect(fx,fy,1.4,fh);
+      // window grid (mirror glass + a few lit/twinkling panes)
+      var colW=(fw-10)/4, rowH=T*0.5, rows=Math.floor((fh-T*1.6)/rowH);
+      for(var r=0;r<rows;r++){ for(var c=0;c<4;c++){
+        var wx=fx+5+c*colW, wy=fy+T*0.5+r*rowH;
+        var lit=((c*7+r*13)%6)===0;
+        ctx.fillStyle = lit ? '#fff0b8' : (((r+c)%2)? '#d8b24a':'#b8901f');
+        ctx.fillRect(wx,wy,colW-2,rowH-2);
+        ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.fillRect(wx,wy,colW-2,1);
+      }}
+      // setback crown + penthouse glow
+      var crW=fw*0.6, crX=fx+(fw-crW)/2, crH=T*0.5;
+      ctx.fillStyle=gDark; ctx.fillRect(crX,fy-crH,crW,crH);
+      ctx.fillStyle=gWall; ctx.fillRect(crX,fy-crH,crW,3);
+      var pg=ctx.createRadialGradient(fx+fw/2,fy-crH*0.4,1,fx+fw/2,fy-crH*0.4,T);
+      pg.addColorStop(0,'rgba(255,225,130,0.6)'); pg.addColorStop(1,'rgba(255,200,80,0)');
+      ctx.fillStyle=pg; ctx.fillRect(fx-T*0.5,fy-crH-T*0.5,fw+T,T);
+      // antenna with a red aircraft-warning beacon
+      ctx.fillStyle=gWall; ctx.fillRect(fx+fw/2-1,fy-crH-T*0.7,2,T*0.7);
+      ctx.fillStyle='#ff5a4a'; ctx.beginPath(); ctx.arc(fx+fw/2,fy-crH-T*0.7,2,0,Math.PI*2); ctx.fill();
+      // vertical neon sign band — placed mid-tower so it stays on-screen
+      var sgY=fy+fh*0.40, sgH=T*1.9, sgX=fx+fw/2-T*0.36, sgW=T*0.72;
+      ctx.fillStyle='#1a1208'; ctx.fillRect(sgX,sgY,sgW,sgH);
+      ctx.strokeStyle=gLit; ctx.lineWidth=1.5; ctx.strokeRect(sgX,sgY,sgW,sgH);
+      // neon outer glow
+      ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.fillStyle='rgba(255,210,90,0.18)';
+      ctx.fillRect(sgX-3,sgY-3,sgW+6,sgH+6); ctx.restore();
+      ctx.save(); ctx.fillStyle='#ffe487'; ctx.font='bold '+Math.max(7,(T*0.22|0))+'px monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      var _bcw='BEACHCOIN'.split('');
+      for(var li=0;li<_bcw.length;li++){ ctx.fillText(_bcw[li], sgX+sgW/2, sgY+9+li*((sgH-16)/_bcw.length)); }
+      ctx.restore();
+      // grand gold entrance with light spilling out
+      var dw=T*1.0, dh=T*1.1, dx=fx+(fw-dw)/2, dy=fy+fh-dh;
+      ctx.fillStyle='#2a1c08'; ctx.fillRect(dx,dy,dw,dh);
+      var lg=ctx.createLinearGradient(dx,dy+dh,dx,dy); lg.addColorStop(0,'rgba(255,215,120,0.55)'); lg.addColorStop(1,'rgba(255,200,80,0)');
+      ctx.fillStyle=lg; ctx.fillRect(dx-T*0.3,dy-T*0.2,dw+T*0.6,dh+T*0.3);
+      ctx.strokeStyle=gWall; ctx.lineWidth=2; ctx.strokeRect(dx,dy,dw,dh);
+      ctx.fillStyle=gWall; ctx.fillRect(dx-3,dy-3,dw+6,4);          // gold lintel
+      // red-carpet step
+      ctx.fillStyle='#b8901f'; ctx.fillRect(dx-T*0.2,fy+fh-T*0.12,dw+T*0.4,T*0.12);
+      _outline(fx,fy,fw,fh);
     }
 
     // HOUSE (3T x 2.5T) - 6 seeded variants

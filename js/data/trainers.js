@@ -956,7 +956,7 @@ DG.TRAINERS.RANGER_SYLVAN = {
   preBattleDialogue:  null,
   postBattleDialogue: null,
   winDialogue:        "The forest speaks to me — and right now it says YOU lose!",
-  loseDialogue:       "The trees are pleased with you. Don't trample Sylva's garden though.",
+  loseDialogue:       "The trees are pleased with you. Don't trample PuKing Maarten's garden though.",
   reward:             520,
   party: [
     { speciesId:'FRONDLET', level:19, moves:['VINE_WHIP','RAZOR_LEAF','STUN_SPORE','SYNTHESIS'] },
@@ -1990,7 +1990,7 @@ DG.TRAINERS.SYLVA_S2_TW2 = {
 
 DG.TRAINERS.SYLVA_S3_TC = {
   id:'SYLVA_S3_TC', name:'Ace Trainer Sprout', class:'Ace Trainer', isGymLeader:false, badge:null,
-  loseDialogue:"Sylva favours strategic Grass-types — stay sharp!", reward:640,
+  loseDialogue:"PuKing Maarten favours strategic Grass-types — stay sharp!", reward:640,
   party:[
     { speciesId:'VINOSAUR',  level:32, moves:['VINE_WHIP','EARTHQUAKE','SOLAR_BEAM'] },
     { speciesId:'FERNASAUR', level:32, moves:['VINE_WHIP','SOLAR_BEAM','TACKLE'] },

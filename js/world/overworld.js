@@ -2495,6 +2495,10 @@ DG.Overworld = (function () {
     // Tiles 0-9 are walkable (FLOOR, GRASS, TALL_GRASS, WATER, SAND, DIRT, ICE, LAVA, SWAMP, FLOWER)
     // Tiles 64+ are solid (TREE, WALL, MOUNTAIN, SIGN, DOOR, ROCK, FENCE, etc.)
     // DOOR (68) is walkable — it triggers a warp
+    // Gold-metropolis dressing (Compound City) lives in the 12-19 band: the
+    // lamppost/coin/ticker/planter/skyline are SOLID, but gold plaza (14) is walkable.
+    if (tile === 14) return false;             // gold plaza pavement (walkable boulevard)
+    if (tile >= 12 && tile <= 19) return true; // gold-city solid dressing + skyline backdrop
     if (tile < 64) return false;
     if (tile === DG.TILE.DOOR) return false; // doors are passable
     return true;

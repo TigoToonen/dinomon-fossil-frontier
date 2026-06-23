@@ -3552,12 +3552,12 @@ DG.MAPS.FERNGROVE_GYM = {
   ],
   npcs:[
     { id:'GYM_SYLVA_HINT', name:'Fossil Scholar', x:7, y:16, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
-      dialogue:["Welcome to Sylva's Grass-type Gym! Answer correctly: SHORT left path (1 trainer).",
+      dialogue:["Welcome to PuKing Maarten's Grass-type Gym! Answer correctly: SHORT left path (1 trainer).",
         "Answer wrong: LONG right path (2 trainers)!",
-        "Tip: Frondlet can be found in Route 2's tall grass!"], onInteract:null },
+        "Tip: Frondlet can be found in Route 4's tall grass!"], onInteract:null },
     { id:'GYM_SYLVA_S1_QUIZ', name:'Botanist', x:14, y:15, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
       onInteract:'TRIGGER_GYM_QUIZ', dialogue:["You've already answered. Move along!"],
-      quizIntroKey:null, quizQuestion:"Which DinoMon is wild in Route 2 grass?",
+      quizIntroKey:null, quizQuestion:"Which DinoMon is wild in Route 4 grass?",
       quizOptionA:'A) Frondlet', quizOptionB:'B) Leafawn', quizWrong:['Leafawn','Sprigdon','Leafcub'],
       quizCorrectFlag:'GYM_SYLVA_S1_CORRECT', quizWrongFlag:'GYM_SYLVA_S1_WRONG', quizDoneFlag:'GYM_SYLVA_S1_DONE',
       correctResponse:'GYM_QUIZ_CORRECT', wrongResponse:'GYM_QUIZ_WRONG', flagToHide:'GYM_SYLVA_S1_DONE' },
@@ -3603,9 +3603,9 @@ DG.MAPS.FERNGROVE_GYM = {
       dialogue:['GRUNT_2'], trainerRef:'SYLVA_S3_TW1', flagToHide:'TRAINER_SYLVA_S3_TW1_DEFEATED' },
     { id:'GYM_SYLVA_S3_TW2', name:'Canopy Scout', x:26, y:3, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
       dialogue:['GRUNT_2'], trainerRef:'SYLVA_S3_TW2', flagToHide:'TRAINER_SYLVA_S3_TW2_DEFEATED' },
-    { id:'GYM_LEADER_SYLVA', name:'Sylva', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_SYLVA', name:'PuKing Maarten', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_SYLVA_PRE'], onInteract:'TRIGGER_GYM', trainerRef:'GYM_SYLVA', flagToHide:'TRAINER_GYM_SYLVA_DEFEATED' },
-    { id:'GYM_LEADER_SYLVA_DONE', name:'Sylva', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_SYLVA_DONE', name:'PuKing Maarten', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_SYLVA_POST'], onInteract:null, requiresFlag:'TRAINER_GYM_SYLVA_DEFEATED' },
   ],
   encounterTable:{grass:[],water:[]}, events:[],
@@ -4698,7 +4698,7 @@ DG.MAPS.FERNGROVE_TOWN = {
     // Guard stepped aside (one tile right) after badge earned — no longer blocks the path
     { id:'FN_GUARD_DONE', name:'Officer', x:7, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The Canopy Badge — Sylva's mark. Route 5 to Stonehaven lies ahead — good luck!"],
+      dialogue:["The Canopy Badge — PuKing Maarten's mark. Route 5 to Stonehaven lies ahead — good luck!"],
       requiresFlag:'BADGE_4', onInteract:null },
     // ── Eastern grove ──
     { id:'FN_FORAGER', name:'Forager', x:20, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -5054,21 +5054,21 @@ DG.MAPS.COMPOUND_CITY = {
   id:'COMPOUND_CITY', name:'Compound City', width:20, height:15,
   music:'TOWN_UPBEAT', isIndoor:false, isCave:false,
   tiles:[
-    [64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64],
-    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64, 1,65,65,65,65,65, 1,65,65,65,65, 1,65,65,65,65,65, 1,64],
-    [64, 1,65,65,65,65,65, 1,65,65,65,65, 1,65,65,65,65,65, 1,64],
-    [64, 1,65,65,68,65,65, 1,65,68,68,65, 1,65,68,65,65,65, 1,64],
-    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64, 1, 1, 1, 1,74,74, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64,64, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,64,64,64],
-    [64,64,64,64,64,64,64,64,64, 0, 0,64,64,64,64,64,64,64,64,64],
+    [19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19], // skyline backdrop
+    [19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19],
+    [64, 1, 1,65,65,65, 1, 1,65,65,65,65, 1,65,65,65,65, 1, 1,64], // DinoExchange tower | Fossil Museum | DinoCenter
+    [64, 1, 1,65,65,65, 1, 1,65,65,65,65, 1,65,65,65,65, 1, 1,64],
+    [64, 1, 1,65,68,65, 1, 1,65,68,68,65, 1,65,68,65,65, 1, 1,64],
+    [64, 1,12, 1, 1, 1,16, 1, 1, 1, 1, 1,16, 1, 1, 1,12, 1, 1,64], // lampposts + planters
+    [64, 1, 1,14,14,14,14,14,14,14,14,14,14,14,14,14,14, 1, 1,64], // grand gold boulevard (main street)
+    [64, 1,13, 1, 1,74,74, 1, 1,14,14, 1, 1, 1,89, 1, 1, 1, 1,64], // Beachcoin monument | broker stall | gold fountain
+    [64, 1, 1, 1, 1, 1, 1, 1,14,14,14,14, 1, 1, 1, 1, 1, 1, 1,64], // statue plaza
+    [64, 1, 1, 1, 1, 1, 1, 1,14,99,14,14, 1, 1, 1, 1, 1, 1, 1,64], //   ★ golden Niels statue ★
+    [64, 1,16, 1, 1, 1, 1, 1,14,14,14,14, 1, 1, 1, 1,16, 1, 1,64],
+    [64, 1, 1, 1, 1, 1, 1, 1, 1,14,14, 1, 1, 1, 1, 1, 1, 1, 1,64], // boulevard spine to the gate
+    [64, 1,12, 1, 1, 1, 1, 1, 1,14,14, 1, 1, 1, 1, 1,12, 1, 1,64],
+    [64,64, 1, 1, 1, 1, 1, 1, 1,14,14, 1, 1, 1, 1, 1, 1,64,64,64],
+    [64,64,64,64,64,64,64,64,64,14,14,64,64,64,64,64,64,64,64,64], // gate to Route 2A
   ],
   warps:[
     { x:9,  y:14, targetMap:'ROUTE_2A', targetX:1, targetY:15 },
@@ -5095,12 +5095,25 @@ DG.MAPS.COMPOUND_CITY = {
     { id:'CC_NPC2', name:'Burned Analyst', x:16, y:9, facing:'LEFT', spriteKey:'NPC_WOMAN',
       movementType:'STATIONARY', dialogue:["Beachcoin took everything I had. One visit it was up, the next... zero.","Niels calls it 'volatility'. I call it a rug pull. Never invest what you can't lose."], onInteract:null },
     { id:'CC_SIGN', name:'Sign', x:11, y:12, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:["Welcome to Compound City — home of Beachcoin.","Beat Daytrader Niels' interns, then beat Niels himself to trade at the DinoExchange.","Beachcoin's price changes every visit. Buy low, sell high — if you dare."], onInteract:null },
-    { id:'CC_MUSEUM_GREETER', name:'Museum Docent', x:7, y:5, facing:'RIGHT', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:["★ WELCOME TO COMPOUND CITY ★","The golden capital of Beachcoin — where the DinoExchange Tower meets the Fossil Museum.","Beat Niels' interns, then Niels himself, to trade at the DinoExchange."], onInteract:null },
+    { id:'CC_MUSEUM_GREETER', name:'Museum Docent', x:8, y:5, facing:'UP', spriteKey:'NPC_WOMAN',
       movementType:'STATIONARY',
       dialogue:["Welcome to the Fossil Museum & Lab — the pride of Compound City!","Inside you'll find the Hall of Titans, and our Incubation Chamber where awakened fossils are revived.","Carrying a fossil? Walk with it until it stirs, then bring it to the pods inside."], onInteract:null },
-    { id:'CC_MUSEUM_SIGN', name:'Sign', x:12, y:5, facing:'LEFT', spriteKey:'NPC_MAN',
+    { id:'CC_MUSEUM_SIGN', name:'Sign', x:11, y:5, facing:'UP', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:["★ FOSSIL MUSEUM & LAB ★","Hall of Titans · Amber Gallery · Incubation Chamber","Revive your awakened fossils into rare DinoMon within."], onInteract:null },
+    // ── Gold-metropolis flavour ──────────────────────────────────
+    { id:'CC_STATUE_PLAQUE', name:'Plaque', x:9, y:10, facing:'UP', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["★ DAYTRADER NIELS ★ — 'The Golden Bull of Beachcoin.'","The inscription reads: 'Erected by N. Sennings, in eternal honour of N. Sennings. Diamond hands forever.'","(Solid gold. You wonder how much it's worth... and whether the price changes every visit.)"], onInteract:null },
+    { id:'CC_TOURIST', name:'Tourist', x:11, y:11, facing:'LEFT', spriteKey:'NPC_KID',
+      movementType:'STATIONARY',
+      dialogue:["Smile! I'm getting a photo with the golden Niels!","They say he had it cast the same day Beachcoin first hit the moon."], onInteract:null },
+    { id:'CC_WHALE', name:'Crypto Whale', x:15, y:8, facing:'LEFT', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["This whole city is gilded with Beachcoin profits. Even the fountain runs gold.","I only deal in seven figures, kid. Come back when you've made it."], onInteract:null },
+    { id:'CC_VALET', name:'Tower Valet', x:4, y:6, facing:'DOWN', spriteKey:'NPC_SHOPKEEPER',
+      movementType:'STATIONARY',
+      dialogue:["Welcome to the DinoExchange Tower — the tallest building in the region.","Mr. Sennings trades from the penthouse. Mind the velvet rope."], onInteract:null },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 };

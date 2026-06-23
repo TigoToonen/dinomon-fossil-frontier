@@ -1,0 +1,9 @@
+[DinoMon] Constants loaded.
+[DinoMon] Species loaded: 121
+[DinoMon] Trainers loaded: 149
+[DinoMon] Warp arrivals sanitized: 12
+[DinoMon] Maps loaded: 118
+═══ DinoMon bugcheck ═══
+Maps:118 Moves:1000 Species:121 Trainers:149
+
+✅ No issues found.

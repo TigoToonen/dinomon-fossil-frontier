@@ -788,6 +788,58 @@ DG.Renderer = (function () {
     ctx.restore();
   }
 
+  // ── Compound City ambience ────────────────────────────────────
+  // Screen-space gold-metropolis layer: a live Beachcoin ticker pinned to the
+  // top, drifting gold dust + glints, and a warm gilded vignette. Pure flavour.
+  let _cityMotes = null;
+  const _TICKER_TEXT = '  BEACHCOIN ¥1,240 ▲ +3.7%   ·   DINOEXCHANGE OPEN   ·   "TO THE MOON" — N. SENNINGS   ·   FOSSIL MUSEUM NOW OPEN   ·   DINOFUND ▲ +12.4%   ·   ';
+  function _drawCompoundCityAmbience(ctx, W, H) {
+    if (!_cityMotes) {
+      _cityMotes = [];
+      for (let i = 0; i < 34; i++) {
+        _cityMotes.push({
+          x: Math.random() * W, y: Math.random() * H,
+          r: 0.5 + Math.random() * 1.6,
+          drift: 0.06 + Math.random() * 0.26,
+          ph: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+    const t = _animOff;
+    ctx.save();
+    // 1) Drifting gold dust + glints
+    ctx.globalCompositeOperation = 'lighter';
+    for (const m of _cityMotes) {
+      m.y -= m.drift; m.ph += 0.04;
+      if (m.y < -4) { m.y = H + 4; m.x = Math.random() * W; }
+      const fl = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(m.ph));
+      ctx.globalAlpha = fl * 0.45;
+      ctx.fillStyle = 'rgba(255,228,150,1)';
+      ctx.beginPath(); ctx.arc(m.x + Math.sin(m.ph) * 3, m.y, m.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    // 2) Warm gilded vignette
+    const vg = ctx.createRadialGradient(W / 2, H * 0.46, H * 0.32, W / 2, H * 0.5, H * 0.98);
+    vg.addColorStop(0, 'rgba(60,40,8,0)');
+    vg.addColorStop(0.72, 'rgba(40,26,4,0.16)');
+    vg.addColorStop(1, 'rgba(20,12,2,0.5)');
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+    // 3) Beachcoin ticker strip pinned to the very top
+    const barH = 13;
+    ctx.fillStyle = 'rgba(10,12,8,0.92)'; ctx.fillRect(0, 0, W, barH);
+    ctx.fillStyle = '#caa12e'; ctx.fillRect(0, barH, W, 1);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, 0, W, barH); ctx.clip();
+    ctx.font = 'bold 9px monospace'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+    ctx.fillStyle = '#ffe487';
+    const span = Math.max(1, ctx.measureText(_TICKER_TEXT).width);   // exact width → seamless loop
+    const off = (t * 1.1) % span;
+    ctx.fillText(_TICKER_TEXT, -off, barH / 2);
+    ctx.fillText(_TICKER_TEXT, -off + span, barH / 2);
+    ctx.restore();
+    ctx.restore();
+  }
+
   // Directional exit markers: for each edge warp that leads to another OUTDOOR
   // area, draw an arrow + destination name pinned to that edge, over the gap.
   // Gives an at-a-glance "this way to <place>" in every town and route.
@@ -1008,7 +1060,7 @@ DG.Renderer = (function () {
         else if (w.targetMap.endsWith('_HOUSE'))  ftype = 'HOUSE';
         else if (w.targetMap.endsWith('_LAB'))    ftype = 'LAB';
         else if (w.targetMap.endsWith('_SHOP'))   ftype = 'SHOP';
-        else if (w.targetMap.endsWith('_BANK'))   ftype = 'SHOP';   // DinoExchange
+        else if (w.targetMap.endsWith('_BANK'))   ftype = 'TOWER';  // DinoExchange — gold skyscraper
         else if (w.targetMap.endsWith('_LIGHTHOUSE')) ftype = 'HOUSE'; // beacon tower (cottage facade)
         if (!ftype) continue;
         if (_drawn.some(d => Math.abs(d.x - w.x) <= 2 && Math.abs(d.y - w.y) <= 2)) continue;
@@ -1076,6 +1128,10 @@ DG.Renderer = (function () {
     // ── Fossil Museum atmosphere — warm vignette, light shafts, drifting amber dust ──
     if (mapData.id === 'COMPOUND_FOSSIL_LAB') {
       _drawMuseumAmbience(ctx, W, H);
+    }
+    // ── Compound City atmosphere — gold dust, gilded vignette, Beachcoin ticker ──
+    else if (mapData.id === 'COMPOUND_CITY') {
+      _drawCompoundCityAmbience(ctx, W, H);
     }
 
     // Directional exit markers (which way to the next route/city)

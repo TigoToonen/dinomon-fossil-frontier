@@ -1,0 +1,165 @@
+[DinoMon] Constants loaded.
+[DinoMon] Species loaded: 121
+[DinoMon] Trainers loaded: 149
+[DinoMon] Warp arrivals sanitized: 12
+[DinoMon] Maps loaded: 118
+═══ DinoMon bugcheck ═══
+Maps:118 Moves:1000 Species:121 Trainers:149
+
+Issues: {"HIGH":156}
+  [HIGH] (moves) effect.type 'BURN_CHANCE' used by 15 move(s) e.g. LAVA_SURGE but no handler '=== 'BURN_CHANCE'' found in battle.js
+  [HIGH] (moves) effect.type 'PARALYSIS' used by 26 move(s) e.g. WATER_FANG but no handler '=== 'PARALYSIS'' found in battle.js
+  [HIGH] (moves) effect.type 'FREEZE_CHANCE' used by 14 move(s) e.g. FROZEN_TIDE but no handler '=== 'FREEZE_CHANCE'' found in battle.js
+  [HIGH] (moves) effect.type 'SLEEP' used by 3 move(s) e.g. SPORE_CLOUD but no handler '=== 'SLEEP'' found in battle.js
+  [HIGH] (moves) effect.type 'POISON_CHANCE' used by 21 move(s) e.g. VENOM_BURST but no handler '=== 'POISON_CHANCE'' found in battle.js
+  [HIGH] (moves) effect.type 'STAT' used by 1 move(s) e.g. FLASH but no handler '=== 'STAT'' found in battle.js
+  [HIGH] (refs) move 'FLAME_CHARGE,FLAMETHROWER,LAVA_PLUME,FRILL_FLARE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FLAME_CHARGE,FLAMETHROWER,LAVA_PLUME,FRILL_FLARE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FLAME_CHARGE,FLAMETHROWER,LAVA_PLUME,FRILL_FLARE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FIRE_BLAST,OVERHEAT,ERUPTION,EXTINCTION_BEAM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'GIGA_DRAIN,ENERGY_BALL,SPORE_BURST,FOREST_CANOPY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'GIGA_DRAIN,ENERGY_BALL,SPORE_BURST,FOREST_CANOPY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'GIGA_DRAIN,ENERGY_BALL,SPORE_BURST,FOREST_CANOPY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SOLAR_BEAM,JADE_PLATE_SLAM,LEAF_STORM,PETAL_DANCE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HYDRO_PUMP,ANCIENT_TORRENT,GLACIAL_MIND,CRABHAMMER' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'BULLDOZE,DIG,MAGNITUDE,CLUB_SMASH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'BULLDOZE,DIG,MAGNITUDE,CLUB_SMASH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'DIG,MAGNITUDE,MUD_SHOT,MUD_BOMB' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'EARTHQUAKE,HIGH_HORSEPOWER,PRECIPICE_BLADES,TECTONIC_RAGE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'DRAGON_BREATH,DRAGON_CLAW,DRAGON_PULSE,BREAKING_SWIPE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'DRAGON_BREATH,DRAGON_CLAW,DRAGON_PULSE,BREAKING_SWIPE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'DRAGON_BREATH,DRAGON_CLAW,DRAGON_PULSE,BREAKING_SWIPE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'OUTRAGE,DRACO_METEOR,MIND_DIVE,DIVE_BOMB' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FLAME_CHARGE,FLAMETHROWER,LAVA_PLUME,FRILL_FLARE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FLAME_CHARGE,FLAMETHROWER,LAVA_PLUME,FRILL_FLARE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FLAME_CHARGE,FLAMETHROWER,LAVA_PLUME,FRILL_FLARE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FIRE_BLAST,OVERHEAT,ERUPTION,EXTINCTION_BEAM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'GIGA_DRAIN,ENERGY_BALL,SPORE_BURST,FOREST_CANOPY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'GIGA_DRAIN,ENERGY_BALL,SPORE_BURST,FOREST_CANOPY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'GIGA_DRAIN,ENERGY_BALL,SPORE_BURST,FOREST_CANOPY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SOLAR_BEAM,JADE_PLATE_SLAM,LEAF_STORM,PETAL_DANCE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ROCK_SLIDE,ANCIENT_POWER,SMASH_DOWN,POWER_GEM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ROCK_SLIDE,ANCIENT_POWER,SMASH_DOWN,POWER_GEM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ROCK_SLIDE,ANCIENT_POWER,SMASH_DOWN,POWER_GEM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'STONE_EDGE,SKULL_SLAM,HEAD_SMASH,DIAMOND_STORM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'PSYCHIC_MOVE,CRYSTAL_BEAM,PSYSHOCK,EXTRASENSORY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'PSYCHIC_MOVE,CRYSTAL_BEAM,PSYSHOCK,EXTRASENSORY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'PSYCHIC_MOVE,CRYSTAL_BEAM,PSYSHOCK,EXTRASENSORY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'PSYSTRIKE,FUTURE_SIGHT,VENOM_EARTH,FOSSIL_MEMORY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HYDRO_PUMP,ANCIENT_TORRENT,GLACIAL_MIND,CRABHAMMER' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SPARK,THUNDERBOLT,DISCHARGE,WILD_CHARGE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SPARK,THUNDERBOLT,DISCHARGE,WILD_CHARGE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SPARK,THUNDERBOLT,DISCHARGE,WILD_CHARGE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'THUNDER,VOLT_TACKLE,ZAP_CANNON,PLASMA_FISTS' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'BITE,CRUNCH,DARK_PULSE,NIGHT_SLASH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'CRUNCH,DARK_PULSE,NIGHT_SLASH,ASSURANCE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SNARL,CRUNCH,DARK_PULSE,NIGHT_SLASH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FOUL_PLAY,HYPERSPACE_FURY,SHADOW_RAID,VOID_BLAST' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HEADBUTT,BODY_SLAM,SLAM_DOWN,HYPER_VOICE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HEADBUTT,BODY_SLAM,SLAM_DOWN,HYPER_VOICE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HEADBUTT,BODY_SLAM,SLAM_DOWN,HYPER_VOICE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HYPER_BEAM,DOUBLE_EDGE,LAST_RESORT,EXPLOSION' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ICE_BEAM,FREEZE_DRY,ICICLE_CRASH,FROST_BREATH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ICE_BEAM,FREEZE_DRY,ICICLE_CRASH,FROST_BREATH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ICE_BEAM,FREEZE_DRY,ICICLE_CRASH,FROST_BREATH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'BLIZZARD,ICE_HAMMER,MOUNTAIN_GALE,BLIZZARD_LANCE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'IRON_HEAD,FLASH_CANNON,STEEL_WING,GYRO_BALL' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'IRON_HEAD,FLASH_CANNON,STEEL_WING,GYRO_BALL' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'IRON_HEAD,FLASH_CANNON,STEEL_WING,GYRO_BALL' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'STEEL_BEAM,IRON_TAIL,STEEL_ROLLER,HEAVY_SLAM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,AQUA_TAIL,SONIC_PULSE,NECK_LASSO' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HYDRO_PUMP,ANCIENT_TORRENT,GLACIAL_MIND,CRABHAMMER' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'AERIAL_ACE,AIR_SLASH,FLY,OBLIVION_WING' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'AERIAL_ACE,AIR_SLASH,FLY,OBLIVION_WING' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'AERIAL_ACE,WING_ATTACK,AIR_SLASH,FLY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'BRAVE_BIRD,HURRICANE,SKY_ATTACK,AERIAL_SLAM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SUBMISSION,DRAIN_PUNCH,AURA_SPHERE,LOW_SWEEP' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SUBMISSION,DRAIN_PUNCH,AURA_SPHERE,LOW_SWEEP' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SUBMISSION,DRAIN_PUNCH,AURA_SPHERE,LOW_SWEEP' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'DYNAMIC_PUNCH,CLOSE_COMBAT,CROSS_CHOP,SUPERPOWER' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SHADOW_BALL,SHADOW_CLAW,PHANTOM_FORCE,HEX' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SHADOW_BALL,SHADOW_CLAW,PHANTOM_FORCE,HEX' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SHADOW_BALL,SHADOW_CLAW,PHANTOM_FORCE,HEX' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'POLTERGEIST,DREAM_EATER,MOONGEIST_BEAM,ASTRAL_BARRAGE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SLUDGE_BOMB,SLUDGE,VENOSHOCK,CROSS_POISON' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SLUDGE_BOMB,SLUDGE,VENOSHOCK,CROSS_POISON' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SLUDGE,VENOSHOCK,CROSS_POISON,POISON_JAB' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SLUDGE_WAVE,GUNK_SHOT,BELCH,NOXIOUS_TORQUE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SIGNAL_BEAM,X_SCISSOR,LEECH_LIFE,SILVER_WIND' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SIGNAL_BEAM,X_SCISSOR,LEECH_LIFE,SILVER_WIND' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SIGNAL_BEAM,X_SCISSOR,LEECH_LIFE,SILVER_WIND' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'MEGAHORN,SWARM_STRIKE,CARAPACE_CRASH,COLONY_STRIKE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'DAZZLING_GLEAM,PLAY_ROUGH,SPIRIT_BREAK,STRANGE_STEAM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'DAZZLING_GLEAM,PLAY_ROUGH,SPIRIT_BREAK,STRANGE_STEAM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'PLAY_ROUGH,SPIRIT_BREAK,STRANGE_STEAM,FAIRY_BURST' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'MOONBLAST,LIGHT_OF_RUIN,FLEUR_CANNON,MOONFORCE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'MOONBLAST,FLEUR_CANNON,LIGHT_OF_RUIN,MOONFORCE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'MOONBLAST,FLEUR_CANNON,MOONFORCE,DAZZLING_GLEAM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ROCK_SLIDE,ANCIENT_POWER,SMASH_DOWN,POWER_GEM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ROCK_SLIDE,ANCIENT_POWER,SMASH_DOWN,POWER_GEM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ROCK_SLIDE,ANCIENT_POWER,SMASH_DOWN,POWER_GEM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'STONE_EDGE,SKULL_SLAM,HEAD_SMASH,DIAMOND_STORM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'BULLDOZE,DIG,MAGNITUDE,CLUB_SMASH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'BULLDOZE,DIG,MAGNITUDE,CLUB_SMASH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'BULLDOZE,DIG,MAGNITUDE,CLUB_SMASH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'EARTHQUAKE,HIGH_HORSEPOWER,PRECIPICE_BLADES,TECTONIC_RAGE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'GIGA_DRAIN,ENERGY_BALL,SPORE_BURST,FOREST_CANOPY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'GIGA_DRAIN,ENERGY_BALL,SPORE_BURST,FOREST_CANOPY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'GIGA_DRAIN,ENERGY_BALL,SPORE_BURST,FOREST_CANOPY' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SOLAR_BEAM,JADE_PLATE_SLAM,LEAF_STORM,PETAL_DANCE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FLAME_CHARGE,FLAMETHROWER,LAVA_PLUME,FRILL_FLARE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FLAME_CHARGE,FLAMETHROWER,LAVA_PLUME,FRILL_FLARE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FLAME_CHARGE,FLAMETHROWER,LAVA_PLUME,FRILL_FLARE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FIRE_BLAST,OVERHEAT,ERUPTION,EXTINCTION_BEAM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HYDRO_PUMP,ANCIENT_TORRENT,GLACIAL_MIND,CRABHAMMER' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ICE_BEAM,FREEZE_DRY,ICICLE_CRASH,FROST_BREATH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ICE_BEAM,FREEZE_DRY,ICICLE_CRASH,FROST_BREATH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ICE_BEAM,FREEZE_DRY,ICICLE_CRASH,FROST_BREATH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'BLIZZARD,ICE_HAMMER,MOUNTAIN_GALE,BLIZZARD_LANCE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SPARK,THUNDERBOLT,DISCHARGE,WILD_CHARGE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SPARK,THUNDERBOLT,DISCHARGE,WILD_CHARGE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SPARK,THUNDERBOLT,DISCHARGE,WILD_CHARGE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'THUNDER,VOLT_TACKLE,ZAP_CANNON,PLASMA_FISTS' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SNARL,CRUNCH,DARK_PULSE,NIGHT_SLASH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SNARL,CRUNCH,DARK_PULSE,NIGHT_SLASH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SNARL,CRUNCH,DARK_PULSE,NIGHT_SLASH' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FOUL_PLAY,HYPERSPACE_FURY,SHADOW_RAID,VOID_BLAST' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HEADBUTT,BODY_SLAM,SLAM_DOWN,HYPER_VOICE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HEADBUTT,BODY_SLAM,SLAM_DOWN,HYPER_VOICE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HYPER_BEAM,DOUBLE_EDGE,LAST_RESORT,EXPLOSION' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'BULLDOZE,MAGNITUDE,CLUB_SMASH,MUD_SHOT' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'BULLDOZE,MAGNITUDE,CLUB_SMASH,MUD_SHOT' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'EARTHQUAKE,HIGH_HORSEPOWER,PRECIPICE_BLADES,TECTONIC_RAGE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ROCK_SLIDE,ANCIENT_POWER,SMASH_DOWN,POWER_GEM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ROCK_SLIDE,ANCIENT_POWER,SMASH_DOWN,POWER_GEM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'STONE_EDGE,SKULL_SLAM,HEAD_SMASH,DIAMOND_STORM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SPARK,THUNDERBOLT,DISCHARGE,WILD_CHARGE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'THUNDERBOLT,DISCHARGE,WILD_CHARGE,ELECTROWEB' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'THUNDER,VOLT_TACKLE,ZAP_CANNON,PLASMA_FISTS' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,SURF,AQUA_TAIL,SONIC_PULSE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,AQUA_TAIL,SONIC_PULSE,NECK_LASSO' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HYDRO_PUMP,ANCIENT_TORRENT,GLACIAL_MIND,CRABHAMMER' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'LAVA_PLUME,INCINERATE,BLAZE_KICK,FIERY_DANCE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FLAME_CHARGE,FLAMETHROWER,FRILL_FLARE,SAIL_BLAST' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'FIRE_BLAST,OVERHEAT,ERUPTION,EXTINCTION_BEAM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SURF,SCALD,BRINE,LIQUIDATION' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'WATERFALL,AQUA_TAIL,SONIC_PULSE,NECK_LASSO' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HYDRO_PUMP,ANCIENT_TORRENT,GLACIAL_MIND,CRABHAMMER' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'SCALE_SHOT,CLANGING_SCALES,BREAKING_SWIPE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'DRAGON_CLAW,DRAGON_PULSE,DRAGON_HAMMER,DRAGON_TAIL' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'OUTRAGE,DRACO_METEOR,MIND_DIVE,DIVE_BOMB' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'DRAGON_BREATH,DRAGON_CLAW,DRAGON_PULSE,BREAKING_SWIPE' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'DRACO_METEOR,MIND_DIVE,DIVE_BOMB,SPACIAL_REND' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'ROCK_SLIDE,ANCIENT_POWER,SMASH_DOWN,POWER_GEM' is referenced (learnset/trainer/TM) but missing from DG.MOVES
+  [HIGH] (refs) move 'HEAD_SMASH,DIAMOND_STORM,METEOR_BEAM,ROCK_WRECKER' is referenced (learnset/trainer/TM) but missing from DG.MOVES

@@ -1,0 +1,100 @@
+[DinoMon] Constants loaded.
+[DinoMon] Species loaded: 121
+[DinoMon] Trainers loaded: 149
+[DinoMon] Warp arrivals sanitized: 11
+[DinoMon] Maps loaded: 118
+[DinoMon] Story loaded.
+=== FERNGROVE_GYM audit ===
+size 30x18 tilesRows=18 tileCols=30
+warps: (14,17)->FERNGROVE_TOWN lock=TRAINER_GYM_SYLVA_DEFEATED | (15,17)->FERNGROVE_TOWN lock=TRAINER_GYM_SYLVA_DEFEATED
+leader at (14,1) name(npc)=Sylva
+leader trainer name= PuKing Maarten party size=3
+
+-- start tile (14,16) tile=9
+
+[all correct] reachable tiles=43 | canReachLeader=false
+
+[all wrong] reachable tiles=43 | canReachLeader=false
+
+[fresh (no flags)] reachable tiles=23 | canReachLeader=false
+
+[mixed C/W/C] reachable tiles=43 | canReachLeader=false
+
+[REAL correct path (trainers beaten)] reachable tiles=179 | canReachLeader=true
+
+[REAL wrong path (trainers beaten)] reachable tiles=186 | canReachLeader=true
+
+MAP [real correct]  . =reachable  # =solid  N =npc/gate  ? =unreachable-floor  L=leader
+  y0 ##############################
+  y1 #.............L??????????????#
+  y2 ####..##################??####
+  y3 #.....##################N?N??#
+  y4 #####...................N#####
+  y5 ##############.###############
+  y6 #............................#
+  y7 ####..##################..####
+  y8 #.....##################N.N??#
+  y9 #####...................N#####
+  y10##############.###############
+  y11#............................#
+  y12####..##################..####
+  y13#.....##################N.N??#
+  y14#####...................N#####
+  y15##############.###############
+  y16#??????N.....................#
+  y17##############..##############
+
+MAP [real wrong]  . =reachable  # =solid  N =npc/gate  ? =unreachable-floor  L=leader
+  y0 ##############################
+  y1 #?????????????L..............#
+  y2 ####??##################..####
+  y3 #????N##################.....#
+  y4 #####N...................#####
+  y5 ##############.###############
+  y6 #............................#
+  y7 ####..##################..####
+  y8 #....N##################.....#
+  y9 #####N...................#####
+  y10##############.###############
+  y11#............................#
+  y12####..##################..####
+  y13#....N##################.....#
+  y14#####N...................#####
+  y15##############.###############
+  y16#??????N.....................#
+  y17##############..##############
+
+MAP [all correct]  . =reachable  # =solid  N =npc/gate  ? =unreachable-floor  L=leader
+  y0 ##############################
+  y1 #?????????????L??????????????#
+  y2 ####??##################??####
+  y3 #????N##################N?N??#
+  y4 #####???????????????????N#####
+  y5 ##############?###############
+  y6 #????????????????????????????#
+  y7 ####??##################??####
+  y8 #????N##################N?N??#
+  y9 #####???????????????????N#####
+  y10##############?###############
+  y11#????????????????????????????#
+  y12####??##################??####
+  y13#????N##################N?N??#
+  y14#####...................N#####
+  y15##############.###############
+  y16#??????N.....................#
+  y17##############..##############
+
+-- trainerRef + flag checks --
+
+-- quiz answers --
+  Q: Which DinoMon is wild in Route 2 grass? | correct(optA)= A) Frondlet | wrong= ["Leafawn","Sprigdon","Leafcub"]
+  Q: Grass-type moves are resisted by...? | correct(optA)= A) Bug | wrong= ["Ice","Water","Ground"]
+  Q: Verdanthorn's secondary type? | correct(optA)= A) Rock | wrong= ["Ground","Dragon","Steel"]
+
+-- name "Sylva" appearances player can read --
+  battle name = PuKing Maarten
+   npc GYM_SYLVA_HINT dialogue: "Welcome to Sylva's Grass-type Gym! Answer correctly: SHORT left path (1 trainer)."
+   npc GYM_LEADER_SYLVA dialogue: "GYM_SYLVA_PRE"
+   npc GYM_LEADER_SYLVA_DONE dialogue: "GYM_SYLVA_POST"
+   trainer SYLVA_S3_TC loseDialogue: "Sylva favours strategic Grass-types — stay sharp!"
+   trainer SYLVA_S3_TW2 loseDialogue: "Sprigdon packs a punch — Sylva even more!"

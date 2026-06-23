@@ -1,0 +1,8 @@
+[DinoMon] Constants loaded.
+[DinoMon] Warp arrivals sanitized: 12
+[DinoMon] Maps loaded: 118
+Total maps: 118  reachable from AMBERTOWN: 117
+--- UNREACHABLE via warps (1) ---
+  ROUTE_1  (name: Route 1)
+--- WARPS TO MISSING MAPS (0) ---
+--- WARP ARRIVALS ON SOLID/OOB TILE (0) ---
