@@ -67,9 +67,12 @@ DG.Battle = (function () {
     // ── Build trainer party sorted weakest→strongest ──────────
     let enemyParty, enemyMon;
     if (battleConfig.type === 'TRAINER' && battleConfig.trainerData) {
-      enemyParty = battleConfig.trainerData.party.map(p =>
-        DG.SaveLoad.createDinoMon(p.speciesId, p.level, null, p.moves)
-      );
+      const _allShiny = !!battleConfig.trainerData.allShiny;
+      enemyParty = battleConfig.trainerData.party.map(p => {
+        const _m = DG.SaveLoad.createDinoMon(p.speciesId, p.level, null, p.moves);
+        if (_m && (_allShiny || p.shiny)) _m.isShiny = true;   // trainer-flagged shiny team
+        return _m;
+      });
       // Sort ascending: weakest first, strongest last
       enemyParty.sort((a, b) => _monStrengthScore(a) - _monStrengthScore(b));
       enemyMon = enemyParty[0];

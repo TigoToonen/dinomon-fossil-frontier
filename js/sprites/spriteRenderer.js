@@ -523,8 +523,20 @@ DG.SpriteRenderer = (function () {
       // ── Dirt / Floor — wooden planks (indoor) or earthy dirt/stone (outdoor) ──
       const _th5 = window.DG_MAP_THEME || 'DEFAULT';
       const _rv5 = _tileRand(seed, 14);
-      const _isIn5 = { LAB:1, CENTER:1, HOUSE:1, SHOP:1 }[_th5];
-      if (_isIn5) {
+      const _isIn5 = { LAB:1, CENTER:1, HOUSE:1, SHOP:1, GOLD:1 }[_th5];
+      if (_th5 === 'GOLD' && _isIn5) {
+        // Polished gold-marble tile floor (2×2 gilded slabs)
+        ctx.fillStyle='#8a6418'; ctx.fillRect(px,py,T,T);
+        const _gv5=_tileRand(seed,4);
+        for (let _r5=0;_r5<2;_r5++) for (let _c5=0;_c5<2;_c5++){
+          const _tx5=px+_c5*16+1, _ty5=py+_r5*16+1;
+          ctx.fillStyle = ((_r5+_c5)%2===0)?'#e6cd82':'#d8bd6e';
+          ctx.fillRect(_tx5,_ty5,14,14);
+          ctx.fillStyle='rgba(255,250,210,0.55)'; ctx.fillRect(_tx5,_ty5,14,2); ctx.fillRect(_tx5,_ty5,2,14);
+          ctx.fillStyle='rgba(120,84,16,0.5)'; ctx.fillRect(_tx5,_ty5+12,14,2); ctx.fillRect(_tx5+12,_ty5,2,14);
+        }
+        if (_gv5[0]>0.8){ ctx.fillStyle='rgba(255,252,225,0.9)'; ctx.fillRect(px+6+_gv5[1]*18, py+6+_gv5[2]*18, 1.5, 1.5); }
+      } else if (_isIn5) {
         // Horizontal wooden plank floor, colour-coded per room type
         const _wpB5=_th5==='CENTER'?'#5a6888':_th5==='LAB'?'#6878a0':'#7a5530';
         const _wpP5=_th5==='CENTER'?'#8898c0':_th5==='LAB'?'#90a4c0':'#b07848';
@@ -1110,6 +1122,7 @@ DG.SpriteRenderer = (function () {
           SWAMP:    ['#0c1408','#283818','#384828','#1c2c14','#58da58','#0c1008'],
           TUNDRA:   ['#788898','#b4c8d8','#d4e4f4','#9aacbc','#e8f4ff','#587090'],
           SUMMIT:   ['#a89870','#e8dcbc','#f8eccc','#c8c0a0','#fff8b0','#9a8858'],
+          GOLD:     ['#6a4810','#caa12e','#e8c24a','#9a721c','#fff0bf','#4a3208'],
           LAB:      ['#687888','#b4b8c8','#ccccd8','#9a9aaa','#c4e8f8','#485060'],
           CENTER:   ['#505880','#9090c0','#a8a0d0','#686090','#ff9ab8','#404070'],
           HOUSE:    ['#4c3018','#9a6840','#b08050','#6c4828','#ffd070','#3c2010'],
