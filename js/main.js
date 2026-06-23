@@ -468,6 +468,14 @@ window.DG = window.DG || {};
     if (DG.Battle.isActive()) {
       _state = DG.STATE.BATTLE;
       try { DG.Audio.playMusic(_battleMusicTrack()); } catch(e) {}
+      // Unique entrance sting for each Elite Four member / the Champion
+      try {
+        const _eb  = DG.Battle.getBattle && DG.Battle.getBattle();
+        const _etd = _eb && _eb.trainerData;
+        if (_etd && (_etd.class === 'Elite Four' || _etd.class === 'Champion') && DG.Audio.playEliteEntrance) {
+          DG.Audio.playEliteEntrance(_etd.class === 'Champion' ? 'Champion' : _etd.name);
+        }
+      } catch(e) {}
       DG.Renderer.resetBattleUI();
       return;
     }

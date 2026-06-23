@@ -1516,6 +1516,82 @@ DG.Audio = (function () {
     } catch(e) {}
   }
 
+  // ── Elite Four / Champion entrance cue — a unique sting per member ──
+  function _cueTone(type, freq, tStart, dur, peak, glideTo) {
+    if (!_ctx) return;
+    try {
+      const o = _ctx.createOscillator();
+      const g = _ctx.createGain();
+      o.type = type;
+      const t = _ctx.currentTime + tStart;
+      o.frequency.setValueAtTime(freq, t);
+      if (glideTo) o.frequency.exponentialRampToValueAtTime(glideTo, t + dur);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(peak, t + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+      o.connect(g); g.connect(_sfxGain);
+      o.start(t); o.stop(t + dur + 0.02);
+    } catch(e) {}
+  }
+  function _cueNoise(tStart, dur, peak, filterType, filterFreq, Q) {
+    if (!_ctx) return;
+    try {
+      const t = _ctx.currentTime + tStart;
+      const bufLen = Math.floor(_ctx.sampleRate * dur);
+      const buffer = _ctx.createBuffer(1, bufLen, _ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1);
+      const src = _ctx.createBufferSource(); src.buffer = buffer;
+      const filt = _ctx.createBiquadFilter();
+      filt.type = filterType || 'bandpass';
+      filt.frequency.value = filterFreq || 800; filt.Q.value = Q || 0.7;
+      const g = _ctx.createGain();
+      g.gain.setValueAtTime(peak, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      src.connect(filt); filt.connect(g); g.connect(_sfxGain);
+      src.start(t); src.stop(t + dur + 0.02);
+    } catch(e) {}
+  }
+  function playEliteEntrance(member) {
+    if (!_ctx) return;
+    try { if (_ctx.state === 'suspended') _ctx.resume(); } catch(e) {}
+    switch (member) {
+      case 'Aurora': // ice — shimmering ascending crystal bells
+        _cueTone('triangle', 1046, 0,    0.50, 0.34);
+        _cueTone('triangle', 1318, 0.08, 0.50, 0.32);
+        _cueTone('sine',     1568, 0.16, 0.55, 0.30);
+        _cueTone('triangle', 2093, 0.26, 0.60, 0.26);
+        _cueNoise(0.0, 0.5, 0.08, 'highpass', 4000, 0.5);
+        break;
+      case 'Ember': // fire — roaring sweep + explosion crunch
+        _cueTone('sawtooth', 110, 0,    0.55, 0.32, 880);
+        _cueTone('square',   220, 0.05, 0.40, 0.22, 660);
+        _cueNoise(0.0,  0.18, 0.50, 'bandpass', 500,  0.6);
+        _cueNoise(0.16, 0.30, 0.38, 'lowpass',  1400, 0.7);
+        break;
+      case 'Garnet': // earth — deep boom + rock crack
+        _cueTone('sine', 70,  0,    0.60, 0.45, 48);
+        _cueTone('sine', 110, 0.02, 0.40, 0.30, 70);
+        _cueNoise(0.0,  0.22, 0.45, 'lowpass',  300,  0.8);
+        _cueNoise(0.12, 0.12, 0.30, 'bandpass', 1800, 1.2);
+        break;
+      case 'Phantom': // dark — eerie detuned descending whoosh
+        _cueTone('sine',     440, 0,    0.70, 0.30, 130);
+        _cueTone('triangle', 446, 0.02, 0.70, 0.26, 132);
+        _cueTone('sine',     660, 0.10, 0.60, 0.18, 180);
+        _cueNoise(0.0, 0.5, 0.12, 'bandpass', 1200, 0.5);
+        break;
+      case 'Champion': // grand regal triad fanfare
+        _cueTone('square', 523,  0,    0.50, 0.30);
+        _cueTone('square', 659,  0,    0.50, 0.26);
+        _cueTone('square', 784,  0,    0.50, 0.24);
+        _cueTone('square', 1046, 0.22, 0.55, 0.30);
+        _cueNoise(0.22, 0.20, 0.12, 'highpass', 5000, 0.5);
+        break;
+      default: break;
+    }
+  }
+
   // ── Battle music switcher (v11) ───────────────────────────
   // type: 'WILD' | 'TRAINER' | 'GYM' | 'ELITE' | 'CHAMPION'
   function playBattleMusic(type) {
@@ -1947,7 +2023,7 @@ DG.Audio = (function () {
   return {
     init, setMusicVolume, setSfxVolume,
     playMusic, stopMusic, playSfx,
-    playBattleMusic,
+    playBattleMusic, playEliteEntrance,
     playLevelUp, playEvolution, playMoveSfx, playVictoryJingle, playCritHitSfx,
     playEncounterJingle, playHealJingle,
     playFootstep,

@@ -2368,6 +2368,8 @@ ROUTE_10A: {
       movementType:'STATIONARY', dialogue:['GRUNT_5'], trainerRef:'DRAGONTAMER_ROOK' },
     { id:'R10A_TRAINER2', name:'Vance', x:14, y:27, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_5'], trainerRef:'EXPLORER_VANCE' },
+    { id:'R10A_TRAINER_VR', name:'Vesna', x:10, y:24, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:["Stop! No one reaches the Elite Four without passing me!"], trainerRef:'VR_ACE_VESNA' },
   ],
   encounterTable:{ grass:[
     { speciesId:'SWOOPTER',  minLv:54, maxLv:58, rate:20 },
@@ -2501,6 +2503,8 @@ ROUTE_10C: {
       requiresFlag:'BADGE_7', flagToHide:'TRAINER_ELITE_RIVAL_DEFEATED' },
     { id:'R10C_TRAINER2', name:'Vance', x:14, y:27, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_5'], trainerRef:'EXPLORER_VANCE' },
+    { id:'R10C_TRAINER_VR', name:'Bram', x:9, y:24, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["I've scaled every ridge of this mountain. You won't pass me on the way to the Elite Four!"], trainerRef:'VR_CLIMBER_BRAM' },
   ],
   encounterTable:{ grass:[
     { speciesId:'SWOOPTER',  minLv:56, maxLv:60, rate:20 },
@@ -2566,6 +2570,8 @@ ROUTE_10D: {
       movementType:'STATIONARY', dialogue:['GRUNT_5'], trainerRef:'EXPLORER_VANCE' },
     { id:'R10D_TRAINER2', name:'Rook', x:14, y:27, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_5'], trainerRef:'DRAGONTAMER_ROOK' },
+    { id:'R10D_TRAINER_VR', name:'Cinder', x:10, y:25, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["My flames burn even in this frost! Beat me, or forget the Elite Four!"], trainerRef:'VR_FIREBRAND_CINDER' },
   ],
   encounterTable:{ grass:[
     { speciesId:'SWOOPTER',  minLv:57, maxLv:61, rate:20 },
@@ -2639,6 +2645,8 @@ ROUTE_10E: {
       movementType:'STATIONARY',
       dialogue:["Every trainer on this mountain is chasing the same four names: Aurora, Ember, Garnet, Phantom.","Can you feel the charge in the wind? The Elite Four are close now. The whole world holds its breath for whoever reaches them."],
       onInteract:null },
+    { id:'R10E_TRAINER_VR', name:'Mort', x:9, y:25, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["I foresaw your coming... and your defeat. The Elite Four are not for you!"], trainerRef:'VR_SEER_MORT' },
   ],
   encounterTable:{ grass:[
     { speciesId:'SWOOPTER',  minLv:58, maxLv:62, rate:20 },
@@ -5116,19 +5124,19 @@ DG.MAPS.COMPOUND_FOSSIL_LAB = {
   tiles:[
     [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
     [65,97,97,97,97,97,97,97,97,97,97,97,97,97,97,97,97,97,65], // fossil-relief back wall
-    [65,98, 5,90, 5, 5,91, 5, 5,92, 5, 5,93, 5, 5,94, 5,98,65], // Hall of Titans: statues + amber pillars
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65], // viewing gallery (lore NPCs)
-    [65,97, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,97,65],
-    [65, 5, 5,96, 5, 5,96, 5, 5,96, 5, 5,96, 5, 5,96, 5, 5,65], // Amber Gallery: display cases
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65,98, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,98,65], // pillars framing the chamber
-    [65,97, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,97,65], // ── INCUBATION CHAMBER ──
-    [65,97, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,97,65],
-    [65,97, 5,95, 5, 5,95, 5, 5,95, 5, 5,95, 5, 5,95, 5,97,65], // five incubation pods
-    [65,97, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,97,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65], // entrance hall (spawn)
+    [65,98,11,90,11,11,91,11,11,92,11,11,93,11,11,94,11,98,65], // Hall of Titans: statues + amber pillars
+    [65,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,65],
+    [65,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,65], // viewing gallery (lore NPCs)
+    [65,97,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,97,65],
+    [65,11,11,96,11,11,96,11,11,96,11,11,96,11,11,96,11,11,65], // Amber Gallery: display cases
+    [65,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,65],
+    [65,98,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,98,65], // pillars framing the chamber
+    [65,97,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,97,65], // ── INCUBATION CHAMBER ──
+    [65,97,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,97,65],
+    [65,97,11,95,11,11,95,11,11,95,11,11,95,11,11,95,11,97,65], // five incubation pods
+    [65,97,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,97,65],
+    [65,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,65],
+    [65,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,65], // entrance hall (spawn)
     [65,65,65,65,65,65,65,65,65,68,68,65,65,65,65,65,65,65,65],
   ],
   warps:[

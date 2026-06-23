@@ -1175,6 +1175,71 @@ DG.TRAINERS.EXPLORER_VANCE = {
 // ELITE FOUR (4 trainers before Champion)
 // ============================================================
 
+// ── Victory Road veterans — the gauntlet on the frost road to the Elite Four ──
+DG.TRAINERS.VR_ACE_VESNA = {
+  id:'VR_ACE_VESNA', name:'Vesna', class:'Ace Trainer',
+  isGymLeader:false, isStoryBoss:false, badge:null,
+  preBattleDialogue:['I climb this frost road to face the Elite Four.', 'Show me you belong on the same ice as Aurora!'],
+  postBattleDialogue:['...You really might beat them. Go on — they are waiting.'],
+  winDialogue:'Not yet. The Elite Four would freeze you solid.',
+  loseDialogue:'Such strength... Aurora herself could not chill the fire in you.',
+  reward:3600,
+  party:[
+    { speciesId:'GLACIOKING', level:59 },
+    { speciesId:'SWOOPTER',   level:60 },
+    { speciesId:'SKYFANG',    level:62 },
+  ],
+  aiTier:3, location:'ROUTE_10A',
+};
+
+DG.TRAINERS.VR_CLIMBER_BRAM = {
+  id:'VR_CLIMBER_BRAM', name:'Bram', class:'Mountaineer',
+  isGymLeader:false, isStoryBoss:false, badge:null,
+  preBattleDialogue:['Garnet of the Elite Four can move mountains.', 'I trained on these cliffs to be just as immovable. Try me!'],
+  postBattleDialogue:['You shifted the unshiftable. Garnet had better watch out.'],
+  winDialogue:'Like the mountain, I do not fall. Toughen up before the Citadel.',
+  loseDialogue:'Crushed... by someone half my size. Garnet awaits you, challenger.',
+  reward:3700,
+  party:[
+    { speciesId:'MEGASTONE',  level:60 },
+    { speciesId:'TERRADON',   level:61 },
+    { speciesId:'TITANOSAUR', level:63 },
+  ],
+  aiTier:3, location:'ROUTE_10C',
+};
+
+DG.TRAINERS.VR_FIREBRAND_CINDER = {
+  id:'VR_FIREBRAND_CINDER', name:'Cinder', class:'Firebreather',
+  isGymLeader:false, isStoryBoss:false, badge:null,
+  preBattleDialogue:['I keep a fire burning on this frozen road.', 'If you cannot stand my heat, Ember will reduce you to ash!'],
+  postBattleDialogue:['Your flame burns hotter than mine. Ember will feel it.'],
+  winDialogue:'Snuffed out? Come back when you can take the heat.',
+  loseDialogue:'My embers... gone cold. Go — Ember is the second trial.',
+  reward:3800,
+  party:[
+    { speciesId:'SCORCHBACK', level:61 },
+    { speciesId:'GLIDEREX',   level:61 },
+    { speciesId:'PYROCERATH', level:63 },
+  ],
+  aiTier:3, location:'ROUTE_10D',
+};
+
+DG.TRAINERS.VR_SEER_MORT = {
+  id:'VR_SEER_MORT', name:'Mort', class:'Seer',
+  isGymLeader:false, isStoryBoss:false, badge:null,
+  preBattleDialogue:['I have seen how your journey ends, challenger.', 'Phantom walks between shadows... and so do my DinoMon. Behold!'],
+  postBattleDialogue:['My visions failed me. Perhaps you alone can unmask Phantom.'],
+  winDialogue:'The shadows swallow you, as I foresaw. Turn back.',
+  loseDialogue:'Impossible... my sight is blind to your fate. Pass, then.',
+  reward:4000,
+  party:[
+    { speciesId:'PHANTOSAUR', level:62 },
+    { speciesId:'OBSIDIUDON', level:63 },
+    { speciesId:'NIGHTREX',   level:64 },
+  ],
+  aiTier:3, location:'ROUTE_10E',
+};
+
 DG.TRAINERS.ELITE_AURORA = {
   id:                 'ELITE_AURORA',
   name:               'Aurora',
