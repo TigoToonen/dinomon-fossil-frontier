@@ -308,7 +308,7 @@ DG.STORY.DIALOGUES = {
 
   GYM_REX_POST: [
     "Hah! Not bad at all. You've got real potential.",
-    "Ridley over at Dustwall is a tough one, so train up before you get there.",
+    "Jam Sennings over at Dustwall is a tough one, so train up before you get there.",
     "And watch out for Team Extinction scouts on the route!",
   ],
 

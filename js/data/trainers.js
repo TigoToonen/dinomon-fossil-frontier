@@ -364,7 +364,7 @@ DG.TRAINERS.NIELS_INTERN2 = {
 };
 DG.TRAINERS.NIELS_BOSS = {
   id:'NIELS_BOSS', name:'Daytrader Niels', class:'Daytrader', isGymLeader:false, isStoryBoss:true,
-  badge:null,
+  badge:null, allShiny:true,   // the flex: Niels battles with an all-shiny team
   winDialogue:"A dip in your portfolio. Come back when you've diversified.",
   loseDialogue:"Outperformed! You've got the instincts of a blue-chip trainer.",
   reward:6000, party:[
@@ -935,7 +935,7 @@ DG.TRAINERS.HIKER_THORN = {
   preBattleDialogue:  null,
   postBattleDialogue: null,
   winDialogue:        "These volcanic ridges breed tough DinoMons. Try mine on for size!",
-  loseDialogue:       "You've got heat in you too, kid. Ignis won't go easy though.",
+  loseDialogue:       "You've got heat in you too, kid. Asset Toverdijk won't go easy though.",
   reward:             400,
   party: [
     { speciesId:'FIRECOAL', level:13, moves:['EMBER','SCRATCH','FLAME_CHARGE','GROWL'] },
@@ -997,7 +997,7 @@ DG.TRAINERS.HIKER_DUSTY = {
   preBattleDialogue:  null,
   postBattleDialogue: null,
   winDialogue:        "You can't cross these badlands without going through me and my ground-types!",
-  loseDialogue:       "You shook me up like an earthquake. Terra's going to love you.",
+  loseDialogue:       "You shook me up like an earthquake. Rock Hard Toonen's going to love you.",
   reward:             680,
   party: [
     { speciesId:'QUAKELING', level:26, moves:['BULLDOZE','MAGNITUDE','MUD_SLAP','GROWL'] },
@@ -1038,7 +1038,7 @@ DG.TRAINERS.ELECTRICIAN_SPARK = {
   preBattleDialogue:  null,
   postBattleDialogue: null,
   winDialogue:        "My DinoMons are fully charged. You don't stand a volt of a chance!",
-  loseDialogue:       "You short-circuited my whole strategy. Volt's not going to be easier.",
+  loseDialogue:       "You short-circuited my whole strategy. Beyblade Luuk's not going to be easier.",
   reward:             980,
   party: [
     { speciesId:'SPARKHORN',  level:36, moves:['THUNDER_SHOCK','SPARK','CHARGE','QUICK_ATTACK'] },
@@ -1079,7 +1079,7 @@ DG.TRAINERS.SWIMMER_WAVE = {
   preBattleDialogue:  null,
   postBattleDialogue: null,
   winDialogue:        "The current's with me today. You're swimming upstream, trainer!",
-  loseDialogue:       "You ride the wave better than me. Marina's even stronger though.",
+  loseDialogue:       "You ride the wave better than me. Surfing Peter's even stronger though.",
   reward:             1100,
   party: [
     { speciesId:'AQUAFLIP', level:39, moves:['WATER_GUN','AQUA_JET','BUBBLE_BEAM','AGILITY'] },
@@ -1120,7 +1120,7 @@ DG.TRAINERS.DRAGONTAMER_ROOK = {
   preBattleDialogue:  null,
   postBattleDialogue: null,
   winDialogue:        "Only the worthy stand before dragons. Let's see if that's you.",
-  loseDialogue:       "A true dragon soul. Valdez awaits — do not disappoint the ancient ones.",
+  loseDialogue:       "A true dragon soul. Bipolar Fieke awaits — do not disappoint the ancient ones.",
   reward:             1800,
   party: [
     { speciesId:'SWOOPTER',  level:55, moves:['DRAGON_CLAW','AIR_SLASH','DRAGON_DANCE','ROOST'] },
@@ -1923,7 +1923,7 @@ DG.TRAINERS.IGNIS_S2_TW2 = {
 
 DG.TRAINERS.IGNIS_S3_TC = {
   id:'IGNIS_S3_TC', name:'Ace Trainer Vesta', class:'Ace Trainer', isGymLeader:false, badge:null,
-  loseDialogue:"Ignis uses Scorchback — keep your cool!", reward:560,
+  loseDialogue:"Asset Toverdijk uses Scorchback — keep your cool!", reward:560,
   party:[
     { speciesId:'SOLARIX', level:27, moves:['FLAMETHROWER','ANCIENT_POWER','EMBER'] },
     { speciesId:'EMBRIX',  level:27, moves:['EMBER','FIRE_SPIN','FLAMETHROWER'] },
@@ -2060,7 +2060,7 @@ DG.TRAINERS.TERRA_S2_TW2 = {
 
 DG.TRAINERS.TERRA_S3_TC = {
   id:'TERRA_S3_TC', name:'Ace Trainer Strata', class:'Ace Trainer', isGymLeader:false, badge:null,
-  loseDialogue:"Terra's Terradon hits like a rockslide!", reward:800,
+  loseDialogue:"Rock Hard Toonen's Terradon hits like a rockslide!", reward:800,
   party:[
     { speciesId:'MIDDODON', level:40, moves:['EARTHQUAKE','MUD_SHOT','BULLDOZE','ANCIENT_POWER'] },
     { speciesId:'TERRADON', level:40, moves:['EARTHQUAKE','ROCK_SLIDE','MUD_SHOT','BULLDOZE'] },
@@ -2130,7 +2130,7 @@ DG.TRAINERS.VOLT_S2_TW2 = {
 
 DG.TRAINERS.VOLT_S3_TC = {
   id:'VOLT_S3_TC', name:'Ace Trainer Kiloton', class:'Ace Trainer', isGymLeader:false, badge:null,
-  loseDialogue:"Volt's Thundersaur hits like a lightning storm!", reward:860,
+  loseDialogue:"Beyblade Luuk's Thundersaur hits like a lightning storm!", reward:860,
   party:[
     { speciesId:'VOLTSCALE', level:43, moves:['THUNDERBOLT','THUNDER','VOLT_TACKLE'] },
     { speciesId:'VOLTHORN',  level:43, moves:['THUNDER','THUNDERBOLT','TACKLE'] },
@@ -2200,7 +2200,7 @@ DG.TRAINERS.MARINA_S2_TW2 = {
 
 DG.TRAINERS.MARINA_S3_TC = {
   id:'MARINA_S3_TC', name:'Ace Trainer Abyssia', class:'Ace Trainer', isGymLeader:false, badge:null,
-  loseDialogue:"Marina's Plesiwave hits hard — brace yourself!", reward:940,
+  loseDialogue:"Surfing Peter's Plesiwave hits hard — brace yourself!", reward:940,
   party:[
     { speciesId:'PLESIWAVE', level:47, moves:['SURF','WATER_PULSE','WATER_GUN','HEADBUTT'] },
     { speciesId:'SEAFANG',   level:47, moves:['SURF','CRUNCH','BITE','WATER_GUN'] },
@@ -2215,7 +2215,7 @@ DG.TRAINERS.MARINA_S3_TW1 = {
 };
 DG.TRAINERS.MARINA_S3_TW2 = {
   id:'MARINA_S3_TW2', name:'Sailor Riptide', class:'Sailor', isGymLeader:false, badge:null,
-  loseDialogue:"Wrong answer, right battler — now face Marina!", reward:768,
+  loseDialogue:"Wrong answer, right battler — now face Surfing Peter!", reward:768,
   party:[
     { speciesId:'SWAMPJAW', level:48, moves:['SURF','BULLDOZE','CRUNCH','WATER_GUN'] },
     { speciesId:'PLESIWAVE',level:48, moves:['SURF','WATER_PULSE','HEADBUTT','WATER_GUN'] },
@@ -2270,7 +2270,7 @@ DG.TRAINERS.VALDEZ_S2_TW2 = {
 
 DG.TRAINERS.VALDEZ_S3_TC = {
   id:'VALDEZ_S3_TC', name:'Ace Trainer Pinnacle', class:'Ace Trainer', isGymLeader:false, badge:null,
-  loseDialogue:"Valdez uses Skyfang — ice moves are key!", reward:1100,
+  loseDialogue:"Bipolar Fieke uses Skyfang — ice moves are key!", reward:1100,
   party:[
     { speciesId:'SWOOPTER', level:55, moves:['DRAGON_CLAW','DRAGON_RAGE','DRAGON_PULSE','BITE'] },
     { speciesId:'SKYFANG',  level:55, moves:['DRAGON_PULSE','DRAGON_CLAW','DRAGON_RAGE','CRUNCH'] },

@@ -5189,14 +5189,14 @@ DG.MAPS.COMPOUND_CENTER = {
   music:'CENTER_THEME', isIndoor:true, isCave:false,
   tiles:[
     [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
-    [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
+    [65,65,65,65,65,15,15,65,65,15,15,65,65,65,65,65], // ticker displays flanking the desk
     [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
     [65,74,74,74,74,74,74,76,76,74,74,74,74,74,74,65],
     [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5,77, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,77, 5,65],
-    [65, 5,78,78, 5, 5, 5, 5, 5, 5, 5,78,78, 5, 5,65],
+    [65, 5,77, 5, 5,16, 5, 5, 5, 5, 5,16, 5, 5,77,65], // gold lounge: planters + seats
+    [65, 5,78,78, 5, 5, 5, 5, 5, 5, 5, 5,78,78, 5,65],
     [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65,75, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,82, 5,65],
+    [65,75, 5, 5, 5, 5, 5,13, 5, 5, 5, 5, 5,82, 5,65], // PC + Beachcoin lobby coin
     [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
     [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
     [65,65,65,65,65,65,65,68,68,65,65,65,65,65,65,65],
@@ -5208,6 +5208,8 @@ DG.MAPS.COMPOUND_CENTER = {
   npcs:[
     { id:'HEALER_CC',  name:'Nurse', x:7, y:2, facing:'DOWN', spriteKey:'NPC_HEALER', movementType:'STATIONARY', dialogue:['HEALER_GREET'], onInteract:'HEAL_PARTY' },
     { id:'HEALER_CC2', name:'Nurse', x:8, y:2, facing:'DOWN', spriteKey:'NPC_HEALER', movementType:'STATIONARY', dialogue:['HEALER_GREET'], onInteract:'HEAL_PARTY' },
+    { id:'CC_LOUNGE', name:'Trader', x:11, y:7, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
+      dialogue:["Even the DinoCenter is trimmed in gold here. Compound City spares no expense.","Heal up — then go challenge Niels by his statue. Bring your best; his team all sparkles."], onInteract:null },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 };
