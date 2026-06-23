@@ -374,6 +374,22 @@ DG.TRAINERS.NIELS_BOSS = {
     { speciesId:'SHADOWLET', level:20, moves:['SHADOW_BALL','NIGHT_SHADE','LICK','CONFUSE_RAY'] },
   ], aiTier:3, location:'COMPOUND_CITY',
 };
+// Rematch team — the flex maxed out: every fully-evolved fossil titan (the rarest
+// revives money can buy), all shiny, with a Pyrocerath ace. High level + smart AI.
+DG.TRAINERS.NIELS_REMATCH = {
+  id:'NIELS_REMATCH', name:'Daytrader Niels', class:'Daytrader', isGymLeader:false, isStoryBoss:true,
+  badge:null, allShiny:true,
+  winDialogue:"Market correction. My shinies still outperform — come back any time.",
+  loseDialogue:"Beaten by my own portfolio?! ...Respect. Diamond hands, kid.",
+  reward:4000, party:[
+    { speciesId:'AMBERWING', level:54, moves:['X_SCISSOR','ROCK_SLIDE','ANCIENT_POWER','STONE_EDGE'] },
+    { speciesId:'TARRASAUR', level:54, moves:['CRUNCH','EARTHQUAKE','ROCK_SLIDE','STONE_EDGE'] },
+    { speciesId:'CRYOSAUR',  level:55, moves:['ICE_BEAM','ICE_FANG','ROCK_SLIDE','STONE_EDGE'] },
+    { speciesId:'ABYSSHELL', level:55, moves:['SURF','AQUA_TAIL','ROCK_SLIDE','STONE_EDGE'] },
+    { speciesId:'AERODON',   level:56, moves:['AIR_SLASH','AERIAL_ACE','ROCK_SLIDE','STONE_EDGE'] },
+    { speciesId:'PYROCERATH',level:60, moves:['FLAMETHROWER','ERUPTION_HORN','IMMOLATION','FIREWORKS'] },
+  ], aiTier:4, location:'COMPOUND_CITY',
+};
 
 // ============================================================
 // STORY BOSSES (5)
@@ -986,7 +1002,7 @@ DG.TRAINERS.CAMPER_IVY = {
   location: 'ROUTE_4',
 };
 
-// ── Route 5 → Gym 5 Terra (Ground) ────────────────────────
+// ── Route 5 → Gym 6 Terra (Ground) ────────────────────────
 DG.TRAINERS.HIKER_DUSTY = {
   id:                 'HIKER_DUSTY',
   name:               'Dusty',
@@ -1027,7 +1043,7 @@ DG.TRAINERS.ROUGHNECK_STONE = {
   location: 'ROUTE_5',
 };
 
-// ── Route 6 → Gym 6 Volt (Electric) ───────────────────────
+// ── Route 6 → Gym 7 Volt (Electric) ───────────────────────
 DG.TRAINERS.ELECTRICIAN_SPARK = {
   id:                 'ELECTRICIAN_SPARK',
   name:               'Spark',
@@ -1068,7 +1084,7 @@ DG.TRAINERS.ROCKER_BOLT = {
   location: 'ROUTE_6',
 };
 
-// ── Route 7 → Gym 7 Marina (Water) ────────────────────────
+// ── Route 7 → Gym 8 Marina (Water) ────────────────────────
 DG.TRAINERS.SWIMMER_WAVE = {
   id:                 'SWIMMER_WAVE',
   name:               'Wave',
@@ -1109,7 +1125,7 @@ DG.TRAINERS.FISHERMAN_TIDE = {
   location: 'ROUTE_7',
 };
 
-// ── Route 10 → Gym 8 Valdez (Dragon) ──────────────────────
+// ── Route 10 → Gym 9 Valdez (Dragon) ──────────────────────
 DG.TRAINERS.DRAGONTAMER_ROOK = {
   id:                 'DRAGONTAMER_ROOK',
   name:               'Rook',

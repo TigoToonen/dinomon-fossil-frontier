@@ -456,7 +456,7 @@ DG.Overworld = (function () {
       // Start the (all-shiny) Niels battle. isRematch=false the first time (awards the
       // Compound Card); true on every later rematch.
       const _startNielsBattle = (isRematch) => {
-        const trainer = DG.TRAINERS.NIELS_BOSS;
+        const trainer = (isRematch && DG.TRAINERS.NIELS_REMATCH) ? DG.TRAINERS.NIELS_REMATCH : DG.TRAINERS.NIELS_BOSS;
         const firstEnemy = DG.SaveLoad.createDinoMon(trainer.party[0].speciesId, trainer.party[0].level);
         DG.Battle.start({
           type: 'TRAINER', enemy: firstEnemy, trainerData: trainer, gameState: _gs,
