@@ -853,6 +853,11 @@ DG.Battle = (function () {
   // Moves that lock the user into a multi-turn rampage, then cause confusion.
   const _RAMPAGE_MOVES = { THRASH: 1, OUTRAGE: 1, PETAL_DANCE: 1 };
 
+  // Status effect.type aliases: many moves encode the status in the TYPE name
+  // (e.g. effect.type:'BURN_CHANCE') instead of using STATUS_CHANCE + status.
+  // Map them so both damage-secondary and status-move paths actually apply them.
+  const _STATUS_ALIAS = { BURN_CHANCE:'BURN', FREEZE_CHANCE:'FREEZE', POISON_CHANCE:'POISON', PARALYSIS:'PARALYSIS', SLEEP:'SLEEP' };
+
   // Index of the move the actor is locked into this turn (-1 if free to choose).
   function lockedMoveIndex(mon) {
     if (!mon || !mon._lock) return -1;
@@ -1351,6 +1356,10 @@ DG.Battle = (function () {
     if (effType === 'STATUS_CHANCE' && Math.random() * 100 < (eff.chance || 30)) {
       _tryApplyStatus(target, eff.status || 'BURN');
     }
+    // Secondary: status via alias type names (BURN_CHANCE/FREEZE_CHANCE/POISON_CHANCE/PARALYSIS/SLEEP)
+    if (_STATUS_ALIAS[effType] && Math.random() * 100 < (eff.chance || 30)) {
+      _tryApplyStatus(target, _STATUS_ALIAS[effType]);
+    }
 
     // Secondary: Flinch (only if target hasn't moved yet this turn)
     if (effType === 'FLINCH' && Math.random() * 100 < (eff.chance || 30)) {
@@ -1510,6 +1519,17 @@ DG.Battle = (function () {
         const side = isPlayer ? `the foe's` : `your`;
         _pushMessage(`Pointed stones float around ${side} team!`);
       }
+    } else if (_STATUS_ALIAS[effType]) {
+      // Status-category move that inflicts a status (e.g. Spore→SLEEP, Stun Spore→PARALYSIS)
+      if (Math.random() * 100 < (eff.chance || 100)) _tryApplyStatus(target, _STATUS_ALIAS[effType]);
+      else _pushMessage(`But it failed!`);
+    } else if (effType === 'STAT') {
+      // Lower/raise a target stat incl. accuracy/evasion (e.g. Flash → -accuracy)
+      const stStages = (tgt === 'self')
+        ? (isPlayer ? _battle.playerStages : _battle.enemyStages)
+        : (isPlayer ? _battle.enemyStages  : _battle.playerStages);
+      const statKey = ({ accuracy:'acc', evasion:'eva' })[eff.stat] || eff.stat || 'acc';
+      _applyStageDelta(stStages, statKey, (eff.stages !== undefined ? eff.stages : -1), (tgt === 'self') ? actorName : targetName);
     } else if (effType === 'NONE') {
       _pushMessage(`But it failed!`);
     } else {
