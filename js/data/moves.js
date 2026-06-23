@@ -552,7 +552,7 @@ DG.MOVES = {
     pp: 10,
     priority: 0,
     animStyle: 'CONE',
-    effect: { type: 'NONE' },
+    effect: { type: 'TWO_TURN', chargeMsg: 'absorbed light!' },
     description: 'In the first turn, the user absorbs sunlight. In the second turn, it unleashes a powerful beam.'
   },
 
@@ -1646,7 +1646,7 @@ DG.MOVES = {
     pp: 10,
     priority: 0,
     animStyle: 'SLAM',
-    effect: { type: 'CONFUSE', chance: 100, target: 'self' },
+    effect: { type: 'NONE' },  // rampage lock + post-fatigue confusion handled by _RAMPAGE_MOVES
     description: 'The user rampages and attacks for two to three turns. The user then becomes confused.'
   },
 

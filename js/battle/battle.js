@@ -868,6 +868,7 @@ DG.Battle = (function () {
     mon._chargingMoveId = null;
     mon._rolloutMult = 1;
     mon._rampageEnded = false;
+    mon._infatuated = false;   // infatuation is a volatile — ends on switch out
   }
 
   // ── MOVE EXECUTION ────────────────────────────────────────
@@ -929,8 +930,9 @@ DG.Battle = (function () {
 
     // Infatuation (Cute Charm): 50% chance to skip move
     if (actor._infatuated) {
-      _pushMessage(`${actorName} is in love and can't move!`);
+      _pushMessage(`${actorName} is infatuated!`);
       if (Math.random() < 0.50) {
+        _pushMessage(`${actorName} is in love and can't move!`);
         _continueExecution();
         return;
       }
@@ -1026,7 +1028,7 @@ DG.Battle = (function () {
 
     // FASE 9: semi-onraakbaar — het doelwit zit in de oplaadbeurt van Fly
     // (in de lucht), Dig (ondergronds) of Phantom Force (verdwenen): mis.
-    const _SEMI_INVULN = { FLY: 1, DIG: 1, PHANTOM_FORCE: 1 };
+    const _SEMI_INVULN = { FLY: 1, DIG: 1, PHANTOM_FORCE: 1, DIVE: 1, SKY_DROP: 1, UMBRAL_DIVE: 1, SHADOW_FORCE: 1 };
     if (move.category !== 'STATUS' && target && target._charging &&
         _SEMI_INVULN[target._chargingMoveId]) {
       _pushMessage(`${_monName(target)} avoided the attack!`);
@@ -1037,6 +1039,11 @@ DG.Battle = (function () {
     // Accuracy check
     if (!DG.TypeChart.accuracyCheck(move, actorStages.acc || 0, targetStages.eva || 0)) {
       _pushMessage(`${actorName}'s attack missed!`);
+      // Rollout breaks on a miss: drop the lock and reset its escalating power.
+      if (move.id === 'ROLLOUT' && actor._lock && actor._lock.kind === 'ROLLOUT') {
+        actor._lock = null;
+        actor._rolloutMult = 1;
+      }
       _continueExecution();
       return;
     }
@@ -1167,7 +1174,8 @@ DG.Battle = (function () {
     let dmgDeferred = false;  // true when damage has been placed in _msgDamageQueue
 
     if (effType === 'MULTI') {
-      const hitsRange = eff.hits || [2, 5];
+      // Accept both data conventions: eff.hits:[min,max] OR eff.min/eff.max.
+      const hitsRange = eff.hits || [eff.min || 2, eff.max || 5];
       const r = Math.random();
       // Distribution: 2×=35%, 3×=35%, 4×=15%, 5×=15%
       if      (r < 0.35)  totalHits = hitsRange[0];
@@ -2598,6 +2606,17 @@ DG.Battle = (function () {
         if (mon && mon.hp.current <= 0) mon.hp.current = 1;
       }
     }
+
+    // Strip battle-only volatile flags off the whole party so nothing (least of
+    // all infatuation) leaks into the saved game and sticks forever.
+    try {
+      for (const mon of gs.player.party) {
+        if (!mon) continue;
+        mon._infatuated = false; mon._lock = null; mon._charging = false;
+        mon._chargingMoveId = null; mon._rolloutMult = 1; mon._rampageEnded = false;
+        mon._flinched = false; mon._rechargeNext = false;
+      }
+    } catch(e) {}
 
     const onEnd = _battle.onEnd;
     _battle = null;
