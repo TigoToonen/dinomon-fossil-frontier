@@ -62,6 +62,14 @@ AMBERTOWN: {
       movementType:'STATIONARY', dialogue:['NPC_AMBERTOWN_2'], onInteract:null },
     { id:'AMBERTOWN_NPC3', name:'Ranger', x:9, y:12, facing:'UP', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['NPC_AMBERTOWN_3'], onInteract:null },
+    { id:'AMBER_E4_NPC1', name:'Dreaming Boy', x:5, y:8, facing:'DOWN', spriteKey:'NPC_KID',
+      movementType:'STATIONARY',
+      dialogue:["My grandpa says that far beyond all eight badges, four undefeated masters wait — the Elite Four!","No trainer in living memory has ever beaten all four and faced the Champion. Wouldn't that be something?"],
+      onInteract:null },
+    { id:'AMBER_E4_NPC2', name:'Old Storyteller', x:12, y:8, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["You just got your first DinoMon? Then you stand at the very bottom of a long, long mountain, child.","At its peak sit the Elite Four — four legends guarding the road to the Champion. Dream big, and walk far."],
+      onInteract:null },
   ],
   encounterTable: { grass:[], water:[] },
   events: [
@@ -276,6 +284,14 @@ SHELLCREEK_CITY: {
     { id:'SC_WILD_SIGN', name:'Sign', x:18, y:10, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
       dialogue:["Wild DinoMons can be found in the area to the east."],
+      onInteract:null },
+    { id:'SHELLCREEK_E4_NPC1', name:'Wistful Sailor', x:5, y:2, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["I've sailed every coast in the region, friend, chasing one harbour I've never reached.","They call it the Fossil Citadel — where the Elite Four stand, four masters none have ever toppled. Maybe you'll be the first."],
+      onInteract:null },
+    { id:'SHELLCREEK_E4_NPC2', name:'Harbour Girl', x:13, y:2, facing:'DOWN', spriteKey:'NPC_KID',
+      movementType:'STATIONARY',
+      dialogue:["My big sister left to challenge the Elite Four. She said it was the dream of every trainer.","Four undefeated masters, then the Champion above them all. I hope she made it that far!"],
       onInteract:null },
   ],
   encounterTable:{ grass:[], water:[
@@ -508,6 +524,14 @@ STONEHAVEN_CITY: {
       movementType:'STATIONARY',
       dialogue:["Wild DinoMons can be found in the area to the east."],
       onInteract:null },
+    { id:'STONEHAVEN_E4_NPC1', name:'Scarred Veteran', x:5, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["You hear the names whispered in every gym now: Aurora, who freezes the very tide of time. Ember, whose fire melts steel.","I faced Garnet once — she moved a mountain onto my team. And Phantom? He walked through my DinoMon like a shadow. The Elite Four are no legend, kid. They're real."],
+      onInteract:null },
+    { id:'STONEHAVEN_E4_NPC2', name:'Museum Scholar', x:14, y:5, facing:'DOWN', spriteKey:'NPC_PROF',
+      movementType:'STATIONARY',
+      dialogue:["I keep records of every challenger who reached the Citadel. The list of those who fell to the Elite Four fills entire volumes.","Aurora, Ember, Garnet, Phantom — four masters, four trials. Past them waits the Champion. Few even survive the climb."],
+      onInteract:null },
     { id:'FLINT_STONE', name:'Flint', x:10, y:8, facing:'DOWN', spriteKey:'NPC_RIVAL',
       movementType:'STATIONARY', dialogue:['RIVAL_PRE_4'], onInteract:'TRIGGER_RIVAL',
       trainerRef:'RIVAL_4_FIRE', requiresFlag:'BADGE_4', flagToHide:'RIVAL_BATTLE_4_DONE' },
@@ -558,6 +582,14 @@ APEXSUMMIT: {
       movementType:'STATIONARY', dialogue:['NPC_APEXSUMMIT_1'], onInteract:null },
     { id:'AS_NPC2', name:'Ranger', x:13, y:5, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'WANDER', dialogue:['NPC_APEXSUMMIT_2'], onInteract:null },
+    { id:'APEX_E4_NPC1', name:'Gate Warden\'s Aide', x:5, y:11, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["This is the last town, trainer. Beyond the summit gate lies the Fossil Citadel itself.","Inside, Aurora, Ember, Garnet and Phantom each wait in their own stadium — beat all four and only then may you face the Champion. This is the final road."],
+      onInteract:null },
+    { id:'APEX_E4_NPC2', name:'Battle-Scarred Veteran', x:8, y:12, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["Steady your breath. Past that gate there's no turning back — four masters, one after another, no rest between.","Aurora's ice, Ember's fire, Garnet's earth, Phantom's shadow. If you fall, you start the whole gauntlet again. Go with everything you have."],
+      onInteract:null },
     // ── Summit market plaza (east) ──
     { id:'AS_VENDOR1', name:'Summit Smith', x:21, y:9, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
@@ -2599,6 +2631,14 @@ ROUTE_10E: {
       movementType:'STATIONARY', dialogue:['GRUNT_5'], trainerRef:'DRAGONTAMER_ROOK' },
     { id:'R10E_TRAINER2', name:'Vance', x:14, y:27, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_5'], trainerRef:'EXPLORER_VANCE' },
+    { id:'R10E_E4_NPC1', name:'Frostbitten Climber', x:3, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["You feel it too, don't you? The air gets thinner the higher we climb — and so does your margin for error.","This frost ascent is the last road to Apex Summit. Beyond it, the Citadel. Beyond that, the Elite Four. We're nearly there."],
+      onInteract:null },
+    { id:'R10E_E4_NPC2', name:'Summit Pilgrim', x:12, y:8, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY',
+      dialogue:["Every trainer on this mountain is chasing the same four names: Aurora, Ember, Garnet, Phantom.","Can you feel the charge in the wind? The Elite Four are close now. The whole world holds its breath for whoever reaches them."],
+      onInteract:null },
   ],
   encounterTable:{ grass:[
     { speciesId:'SWOOPTER',  minLv:58, maxLv:62, rate:20 },
@@ -2761,6 +2801,14 @@ FOSSIL_GATEWAY: {
       movementType:'STATIONARY',
       dialogue:['FOSSIL_GATE_OPEN'], onInteract:'TRIGGER_STORY',
       requiresFlag:'BADGE_9' },
+    { id:'GATEWAY_E4_NPC1', name:'Citadel Herald', x:5, y:6, facing:'RIGHT', spriteKey:'NPC_LEADER',
+      movementType:'STATIONARY',
+      dialogue:["This is the threshold, challenger. Through that gate, the Fossil Citadel rises — and the Elite Four await within.","Aurora freezes the tide of time. Ember melts steel. Garnet moves mountains. Phantom walks through shadow. Defeat all four, and the Champion is yours to face. None go further without them falling first."],
+      onInteract:null },
+    { id:'GATEWAY_E4_NPC2', name:'Last Aide', x:13, y:6, facing:'LEFT', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY',
+      dialogue:["You've climbed every route and earned every badge to stand here. This is the end of the road — and its hardest stretch.","Four stadiums, four masters, no mercy and no second chances between them. Steel yourself. Beyond that gate, legends are made or broken."],
+      onInteract:null },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 },
@@ -4728,6 +4776,14 @@ DG.MAPS.CRESTFALL_TOWN = {
     { id:'CF_KID2', name:'Child', x:25, y:7, facing:'LEFT', spriteKey:'NPC_KID',
       movementType:'WANDER',
       dialogue:["When it thunders, the stalls' lights flicker like fireflies!"], onInteract:null },
+    { id:'CRESTFALL_E4_NPC1', name:'Broken Challenger', x:5, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["I made it all the way to the Citadel once. Then Ember's flames melted right through my best DinoMon's armour.","Aurora froze what was left of my team in a single heartbeat. The Elite Four... they don't lose. They simply don't."],
+      onInteract:null },
+    { id:'CRESTFALL_E4_NPC2', name:'Storm Watcher', x:16, y:5, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY',
+      dialogue:["They say Garnet can lift mountains and Phantom can step clean through the dark — and both call the Citadel home.","Four masters in a row, then the Champion. The closer you get, the more the rumours turn to dread."],
+      onInteract:null },
   ],
   encounterTable:{ grass:[
     { speciesId:'SPARKHORN', minLv:36, maxLv:40, rate:35 },
@@ -4995,9 +5051,9 @@ DG.MAPS.COMPOUND_CITY = {
   tiles:[
     [64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64],
     [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
-    [64, 1,65,65,65,65,65, 1, 1, 1, 1, 1, 1,65,65,65,65,65, 1,64],
-    [64, 1,65,65,65,65,65, 1, 1, 1, 1, 1, 1,65,65,65,65,65, 1,64],
-    [64, 1,65,65,68,65,65, 1, 1, 1, 1, 1, 1,65,68,65,65,65, 1,64],
+    [64, 1,65,65,65,65,65, 1,65,65,65,65, 1,65,65,65,65,65, 1,64],
+    [64, 1,65,65,65,65,65, 1,65,65,65,65, 1,65,65,65,65,65, 1,64],
+    [64, 1,65,65,68,65,65, 1,65,68,68,65, 1,65,68,65,65,65, 1,64],
     [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
     [64, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
     [64, 1, 1, 1, 1,74,74, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,64],
@@ -5014,6 +5070,8 @@ DG.MAPS.COMPOUND_CITY = {
     { x:10, y:14, targetMap:'ROUTE_2A', targetX:1, targetY:15 },
     { x:4,  y:4,  targetMap:'COMPOUND_BANK',  targetX:6, targetY:9 },
     { x:14, y:4,  targetMap:'COMPOUND_CENTER', targetX:7, targetY:10 },
+    { x:9,  y:4,  targetMap:'COMPOUND_FOSSIL_LAB', targetX:9,  targetY:14 },
+    { x:10, y:4,  targetMap:'COMPOUND_FOSSIL_LAB', targetX:10, targetY:14 },
   ],
   npcs:[
     { id:'NIELS', name:'Daytrader Niels', x:10, y:6, facing:'DOWN', spriteKey:'NPC_PROF',
@@ -5033,12 +5091,77 @@ DG.MAPS.COMPOUND_CITY = {
       movementType:'STATIONARY', dialogue:["Beachcoin took everything I had. One visit it was up, the next... zero.","Niels calls it 'volatility'. I call it a rug pull. Never invest what you can't lose."], onInteract:null },
     { id:'CC_SIGN', name:'Sign', x:11, y:12, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:["Welcome to Compound City — home of Beachcoin.","Beat Daytrader Niels' interns, then beat Niels himself to trade at the DinoExchange.","Beachcoin's price changes every visit. Buy low, sell high — if you dare."], onInteract:null },
-    { id:'CC_FOSSIL_LAB', name:'Fossil Lab', x:8, y:7, facing:'DOWN', spriteKey:'NPC_PROF',
+    { id:'CC_MUSEUM_GREETER', name:'Museum Docent', x:7, y:5, facing:'RIGHT', spriteKey:'NPC_WOMAN',
       movementType:'STATIONARY',
-      dialogue:["Welcome to the Compound City Fossil Lab!","Carrying a fossil? Walk with it until it stirs with life, then bring it here and I'll revive it into a DinoMon."],
+      dialogue:["Welcome to the Fossil Museum & Lab — the pride of Compound City!","Inside you'll find the Hall of Titans, and our Incubation Chamber where awakened fossils are revived.","Carrying a fossil? Walk with it until it stirs, then bring it to the pods inside."], onInteract:null },
+    { id:'CC_MUSEUM_SIGN', name:'Sign', x:12, y:5, facing:'LEFT', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["★ FOSSIL MUSEUM & LAB ★","Hall of Titans · Amber Gallery · Incubation Chamber","Revive your awakened fossils into rare DinoMon within."], onInteract:null },
+  ],
+  encounterTable:{ grass:[], water:[] }, events:[],
+};
+
+// ═══════════════════════════════════════════════════════════════
+// COMPOUND CITY — FOSSIL MUSEUM & LAB  (grand interior)
+//   • Hall of Titans  — carved stone statues of the five fully-evolved
+//     fossil DinoMon (Amberwing 90, Tarrasaur 91, Cryosaur 92,
+//     Abysshell 93, Aerodon 94), framed by glowing amber pillars (98)
+//     and a fossil-relief back wall (97).
+//   • Amber Gallery   — museum display cases (96) with amber specimens.
+//   • Incubation Chamber — five glowing amber pods (95); the curator
+//     (REVIVE_FOSSIL) hatches awakened fossils here with a cinematic.
+// ═══════════════════════════════════════════════════════════════
+DG.MAPS.COMPOUND_FOSSIL_LAB = {
+  id:'COMPOUND_FOSSIL_LAB', name:'Fossil Museum & Lab', width:19, height:16,
+  music:'LAB_THEME', isIndoor:true, isCave:false,
+  tiles:[
+    [65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65],
+    [65,97,97,97,97,97,97,97,97,97,97,97,97,97,97,97,97,97,65], // fossil-relief back wall
+    [65,98, 5,90, 5, 5,91, 5, 5,92, 5, 5,93, 5, 5,94, 5,98,65], // Hall of Titans: statues + amber pillars
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65], // viewing gallery (lore NPCs)
+    [65,97, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,97,65],
+    [65, 5, 5,96, 5, 5,96, 5, 5,96, 5, 5,96, 5, 5,96, 5, 5,65], // Amber Gallery: display cases
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65,98, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,98,65], // pillars framing the chamber
+    [65,97, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,97,65], // ── INCUBATION CHAMBER ──
+    [65,97, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,97,65],
+    [65,97, 5,95, 5, 5,95, 5, 5,95, 5, 5,95, 5, 5,95, 5,97,65], // five incubation pods
+    [65,97, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,97,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65], // entrance hall (spawn)
+    [65,65,65,65,65,65,65,65,65,68,68,65,65,65,65,65,65,65,65],
+  ],
+  warps:[
+    { x:9,  y:15, targetMap:'COMPOUND_CITY', targetX:9,  targetY:5 },
+    { x:10, y:15, targetMap:'COMPOUND_CITY', targetX:10, targetY:5 },
+  ],
+  npcs:[
+    // ── Hall of Titans — statue plaques (face up toward their statue) ──
+    { id:'FML_PLAQUE_AMBER', name:'Plaque', x:3, y:3, facing:'UP', spriteKey:'NPC_MAN', movementType:'STATIONARY',
+      dialogue:["AMBERWING — Bug/Rock.","Sealed in amber for an age, its stained-glass wings still catch the light. A living relic of the first dawn."], onInteract:null },
+    { id:'FML_PLAQUE_TAR', name:'Plaque', x:6, y:3, facing:'UP', spriteKey:'NPC_MAN', movementType:'STATIONARY',
+      dialogue:["TARRASAUR — Dark/Rock.","Hauled from the tar pits. Its hardened ooze-armour cracks bone like driftwood."], onInteract:null },
+    { id:'FML_PLAQUE_CRYO', name:'Plaque', x:9, y:3, facing:'UP', spriteKey:'NPC_MAN', movementType:'STATIONARY',
+      dialogue:["CRYOSAUR — Ice/Rock.","An ice-age titan locked in a glacier core. Its breath drops the air to frost for metres around."], onInteract:null },
+    { id:'FML_PLAQUE_ABYSS', name:'Plaque', x:12, y:3, facing:'UP', spriteKey:'NPC_MAN', movementType:'STATIONARY',
+      dialogue:["ABYSSHELL — Water/Rock.","An ammonite-beast of the deep. The crushing abyss forged a shell nothing can break."], onInteract:null },
+    { id:'FML_PLAQUE_AERO', name:'Plaque', x:15, y:3, facing:'UP', spriteKey:'NPC_MAN', movementType:'STATIONARY',
+      dialogue:["AERODON — Flying/Rock.","Apex of the ancient skies, reborn. Its stone wings shatter the sound barrier."], onInteract:null },
+    { id:'FML_HISTORIAN', name:'Curator Marlowe', x:8, y:4, facing:'DOWN', spriteKey:'NPC_PROF', movementType:'STATIONARY',
+      dialogue:["Welcome to the Hall of Titans.","Every creature here was once a lifeless fossil — restored, in this very lab, to its mightiest final form.","Bring me yours, and one day it could stand among them."], onInteract:null },
+    { id:'FML_VISITOR', name:'Wide-eyed Kid', x:11, y:4, facing:'UP', spriteKey:'NPC_KID', movementType:'STATIONARY',
+      dialogue:["Whoa... they're HUGE up close!","Mum says if I find a fossil, the lab can bring it to LIFE. I'm gonna catch 'em all!"], onInteract:null },
+    // ── Amber Gallery ──
+    { id:'FML_GALLERY', name:'Gallery Guide', x:7, y:7, facing:'DOWN', spriteKey:'NPC_WOMAN', movementType:'STATIONARY',
+      dialogue:["Each amber nodule traps a whole prehistoric moment — a feather, a claw, sometimes a heartbeat of light.","We can read the ancient DNA inside... and wake it."], onInteract:null },
+    // ── Incubation Chamber ──
+    { id:'FML_SIGN', name:'Sign', x:7, y:13, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
+      dialogue:["★ INCUBATION CHAMBER ★","Deposit an AWAKENED fossil into the pods.","Speak to the Lab Director to revive it into a DinoMon."], onInteract:null },
+    { id:'FML_CURATOR', name:'Lab Director Vance', x:9, y:12, facing:'DOWN', spriteKey:'NPC_PROF', movementType:'STATIONARY',
+      dialogue:["Director Vance: A fossil only wakes after it's travelled with you a long while.","Once it stirs, set it in a pod and I'll breathe the ancient spark back into it."],
       onInteract:'REVIVE_FOSSIL' },
-    { id:'CC_FOSSIL_SIGN', name:'Sign', x:9, y:7, facing:'DOWN', spriteKey:'NPC_WOMAN',
-      movementType:'STATIONARY', dialogue:["★ FOSSIL LAB ★","Revive your awakened fossils into rare DinoMon here."], onInteract:null },
+    { id:'FML_TECH', name:'Lab Tech', x:6, y:12, facing:'UP', spriteKey:'NPC_WOMAN', movementType:'STATIONARY',
+      dialogue:["The pods cycle primordial amber-light through the specimen.","When one's ready, the whole chamber lights up gold. You'll know."], onInteract:null },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 };
