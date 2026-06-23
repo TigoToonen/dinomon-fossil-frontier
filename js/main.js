@@ -443,11 +443,31 @@ window.DG = window.DG || {};
     return (mapData && mapData.music) ? mapData.music : 'AMBERTOWN';
   }
 
+  // Pick the right battle track: wild / trainer / gym / per-Elite-member / champion.
+  function _battleMusicTrack() {
+    const b  = (DG.Battle && DG.Battle.getBattle) ? DG.Battle.getBattle() : null;
+    const td = b && b.trainerData;
+    if (td) {
+      if (td.class === 'Champion') return 'BATTLE_CHAMPION';
+      if (td.class === 'Elite Four') {
+        return ({
+          'Aurora':  'BATTLE_ELITE_AURORA',
+          'Ember':   'BATTLE_ELITE_EMBER',
+          'Garnet':  'BATTLE_ELITE_GARNET',
+          'Phantom': 'BATTLE_ELITE_PHANTOM',
+        })[td.name] || 'BATTLE_ELITE';
+      }
+      if (td.isGymLeader || td.class === 'Gym Leader') return 'BATTLE_GYM';
+      return 'BATTLE_TRAINER';
+    }
+    return 'BATTLE_WILD';
+  }
+
   // ── OVERWORLD ─────────────────────────────────────────────
   function _updateOverworld(dt) {
     if (DG.Battle.isActive()) {
       _state = DG.STATE.BATTLE;
-      try { DG.Audio.playMusic('BATTLE_WILD'); } catch(e) {}
+      try { DG.Audio.playMusic(_battleMusicTrack()); } catch(e) {}
       DG.Renderer.resetBattleUI();
       return;
     }

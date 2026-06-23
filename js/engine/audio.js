@@ -496,6 +496,40 @@ DG.Audio = (function () {
       drums:   ['K','K','S','K','K','K','S','K','K','H','S','K','K','K','S','K'],
     },
 
+    // ── Per-member Elite Four themes — each their own iconic tune ──
+    // Aurora (ice): crystalline, shimmering, high & airy descents
+    BATTLE_ELITE_AURORA: {
+      bpm:182, root:880,
+      melody:  [0,3,7,3,0,-2,-5,-2, 0,5,8,5,3,0,-4,0],
+      bass:    [-12,-12,-9,-7, -5,-7,-9,-12],
+      harmony: [7,3, 8,7],
+      drums:   ['K','H','S','H','K','H','S','H','K','H','S','H','K','H','S','H'],
+    },
+    // Ember (fire): rapid, blazing, relentless ascending runs
+    BATTLE_ELITE_EMBER: {
+      bpm:196, root:440,
+      melody:  [0,2,3,5,7,9,11,12, 10,7,5,3,5,7,10,12],
+      bass:    [-12,-12,-5,-5, -7,-5,-12,-12],
+      harmony: [7,5, 9,7],
+      drums:   ['K','K','S','K','K','K','S','H','K','K','S','K','K','H','S','K'],
+    },
+    // Garnet (earth): heavy, grounded, weighty low stomps
+    BATTLE_ELITE_GARNET: {
+      bpm:176, root:587.33,
+      melody:  [0,0,-2,-4,-5,-4,-2,0, -5,-5,-7,-5,0,-2,-4,-5],
+      bass:    [-12,-12,-12,-12, -17,-12,-7,-12],
+      harmony: [7,3, 5,7],
+      drums:   ['K','K','S','K','K','-','S','K','K','K','S','-','K','K','S','K'],
+    },
+    // Phantom (dark): eerie, chromatic, wandering & dissonant
+    BATTLE_ELITE_PHANTOM: {
+      bpm:188, root:466.16,
+      melody:  [0,-1,-3,-4,-6,-7,-9,-10, -9,-7,-6,-4,-3,-1,0,2],
+      bass:    [-12,-13,-9,-10, -14,-12,-8,-12],
+      harmony: [6,3, 5,6],
+      drums:   ['K','H','S','K','K','H','S','K','K','H','S','K','H','H','S','K'],
+    },
+
     // ── VICTORY_NEW — win fanfare, loop:false, 180 bpm ───────
     // Root C5=523.25. C5=0,E5=4,G5=7,C6=12,G5=7,E6=16,D6=14
     VICTORY_NEW: {
