@@ -782,7 +782,13 @@ ROUTE_2A: {
   ],
   npcs:[
     { id:'R2A_CC_SIGN', name:'Sign', x:2, y:15, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:["◄ Side path: COMPOUND CITY","Home of the DinoFund — grow your money as you walk!"], onInteract:null },
+      movementType:'STATIONARY', dialogue:["◄ Side path: COMPOUND CITY","Home of Beachcoin — get rich quick, or get rugged!"], onInteract:null },
+    { id:'R2A_NIELS_FAN', name:'Crypto Bro', x:7, y:7, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'WANDER', dialogue:["You heading to Compound City? Talk to Daytrader Niels — the man's a GENIUS.","Beachcoin's gonna go to the moon AND back. I'm all in!"], onInteract:null },
+    { id:'R2A_NIELS_HATER', name:'Bitter Trainer', x:12, y:13, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["Niels? That snake took my last yen with his 'Beachcoin'.","Walked in rich, walked out with NOTHING. Stay away from that exchange."], onInteract:null },
+    { id:'R2A_NIELS_NEUTRAL', name:'Cautious Hiker', x:17, y:14, facing:'LEFT', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:["Some folks swear Beachcoin made them rich. Others lost everything.","Me? I only ever bet what I can afford to lose. Same with Niels' coin."], onInteract:null },
     { id:'R2A_TRAINER1', name:'Brett', x:5, y:7, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_1'], trainerRef:'HIKER_BRETT' },
     { id:'R2A_TRAINER2', name:'Stone', x:14, y:14, facing:'LEFT', spriteKey:'NPC_MAN',
@@ -839,6 +845,10 @@ ROUTE_2B: {
       movementType:'STATIONARY', dialogue:["I've seen people in black uniforms near Dustwall...", "They call themselves Team Extinction. Be careful on this route."], onInteract:null },
     { id:'R2B_TIP2', name:'Geologist', x:3, y:13, facing:'RIGHT', spriteKey:'NPC_WOMAN',
       movementType:'WANDER', dialogue:["Digclaw can teach you Cut once they learn it!", "Ground-type DinoMons are immune to Electric moves — useful to know!"], onInteract:null },
+    { id:'R2B_NIELS_FAN', name:'Hopeful Investor', x:12, y:3, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["My cousin bought Beachcoin off Daytrader Niels and made a fortune!","I'm walking to Compound City right now to get in. To the moon!"], onInteract:null },
+    { id:'R2B_NIELS_HATER', name:'Ruined Merchant', x:4, y:2, facing:'RIGHT', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["Don't believe the Beachcoin hype. Niels is a con man in a nice suit.","I lost my whole savings to that 'coin'. It crashed to zero overnight."], onInteract:null },
   ],
   encounterTable:{ grass:[
     { speciesId:'SANDCLAW',  minLv:10, maxLv:13, rate:30 },
@@ -4976,7 +4986,7 @@ DG.MAPS.FAIRYDELL_GYM = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// COMPOUND CITY — finance town (Daytrader Niels + DinoFund), side-town
+// COMPOUND CITY — finance town (Daytrader Niels + Beachcoin), side-town
 // off Route 2A. Not a gym; no badge gating.
 // ═══════════════════════════════════════════════════════════════
 DG.MAPS.COMPOUND_CITY = {
@@ -5017,12 +5027,12 @@ DG.MAPS.COMPOUND_CITY = {
       movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'NIELS_INTERN1', flagToHide:'TRAINER_NIELS_INTERN1_DEFEATED' },
     { id:'CC_T2', name:'Intern Bear', x:13, y:10, facing:'DOWN', spriteKey:'NPC_KID',
       movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'NIELS_INTERN2', flagToHide:'TRAINER_NIELS_INTERN2_DEFEATED' },
-    { id:'CC_NPC1', name:'Investor', x:3, y:9, facing:'RIGHT', spriteKey:'NPC_MAN',
-      movementType:'WANDER', dialogue:["Niels' DinoFund grows the longer your money sits — every step earns interest!","Compounding: small gains, repeated, become huge."], onInteract:null },
-    { id:'CC_NPC2', name:'Analyst', x:16, y:9, facing:'LEFT', spriteKey:'NPC_WOMAN',
-      movementType:'STATIONARY', dialogue:["Bull Market Boulevard never sleeps.","Deposit, walk, withdraw richer. That's the Compound City way."], onInteract:null },
+    { id:'CC_NPC1', name:'Beachcoin Bull', x:3, y:9, facing:'RIGHT', spriteKey:'NPC_MAN',
+      movementType:'WANDER', dialogue:["I put my whole wallet into Beachcoin and DOUBLED it! Well... almost. +50%, baby!","Diamond hands, kid. To the moon and back!"], onInteract:null },
+    { id:'CC_NPC2', name:'Burned Analyst', x:16, y:9, facing:'LEFT', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:["Beachcoin took everything I had. One visit it was up, the next... zero.","Niels calls it 'volatility'. I call it a rug pull. Never invest what you can't lose."], onInteract:null },
     { id:'CC_SIGN', name:'Sign', x:11, y:12, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:["Welcome to Compound City — home of the DinoFund.","Daytrader Niels invests in rising trainers. Battle his interns, then talk to Niels!"], onInteract:null },
+      movementType:'STATIONARY', dialogue:["Welcome to Compound City — home of Beachcoin.","Beat Daytrader Niels' interns, then beat Niels himself to trade at the DinoExchange.","Beachcoin's price changes every visit. Buy low, sell high — if you dare."], onInteract:null },
     { id:'CC_FOSSIL_LAB', name:'Fossil Lab', x:8, y:7, facing:'DOWN', spriteKey:'NPC_PROF',
       movementType:'STATIONARY',
       dialogue:["Welcome to the Compound City Fossil Lab!","Carrying a fossil? Walk with it until it stirs with life, then bring it here and I'll revive it into a DinoMon."],
@@ -5083,9 +5093,9 @@ DG.MAPS.COMPOUND_BANK = {
   ],
   npcs:[
     { id:'NIELS_BANK', name:'Daytrader Niels', x:6, y:1, facing:'DOWN', spriteKey:'NPC_PROF',
-      movementType:'STATIONARY', dialogue:['NIELS_GREET'], onInteract:'DINO_FUND' },
+      movementType:'STATIONARY', dialogue:['NIELS_GREET'], onInteract:'BEACHCOIN' },
     { id:'CB_TELLER', name:'Teller', x:9, y:1, facing:'DOWN', spriteKey:'NPC_WOMAN',
-      movementType:'STATIONARY', dialogue:["The DinoFund pays interest for every step you take while money is deposited.","The bigger your balance, the more each step earns. That's compounding!"], onInteract:null },
+      movementType:'STATIONARY', dialogue:["Beachcoin's price re-rolls every time you walk in here.","Best case you cash out +50%. Worst case it crashes to zero and it's gone for good.","My advice? Sell the moment you're up. Greed gets rugged."], onInteract:null },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 };

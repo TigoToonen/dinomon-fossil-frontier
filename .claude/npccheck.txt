@@ -1,0 +1,7 @@
+OK ROUTE_2A @ROUTE_2A(7,7) tile=1 adjFree=true
+OK ROUTE_2A @ROUTE_2A(12,13) tile=9 adjFree=true
+OK ROUTE_2A @ROUTE_2A(17,14) tile=1 adjFree=true
+OK ROUTE_2B @ROUTE_2B(12,3) tile=1 adjFree=true
+OK ROUTE_2B @ROUTE_2B(4,2) tile=9 adjFree=true
+OK COMPOUND_CITY @COMPOUND_CITY(3,9) tile=1 adjFree=true
+OK COMPOUND_CITY @COMPOUND_CITY(16,9) tile=1 adjFree=true

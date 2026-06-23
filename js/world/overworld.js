@@ -189,11 +189,8 @@ DG.Overworld = (function () {
     // Fossil incubation: carried fossils awaken after enough steps
     try { _incubateFossils(); } catch(e) {}
 
-    // DinoFund: deposited money compounds ~2% every 32 steps
-    if (_gs.player.fund && _gs.player.fund.balance > 0 && _gs.player.steps % 32 === 0) {
-      const f = _gs.player.fund;
-      f.balance = Math.min(9999999, f.balance + Math.max(1, Math.floor(f.balance * 0.02)));
-    }
+    // (The old risk-free step-compounding DinoFund was removed — Compound City now
+    //  runs on Daytrader Niels' volatile Beachcoin, see _beachcoin/_rollBeachcoin.)
 
     // Terrain footstep SFX — play every step (audio.js throttles volume)
     try {
@@ -444,17 +441,17 @@ DG.Overworld = (function () {
       return;
     }
 
-    // onInteract: DINO_FUND (Daytrader Niels)
-    if (npc.onInteract === 'DINO_FUND') {
-      _dinoFund();
+    // onInteract: BEACHCOIN (Daytrader Niels — his volatile cryptocoin)
+    if (npc.onInteract === 'BEACHCOIN') {
+      _beachcoin();
       return;
     }
 
     // onInteract: NIELS_CHALLENGE — beat the interns, then battle Niels for the
-    // Compound Card (+50% prize money). After he's beaten he runs the DinoFund.
+    // Compound Card (+50% prize money). After he's beaten he runs the Beachcoin exchange.
     if (npc.onInteract === 'NIELS_CHALLENGE') {
       const f = _gs.player.flags || {};
-      if (f['TRAINER_NIELS_BOSS_DEFEATED']) { _dinoFund(); return; }
+      if (f['TRAINER_NIELS_BOSS_DEFEATED']) { _beachcoin(); return; }
       const internsDone = f['TRAINER_NIELS_INTERN1_DEFEATED'] && f['TRAINER_NIELS_INTERN2_DEFEATED'];
       if (!internsDone) {
         DG.DialogueBox.show([
@@ -479,7 +476,7 @@ DG.Overworld = (function () {
               DG.DialogueBox.show([
                 "Daytrader Niels: Outstanding return! You've earned a seat at the big table.",
                 "You received the COMPOUND CARD!",
-                "Battle prize money is now boosted by 50%. Talk to me again to use the DinoFund."],
+                "Battle prize money is now boosted by 50%. Talk to me again to trade Beachcoin!"],
                 () => { _blocked = false; DG.SaveLoad.save(_gs); });
             } else {
               DG.DialogueBox.show([trainer.winDialogue || "A dip in your portfolio. Come back when you've diversified."],
@@ -2207,38 +2204,96 @@ DG.Overworld = (function () {
       () => { _blocked = false; });
   }
 
-  // ── Compound City: Daytrader Niels' DinoFund (compounding savings) ──
-  function _dinoFund() {
+  // ── Compound City: Daytrader Niels' Beachcoin (volatile cryptocoin) ──
+  // The coin re-rolls its value every time you enter the DinoExchange (see
+  // _rollBeachcoin, fired from _loadMap). You can cash out at most +50% over what
+  // you put in, but a roll can wipe you to ¥0 — and that money is gone for good.
+  const _BC_CAP        = 1.5;   // max sell value = 1.5× what you invested (+50%)
+  const _BC_RUG_CHANCE = 0.08;  // chance of a total crash to ¥0 per visit
+  const _BC_MIN_FACTOR = 0.70;  // per-visit swing: ×0.70 ..
+  const _BC_MAX_FACTOR = 1.45;  //                  .. ×1.45 (clamped to the cap)
+
+  function _rollBeachcoin() {
+    const p = _gs && _gs.player;
+    if (!p || !p.beachcoin) return;
+    const bc = p.beachcoin;
+    if (!(bc.value > 0)) { bc.lastSwing = null; return; }
+    const before = bc.value;
+    // Rug pull — total loss, principal gone for good.
+    if (Math.random() < _BC_RUG_CHANCE) {
+      bc.value = 0; bc.basis = 0;
+      bc.lastSwing = { type: 'rug', amount: before };
+      return;
+    }
+    const factor = _BC_MIN_FACTOR + Math.random() * (_BC_MAX_FACTOR - _BC_MIN_FACTOR);
+    const cap    = Math.round(bc.basis * _BC_CAP);
+    bc.value = Math.max(0, Math.min(cap, Math.round(before * factor)));
+    if (bc.value <= 0) bc.basis = 0;
+    const d = bc.value - before;
+    bc.lastSwing = { type: d > 0 ? 'surge' : (d < 0 ? 'dip' : 'flat'), amount: Math.abs(d) };
+  }
+
+  function _beachcoin() {
     const p = _gs.player;
-    p.fund = p.fund || { balance: 0 };
-    const bal = p.fund.balance, cash = p.money || 0;
-    DG.DialogueBox.show(
-      ['Daytrader Niels: Your DinoFund balance is ¥' + bal + '.',
-       'You hold ¥' + cash + ' in cash. It grows ~2% every 32 steps while deposited!'],
-      () => {
-        const opts = [];
-        if (cash >= 500)   opts.push('Deposit ¥500');
-        if (cash >= 2000)  opts.push('Deposit ¥2000');
-        if (cash >= 10000) opts.push('Deposit ¥10000');
-        if (bal > 0)       opts.push('Withdraw all (¥' + bal + ')');
-        opts.push('Leave');
-        if (typeof DG.Menu !== 'undefined' && DG.Menu.showChoiceMenu) {
-          DG.Menu.showChoiceMenu('DinoFund', opts, (idx) => {
-            const choice = opts[idx];
-            if (choice && choice.indexOf('Deposit') === 0) {
-              const amt = parseInt(choice.replace(/[^0-9]/g, ''), 10) || 0;
-              p.money = Math.max(0, (p.money || 0) - amt);
-              p.fund.balance += amt;
-              DG.SaveLoad.save(_gs);
-              DG.DialogueBox.show(['Deposited ¥' + amt + '!', 'Take a walk — compounding does the rest.'], () => { _blocked = false; });
-            } else if (choice && choice.indexOf('Withdraw') === 0) {
-              const w = p.fund.balance; p.money = (p.money || 0) + w; p.fund.balance = 0;
-              DG.SaveLoad.save(_gs);
-              DG.DialogueBox.show(['Withdrew ¥' + w + ' from the DinoFund!', 'Pleasure doing business.'], () => { _blocked = false; });
-            } else { _blocked = false; }
-          });
-        } else { _blocked = false; }
-      });
+    p.beachcoin = p.beachcoin || { value: 0, basis: 0, lastSwing: null };
+    const bc = p.beachcoin;
+    // One-time migration: refund any old DinoFund balance as cash.
+    if (p.fund && p.fund.balance > 0) { p.money = (p.money || 0) + p.fund.balance; }
+    if (p.fund) delete p.fund;
+    const cash = p.money || 0;
+
+    const lines = [];
+    // Report the price swing since the last time the exchange re-rolled.
+    if (bc.lastSwing) {
+      const s = bc.lastSwing;
+      if (s.type === 'rug')        lines.push("Daytrader Niels: ...oof. RUG PULL.", "Beachcoin crashed to zero overnight. Your ¥" + s.amount + " is gone — for good.");
+      else if (s.type === 'surge') lines.push("Daytrader Niels: TO THE MOON! 🚀", "Beachcoin pumped +¥" + s.amount + " since you last left!");
+      else if (s.type === 'dip')   lines.push("Daytrader Niels: Brutal session — Beachcoin shed ¥" + s.amount + " since you left.");
+      else                          lines.push("Daytrader Niels: Beachcoin held flat since you left. Calm before the moon?");
+      bc.lastSwing = null;
+    } else {
+      lines.push("Daytrader Niels: Welcome to the DinoExchange — home of Beachcoin!", "My own coin. To the moon and back, kid — or to zero. The market decides!");
+    }
+    lines.push(
+      "Your Beachcoin: ¥" + bc.value + (bc.basis > 0 ? " (you put in ¥" + bc.basis + ")" : ""),
+      "Cash on hand: ¥" + cash + "."
+    );
+
+    DG.DialogueBox.show(lines, () => {
+      const opts = [];
+      if (cash >= 500)   opts.push('Buy ¥500');
+      if (cash >= 2000)  opts.push('Buy ¥2000');
+      if (cash >= 10000) opts.push('Buy ¥10000');
+      if (cash > 0)      opts.push('Buy ALL (¥' + cash + ')');
+      if (bc.value > 0)  opts.push('Sell all (¥' + bc.value + ')');
+      opts.push('Leave');
+      if (typeof DG.Menu !== 'undefined' && DG.Menu.showChoiceMenu) {
+        DG.Menu.showChoiceMenu('Beachcoin', opts, (idx) => {
+          const choice = opts[idx];
+          if (choice && choice.indexOf('Buy') === 0) {
+            let amt = (choice.indexOf('ALL') >= 0) ? (p.money || 0)
+                                                   : (parseInt(choice.replace(/[^0-9]/g, ''), 10) || 0);
+            amt = Math.min(amt, p.money || 0);
+            if (amt <= 0) { _blocked = false; return; }
+            p.money   = Math.max(0, (p.money || 0) - amt);
+            bc.value += amt;
+            bc.basis += amt;
+            DG.SaveLoad.save(_gs);
+            DG.DialogueBox.show([
+              'You bought ¥' + amt + ' of Beachcoin!',
+              "Niels: Diamond hands! The price moves every time you visit — sell high if you can."
+            ], () => { _blocked = false; });
+          } else if (choice && choice.indexOf('Sell') === 0) {
+            const w = bc.value; p.money = (p.money || 0) + w; bc.value = 0; bc.basis = 0;
+            DG.SaveLoad.save(_gs);
+            DG.DialogueBox.show([
+              w > 0 ? ('You sold all your Beachcoin for ¥' + w + '!') : 'There was nothing to sell.',
+              w > 0 ? "Niels: Pleasure doing business. The moon misses you already." : "Niels: Come back when you're feeling brave."
+            ], () => { _blocked = false; });
+          } else { _blocked = false; }
+        });
+      } else { _blocked = false; }
+    });
   }
 
   // ── Navigation HUD state ──────────────────────────────────
@@ -2251,11 +2306,20 @@ DG.Overworld = (function () {
       console.error('[Overworld] Map not found:', mapId);
       return;  // _mapData is preserved — old map stays visible
     }
-    const _changed = (!_mapData || _mapData.id !== newData.id);
+    const _prevId  = _mapData ? _mapData.id : null;
+    const _changed = (_prevId !== newData.id);
     _mapData = newData;
 
     // Force navigation recompute for the new map
     if (_changed) { _navCache = null; }
+
+    // Beachcoin re-rolls its price every time you ARRIVE in Compound City from
+    // outside the town (Route 2A) — not when you step out of its bank/center.
+    // This keeps "the price changes every visit" while preventing re-roll spam.
+    if (newData.id === 'COMPOUND_CITY' &&
+        _prevId !== 'COMPOUND_CITY' && _prevId !== 'COMPOUND_BANK' && _prevId !== 'COMPOUND_CENTER') {
+      try { _rollBeachcoin(); } catch(e) {}
+    }
 
     // Auto-place a route signpost at the city-facing entrance (once per map)
     try { _injectRouteSign(newData); } catch(e) {}

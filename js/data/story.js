@@ -587,9 +587,10 @@ DG.STORY.DIALOGUES = {
   ],
 
   NIELS_GREET: [
-    "Daytrader Niels here — welcome to the DinoFund!",
-    "Deposit your DinoDollars and they earn interest with every step you take.",
-    "Compounding is the eighth wonder of the world, kid. Let's make you rich.",
+    "Daytrader Niels here — and have I got a coin for you!",
+    "I designed my own cryptocurrency: Beachcoin. To the moon and back, kid!",
+    "Buy in at the DinoExchange. The price swings every single visit —",
+    "you could cash out fifty percent richer... or lose the lot. That's the thrill!",
   ],
 
   HEALER_DONE: [
