@@ -1818,7 +1818,7 @@ ROUTE_8A: {
     { id:'R8A_TIP1', name:'Dragon Scout', x:3, y:2, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:["Ptryx and its evolutions soar on these storm cliffs!", "Dragon types hit almost everything neutrally — very few resistances."], onInteract:null },
     { id:'R8A_TIP2', name:'Summit Climber', x:16, y:29, facing:'LEFT', spriteKey:'NPC_WOMAN',
-      movementType:'WANDER', dialogue:["Apex Summit is near — Gym 8 is the final test!", "Bipolar Fieke uses a mixed team. Bring your strongest and most versatile DinoMons!"], onInteract:null },
+      movementType:'WANDER', dialogue:["Apex Summit is near — Gym 9 is the final test!", "Bipolar Fieke uses a mixed team. Bring your strongest and most versatile DinoMons!"], onInteract:null },
   ],
   encounterTable:{ grass:[
     { speciesId:'PTRYX',     minLv:44, maxLv:48, rate:35 },

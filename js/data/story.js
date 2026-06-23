@@ -339,7 +339,7 @@ DG.STORY.DIALOGUES = {
     "The trees have long memories. They know something dark is coming.",
   ],
 
-  // Gym 5 — Terra (Ground) — Stonehaven — Bedrock Badge
+  // Gym 6 — Terra (Ground) — Stonehaven — Bedrock Badge
   GYM_TERRA_POST: [
     "The ground shook... but so did you. And you held firm. Remarkable.",
     "Accept the Bedrock Badge — your foundation is solid.",
@@ -348,7 +348,7 @@ DG.STORY.DIALOGUES = {
     "They're searching for something in the deep places of the earth. I shudder to think what.",
   ],
 
-  // Gym 6 — Volt (Electric) — Crestfall — Static Badge
+  // Gym 7 — Volt (Electric) — Crestfall — Static Badge
   GYM_VOLT_PRE: [
     "You've got nerve, coming to challenge me in this storm.",
     "My Electric-type DinoMons are charged and ready to strike.",
@@ -363,7 +363,7 @@ DG.STORY.DIALOGUES = {
     "Whatever they're planning, they don't want anyone calling for help.",
   ],
 
-  // Gym 7 — Marina (Water) — Bogmire — Tide Badge
+  // Gym 8 — Marina (Water) — Bogmire — Tide Badge
   GYM_MARINA_POST: [
     "Ha... you really can ride the wave. Well done.",
     "Take the Tide Badge — you've earned it.",
@@ -373,7 +373,7 @@ DG.STORY.DIALOGUES = {
     "Whatever they're looking for out there, don't let them find it first.",
   ],
 
-  // Gym 8 — Valdez (Dragon) — Apex Summit — Scale Badge
+  // Gym 9 — Valdez (Dragon) — Apex Summit — Scale Badge
   GYM_VALDEZ_POST: [
     "That was a battle worthy of the Summit.",
     "Take the Scale Badge — as sharp as a dragon's claw.",
@@ -1043,22 +1043,23 @@ DG.STORY.FLAGS = {
   GAME_STARTED:              'GAME_STARTED',
   STARTER_CHOSEN:            'STARTER_CHOSEN',
   LEFT_AMBERTOWN:            'LEFT_AMBERTOWN',
-  BADGE_1:                   'BADGE_1',   // Herd Badge     — Rex,        Shellcreek (Normal)
-  BADGE_2:                   'BADGE_2',   // Fossil Badge   — Ridley,     Dustwall   (Rock)
-  BADGE_3:                   'BADGE_3',   // Magma Badge    — Ignis,      Pyreside   (Fire)
-  BADGE_4:                   'BADGE_4',   // Canopy Badge   — Sylva,      Ferngrove  (Grass)
-  BADGE_5:                   'BADGE_5',   // Bedrock Badge  — Terra,      Stonehaven (Ground)
-  BADGE_6:                   'BADGE_6',   // Static Badge   — Volt,       Crestfall  (Electric)
-  BADGE_7:                   'BADGE_7',   // Tide Badge     — Marina,     Bogmire    (Water)
-  BADGE_8:                   'BADGE_8',   // Scale Badge    — Valdez,     Apex Summit (Dragon)
+  BADGE_1:                   'BADGE_1',   // Herd Badge     — Normal Normi,        Shellcreek (Normal)
+  BADGE_2:                   'BADGE_2',   // Fossil Badge   — Jam Sennings,     Dustwall   (Rock)
+  BADGE_3:                   'BADGE_3',   // Magma Badge    — Asset Toverdijk,      Pyreside   (Fire)
+  BADGE_4:                   'BADGE_4',   // Canopy Badge   — PuKing Maarten,      Ferngrove  (Grass)
+  BADGE_5:                   'BADGE_5',   // Charm Badge    — AFK Jorn, Fairydell (Fairy)
+  BADGE_6:                   'BADGE_6',   // Bedrock Badge  — Rock Hard Toonen, Stonehaven (Ground)
+  BADGE_7:                   'BADGE_7',   // Static Badge   — Beyblade Luuk, Crestfall (Electric)
+  BADGE_8:                   'BADGE_8',   // Tide Badge     — Surfing Peter, Bogmire (Water)
+  BADGE_9:                   'BADGE_9',   // Scale Badge    — Bipolar Fieke, Apex Summit (Dragon)
   // Field move unlock flags (set after each corresponding gym badge is awarded)
   ROCK_SMASH_UNLOCKED:       'ROCK_SMASH_UNLOCKED',  // Gym 2 — Fossil Badge
   FLASH_UNLOCKED:            'FLASH_UNLOCKED',        // Gym 3 — Magma Badge
   CUT_UNLOCKED:              'CUT_UNLOCKED',          // Gym 4 — Canopy Badge
-  STRENGTH_UNLOCKED:         'STRENGTH_UNLOCKED',     // Gym 5 — Bedrock Badge
-  FLY_UNLOCKED:              'FLY_UNLOCKED',          // Gym 6 — Static Badge
-  SURF_UNLOCKED:             'SURF_UNLOCKED',         // Gym 7 — Tide Badge
-  DIVE_UNLOCKED:             'DIVE_UNLOCKED',         // Gym 8 — Scale Badge
+  STRENGTH_UNLOCKED:         'STRENGTH_UNLOCKED',     // Gym 6 — Bedrock Badge
+  FLY_UNLOCKED:              'FLY_UNLOCKED',          // Gym 7 — Static Badge
+  SURF_UNLOCKED:             'SURF_UNLOCKED',         // Gym 8 — Tide Badge
+  DIVE_UNLOCKED:             'DIVE_UNLOCKED',         // Gym 9 — Scale Badge
   RIVAL_BATTLE_1_DONE:       'RIVAL_BATTLE_1_DONE',
   RIVAL_BATTLE_2_DONE:       'RIVAL_BATTLE_2_DONE',
   RIVAL_BATTLE_3_DONE:       'RIVAL_BATTLE_3_DONE',
@@ -1088,12 +1089,12 @@ DG.STORY.EVENTS = {
   MOM_FAREWELL:           { flag: 'STARTER_CHOSEN',                mapId: 'AMBERTOWN',     trigger: 'interact' },
   GRUNT_AMBUSH_ROUTE3:    { flag: 'LEFT_AMBERTOWN',                mapId: 'ROUTE_3',       trigger: 'auto'     },
   CMD_TRIASSIC_FIGHT_1:   { flag: 'LEFT_AMBERTOWN',                mapId: 'ROUTE_3',       trigger: 'auto'     },
-  // CMD_JURASSIC triggers after Gym 5 (Bedrock Badge — Terra, Stonehaven)
-  CMD_JURASSIC_FIGHT:     { flag: 'BADGE_5',                       mapId: 'STONEHAVEN',    trigger: 'auto'     },
-  // CMD_CRETACEOUS triggers after Gym 7 (Tide Badge — Marina, Bogmire)
-  CMD_CRETACEOUS_FIGHT:   { flag: 'BADGE_7',                       mapId: 'BOGMIRE',       trigger: 'auto'     },
-  // CMD_TRIASSIC 2nd fight triggers after Gym 6 (Static Badge — Volt, Crestfall)
-  CMD_TRIASSIC_FIGHT_2:   { flag: 'BADGE_6',                       mapId: 'ROUTE_8',       trigger: 'auto'     },
+  // CMD_JURASSIC triggers after Gym 6 (Bedrock Badge — Rock Hard Toonen, Stonehaven)
+  CMD_JURASSIC_FIGHT:     { flag: 'BADGE_6',                       mapId: 'STONEHAVEN',    trigger: 'auto'     },
+  // CMD_CRETACEOUS triggers after Gym 8 (Tide Badge — Surfing Peter, Bogmire)
+  CMD_CRETACEOUS_FIGHT:   { flag: 'BADGE_8',                       mapId: 'BOGMIRE',       trigger: 'auto'     },
+  // CMD_TRIASSIC 2nd fight triggers after Gym 7 (Static Badge — Beyblade Luuk, Crestfall)
+  CMD_TRIASSIC_FIGHT_2:   { flag: 'BADGE_7',                       mapId: 'ROUTE_8',       trigger: 'auto'     },
   FINAL_CLIMB:            { flag: 'BADGE_8',                       mapId: 'MT_CRETACEOUS', trigger: 'auto'     },
   DIRECTOR_CLADE_FIGHT:   { flag: 'CMD_CRETACEOUS_DEFEATED',       mapId: 'MT_CRETACEOUS', trigger: 'auto'     },
   ENDGAME_CUTSCENE:       { flag: 'DIRECTOR_CLADE_DEFEATED',       mapId: 'MT_CRETACEOUS', trigger: 'auto'     },

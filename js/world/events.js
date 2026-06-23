@@ -396,13 +396,13 @@ DG.Events = (function () {
         _startCutsceneTriassic(gs, function() {});
       }
     }
-    // Jurassic: Route 6, needs Badge 5
+    // Jurassic: Route 6, needs Badge 6
     if (mapId === 'ROUTE_6' && playerX >= 8 && playerX <= 14 && playerY >= 5 && playerY <= 8) {
       if (flags['BADGE_6'] && !flags['EVENT_JURASSIC_DONE'] && !_cutscene) {
         _startCutsceneJurassic(gs, function() {});
       }
     }
-    // Cretaceous: Route 9, needs Badge 7
+    // Cretaceous: Route 9, needs Badge 8
     if (mapId === 'ROUTE_9' && playerX >= 8 && playerX <= 14 && playerY >= 5 && playerY <= 8) {
       if (flags['BADGE_8'] && !flags['EVENT_CRETACEOUS_DONE'] && !_cutscene) {
         _startCutsceneCretaceous(gs, function() {});
