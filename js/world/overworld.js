@@ -2212,8 +2212,17 @@ DG.Overworld = (function () {
       mon.caughtAt     = 'Fossil Museum';
       mon.caughtAtLevel = 20;
     }
-    const perfectIVs = mon ? statKeys30(mon.ivs) : 3;
-    const isShiny = !!(mon && mon.isShiny);
+    // Safety net: if the species data were ever missing, bail gracefully instead
+    // of pushing a null DinoMon into the party.
+    if (!mon) {
+      DG.DialogueBox.show(
+        ["The fossil flickers... but the revival fails to take hold.",
+         "Director Vance: Strange — bring it back another time."],
+        () => { _blocked = false; });
+      return;
+    }
+    const perfectIVs = statKeys30(mon.ivs);
+    const isShiny = !!mon.isShiny;
 
     // The actual revival, applied once the cinematic finishes.
     const _finishRevive = () => {
@@ -2223,9 +2232,7 @@ DG.Overworld = (function () {
       DG.SaveLoad.removeItem(_gs, fid, 1);
       if (_gs.player.flags) delete _gs.player.flags['FOSSIL_READY_' + fid];
       if (_gs.player.fossilSteps) _gs.player.fossilSteps[fid] = 0;
-      try { DG.SaveLoad.markCaught(_gs, species, isShiny); } catch(e) {
-        try { DG.SaveLoad.markCaught(_gs, species); } catch(e2) {}
-      }
+      try { DG.SaveLoad.markCaught(_gs, species); } catch(e) {}
       DG.SaveLoad.save(_gs);
       const lines = ['The ancient spark takes hold...'];
       if (isShiny) lines.push('Incredible — a SHINY ' + spName + ' emerged from the amber!!');
@@ -2236,7 +2243,7 @@ DG.Overworld = (function () {
     };
 
     // Epic "Primordial Awakening" cinematic, then complete the revival.
-    if (mon && typeof DG.HatchAnim !== 'undefined' && DG.HatchAnim.start) {
+    if (typeof DG.HatchAnim !== 'undefined' && DG.HatchAnim.start) {
       _blocked = true;
       DG.DialogueBox.show(
         ['Director Vance sets the fossil into the incubation pod...',
