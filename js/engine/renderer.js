@@ -1955,24 +1955,30 @@ DG.Renderer = (function () {
       const col = ECOL[nm] || (cls === 'Champion' ? '#c89cff' : '#ffd24a');
       const sceneH = Math.floor(H * 0.66);
       ctx.save();
-      // 1) arena darkening — spotlight mood, dims the ordinary field
-      ctx.fillStyle = 'rgba(6,4,18,0.20)';
+      // 1) arena darkening — turns the ordinary field into a spotlit duel
+      ctx.fillStyle = 'rgba(4,2,16,0.34)';
       ctx.fillRect(0, 0, W, sceneH);
-      // 2) strong themed edge-vignette breathing around the duel
-      const pulse = 0.24 + 0.08 * Math.sin(_animOff * 0.06);
-      const vg = ctx.createRadialGradient(W / 2, H * 0.40, H * 0.18, W / 2, H * 0.40, H * 0.82);
+      // 2) themed light beam pouring down from the top
+      const beam = ctx.createLinearGradient(0, 0, 0, H * 0.5);
+      beam.addColorStop(0, _hexRGBA(col, 0.30));
+      beam.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = beam;
+      ctx.fillRect(0, 0, W, Math.floor(H * 0.5));
+      // 3) strong themed edge-vignette breathing around the duel
+      const pulse = 0.30 + 0.12 * Math.sin(_animOff * 0.06);
+      const vg = ctx.createRadialGradient(W / 2, H * 0.40, H * 0.16, W / 2, H * 0.40, H * 0.80);
       vg.addColorStop(0, 'rgba(0,0,0,0)');
-      vg.addColorStop(0.6, _hexRGBA(col, pulse * 0.4));
-      vg.addColorStop(1, _hexRGBA(col, pulse));
+      vg.addColorStop(0.55, _hexRGBA(col, pulse * 0.35));
+      vg.addColorStop(1, _hexRGBA(col, pulse + 0.18));
       ctx.fillStyle = vg;
       ctx.fillRect(0, 0, W, sceneH);
-      // 3) bright element motes drifting upward (colored halo + white core)
-      for (let i = 0; i < 14; i++) {
+      // 4) bright element motes drifting upward (colored halo + white core)
+      for (let i = 0; i < 16; i++) {
         const px = ((i * 71 + 17) % 100) / 100 * W;
-        const py = (H * 0.62) - ((_animOff * 0.5 + i * 29) % (H * 0.62 + 16));
-        const tw = 0.35 + 0.4 * (0.5 + 0.5 * Math.sin(_animOff * 0.12 + i));
-        const s = (i % 4 === 0) ? 3 : 2;
-        ctx.globalAlpha = tw * 0.5;
+        const py = (H * 0.62) - ((_animOff * 0.55 + i * 27) % (H * 0.62 + 16));
+        const tw = 0.45 + 0.45 * (0.5 + 0.5 * Math.sin(_animOff * 0.12 + i));
+        const s = (i % 4 === 0) ? 4 : 2;
+        ctx.globalAlpha = tw * 0.55;
         ctx.fillStyle = col;
         ctx.fillRect(px - 1, py - 1, s + 2, s + 2);
         ctx.globalAlpha = tw;
