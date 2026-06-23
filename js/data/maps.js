@@ -4215,7 +4215,7 @@ DG.MAPS.PYRESIDE_WEST_HOUSE = _townHome('PYRESIDE_WEST_HOUSE','Pyreside Home','P
 DG.MAPS.PYRESIDE_EAST_HOUSE = _townHome('PYRESIDE_EAST_HOUSE','Pyreside Cottage','PYRESIDE_CITY',12,9,
   'Old Miner','NPC_MAN',["The volcano's glow keeps our home warm through the night.","Dig deep and you'll find Fire DinoMon love the heat."]);
 DG.MAPS.FERNGROVE_HOUSE = _townHome('FERNGROVE_HOUSE','Ferngrove Home','FERNGROVE_TOWN',3,9,
-  'Resident','NPC_WOMAN',["Welcome to Ferngrove! Our forest is full of Grass-type DinoMon.","Sylva's Gym is the heart of our little town."]);
+  'Resident','NPC_WOMAN',["Welcome to Ferngrove! Our forest is full of Grass-type DinoMon.","PuKing Maarten's Gym is the heart of our little town."]);
 DG.MAPS.CRESTFALL_HOUSE = _townHome('CRESTFALL_HOUSE','Crestfall Home','CRESTFALL_TOWN',3,9,
   'Resident','NPC_MAN',["Crestfall's storms power Volt's Electric Gym.","Mind the lightning when the sky turns dark!"]);
 DG.MAPS.BOGMIRE_HOUSE = _townHome('BOGMIRE_HOUSE','Bogmire Home','BOGMIRE_CITY',3,9,
