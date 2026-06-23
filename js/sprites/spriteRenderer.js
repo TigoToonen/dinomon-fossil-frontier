@@ -4869,12 +4869,103 @@ DG.SpriteRenderer = (function () {
     ctx.restore();
   }
 
+  // ── Elite Four / Champion STADIUM frame ───────────────────────
+  // Drawn over the biome backdrop to turn the field into a grand arena:
+  // tiered crowd stands, colossal pillars with hanging banners, converging
+  // spotlights and rising element embers — tinted to each member's element.
+  function _eliteHexA(hex, a) {
+    hex = hex.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16),
+          g = parseInt(hex.substr(2, 2), 16),
+          b = parseInt(hex.substr(4, 2), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  }
+  function _drawEliteArena(ctx, W, H, anim, cfg) {
+    const acc = cfg.accent;
+    const A = (a) => _eliteHexA(acc, a);
+    ctx.save();
+    // 1) arena back wall — darker upper band for depth
+    const wall = ctx.createLinearGradient(0, 0, 0, H * 0.36);
+    wall.addColorStop(0, 'rgba(8,8,16,0.55)');
+    wall.addColorStop(1, 'rgba(8,8,16,0)');
+    ctx.fillStyle = wall;
+    ctx.fillRect(0, 0, W, Math.floor(H * 0.36));
+    // 2) tiered crowd stands with twinkling accent specks
+    for (let row = 0; row < 3; row++) {
+      const ry = 5 + row * 9;
+      ctx.fillStyle = 'rgba(14,14,26,0.72)';
+      ctx.fillRect(0, ry, W, 7);
+      for (let cx = 4; cx < W; cx += 10) {
+        const tw = Math.sin(anim * 0.05 + cx * 0.7 + row) * 0.5 + 0.5;
+        ctx.globalAlpha = 0.22 + 0.5 * tw;
+        ctx.fillStyle = A(0.7);
+        ctx.fillRect(cx + (row % 2) * 4, ry + 2, 2, 2);
+      }
+      ctx.globalAlpha = 1;
+    }
+    // 3) grand pillars at both edges with hanging banners
+    const pillarH = Math.floor(H * 0.62), pw = 22;
+    [0, W - pw].forEach((px) => {
+      const pg = ctx.createLinearGradient(px, 0, px + pw, 0);
+      pg.addColorStop(0, A(0.32)); pg.addColorStop(0.5, A(0.15)); pg.addColorStop(1, A(0.32));
+      ctx.fillStyle = pg; ctx.fillRect(px, 0, pw, pillarH);
+      ctx.fillStyle = A(0.5);
+      ctx.fillRect(px - 3, 0, pw + 6, 8);
+      ctx.fillRect(px - 3, pillarH - 8, pw + 6, 8);
+      const bx = px + pw / 2 - 5;
+      ctx.fillStyle = A(0.55);
+      ctx.fillRect(bx, 10, 10, 44);
+      ctx.beginPath();
+      ctx.moveTo(bx, 54); ctx.lineTo(bx + 5, 60); ctx.lineTo(bx + 10, 54); ctx.closePath(); ctx.fill();
+    });
+    // 4) converging spotlight beams from the top
+    [W * 0.18, W * 0.82].forEach((sx, i) => {
+      const tx = W * 0.5, ty = H * 0.30;
+      ctx.globalAlpha = 0.10 + 0.05 * Math.sin(anim * 0.05 + i);
+      const bg = ctx.createLinearGradient(sx, 0, tx, ty);
+      bg.addColorStop(0, A(0.55)); bg.addColorStop(1, A(0));
+      ctx.fillStyle = bg;
+      ctx.beginPath();
+      ctx.moveTo(sx - 14, 0); ctx.lineTo(sx + 14, 0);
+      ctx.lineTo(tx + 30, ty); ctx.lineTo(tx - 30, ty); ctx.closePath(); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    // 5) rising element embers
+    for (let i = 0; i < 10; i++) {
+      const px = ((i * 83 + 11) % 100) / 100 * W;
+      const py = (H * 0.6) - ((anim * 0.6 + i * 37) % (H * 0.6));
+      ctx.globalAlpha = 0.3 + 0.3 * Math.sin(anim * 0.1 + i);
+      ctx.fillStyle = acc;
+      ctx.fillRect(px, py, 2, 2);
+    }
+    ctx.restore();
+  }
+
   function drawBattleScene(ctx, playerMon, enemyMon, animOffset, playerOffset, enemyOffset) {
     playerOffset = playerOffset || { x: 0, y: 0 };
     enemyOffset  = enemyOffset  || { x: 0, y: 0 };
     const W = DG.CANVAS.W, H = DG.CANVAS.H;
-    const theme = window.DG_MAP_THEME || 'DEFAULT';
     const anim  = animOffset || 0;
+    // ── Elite Four / Champion stadium: distinct biome backdrop + arena frame ──
+    let _elite = null;
+    {
+      const _b  = (DG.Battle && DG.Battle.getBattle) ? DG.Battle.getBattle() : null;
+      const _td = _b && _b.trainerData;
+      if (_td && (_td.class === 'Elite Four' || _td.class === 'Champion')) {
+        if (_td.class === 'Champion') {
+          _elite = { biome: 'DRAGON', accent: '#c89cff', label: 'CHAMPION' };
+        } else {
+          _elite = ({
+            'Aurora':  { biome: 'TUNDRA',   accent: '#7ec8ff', label: 'AURORA' },
+            'Ember':   { biome: 'VOLCANIC', accent: '#ff7a3a', label: 'EMBER' },
+            'Garnet':  { biome: 'GRANITE',  accent: '#e0b060', label: 'GARNET' },
+            'Phantom': { biome: 'DRAGON',   accent: '#b070e0', label: 'PHANTOM' },
+          })[_td.name] || null;
+        }
+      }
+    }
+    const theme  = _elite ? _elite.biome : (window.DG_MAP_THEME || 'DEFAULT');
+    const _bgKey = _elite ? ('ELITE_' + _elite.label) : theme;
 
     // ── FASE 11: de complete achtergrond rendert naar een half-res
     // offscreen canvas (alle bestaande biome-code blijft ongewijzigd),
@@ -4884,11 +4975,11 @@ DG.SpriteRenderer = (function () {
     // skip-frames gaat alle inline tekenwerk naar een wegwerp-canvasje
     // en blitten we de vorige (al geposterizede) achtergrond.
     const _realCtx = ctx;
-    const _bgRedraw = _BG.lastStamp === undefined || _BG.lastTheme !== theme ||
+    const _bgRedraw = _BG.lastStamp === undefined || _BG.lastTheme !== _bgKey ||
                       anim - _BG.lastStamp >= 2 || anim < _BG.lastStamp;
     if (_bgRedraw) {
       _BG.lastStamp = anim;
-      _BG.lastTheme = theme;
+      _BG.lastTheme = _bgKey;
       ctx = _bgCtx();
       ctx.setTransform(0.5, 0, 0, 0.5, 0, 0);
       ctx.clearRect(0, 0, W, H);
@@ -5387,6 +5478,9 @@ DG.SpriteRenderer = (function () {
       ctx.fillStyle=pplatGrad; ctx.beginPath(); ctx.ellipse(ppX+52,ppY+30,56,14,0,0,Math.PI*2); ctx.fill();
       ctx.fillStyle='#5a9444'; ctx.beginPath(); ctx.ellipse(ppX+52,ppY+24,56,8,0,0,Math.PI*2); ctx.fill();
     }
+
+    // ── Elite Four / Champion stadium frame (over the biome backdrop) ──
+    if (_elite) _drawEliteArena(ctx, W, H, anim, _elite);
 
     // ── Celestial body overlay (sun / moon / stars) ───────────
     {
