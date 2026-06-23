@@ -40,6 +40,7 @@ function runBattle(party, enemyConfig, pick, opts){
   let frames = 0, turns = 0;
   let enemyStatusSeen = null, playerStatusSeen = null;
   const hitCounts = [];           // numbers parsed from "Hit N times!"
+  const enemyHpLog = [];          // enemy hp.current snapshotted at each PLAYER_INPUT
   while(frames++ < (opts.maxFrames||8000)){
     B.update(16);
     const cm = B.currentMessage();
@@ -63,12 +64,13 @@ function runBattle(party, enemyConfig, pick, opts){
         B.submitPlayerAction({ type:'SWITCH', targetIndex: idx>=0?idx:0 });
         continue;
       }
+      if(bt && bt.enemyMon) enemyHpLog.push(bt.enemyMon.hp.current);
       if(++turns > (opts.maxTurns||40)){ B.submitPlayerAction({type:'RUN'}); continue; }
       const act = pick(B.getBattle(), turns);
       B.submitPlayerAction(act);
     }
   }
-  return { log, ended, result, frames, battle: B.getBattle(), enemyStatusSeen, playerStatusSeen, hitCounts };
+  return { log, ended, result, frames, battle: B.getBattle(), enemyStatusSeen, playerStatusSeen, hitCounts, enemyHpLog };
 }
 
 // ── Assertions framework ─────────────────────────────────────
@@ -160,6 +162,70 @@ console.log('═══ DinoMon battle simulator ═══');
   }
   // chance ~30%/hit over up to 8 hits → burn should appear in the large majority of battles
   check(`${cand.id} (BURN_CHANCE) inflicts burn`, burned >= trials*0.6, `${burned}/${trials} battles burned`);
+})();
+
+// TEST 6 — Semi-invulnerability: a charging FLY user can't be hit that turn.
+(function(){
+  console.log('\n[6] Semi-invuln: FLY user is untouchable on its charge turn');
+  if(!DG.MOVES.FLY){ check('FLY exists', false); return; }
+  let avoided=0, trials=8;
+  for(let i=0;i<trials;i++){
+    const atk = mon(anySpecies(), 95, ['FLY'], 9999);          // fast (high level) → charges first
+    const enemy = mon(SP[2]||SP[0], 40, ['TACKLE'], 9999);
+    const r = runBattle([atk], { type:'WILD', enemy },
+      (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:3, maxFrames:5000});
+    if(r.log.some(l=>/avoided the attack|flew up|protected|avoided/i.test(l))) avoided++;
+  }
+  check('FLY grants semi-invulnerability on the charge turn', avoided >= trials*0.6, `${avoided}/${trials} battles showed an avoided hit`);
+})();
+
+// TEST 7 — Recharge: after HYPER_BEAM the user must recharge next turn.
+(function(){
+  console.log('\n[7] Recharge: HYPER_BEAM forces a recharge turn');
+  if(!DG.MOVES.HYPER_BEAM){ check('HYPER_BEAM exists', false); return; }
+  const atk = mon(anySpecies(), 95, ['HYPER_BEAM'], 99999);
+  const enemy = mon(SP[2]||SP[0], 60, ['TACKLE'], 99999);
+  const r = runBattle([atk], { type:'WILD', enemy }, (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:4, maxFrames:6000});
+  check('HYPER_BEAM triggers "must recharge!"', r.log.some(l=>/recharge/i.test(l)), 'log: '+JSON.stringify(r.log.filter(l=>/recharge|Hyper/i.test(l))));
+})();
+
+// TEST 8 — Type immunity: an Electric move does NOTHING to a Ground type.
+(function(){
+  console.log('\n[8] Type immunity: Electric vs Ground deals 0 damage');
+  const elec = Object.values(DG.MOVES).find(m=>m.type==='ELECTRIC'&&(m.category==='SPECIAL'||m.category==='PHYSICAL')&&m.power>0);
+  const ground = Object.keys(DG.SPECIES).find(id=>{const t=DG.SPECIES[id].types||[]; return t.includes('GROUND')&&!t.includes('FLYING');});
+  if(!elec||!ground){ check('found electric move + ground species', false); return; }
+  const atk = mon(anySpecies(), 90, [elec.id], 9999);
+  const enemy = mon(ground, 50, ['TACKLE'], 99999);
+  const startHp = enemy.hp.current;
+  const r = runBattle([atk], { type:'WILD', enemy }, (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:2, maxFrames:4000});
+  const dmg = startHp - (r.enemyHpLog.length ? r.enemyHpLog[r.enemyHpLog.length-1] : startHp);
+  const immuneMsg = r.log.some(l=>/doesn'?t affect|no effect|not affect|immune/i.test(l));
+  check(`${elec.id} does 0 damage to ${ground} (Ground)`, dmg===0, `dealt ${dmg}`);
+  check('immunity message shown', immuneMsg, 'log: '+JSON.stringify(r.log.slice(0,8)));
+})();
+
+// TEST 9 — Stat stages affect damage: +2 Atk (Swords Dance) ~doubles physical damage.
+(function(){
+  console.log('\n[9] Stat stages: +2 Atk via SWORDS_DANCE increases physical damage');
+  if(!DG.MOVES.SWORDS_DANCE || !DG.MOVES.TACKLE){ check('SWORDS_DANCE + TACKLE exist', false); return; }
+  const ground = Object.keys(DG.SPECIES).find(id=>{const t=DG.SPECIES[id].types||[]; return t.includes('GROUND')&&!t.includes('FLYING');}) || SP[0];
+  function avg(a){ return a.reduce((x,y)=>x+y,0)/a.length; }
+  const base=[], boosted=[];
+  for(let i=0;i<8;i++){
+    // baseline: just TACKLE
+    let atk = mon(anySpecies(), 50, ['TACKLE'], 99999);
+    let r = runBattle([atk], { type:'WILD', enemy: mon(ground, 60, ['TACKLE'], 99999) },
+      (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:2, maxFrames:4000});
+    if(r.enemyHpLog.length>=2) base.push(r.enemyHpLog[0]-r.enemyHpLog[1]);
+    // boosted: SWORDS_DANCE then TACKLE
+    atk = mon(anySpecies(), 50, ['SWORDS_DANCE','TACKLE'], 99999);
+    r = runBattle([atk], { type:'WILD', enemy: mon(ground, 60, ['TACKLE'], 99999) },
+      (bt,turn)=>({type:'MOVE', moveIndex: turn===1?0:1}), {maxTurns:3, maxFrames:5000});
+    if(r.enemyHpLog.length>=3) boosted.push(r.enemyHpLog[1]-r.enemyHpLog[2]);
+  }
+  const ba=avg(base), bo=avg(boosted);
+  check('+2 Atk meaningfully raises damage', bo > ba*1.4, `baseline avg ${ba.toFixed(0)}, boosted avg ${bo.toFixed(0)}`);
 })();
 
 // ── REPORT ───────────────────────────────────────────────────
