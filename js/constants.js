@@ -149,6 +149,19 @@ DG.TILE = {
   STRENGTH_BOULDER: 86, // heavy boulder (HM Strength needed to push aside)
   DEEP_WATER_TILE: 87, // requires Surf to cross (solid without surfing)
   FISHING_SPOT: 88, // rippling water — higher bite rate
+  // 89 = plaza fountain (handled in renderer)
+  // ── Fossil Lab & Museum decoration set (Compound City) ─────────
+  // Carved stone statues of the fully-evolved fossil DinoMon. Each ID bakes a
+  // specific species so the renderer knows which titan to carve.
+  FOSSIL_STATUE_AMBER: 90, // Amberwing  (Bug/Rock)
+  FOSSIL_STATUE_TAR:   91, // Tarrasaur  (Dark/Rock)
+  FOSSIL_STATUE_CRYO:  92, // Cryosaur   (Ice/Rock)
+  FOSSIL_STATUE_ABYSS: 93, // Abysshell  (Water/Rock)
+  FOSSIL_STATUE_AERO:  94, // Aerodon    (Flying/Rock)
+  FOSSIL_INCUBATOR:    95, // glowing amber incubation pod (the "place fossils here" station)
+  MUSEUM_CASE:         96, // glass display case with an amber specimen
+  FOSSIL_WALL:         97, // wall embedded with fossil bones / ammonite relief
+  AMBER_PILLAR:        98, // grand glowing amber column
 };
 
 // ── Canvas Config ─────────────────────────────────────────────

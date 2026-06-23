@@ -148,6 +148,11 @@ DG.Renderer = (function () {
     // Evolution animation — full-screen overlay, drawn before dialogue
     _drawEvoOverlay(ctx);
 
+    // Fossil "Primordial Awakening" hatch cinematic — full-screen overlay
+    if (typeof DG.HatchAnim !== 'undefined' && DG.HatchAnim.isActive()) {
+      DG.HatchAnim.draw(ctx);
+    }
+
     // Field-move (HM/TM) reward showcase — full-screen overlay
     if (typeof DG.TmReward !== 'undefined' && DG.TmReward.isActive()) {
       DG.TmReward.draw(ctx);
@@ -724,6 +729,65 @@ DG.Renderer = (function () {
     ctx.textAlign = 'left';
   }
 
+  // ── Fossil Museum ambience ────────────────────────────────────
+  // Screen-space cinematic layer for the Fossil Museum & Lab: soft golden light
+  // shafts angling down from the high windows, slow-drifting amber dust motes,
+  // and a warm vignette. Pure atmosphere — drawn over the world, under the HUD.
+  let _museumMotes = null;
+  function _drawMuseumAmbience(ctx, W, H) {
+    if (!_museumMotes) {
+      _museumMotes = [];
+      for (let i = 0; i < 38; i++) {
+        _museumMotes.push({
+          x: Math.random() * W, y: Math.random() * H,
+          r: 0.5 + Math.random() * 1.7,
+          drift: 0.08 + Math.random() * 0.30,
+          sway: 0.3 + Math.random() * 0.8,
+          ph: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+    const t = _animOff;
+    ctx.save();
+    // 1) Light shafts from the top windows — broad translucent golden beams
+    ctx.globalCompositeOperation = 'lighter';
+    const shafts = [0.22, 0.5, 0.78];
+    for (let s = 0; s < shafts.length; s++) {
+      const topX = W * shafts[s];
+      const sway = Math.sin(t * 0.01 + s) * 6;
+      const flick = 0.10 + 0.03 * Math.sin(t * 0.03 + s * 2);
+      const g = ctx.createLinearGradient(topX, 0, topX + 60 + sway, H);
+      g.addColorStop(0, 'rgba(255,210,120,' + flick.toFixed(3) + ')');
+      g.addColorStop(0.6, 'rgba(255,180,80,' + (flick * 0.4).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(255,160,60,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(topX - 26, 0); ctx.lineTo(topX + 26, 0);
+      ctx.lineTo(topX + 70 + sway, H); ctx.lineTo(topX - 34 + sway, H);
+      ctx.closePath(); ctx.fill();
+    }
+    // 2) Drifting amber dust motes
+    for (const m of _museumMotes) {
+      m.y -= m.drift; m.ph += 0.02;
+      if (m.y < -4) { m.y = H + 4; m.x = Math.random() * W; }
+      const fl = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(m.ph));
+      ctx.globalAlpha = fl * 0.5;
+      ctx.fillStyle = 'rgba(255,225,150,1)';
+      ctx.beginPath();
+      ctx.arc(m.x + Math.sin(m.ph) * m.sway * 4, m.y, m.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+    // 3) Warm vignette — darken the edges, faint amber wash in the centre
+    const vg = ctx.createRadialGradient(W / 2, H * 0.46, H * 0.28, W / 2, H * 0.5, H * 0.95);
+    vg.addColorStop(0, 'rgba(40,20,5,0)');
+    vg.addColorStop(0.7, 'rgba(20,10,4,0.22)');
+    vg.addColorStop(1, 'rgba(8,4,2,0.6)');
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
   // Directional exit markers: for each edge warp that leads to another OUTDOOR
   // area, draw an arrow + destination name pinned to that edge, over the gap.
   // Gives an at-a-glance "this way to <place>" in every town and route.
@@ -938,7 +1002,8 @@ DG.Renderer = (function () {
       for (const w of mapData.warps) {
         if (!w.targetMap) continue;
         let ftype = null;
-        if      (w.targetMap.endsWith('_CENTER')) ftype = 'CENTER';
+        if      (w.targetMap.indexOf('FOSSIL_LAB') >= 0) ftype = 'FOSSIL'; // grand museum facade
+        else if (w.targetMap.endsWith('_CENTER')) ftype = 'CENTER';
         else if (w.targetMap.endsWith('_GYM'))    ftype = 'GYM';
         else if (w.targetMap.endsWith('_HOUSE'))  ftype = 'HOUSE';
         else if (w.targetMap.endsWith('_LAB'))    ftype = 'LAB';
@@ -1006,6 +1071,11 @@ DG.Renderer = (function () {
       g.addColorStop(1, 'rgba(0,0,0,' + edgeAlpha.toFixed(3) + ')');
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
+    }
+
+    // ── Fossil Museum atmosphere — warm vignette, light shafts, drifting amber dust ──
+    if (mapData.id === 'COMPOUND_FOSSIL_LAB') {
+      _drawMuseumAmbience(ctx, W, H);
     }
 
     // Directional exit markers (which way to the next route/city)

@@ -2187,21 +2187,72 @@ DG.Overworld = (function () {
     }
     const fid = ready[0];
     const species = _FOSSIL_SPECIES[fid];
-    const mon = DG.SaveLoad.createDinoMon(species, 20);
     const spName = (DG.SPECIES[species] && DG.SPECIES[species].name) || species;
-    let dest;
-    if ((_gs.player.party || []).length < 6) { _gs.player.party.push(mon); dest = 'party'; }
-    else { _gs.player.box = _gs.player.box || []; _gs.player.box.push(mon); dest = 'box'; }
-    DG.SaveLoad.removeItem(_gs, fid, 1);
-    if (_gs.player.flags) delete _gs.player.flags['FOSSIL_READY_' + fid];
-    if (_gs.player.fossilSteps) _gs.player.fossilSteps[fid] = 0;
-    try { DG.SaveLoad.markCaught(_gs, species); } catch(e) {}
-    DG.SaveLoad.save(_gs);
-    DG.DialogueBox.show(
-      ['The fossil glows with primordial light...',
-       'A ' + spName + ' was revived!',
-       dest === 'box' ? (spName + ' was sent to the PC box.') : (spName + ' joined your party!')],
-      () => { _blocked = false; });
+
+    // ── Build the revived DinoMon up front as a PRISTINE SPECIMEN ──
+    // Fossils are once-in-an-age finds, so what hatches is genuinely special:
+    //   • three guaranteed perfect (31) IVs — a flawless ancient bloodline
+    //   • a vastly boosted shiny rate (≈1 in 12, vs the usual 1 in 4096)
+    //   • brimming with vigour (high happiness), tagged as Fossil-revived
+    const mon = DG.SaveLoad.createDinoMon(species, 20);
+    if (mon) {
+      // Three distinct stats locked to a perfect 31.
+      const statKeys = ['hp','atk','def','spAtk','spDef','spd'];
+      for (let i = statKeys.length - 1; i > 0; i--) { // shuffle
+        const j = Math.floor(Math.random() * (i + 1));
+        const t = statKeys[i]; statKeys[i] = statKeys[j]; statKeys[j] = t;
+      }
+      mon.ivs = mon.ivs || {};
+      for (let k = 0; k < 3; k++) mon.ivs[statKeys[k]] = 31;
+      try { DG.SaveLoad.recalcStats(mon); mon.hp.current = mon.hp.max; } catch (e) {}
+      // Boosted shiny chance for the awakening.
+      if (!mon.isShiny && Math.random() < (1 / 12)) mon.isShiny = true;
+      mon.happiness    = 140;
+      mon.fossilRevived = true;
+      mon.caughtAt     = 'Fossil Museum';
+      mon.caughtAtLevel = 20;
+    }
+    const perfectIVs = mon ? statKeys30(mon.ivs) : 3;
+    const isShiny = !!(mon && mon.isShiny);
+
+    // The actual revival, applied once the cinematic finishes.
+    const _finishRevive = () => {
+      let dest;
+      if ((_gs.player.party || []).length < 6) { _gs.player.party.push(mon); dest = 'party'; }
+      else { _gs.player.box = _gs.player.box || []; _gs.player.box.push(mon); dest = 'box'; }
+      DG.SaveLoad.removeItem(_gs, fid, 1);
+      if (_gs.player.flags) delete _gs.player.flags['FOSSIL_READY_' + fid];
+      if (_gs.player.fossilSteps) _gs.player.fossilSteps[fid] = 0;
+      try { DG.SaveLoad.markCaught(_gs, species, isShiny); } catch(e) {
+        try { DG.SaveLoad.markCaught(_gs, species); } catch(e2) {}
+      }
+      DG.SaveLoad.save(_gs);
+      const lines = ['The ancient spark takes hold...'];
+      if (isShiny) lines.push('Incredible — a SHINY ' + spName + ' emerged from the amber!!');
+      else         lines.push('A ' + spName + ' was revived from its fossil!');
+      lines.push('Director Vance: A pristine specimen — flawless ancient bloodline.');
+      lines.push(dest === 'box' ? (spName + ' was sent to the PC box.') : (spName + ' joined your party!'));
+      DG.DialogueBox.show(lines, () => { _blocked = false; });
+    };
+
+    // Epic "Primordial Awakening" cinematic, then complete the revival.
+    if (mon && typeof DG.HatchAnim !== 'undefined' && DG.HatchAnim.start) {
+      _blocked = true;
+      DG.DialogueBox.show(
+        ['Director Vance sets the fossil into the incubation pod...',
+         'The chamber floods with primordial amber light!'],
+        () => { DG.HatchAnim.start(species, _finishRevive, { isShiny: isShiny, perfectIVs: perfectIVs }); });
+    } else {
+      _finishRevive();
+    }
+  }
+
+  // Count perfect (31) IVs — used for the specimen's rarity stars.
+  function statKeys30(ivs) {
+    if (!ivs) return 0;
+    let n = 0;
+    ['hp','atk','def','spAtk','spDef','spd'].forEach(k => { if (ivs[k] === 31) n++; });
+    return n;
   }
 
   // ── Compound City: Daytrader Niels' Beachcoin (volatile cryptocoin) ──
@@ -2574,6 +2625,7 @@ DG.Overworld = (function () {
     if (/_CENTER$/.test(targetId)) return 'DinoCenter';
     if (/_SHOP$/.test(targetId))   return 'Mart';
     if (/_WILD$/.test(targetId))   return 'Wild Area';
+    if (/FOSSIL_LAB$/.test(targetId)) return 'Museum';
     if (/_LAB$/.test(targetId))    return 'Lab';
     if (/HOUSE|HOME/.test(targetId)) return 'House';
     const m = DG.MAPS[targetId];
@@ -2594,6 +2646,7 @@ DG.Overworld = (function () {
   function drawObjectiveHint(ctx, gs) {
     if (!gs || !gs.player) return;
     if (typeof DG.FlyAnim !== 'undefined' && DG.FlyAnim.isActive()) return; // hidden during Fly cutscene
+    if (typeof DG.HatchAnim !== 'undefined' && DG.HatchAnim.isActive()) return; // hidden during fossil hatch cinematic
     if (typeof DG.DialogueBox !== 'undefined' && DG.DialogueBox.isVisible()) return;
     _navTick++;
     const W = DG.CANVAS.W, H = DG.CANVAS.H, T = DG.CANVAS.TILE_SIZE;
@@ -2617,7 +2670,7 @@ DG.Overworld = (function () {
       const sx = w.x * T - _camX + T / 2;
       const sy = w.y * T - _camY;
       if (sx < -20 || sx > W + 20 || sy < -10 || sy > H + 20) continue;
-      if (drawn.some(d => Math.abs(d.x - sx) < 30 && d.t === w.targetMap)) continue;
+      if (drawn.some(d => Math.abs(d.x - sx) < 34 && d.t === w.targetMap)) continue;
       drawn.push({ x: sx, t: w.targetMap });
 
       const isEdge = (w.x <= 1 || w.y <= 1 || w.x >= _mapData.width - 2 || w.y >= _mapData.height - 2);

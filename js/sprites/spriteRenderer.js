@@ -40,7 +40,69 @@ DG.SpriteRenderer = (function () {
     [81]: '#5D3A1A', // BOOKSHELF
     [82]: '#2E7D32', // PLANT pot
     [86]: '#2d5a1b', // STRENGTH_BOULDER (mossy ground base)
+    // Fossil Lab & Museum decoration set — polished dark-marble museum floor base
+    [90]: '#2a2230', [91]: '#2a2230', [92]: '#2a2230', [93]: '#2a2230', [94]: '#2a2230',
+    [95]: '#1a1426', // incubation pod (dark chamber floor)
+    [96]: '#241c2c', // museum case
+    [97]: '#3a2c20', // fossil-relief wall
+    [98]: '#241c2c', // amber pillar
   };
+
+  // ── Fossil-statue cache ───────────────────────────────────────
+  // Carving the evolved fossil titans from their real sprites every frame would
+  // re-bake 5 mons × 60fps. Instead bake each statue once to an offscreen canvas
+  // (stone-grey, amber-tinted) and blit it. Keyed by species id.
+  const _STATUE_TILE_SPECIES = {
+    90: 'AMBERWING', 91: 'TARRASAUR', 92: 'CRYOSAUR', 93: 'ABYSSHELL', 94: 'AERODON',
+  };
+  // Type-coloured aura behind each carved titan (matches its primary typing).
+  const _STATUE_AURA = {
+    90: '150,200,70', 91: '150,110,190', 92: '160,230,255', 93: '70,160,255', 94: '170,200,255',
+  };
+  // Polished dark-marble museum floor — shared by tile 11 and every fossil-lab
+  // decoration tile so the grand hall reads as one continuous surface.
+  function _museumFloor(ctx, px, py, T, seed, anim) {
+    ctx.fillStyle = '#211a2b'; ctx.fillRect(px, py, T, T);
+    // 2×2 polished slabs with grout
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 2; c++) {
+      const tx = px + c*16 + 1, ty = py + r*16 + 1;
+      ctx.fillStyle = ((r + c) % 2 === 0) ? '#2c2440' : '#272036';
+      ctx.fillRect(tx, ty, 14, 14);
+      ctx.fillStyle = 'rgba(150,130,190,0.14)'; ctx.fillRect(tx, ty, 14, 1); ctx.fillRect(tx, ty, 1, 14);
+      ctx.fillStyle = 'rgba(0,0,0,0.22)';        ctx.fillRect(tx, ty+13, 14, 1); ctx.fillRect(tx+13, ty, 1, 14);
+    }
+    // faint marble vein
+    const rv = _tileRand(seed, 4);
+    if (rv[0] > 0.55) {
+      ctx.strokeStyle = 'rgba(170,150,200,0.10)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(px + rv[1]*T, py); ctx.lineTo(px + rv[2]*T, py + T); ctx.stroke();
+    }
+    // warm amber sheen reflected from the displays
+    ctx.fillStyle = 'rgba(255,170,70,0.04)'; ctx.fillRect(px, py, T, T);
+  }
+
+  const _statueCache = {};
+  function _getStatue(speciesId, sizePx) {
+    const key = speciesId + '@' + sizePx;
+    if (_statueCache[key]) return _statueCache[key];
+    let cv = null;
+    try {
+      cv = document.createElement('canvas');
+      cv.width = sizePx; cv.height = sizePx;
+      const c = cv.getContext('2d');
+      // Carve in stone: desaturate, lift to a pale granite tone, amber-warm shadows.
+      c.save();
+      // Warm carved-bronze museum statue — desaturate, then push a rich amber-gold
+      // tone so every titan reads as one consistent, premium material.
+      c.filter = 'grayscale(1) sepia(0.85) saturate(1.7) brightness(1.3) contrast(1.08)';
+      // drawMon centres on (x,y); local sprite is ~36 units tall. Fill the box.
+      const scale = sizePx / 34;
+      DG.SpriteRenderer.drawMon(c, speciesId, sizePx / 2, sizePx * 0.5, scale);
+      c.restore();
+    } catch (e) { cv = null; }
+    _statueCache[key] = cv;
+    return cv;
+  }
 
   // Seeded pseudo-random per tile position (deterministic, no flicker)
   function _tileRand(seed, n) {
@@ -1455,6 +1517,201 @@ DG.SpriteRenderer = (function () {
       ctx.beginPath(); ctx.ellipse(px + T/2 + 5, py + T - 22, 7, 5, 0.4, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = '#388e3c';
       ctx.beginPath(); ctx.ellipse(px + T/2 - 5, py + T - 20, 6, 5, -0.5, 0, Math.PI*2); ctx.fill();
+    }
+
+    // ══ Museum marble floor (tile 11) + fossil-lab decoration set ══
+    else if (tileId === 11) {
+      _museumFloor(ctx, px, py, T, seed, anim);
+    }
+    else if (tileId >= 90 && tileId <= 98) {
+      const a = (typeof anim !== 'undefined' ? anim : 0);
+
+      if (tileId >= 90 && tileId <= 94) {
+        // ── Carved titan statue on a museum plinth ────────────────
+        _museumFloor(ctx, px, py, T, seed, anim);
+        const cx = px + T / 2;
+        const aura = _STATUE_AURA[tileId] || '255,190,90';
+        const pulse = 0.5 + 0.5 * Math.sin(a * 0.06 + tileId);
+        // Type-coloured aura glow rising behind the statue
+        ctx.save(); ctx.globalCompositeOperation = 'lighter';
+        const ag = ctx.createRadialGradient(cx, py - T * 0.2, 2, cx, py - T * 0.2, T * 1.2);
+        ag.addColorStop(0, 'rgba(' + aura + ',' + (0.22 + pulse * 0.12) + ')');
+        ag.addColorStop(1, 'rgba(' + aura + ',0)');
+        ctx.fillStyle = ag; ctx.fillRect(px - T, py - T * 2, T * 3, T * 3);
+        ctx.restore();
+        // Spotlight cone from above
+        ctx.save(); ctx.globalCompositeOperation = 'lighter';
+        const sg = ctx.createLinearGradient(cx, py - T * 1.6, cx, py + T * 0.5);
+        sg.addColorStop(0, 'rgba(255,240,200,0.16)');
+        sg.addColorStop(1, 'rgba(255,220,150,0)');
+        ctx.fillStyle = sg;
+        ctx.beginPath();
+        ctx.moveTo(cx - T * 0.16, py - T * 1.6); ctx.lineTo(cx + T * 0.16, py - T * 1.6);
+        ctx.lineTo(cx + T * 0.62, py + T * 0.5); ctx.lineTo(cx - T * 0.62, py + T * 0.5);
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+        // Amber up-light pooling around the plinth
+        const ug = ctx.createRadialGradient(cx, py + 2, 2, cx, py + 2, T * 1.0);
+        ug.addColorStop(0, 'rgba(255,190,90,' + (0.26 + pulse * 0.12) + ')');
+        ug.addColorStop(1, 'rgba(255,150,40,0)');
+        ctx.fillStyle = ug; ctx.fillRect(px - T, py - T * 1.5, T * 3, T * 2.5);
+        // Carved statue (cached) rising well above the tile — imposing
+        const sz = Math.round(T * 2.25);
+        const img = _getStatue(_STATUE_TILE_SPECIES[tileId], sz);
+        if (img) {
+          // The statue itself, with a soft type-tinted rim glow
+          ctx.save();
+          ctx.shadowColor = 'rgba(' + aura + ',0.6)'; ctx.shadowBlur = 8;
+          ctx.drawImage(img, cx - sz / 2, py + T * 0.56 - sz, sz, sz);
+          ctx.restore();
+        }
+        // Stone plinth (drawn over the statue feet so it "stands" on it)
+        const pw = T * 0.82, ph = T * 0.46, plx = cx - pw / 2, ply = py + T - ph;
+        ctx.fillStyle = '#443c52'; ctx.fillRect(plx, ply, pw, ph);
+        ctx.fillStyle = '#5d5366'; ctx.fillRect(plx, ply, pw, 3);              // top lip
+        ctx.fillStyle = '#615776'; ctx.fillRect(plx, ply, 3, ph);             // left hi
+        ctx.fillStyle = '#2e2838'; ctx.fillRect(plx + pw - 3, ply, 3, ph);    // right shade
+        ctx.fillStyle = '#241f30'; ctx.fillRect(plx, ply + ph - 4, pw, 4);    // base shadow
+        ctx.strokeStyle = '#201b2a'; ctx.lineWidth = 1; ctx.strokeRect(plx, ply, pw, ph);
+        // Golden name plaque with a glint
+        ctx.fillStyle = '#caa24a'; ctx.fillRect(cx - pw * 0.34, ply + ph * 0.32, pw * 0.68, ph * 0.36);
+        ctx.fillStyle = '#8a6e2c'; ctx.strokeStyle = '#8a6e2c'; ctx.lineWidth = 1;
+        ctx.strokeRect(cx - pw * 0.34, ply + ph * 0.32, pw * 0.68, ph * 0.36);
+        ctx.fillStyle = 'rgba(255,245,200,0.7)'; ctx.fillRect(cx - pw * 0.34, ply + ph * 0.32, pw * 0.68, 1);
+      }
+
+      else if (tileId === 95) {
+        // ── Incubation pod — the unmistakable "place fossils here" station ──
+        _museumFloor(ctx, px, py, T, seed, anim);                          // blend into the chamber
+        const cx = px + T / 2, baseY = py + T - 3;
+        const pulse = 0.5 + 0.5 * Math.sin(a * 0.12 + px * 0.05);
+        // Glowing pool of light spilling onto the marble under the pod
+        const fg = ctx.createRadialGradient(cx, baseY, 1, cx, baseY, T * 0.95);
+        fg.addColorStop(0, 'rgba(255,200,90,' + (0.45 + pulse * 0.3) + ')');
+        fg.addColorStop(1, 'rgba(255,160,40,0)');
+        ctx.fillStyle = fg; ctx.fillRect(px - T * 0.5, py - T, T * 2, T * 2);
+        // Metal pedestal base (cylinder)
+        ctx.fillStyle = '#2c2740'; ctx.beginPath(); ctx.ellipse(cx, baseY, T * 0.3, T * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#403a5a'; ctx.fillRect(cx - T * 0.22, py + T * 0.62, T * 0.44, T * 0.28);
+        ctx.fillStyle = '#56507a'; ctx.fillRect(cx - T * 0.22, py + T * 0.62, T * 0.06, T * 0.28); // hi edge
+        ctx.fillStyle = '#1d1830'; ctx.fillRect(cx + T * 0.14, py + T * 0.62, T * 0.08, T * 0.28); // shade
+        // Tall glass tube of swirling amber incubation fluid
+        const tubeY = py + T * 0.08, tubeH = T * 0.56, tubeR = T * 0.26;
+        const dg = ctx.createLinearGradient(cx - tubeR, 0, cx + tubeR, 0);
+        dg.addColorStop(0, 'rgba(190,110,30,0.85)');
+        dg.addColorStop(0.45, 'rgba(255,210,110,0.95)');
+        dg.addColorStop(1, 'rgba(150,80,20,0.85)');
+        ctx.fillStyle = dg;
+        ctx.fillRect(cx - tubeR, tubeY + T * 0.06, tubeR * 2, tubeH);
+        ctx.beginPath(); ctx.ellipse(cx, tubeY + T * 0.06, tubeR, T * 0.1, 0, Math.PI, 0); ctx.fill();      // domed top
+        ctx.beginPath(); ctx.ellipse(cx, tubeY + T * 0.06 + tubeH, tubeR, T * 0.08, 0, 0, Math.PI); ctx.fill(); // rounded bottom
+        // Fossil egg suspended inside, bobbing
+        const eggY = tubeY + T * 0.06 + tubeH * 0.5 + Math.sin(a * 0.05) * 2;
+        ctx.fillStyle = 'rgba(70,45,22,0.6)';
+        ctx.beginPath(); ctx.ellipse(cx, eggY, tubeR * 0.5, T * 0.18, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(40,26,12,0.5)';
+        ctx.beginPath(); ctx.ellipse(cx, eggY, tubeR * 0.28, T * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+        // Rising bubbles
+        ctx.fillStyle = 'rgba(255,245,210,0.9)';
+        for (let b = 0; b < 4; b++) {
+          const bp = ((a * 0.9 + b * 70) % 100) / 100;
+          const bx = cx + Math.sin((a * 0.08) + b * 2) * tubeR * 0.5;
+          const by = (tubeY + T * 0.06 + tubeH) - bp * tubeH;
+          ctx.beginPath(); ctx.arc(bx, by, 0.8 + (1 - bp) * 1.4, 0, Math.PI * 2); ctx.fill();
+        }
+        // Glass cylinder rim + vertical specular highlight
+        ctx.strokeStyle = 'rgba(210,230,255,0.5)'; ctx.lineWidth = 1.4;
+        ctx.strokeRect(cx - tubeR, tubeY + T * 0.06, tubeR * 2, tubeH);
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.fillRect(cx - tubeR * 0.6, tubeY + T * 0.12, 1.6, tubeH * 0.8);
+        // Glowing brass cap
+        ctx.fillStyle = '#caa24a'; ctx.fillRect(cx - tubeR - 1, tubeY + T * 0.02, tubeR * 2 + 2, T * 0.07);
+        ctx.fillStyle = 'rgba(255,240,190,' + (0.5 + pulse * 0.4) + ')';
+        ctx.beginPath(); ctx.arc(cx, tubeY + T * 0.05, 1.6, 0, Math.PI * 2); ctx.fill();
+      }
+
+      else if (tileId === 96) {
+        // ── Museum glass display case with an amber specimen ──────
+        _museumFloor(ctx, px, py, T, seed, anim);
+        const cx = px + T / 2;
+        // Pedestal
+        ctx.fillStyle = '#3a3346'; ctx.fillRect(px + 5, py + T - 8, T - 10, 8);
+        // Glass case body
+        ctx.fillStyle = 'rgba(150,200,230,0.16)'; ctx.fillRect(px + 5, py + 3, T - 10, T - 11);
+        ctx.strokeStyle = 'rgba(200,230,255,0.5)'; ctx.lineWidth = 1.2; ctx.strokeRect(px + 5, py + 3, T - 10, T - 11);
+        // Amber specimen inside, faintly glowing
+        const pulse = 0.5 + 0.5 * Math.sin(a * 0.05 + px);
+        ctx.save(); ctx.shadowColor = 'rgba(255,180,70,0.7)'; ctx.shadowBlur = 4 + pulse * 3;
+        ctx.fillStyle = '#e0a64a';
+        ctx.beginPath(); ctx.moveTo(cx - 5, py + T - 11); ctx.lineTo(cx + 6, py + T - 12);
+        ctx.lineTo(cx + 4, py + T - 22); ctx.lineTo(cx - 4, py + T - 24); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#f4cf86'; ctx.beginPath(); ctx.moveTo(cx - 2, py + T - 14); ctx.lineTo(cx + 2, py + T - 22); ctx.lineTo(cx, py + T - 13); ctx.closePath(); ctx.fill();
+        ctx.restore();
+        // tiny trapped fossil bone
+        ctx.fillStyle = 'rgba(80,55,30,0.8)'; ctx.fillRect(cx - 1, py + T - 20, 2, 6);
+        // glass glare
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(px + 8, py + 5); ctx.lineTo(px + 8, py + T - 12); ctx.stroke();
+      }
+
+      else if (tileId === 97) {
+        // ── Fossil-relief wall — carved ammonite + bones, amber veins ──
+        ctx.fillStyle = '#352a3c'; ctx.fillRect(px, py, T, T);
+        ctx.fillStyle = '#2b2230'; ctx.fillRect(px, py, T, 2);
+        ctx.fillStyle = '#403349';
+        ctx.fillRect(px, py + 10, T, 1); ctx.fillRect(px, py + 22, T, 1); // block seams
+        ctx.fillRect(px + 16, py, 1, T);
+        const seed = (Math.round(px / T) * 13 + Math.round(py / T) * 7);
+        if (seed % 2 === 0) {
+          // Ammonite spiral relief
+          const cx = px + T / 2, cy = py + T / 2;
+          ctx.strokeStyle = '#8a7766'; ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          for (let i = 0; i < 22; i++) {
+            const ang = i * 0.6, r = 1 + i * 0.5;
+            const sx = cx + Math.cos(ang) * r, sy = cy + Math.sin(ang) * r;
+            i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+          }
+          ctx.stroke();
+          ctx.strokeStyle = 'rgba(60,45,30,0.6)'; ctx.lineWidth = 0.6; ctx.stroke();
+        } else {
+          // Crossed bone relief
+          ctx.strokeStyle = '#9a8674'; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(px + 8, py + 8); ctx.lineTo(px + T - 8, py + T - 8); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(px + T - 8, py + 8); ctx.lineTo(px + 8, py + T - 8); ctx.stroke();
+          ctx.fillStyle = '#b6a18d';
+          [[8,8],[T-8,8],[8,T-8],[T-8,T-8]].forEach(p => { ctx.beginPath(); ctx.arc(px+p[0], py+p[1], 2.4, 0, Math.PI*2); ctx.fill(); });
+          ctx.lineCap = 'butt';
+        }
+        // faint glowing amber vein
+        const pulse = 0.4 + 0.4 * Math.sin(a * 0.04 + seed);
+        ctx.strokeStyle = 'rgba(255,170,60,' + (0.18 + pulse * 0.18) + ')'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(px + 2, py + 4); ctx.lineTo(px + 7, py + 14); ctx.lineTo(px + 3, py + T - 3); ctx.stroke();
+      }
+
+      else if (tileId === 98) {
+        // ── Grand glowing amber pillar ────────────────────────────
+        ctx.fillStyle = '#241d2e'; ctx.fillRect(px, py, T, T);
+        const cx = px + T / 2, pulse = 0.5 + 0.5 * Math.sin(a * 0.05 + px * 0.1);
+        // halo
+        const hg = ctx.createRadialGradient(cx, py + T / 2, 2, cx, py + T / 2, T * 0.8);
+        hg.addColorStop(0, 'rgba(255,180,70,' + (0.18 + pulse * 0.14) + ')');
+        hg.addColorStop(1, 'rgba(255,140,40,0)');
+        ctx.fillStyle = hg; ctx.fillRect(px - T * 0.5, py - T * 0.5, T * 2, T * 2);
+        // stone capital (top) + base
+        ctx.fillStyle = '#4a4150'; ctx.fillRect(cx - T * 0.32, py, T * 0.64, T * 0.12);
+        ctx.fillStyle = '#4a4150'; ctx.fillRect(cx - T * 0.32, py + T - T * 0.14, T * 0.64, T * 0.14);
+        // amber shaft with vertical glow gradient
+        const sw = T * 0.42;
+        const sg = ctx.createLinearGradient(cx - sw / 2, 0, cx + sw / 2, 0);
+        sg.addColorStop(0, '#7a4a16'); sg.addColorStop(0.5, '#f0b455'); sg.addColorStop(1, '#7a4a16');
+        ctx.fillStyle = sg; ctx.fillRect(cx - sw / 2, py + T * 0.1, sw, T * 0.82);
+        // inner light core pulse
+        ctx.fillStyle = 'rgba(255,240,190,' + (0.3 + pulse * 0.4) + ')';
+        ctx.fillRect(cx - sw * 0.16, py + T * 0.12, sw * 0.32, T * 0.78);
+        // trapped fleck
+        ctx.fillStyle = 'rgba(70,45,20,0.7)'; ctx.fillRect(cx - 1, py + T * 0.4, 2, 5);
+      }
     }
   }
 
@@ -6609,7 +6866,8 @@ DG.SpriteRenderer = (function () {
     var isHouse  = type === 'HOUSE';
     var isLab    = type === 'LAB';
     var isShop   = type === 'SHOP';
-    if (!isCenter && !isGym && !isHouse && !isLab && !isShop) return;
+    var isFossil = type === 'FOSSIL';
+    if (!isCenter && !isGym && !isHouse && !isLab && !isShop && !isFossil) return;
 
     var THEMES = {
       AMBER:    { wall:'#ede0c4', roof:'#8b4513', acc:'#d4a04a', dark:'#5a2e0a' },
@@ -6792,6 +7050,88 @@ DG.SpriteRenderer = (function () {
       ctx.strokeStyle='#263238'; ctx.lineWidth=1.5; ctx.strokeRect(ldx,ldy,ldw,ldh);
       ctx.fillStyle='#b3e5fc'; ctx.fillRect(ldx+ldw*0.2,ldy+ldh*0.08,ldw*0.6,ldh*0.32);
       _outline(fx,fy,fw,fh); ctx.strokeStyle='#37474f'; ctx.lineWidth=2; ctx.strokeRect(fx,fy,fw,fh);
+    }
+
+    // FOSSIL MUSEUM (4.2T x 3.4T) — the grand centerpiece of Compound City
+    else if (isFossil) {
+      var fw=T*4.2, fh=T*3.0, fx=px-T*1.6, fy=py-T*2.2;
+      // ivory/amber museum palette
+      var ivory='#e9ddc2', ivoryD='#c9b990', amber='#d99a32', amberL='#f2c45f', bronze='#7a4e1c', stone='#b8a87e';
+      _shadow(fx,fy,fw,fh);
+      // ── main hall body
+      ctx.fillStyle=ivory; ctx.fillRect(fx,fy+fh*0.30,fw,fh*0.70);
+      // subtle ashlar block lines
+      ctx.strokeStyle='rgba(120,95,55,0.18)'; ctx.lineWidth=1;
+      for(var br=1;br<4;br++){ ctx.beginPath(); ctx.moveTo(fx,fy+fh*0.30+br*(fh*0.70/4)); ctx.lineTo(fx+fw,fy+fh*0.30+br*(fh*0.70/4)); ctx.stroke(); }
+      // ── grand triangular pediment (roof)
+      ctx.fillStyle=amber;
+      ctx.beginPath(); ctx.moveTo(fx-T*0.18,fy+fh*0.34); ctx.lineTo(fx+fw/2,fy-T*0.1); ctx.lineTo(fx+fw+T*0.18,fy+fh*0.34); ctx.closePath(); ctx.fill();
+      ctx.fillStyle=amberL; // sun-lit left face
+      ctx.beginPath(); ctx.moveTo(fx-T*0.18,fy+fh*0.34); ctx.lineTo(fx+fw/2,fy-T*0.1); ctx.lineTo(fx+fw/2,fy+fh*0.34); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle=bronze; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(fx-T*0.18,fy+fh*0.34); ctx.lineTo(fx+fw/2,fy-T*0.1); ctx.lineTo(fx+fw+T*0.18,fy+fh*0.34); ctx.closePath(); ctx.stroke();
+      // cornice band under pediment
+      ctx.fillStyle=bronze; ctx.fillRect(fx-T*0.12,fy+fh*0.30,fw+T*0.24,T*0.12);
+      ctx.fillStyle=amberL; ctx.fillRect(fx-T*0.12,fy+fh*0.30,fw+T*0.24,2);
+      // ── dinosaur skull crest in the pediment (T-rex style profile)
+      (function(){
+        var kx=fx+fw/2, ky=fy+fh*0.16, ks=T*0.42;
+        ctx.fillStyle='#f3ead2';
+        // skull mass
+        ctx.beginPath(); ctx.moveTo(kx-ks*0.2,ky-ks*0.5); ctx.lineTo(kx+ks*0.5,ky-ks*0.35);
+        ctx.lineTo(kx+ks*0.95,ky+ks*0.1); ctx.lineTo(kx+ks*0.45,ky+ks*0.22);
+        ctx.lineTo(kx+ks*0.5,ky+ks*0.55); ctx.lineTo(kx+ks*0.18,ky+ks*0.3);
+        ctx.lineTo(kx-ks*0.45,ky+ks*0.32); ctx.lineTo(kx-ks*0.55,ky-ks*0.05);
+        ctx.lineTo(kx-ks*0.2,ky-ks*0.5); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle=bronze; ctx.lineWidth=1.4; ctx.stroke();
+        // eye socket
+        ctx.fillStyle='#5a3a14'; ctx.beginPath(); ctx.arc(kx+ks*0.05,ky-ks*0.05,ks*0.16,0,Math.PI*2); ctx.fill();
+        // teeth
+        ctx.fillStyle='#f3ead2';
+        for(var ti=0;ti<4;ti++){ var txx=kx+ks*(0.45-ti*0.16); ctx.beginPath(); ctx.moveTo(txx,ky+ks*0.2); ctx.lineTo(txx+ks*0.06,ky+ks*0.36); ctx.lineTo(txx-ks*0.05,ky+ks*0.2); ctx.closePath(); ctx.fill(); }
+      })();
+      // ── flanking columns
+      var colW=T*0.34;
+      [fx+T*0.18, fx+fw-T*0.18-colW].forEach(function(cxp){
+        ctx.fillStyle=stone; ctx.fillRect(cxp,fy+fh*0.42,colW,fh*0.58);
+        ctx.fillStyle=ivoryD; for(var fl=0;fl<3;fl++) ctx.fillRect(cxp+2+fl*(colW-3)/3,fy+fh*0.44,1.4,fh*0.52); // flutes
+        ctx.fillStyle=bronze; ctx.fillRect(cxp-2,fy+fh*0.40,colW+4,T*0.1);      // capital
+        ctx.fillRect(cxp-3,fy+fh*0.94,colW+6,T*0.12);                            // base
+      });
+      // ── sign band "FOSSIL MUSEUM"
+      var sgY=fy+fh*0.44, sgH=T*0.42, sgX=fx+fw*0.20, sgW=fw*0.60;
+      ctx.fillStyle='#2a1c10'; ctx.fillRect(sgX,sgY,sgW,sgH);
+      ctx.strokeStyle=amberL; ctx.lineWidth=1.5; ctx.strokeRect(sgX,sgY,sgW,sgH);
+      ctx.fillStyle=amberL; ctx.font='bold '+Math.max(7,(T*0.2|0))+'px monospace';
+      ctx.fillText('FOSSIL MUSEUM',fx+fw/2,sgY+sgH/2+1);
+      // ── glowing amber windows flanking the door
+      [fx+fw*0.24, fx+fw*0.64].forEach(function(wx3){
+        var wy3=sgY+sgH+T*0.16, ww3=fw*0.12, wh3=T*0.5;
+        var wg=ctx.createLinearGradient(wx3,wy3,wx3,wy3+wh3);
+        wg.addColorStop(0,'#ffe6a0'); wg.addColorStop(1,'#d98a2a');
+        ctx.fillStyle=wg; ctx.fillRect(wx3,wy3,ww3,wh3);
+        ctx.strokeStyle=bronze; ctx.lineWidth=1.5; ctx.strokeRect(wx3,wy3,ww3,wh3);
+        ctx.strokeStyle='rgba(120,80,30,0.6)'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(wx3+ww3/2,wy3); ctx.lineTo(wx3+ww3/2,wy3+wh3); ctx.stroke();
+      });
+      // ── grand arched entrance (door) with amber glow spilling out
+      var dw=T*0.9, dh=T*1.04, dx=fx+(fw-dw)/2, dy=fy+fh-dh;
+      var dg2=ctx.createLinearGradient(dx,dy,dx,dy+dh);
+      dg2.addColorStop(0,'#5a3a14'); dg2.addColorStop(1,'#2a1808');
+      ctx.fillStyle=dg2;
+      ctx.beginPath(); ctx.moveTo(dx,dy+dh); ctx.lineTo(dx,dy+dh*0.34);
+      ctx.arcTo(dx+dw/2,dy-dh*0.04,dx+dw,dy+dh*0.34,dw*0.5); ctx.lineTo(dx+dw,dy+dh); ctx.closePath(); ctx.fill();
+      // warm light glow from within the doorway
+      var lg=ctx.createRadialGradient(dx+dw/2,dy+dh*0.55,2,dx+dw/2,dy+dh*0.55,dw*0.7);
+      lg.addColorStop(0,'rgba(255,210,120,0.55)'); lg.addColorStop(1,'rgba(255,180,70,0)');
+      ctx.fillStyle=lg; ctx.fillRect(dx-T*0.4,dy-T*0.2,dw+T*0.8,dh+T*0.4);
+      ctx.strokeStyle=bronze; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(dx,dy+dh); ctx.lineTo(dx,dy+dh*0.34);
+      ctx.arcTo(dx+dw/2,dy-dh*0.04,dx+dw,dy+dh*0.34,dw*0.5); ctx.lineTo(dx+dw,dy+dh); ctx.stroke();
+      // welcome steps
+      ctx.fillStyle=ivoryD; ctx.fillRect(dx-T*0.2,fy+fh-T*0.12,dw+T*0.4,T*0.12);
+      ctx.fillStyle=stone;  ctx.fillRect(dx-T*0.08,fy+fh-T*0.24,dw+T*0.16,T*0.12);
+      _outline(fx,fy+fh*0.30,fw,fh*0.70);
     }
 
     // HOUSE (3T x 2.5T) - 6 seeded variants
