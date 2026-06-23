@@ -2005,7 +2005,7 @@ DG.TRAINERS.SYLVA_S3_TW1 = {
 };
 DG.TRAINERS.SYLVA_S3_TW2 = {
   id:'SYLVA_S3_TW2', name:'Ranger Canopy', class:'Ranger', isGymLeader:false, badge:null,
-  loseDialogue:"Sprigdon packs a punch — Sylva even more!", reward:528,
+  loseDialogue:"Sprigdon packs a punch — PuKing Maarten even more!", reward:528,
   party:[
     { speciesId:'LEAFCUB',  level:33, moves:['VINE_WHIP','TACKLE','PETAL_DANCE'] },
     { speciesId:'SPRIGDON', level:33, moves:['VINE_WHIP','LOW_KICK','TACKLE'] },

@@ -5251,6 +5251,14 @@ MIND_CRUSH: { id:'MIND_CRUSH', name:'Mind Crush', type:'PSYCHIC', category:'SPEC
     effect:{type:'FLINCH',chance:20}, description:'A fearsome dragon bite may cause flinching.' },
   WYVERN_STRIKE: { id:'WYVERN_STRIKE', name:'Wyvern Strike', type:'DRAGON', category:'PHYSICAL', power:85, accuracy:95, pp:10, priority:0, animStyle:'ARC',
     effect:{type:'NONE'}, description:'A wyverns signature aerial slash.' },
+
+  // ── Legendary signature moves ─────────────────────────────────
+  PHOENIX_CATACLYSM: { id:'PHOENIX_CATACLYSM', name:'Phoenix Cataclysm', type:'FIRE', category:'SPECIAL', power:120, accuracy:100, pp:5, priority:0, animStyle:'BURST',
+    effect:{type:'DRAIN',fraction:0.5}, description:'CRATERON’s signature. An undying firestorm that restores the user by half the damage dealt — it refuses to die.' },
+  TIME_FREEZE_TORRENT: { id:'TIME_FREEZE_TORRENT', name:'Time-Freeze Torrent', type:'WATER', category:'SPECIAL', power:110, accuracy:100, pp:5, priority:0, animStyle:'BEAM',
+    effect:{type:'STATUS_CHANCE',status:'FREEZE',chance:30}, description:'GLACIODON’s signature. Water frozen in stilled time crashes down — a 30% chance to freeze the target solid.' },
+  GENESIS_ROAR: { id:'GENESIS_ROAR', name:'Genesis Roar', type:'DRAGON', category:'PHYSICAL', power:110, accuracy:100, pp:10, priority:0, animStyle:'MELEE',
+    effect:{type:'STAT_LOWER',stat:'atk',stages:-2,chance:100,target:'opponent'}, description:'PRIMORDIA’s signature. A primal roar from the dawn of time that strikes hard and harshly drops the foe’s Attack.' },
   SCALE_SHOT_PLUS: { id:'SCALE_SHOT_PLUS', name:'Scale Barrage', type:'DRAGON', category:'PHYSICAL', power:50, accuracy:90, pp:20, priority:0, animStyle:'MULTI',
     effect:{type:'MULTI_HIT',hits:'2-5'}, description:'Fires scales like arrows 2-5 times.' },
   DRAGON_ASCENT: { id:'DRAGON_ASCENT', name:'Dragon Ascent', type:'DRAGON', category:'PHYSICAL', power:110, accuracy:90, pp:10, priority:0, animStyle:'ARC',

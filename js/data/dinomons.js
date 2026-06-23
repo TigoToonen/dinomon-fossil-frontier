@@ -1463,7 +1463,9 @@ CRATERON: _sp('CRATERON','Crateron',['FIRE','DRAGON'],
     10,['LAVA_PLUME','INCINERATE','BLAZE_KICK','FIERY_DANCE'],15,'ERUPTION_HORN',22,'FIREWORKS',30,'IMMOLATION',
     38,'FIRECRACKER',40,['FLAME_CHARGE','FLAMETHROWER','FRILL_FLARE','SAIL_BLAST'],46,'GROWL',54,'SMOKESCREEN',
     55,['FIRE_BLAST','OVERHEAT','ERUPTION','EXTINCTION_BEAM'],62,'TAIL_WHIP',70,'WORK_UP',78,'SWORDS_DANCE',
-    86,'DRAGON_DANCE'
+    86,'DRAGON_DANCE',
+    // Signature default moveset (appended last → these are the 4 a caught Crateron starts with)
+    50,'PHOENIX_CATACLYSM',50,'DRACO_METEOR',50,'FIRE_BLAST',50,'WORK_UP'
   ),
   null,null,null,'Immortal Flame','Survives one lethal hit per battle at 1 HP, then deals a fire burst',
   3,340,'SLOW',true,false,
