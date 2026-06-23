@@ -1479,7 +1479,9 @@ GLACIODON: _sp('GLACIODON','Glaciodon',['WATER','PSYCHIC'],
     10,['SURF','SCALD','BRINE','LIQUIDATION'],15,'AQUA_JET',22,'CLAMP',30,'WATER_SHURIKEN',
     38,'LEER',40,['WATERFALL','AQUA_TAIL','SONIC_PULSE','NECK_LASSO'],46,'GROWL',54,'SMOKESCREEN',
     55,['HYDRO_PUMP','ANCIENT_TORRENT','GLACIAL_MIND','CRABHAMMER'],62,'TAIL_WHIP',70,'WORK_UP',78,'SWORDS_DANCE',
-    86,'DRAGON_DANCE'
+    86,'DRAGON_DANCE',
+    // Signature default moveset (appended last → these are the 4 a caught Glaciodon starts with)
+    50,'TIME_FREEZE_TORRENT',50,'ANCIENT_TORRENT',50,'PSYCHIC',50,'ICE_BEAM'
   ),
   null,null,null,'Time Lock','Once per battle, returns at half HP after being KO\'d',
   5,330,'SLOW',true,false,
@@ -1493,7 +1495,9 @@ PRIMORDIA: _sp('PRIMORDIA','Primordia',['DRAGON'],
     10,['SCALE_SHOT','CLANGING_SCALES','BREAKING_SWIPE'],15,'DUAL_WINGBEAT',22,'SCALE_SHOT_PLUS',30,'CLAW_STORM',
     38,'LEER',40,['DRAGON_CLAW','DRAGON_PULSE','DRAGON_HAMMER','DRAGON_TAIL'],46,'GROWL',54,'SMOKESCREEN',
     55,['OUTRAGE','DRACO_METEOR','MIND_DIVE','DIVE_BOMB'],62,'TAIL_WHIP',70,'WORK_UP',78,'SWORDS_DANCE',
-    86,'DRAGON_DANCE'
+    86,'DRAGON_DANCE',
+    // Signature default moveset (appended last → these are the 4 a caught Primordia starts with)
+    50,'GENESIS_ROAR',50,'DRAGON_DANCE',50,'OUTRAGE',50,'EARTHQUAKE'
   ),
   null,null,null,'Ancient Power','All moves gain +15% power; immune to stat drops from foes',
   3,350,'SLOW',true,false,
