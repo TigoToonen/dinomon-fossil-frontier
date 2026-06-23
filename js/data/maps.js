@@ -2920,10 +2920,7 @@ FOSSIL_CITADEL: {
       spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:["Your flame surpassed mine. Terra, the earth-shaker, is next."],
       requiresFlag:'TRAINER_ELITE_EMBER_DEFEATED' },
-    // ── Citadel Healer (row 13) ──
-    { id:'CITADEL_HEALER', name:'Citadel Nurse', x:10, y:13, facing:'DOWN',
-      spriteKey:'NPC_HEALER', movementType:'STATIONARY',
-      dialogue:['HEALER_FOSSIL'], onInteract:'HEAL_PARTY' },
+    // ── No healing inside the Citadel — the Elite Four is a no-heal gauntlet ──
     // ── Elite Four: Aurora (1st) — always accessible ──
     { id:'ELITE_AURORA_NPC', name:'Aurora', x:10, y:14, facing:'DOWN',
       spriteKey:'NPC_LEADER', movementType:'STATIONARY',

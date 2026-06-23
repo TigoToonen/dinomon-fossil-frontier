@@ -532,7 +532,8 @@ DG.Overworld = (function () {
                   DG.SaveLoad.save(_gs);
                 });
               } else {
-                _blocked = false;
+                // LOSE to the Champion — the entire Elite Four gauntlet resets.
+                _resetEliteFour(_gs);
               }
             }
           });
@@ -1165,13 +1166,18 @@ DG.Overworld = (function () {
                   DG.DialogueBox.show(postLines, () => { _blocked = false; DG.SaveLoad.save(_gs); });
                 }
               } else {
-                // LOSE — reset gym trainers if this was a gym battle (Feature 1)
-                const lostGymId = _gs.player._lastGymId;
-                if (lostGymId) {
-                  _resetGymTrainers(_gs, lostGymId);
-                  _gs.player._lastGymId = null;
+                // LOSE — Elite Four / Champion wipe resets the whole gauntlet;
+                // otherwise a gym loss resets that gym's trainers.
+                if (trainer.class === 'Elite Four' || trainer.class === 'Champion') {
+                  _resetEliteFour(_gs);
                 } else {
-                  _blocked = false;
+                  const lostGymId = _gs.player._lastGymId;
+                  if (lostGymId) {
+                    _resetGymTrainers(_gs, lostGymId);
+                    _gs.player._lastGymId = null;
+                  } else {
+                    _blocked = false;
+                  }
                 }
               }
             }
@@ -1350,13 +1356,18 @@ DG.Overworld = (function () {
                 DG.DialogueBox.show(postLines, () => { _blocked = false; DG.SaveLoad.save(_gs); });
               }
             } else {
-              // LOSE — reset gym trainers if this was a gym battle (Feature 1)
-              const lostGymId = _gs.player._lastGymId;
-              if (lostGymId) {
-                _resetGymTrainers(_gs, lostGymId);
-                _gs.player._lastGymId = null;
+              // LOSE — Elite Four / Champion wipe resets the whole gauntlet;
+              // otherwise a gym loss resets that gym's trainers.
+              if (trainer.class === 'Elite Four' || trainer.class === 'Champion') {
+                _resetEliteFour(_gs);
               } else {
-                _blocked = false;
+                const lostGymId = _gs.player._lastGymId;
+                if (lostGymId) {
+                  _resetGymTrainers(_gs, lostGymId);
+                  _gs.player._lastGymId = null;
+                } else {
+                  _blocked = false;
+                }
               }
             }
             _trainerAlert = null;
@@ -1522,6 +1533,25 @@ DG.Overworld = (function () {
     } else {
       _blocked = false;
     }
+  }
+
+  // Lose anywhere in the Elite Four / Champion gauntlet → the whole run resets.
+  // Clears every Elite progress + defeated flag so you must start again at Aurora.
+  function _resetEliteFour(gs) {
+    const flags = [
+      'ELITE_1_DONE', 'ELITE_2_DONE', 'ELITE_3_DONE', 'ELITE_4_DONE',
+      'TRAINER_ELITE_AURORA_DEFEATED', 'TRAINER_ELITE_EMBER_DEFEATED',
+      'TRAINER_ELITE_GARNET_DEFEATED', 'TRAINER_ELITE_PHANTOM_DEFEATED',
+      'TRAINER_GRAND_ARCHON_CORVUS_DEFEATED',
+    ];
+    if (gs.player.flags) {
+      for (const f of flags) delete gs.player.flags[f];
+    }
+    DG.DialogueBox.show(
+      ['The Elite Four challenge resets!',
+       'There is no healing and no second chance here — you must defeat all of them again, starting from Aurora.'],
+      () => { _blocked = false; DG.SaveLoad.save(gs); }
+    );
   }
 
   // ── Day Care ──────────────────────────────────────────────
@@ -2400,6 +2430,7 @@ DG.Overworld = (function () {
       'FERNGROVE_TOWN':  'FOREST',   'STONEHAVEN_CITY': 'GRANITE',
       'CRESTFALL_TOWN':  'MOUNTAIN', 'BOGMIRE_CITY':    'SWAMP',
       'APEXSUMMIT_CITY': 'SUMMIT',
+      'COMPOUND_CITY':   'GOLD',     // the golden crypto metropolis
       // ── Interior maps ────────────────────────────────────────
       'AMBERTOWN_LAB':      'LAB',     'AMBERTOWN_CENTER':    'CENTER',
       'AMBERTOWN_HOUSE':    'HOUSE',   'AMBERTOWN_SHOP':      'SHOP',
