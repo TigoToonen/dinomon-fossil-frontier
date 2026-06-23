@@ -2315,6 +2315,80 @@ DG.Renderer = (function () {
     }
   }
 
+  // A unique element-themed trainer figure per Elite Four member / the Champion,
+  // drawn as blocky pixel-art anchored at (cx, footY) facing left.
+  function _drawEliteFigure(ctx, cx, footY, s, cfg) {
+    const skin = '#e8b890';
+    ctx.save();
+    const rect = (x, y, w, h, col) => {
+      ctx.fillStyle = col;
+      ctx.fillRect(Math.round(cx + x * s), Math.round(footY - (y + h) * s),
+                   Math.ceil(w * s), Math.ceil(h * s));
+    };
+    const poly = (pts, col) => {
+      ctx.fillStyle = col; ctx.beginPath();
+      pts.forEach((p, i) => {
+        const X = cx + p[0] * s, Y = footY - p[1] * s;
+        if (i) ctx.lineTo(X, Y); else ctx.moveTo(X, Y);
+      });
+      ctx.closePath(); ctx.fill();
+    };
+    // cape behind
+    if (cfg.cape) poly([[-9, 2], [9, 2], [12, 31], [-12, 31]], cfg.robeDk);
+    // robe body (wide hem → narrow shoulders)
+    poly([[-6, 32], [6, 32], [11, 1], [-11, 1]], cfg.robe);
+    // hem trim + center stripe + belt
+    poly([[-11, 1], [11, 1], [11, 4], [-11, 4]], cfg.trim);
+    rect(-1.5, 4, 3, 28, cfg.trim);
+    rect(-7, 17, 14, 2.5, cfg.robeDk);
+    // arms
+    poly([[-6, 30], [-9, 30], [-11, 9], [-8, 9]], cfg.robe);
+    poly([[6, 30], [9, 30], [11, 9], [8, 9]], cfg.robe);
+    // shoulder pads
+    rect(-9.5, 28, 5, 3, cfg.trim); rect(4.5, 28, 5, 3, cfg.trim);
+    // neck + head
+    rect(-2, 32, 4, 2, skin);
+    rect(-4, 34, 8, 7, skin);
+    rect(-4, 34, 1.6, 7, 'rgba(0,0,0,0.14)'); // face shade
+    // hair / hood / crown by style
+    if (cfg.style === 'hood') {
+      poly([[-6.5, 43], [6.5, 43], [5, 32], [-5, 32]], cfg.hair);
+      rect(-5, 38.5, 10, 2.5, 'rgba(0,0,0,0.45)'); // hood brow shadow
+      ctx.fillStyle = cfg.accent; // glowing eyes
+      ctx.fillRect(Math.round(cx - 2.6 * s), Math.round(footY - 38 * s), Math.ceil(1.5 * s), Math.ceil(1.4 * s));
+      ctx.fillRect(Math.round(cx + 1.1 * s), Math.round(footY - 38 * s), Math.ceil(1.5 * s), Math.ceil(1.4 * s));
+    } else {
+      rect(-4.5, 40, 9, 3, cfg.hair);
+      rect(-4.5, 36.5, 2, 4, cfg.hair); rect(2.5, 36.5, 2, 4, cfg.hair);
+    }
+    if (cfg.style === 'crown' || cfg.style === 'grand') {
+      rect(-4.5, 41.2, 9, 1.8, cfg.trim);
+      poly([[-4, 43], [-3, 43], [-3.5, 45.2]], cfg.trim);
+      poly([[-0.7, 43], [0.7, 43], [0, 45.8]], cfg.trim);
+      poly([[3, 43], [4, 43], [3.5, 45.2]], cfg.trim);
+      if (cfg.style === 'grand') {
+        ctx.fillStyle = cfg.accent;
+        ctx.fillRect(Math.round(cx - 0.7 * s), Math.round(footY - 44 * s), Math.ceil(1.4 * s), Math.ceil(1.4 * s));
+      }
+    } else if (cfg.style === 'tiara') {
+      rect(-4, 41.2, 8, 1.3, cfg.trim);
+      poly([[-0.9, 42.5], [0.9, 42.5], [0, 44.8]], cfg.trim);
+      ctx.fillStyle = cfg.accent;
+      ctx.fillRect(Math.round(cx - 0.6 * s), Math.round(footY - 42.7 * s), Math.ceil(1.2 * s), Math.ceil(1.2 * s));
+    } else if (cfg.style === 'helm') {
+      rect(-4.8, 40.5, 9.6, 2.6, cfg.trim);
+      rect(-4.8, 35.5, 1.6, 5.5, cfg.trim);
+      rect(3.2, 35.5, 1.6, 5.5, cfg.trim);
+    }
+    // glowing element orb held toward the challenger (left)
+    ctx.save();
+    ctx.shadowColor = cfg.accent; ctx.shadowBlur = 8 * s;
+    ctx.fillStyle = cfg.accent;
+    ctx.beginPath(); ctx.arc(cx - 9.5 * s, footY - 13 * s, 2.4 * s, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.restore();
+  }
+
   // Dramatic stadium walk-in for Elite Four / Champion: the member strides into
   // their darkened arena under a spotlight before the battle begins.
   function _drawEliteEntranceWalk(ctx, battle, pct) {
@@ -2326,6 +2400,17 @@ DG.Renderer = (function () {
     const acc = champ ? '#c89cff' : (ECOL[td.name] || '#ffd24a');
     const A = (a) => _hexRGBA(acc, a);
     const ease = (t) => 1 - (1 - t) * (1 - t);
+    // per-member figure styling (robe / trim / hair / headpiece / cape)
+    const _STYLE = {
+      Aurora:  { robe: '#5a93cf', robeDk: '#33608f', trim: '#d6f0ff', hair: '#eaf6ff', style: 'tiara', cape: true },
+      Ember:   { robe: '#c2371c', robeDk: '#7a230f', trim: '#ffc24a', hair: '#ff8a3a', style: 'crown', cape: true },
+      Garnet:  { robe: '#8a6736', robeDk: '#574021', trim: '#e6bf72', hair: '#caa05c', style: 'helm',  cape: false },
+      Phantom: { robe: '#3a2a55', robeDk: '#1d1430', trim: '#c08ae8', hair: '#160f24', style: 'hood',  cape: true },
+    };
+    const cfg = champ
+      ? { robe: '#52458a', robeDk: '#302651', trim: '#ecd680', hair: '#cda6ff', style: 'grand', cape: true, accent: acc }
+      : Object.assign({ accent: acc },
+          _STYLE[td.name] || { robe: '#556', robeDk: '#334', trim: acc, hair: '#222', style: 'crown', cape: true });
 
     // backdrop — opaque dark arena + a soft accent glow rising from the stage
     ctx.fillStyle = '#070610'; ctx.fillRect(0, 0, W, H);
@@ -2358,8 +2443,6 @@ DG.Renderer = (function () {
     const walkT = Math.min(1, pct / 0.7);
     const startX = W + 50, endX = W * 0.60;
     const tx = startX + (endX - startX) * ease(walkT);
-    let ty = floorY - T * 1.25;
-    if (walkT < 1) ty += Math.sin(_animOff * 0.4) * 1.5; // bob while walking
 
     // moving spotlight cone from above
     ctx.save();
@@ -2376,9 +2459,9 @@ DG.Renderer = (function () {
     ctx.save(); ctx.globalAlpha = 0.4; ctx.fillStyle = '#000';
     ctx.beginPath(); ctx.ellipse(tx, floorY + 5, 26, 7, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
 
-    // the member, striding in (facing the challenger to the left)
-    const fakeE = { x: (tx - T / 2) / T, y: ty / T, spriteKey: td.spriteKey || 'NPC_LEADER', facing: 'LEFT' };
-    try { DG.SpriteRenderer.drawNPC(ctx, fakeE, 0, 0); } catch(e) {}
+    // the member, striding in — a unique element-themed figure (bobs while walking)
+    const footY = floorY + 2 + (walkT < 1 ? Math.sin(_animOff * 0.4) * 1.5 : 0);
+    try { _drawEliteFigure(ctx, tx, footY, 1.35, cfg); } catch(e) {}
 
     // rising element embers
     for (let i = 0; i < 12; i++) {
