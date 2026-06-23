@@ -1503,8 +1503,15 @@ DG.Renderer = (function () {
     const sh   = BA ? BA.getShake()             : { x: 0, y: 0 };
 
     // Draw battle scene + animation effects (all shifted by screen shake)
+    // Legendary-moment shake (self-decaying) is layered on top of move shake.
+    let _sx = sh.x, _sy = sh.y;
+    if (_legShakeMag > 0.3) {
+      _sx += (Math.random() * 2 - 1) * _legShakeMag;
+      _sy += (Math.random() * 2 - 1) * _legShakeMag;
+      _legShakeMag *= 0.86;
+    } else { _legShakeMag = 0; }
     ctx.save();
-    ctx.translate(sh.x, sh.y);
+    ctx.translate(_sx, _sy);
     // FASE 1: camera zoom-punch bij crits/super-effective/KO
     const cam = (BA && BA.getCamera) ? BA.getCamera() : null;
     if (cam && cam.zoom > 1.001) {
@@ -1932,8 +1939,11 @@ DG.Renderer = (function () {
   }
 
   // ── Epic battle overlays: legendary reveal splash + Elite Four atmosphere ──
-  let _legBanner = 0;     // countdown for the legendary reveal banner
-  let _lastLegId = null;  // which legendary already triggered the banner
+  let _legBanner = 0;        // countdown for the enemy legendary reveal banner
+  let _lastLegId = null;     // which enemy legendary already triggered the banner
+  let _playerLegBanner = 0;  // countdown for the player's own legendary send-out banner
+  let _lastPlayerLegId = null;
+  let _legShakeMag = 0;      // decaying screen-shake magnitude for legendary moments
   function _hexRGBA(hex, a) {
     hex = hex.replace('#', '');
     const r = parseInt(hex.substr(0, 2), 16),
@@ -1946,6 +1956,9 @@ DG.Renderer = (function () {
     const W = DG.CANVAS.W, H = DG.CANVAS.H;
     const inIntro = (DG.BattleAnim && DG.BattleAnim.isBattleIntro)
       ? DG.BattleAnim.isBattleIntro() : false;
+    // Re-arm both legendary reveals during every battle's intro, so the player's
+    // send-out cinematic fires anew each battle (and re-encounters re-trigger too).
+    if (inIntro) { _lastLegId = null; _lastPlayerLegId = null; }
 
     // ── Elite Four / Champion: persistent themed atmosphere ──
     const cls = battle.trainerData && battle.trainerData.class;
@@ -1994,6 +2007,7 @@ DG.Renderer = (function () {
       if (!inIntro && _lastLegId !== battle.enemyMon.speciesId) {
         _lastLegId = battle.enemyMon.speciesId;
         _legBanner = 165;
+        _legShakeMag = 8;
       }
       if (_legBanner > 0) {
         const t = _legBanner;
@@ -2037,6 +2051,58 @@ DG.Renderer = (function () {
       }
     } else {
       _lastLegId = null;
+    }
+
+    // ── Player's OWN legendary: send-out cinematic (flash + banner + shake) ──
+    // Fires every time you send out a legendary — at battle start and on switch-in.
+    const psp = battle.playerMon && DG.SPECIES ? DG.SPECIES[battle.playerMon.speciesId] : null;
+    if (psp && psp.isLegendary) {
+      if (!inIntro && _lastPlayerLegId !== battle.playerMon.speciesId) {
+        _lastPlayerLegId = battle.playerMon.speciesId;
+        _playerLegBanner = 150;
+        _legShakeMag = 8;
+      }
+      if (_playerLegBanner > 0) {
+        const t = _playerLegBanner;
+        // opening cyan flash
+        if (t > 128) {
+          ctx.save();
+          ctx.globalAlpha = (t - 128) / 22 * 0.8;
+          ctx.fillStyle = '#d6f4ff';
+          ctx.fillRect(0, 0, W, H);
+          ctx.restore();
+        }
+        const fIn = Math.min(1, (150 - t) / 16);
+        const fOut = t < 30 ? t / 30 : 1;
+        const a = Math.max(0, Math.min(fIn, fOut));
+        const by = Math.floor(H * 0.50);
+        ctx.save();
+        ctx.globalAlpha = a;
+        const bg = ctx.createLinearGradient(0, by, 0, by + 46);
+        bg.addColorStop(0, 'rgba(6,16,28,0.92)');
+        bg.addColorStop(1, 'rgba(4,26,40,0.92)');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, by, W, 46);
+        ctx.fillStyle = '#5ad6ff';
+        ctx.fillRect(0, by, W, 2);
+        ctx.fillRect(0, by + 44, W, 2);
+        ctx.shadowColor = '#5ad6ff';
+        ctx.shadowBlur = 12;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillStyle = '#aef0ff';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText('✦  YOUR  LEGENDARY  ✦', W / 2, by + 15);
+        ctx.shadowBlur = 14;
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 17px monospace';
+        ctx.fillText('GO!  ' + (psp.name || battle.playerMon.speciesId).toUpperCase() + '!', W / 2, by + 36);
+        ctx.restore();
+        ctx.textAlign = 'left';
+        _playerLegBanner--;
+      }
+    } else {
+      _lastPlayerLegId = null;
     }
   }
 
