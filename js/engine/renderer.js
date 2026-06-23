@@ -2315,12 +2315,120 @@ DG.Renderer = (function () {
     }
   }
 
+  // Dramatic stadium walk-in for Elite Four / Champion: the member strides into
+  // their darkened arena under a spotlight before the battle begins.
+  function _drawEliteEntranceWalk(ctx, battle, pct) {
+    const W = DG.CANVAS.W, H = DG.CANVAS.H;
+    const T = DG.CANVAS.TILE_SIZE || 32;
+    const td = battle.trainerData;
+    const champ = td.class === 'Champion';
+    const ECOL = { Aurora: '#7ec8ff', Ember: '#ff7a3a', Garnet: '#e0b060', Phantom: '#b070e0' };
+    const acc = champ ? '#c89cff' : (ECOL[td.name] || '#ffd24a');
+    const A = (a) => _hexRGBA(acc, a);
+    const ease = (t) => 1 - (1 - t) * (1 - t);
+
+    // backdrop — opaque dark arena + a soft accent glow rising from the stage
+    ctx.fillStyle = '#070610'; ctx.fillRect(0, 0, W, H);
+    const glow = ctx.createRadialGradient(W * 0.6, H * 0.72, 24, W * 0.6, H * 0.72, W * 0.55);
+    glow.addColorStop(0, A(0.30));
+    glow.addColorStop(1, A(0));
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+
+    // crowd stands with twinkling accent specks
+    for (let row = 0; row < 3; row++) {
+      const ry = 8 + row * 10;
+      ctx.fillStyle = 'rgba(12,12,24,0.8)'; ctx.fillRect(0, ry, W, 8);
+      for (let cx = 4; cx < W; cx += 9) {
+        const tw = Math.sin(_animOff * 0.06 + cx + row) * 0.5 + 0.5;
+        ctx.globalAlpha = 0.2 + 0.5 * tw; ctx.fillStyle = acc;
+        ctx.fillRect(cx + (row % 2) * 4, ry + 2, 2, 2);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // stage floor
+    const floorY = Math.floor(H * 0.74);
+    const fg = ctx.createLinearGradient(0, floorY, 0, H);
+    fg.addColorStop(0, A(0.20)); fg.addColorStop(1, 'rgba(0,0,0,0.6)');
+    ctx.fillStyle = fg; ctx.fillRect(0, floorY, W, H - floorY);
+    ctx.strokeStyle = A(0.5); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, floorY); ctx.lineTo(W, floorY); ctx.stroke();
+
+    // walk path: enters from the right, reaches centre-right by pct 0.7
+    const walkT = Math.min(1, pct / 0.7);
+    const startX = W + 50, endX = W * 0.60;
+    const tx = startX + (endX - startX) * ease(walkT);
+    let ty = floorY - T * 1.25;
+    if (walkT < 1) ty += Math.sin(_animOff * 0.4) * 1.5; // bob while walking
+
+    // moving spotlight cone from above
+    ctx.save();
+    ctx.globalAlpha = 0.16;
+    const sg = ctx.createLinearGradient(tx, 0, tx, floorY);
+    sg.addColorStop(0, A(0.85)); sg.addColorStop(1, A(0));
+    ctx.fillStyle = sg;
+    ctx.beginPath();
+    ctx.moveTo(tx - 12, 0); ctx.lineTo(tx + 12, 0);
+    ctx.lineTo(tx + 52, floorY); ctx.lineTo(tx - 52, floorY); ctx.closePath(); ctx.fill();
+    ctx.restore();
+
+    // ground shadow
+    ctx.save(); ctx.globalAlpha = 0.4; ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.ellipse(tx, floorY + 5, 26, 7, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+
+    // the member, striding in (facing the challenger to the left)
+    const fakeE = { x: (tx - T / 2) / T, y: ty / T, spriteKey: td.spriteKey || 'NPC_LEADER', facing: 'LEFT' };
+    try { DG.SpriteRenderer.drawNPC(ctx, fakeE, 0, 0); } catch(e) {}
+
+    // rising element embers
+    for (let i = 0; i < 12; i++) {
+      const px = ((i * 71 + 13) % 100) / 100 * W;
+      const py = floorY - ((_animOff * 0.6 + i * 33) % floorY);
+      ctx.globalAlpha = 0.28 + 0.3 * Math.sin(_animOff * 0.1 + i);
+      ctx.fillStyle = acc; ctx.fillRect(px, py, 2, 2);
+    }
+    ctx.globalAlpha = 1;
+
+    // title band + glowing name fade in as they stride
+    if (pct > 0.35) {
+      const a = Math.min(1, (pct - 0.35) / 0.3);
+      ctx.save();
+      ctx.globalAlpha = a;
+      const title = champ ? 'WORLD CHAMPION' : 'ELITE FOUR';
+      ctx.fillStyle = 'rgba(8,6,20,0.9)'; ctx.fillRect(0, 40, W, 24);
+      ctx.fillStyle = acc; ctx.fillRect(0, 40, W, 2); ctx.fillRect(0, 62, W, 2);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = 'bold 13px monospace'; ctx.fillStyle = '#ffffff';
+      ctx.fillText(title, W / 2, 52);
+      ctx.shadowColor = acc; ctx.shadowBlur = 16;
+      ctx.font = 'bold 26px monospace'; ctx.fillStyle = acc;
+      ctx.fillText((td.name || '').toUpperCase(), W / 2, H * 0.40);
+      ctx.restore();
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    }
+
+    // closing flash into the battle
+    if (pct > 0.9) {
+      ctx.save();
+      ctx.globalAlpha = (pct - 0.9) / 0.1 * 0.85;
+      ctx.fillStyle = acc; ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+  }
+
   function _drawTrainerIntro(ctx, battle) {
     const W = DG.CANVAS.W, H = DG.CANVAS.H;
     const T = DG.CANVAS.TILE_SIZE || 32;
     // introTimer counts down from 90→0
     const timer = battle.introTimer || 0;
     const pct   = Math.max(0, Math.min(1, 1 - timer / 90)); // 0→1
+
+    // Elite Four / Champion get a dramatic stadium walk-in instead of the VS split
+    if (battle.trainerData &&
+        (battle.trainerData.class === 'Elite Four' || battle.trainerData.class === 'Champion')) {
+      _drawEliteEntranceWalk(ctx, battle, pct);
+      return;
+    }
 
     // Split background: blue left, crimson right
     ctx.fillStyle = '#0a1e4a';
