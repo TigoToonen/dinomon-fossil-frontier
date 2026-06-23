@@ -278,7 +278,7 @@ SHELLCREEK_CITY: {
     // Guard stepped aside (one tile north) after badge earned — no longer blocks the path
     { id:'SC_GUARD_DONE', name:'Officer', x:1, y:9, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The Herd Badge — Rex's mark. The path to Route 2 is open! Head west!"],
+      dialogue:["The Herd Badge — Normal Normi's mark. The path to Route 2 is open! Head west!"],
       requiresFlag:'BADGE_1',
       onInteract: null },
     { id:'SC_WILD_SIGN', name:'Sign', x:18, y:10, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -360,7 +360,7 @@ DUSTWALL_TOWN: {
     // Guard stepped aside (one tile right) after badge earned — no longer blocks the path
     { id:'DW_GUARD_DONE', name:'Officer', x:10, y:13, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The Fossil Badge — Ridley's mark. Route 3 lies to the south — good luck!"],
+      dialogue:["The Fossil Badge — Jam Sennings's mark. Route 3 lies to the south — good luck!"],
       requiresFlag:'BADGE_2',
       onInteract: null },
   ],
@@ -436,7 +436,7 @@ PYRESIDE_CITY: {
     // Guard stepped aside (one tile right) after badge earned — no longer blocks the path
     { id:'PY_GUARD_DONE', name:'Officer', x:10, y:13, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The Magma Badge — Ignis's mark. Route 4 lies to the south — good luck!"],
+      dialogue:["The Magma Badge — Asset Toverdijk's mark. Route 4 lies to the south — good luck!"],
       requiresFlag:'BADGE_3',
       onInteract: null },
     { id:'FLINT_PYRE', name:'Flint', x:8, y:8, facing:'RIGHT', spriteKey:'NPC_RIVAL',
@@ -505,14 +505,14 @@ STONEHAVEN_CITY: {
       dialogue:["We cut the finest granite in the land down in this quarter.","Half the cities you've seen were built from Stonehaven stone."], onInteract:null },
     { id:'SH_GEM_VENDOR', name:'Gem Vendor', x:11, y:18, facing:'UP', spriteKey:'NPC_WOMAN',
       movementType:'STATIONARY',
-      dialogue:["Polished gemstones and carved charms — straight from the quarry!","Terra's Ground-types love digging these up for us."], onInteract:null },
+      dialogue:["Polished gemstones and carved charms — straight from the quarry!","Rock Hard Toonen's Ground-types love digging these up for us."], onInteract:null },
     { id:'SH_QUARRYHAND', name:'Quarryhand', x:6, y:18, facing:'DOWN', spriteKey:'NPC_KID',
       movementType:'WANDER',
       dialogue:["The new south quarter doubled the size of our town!"], onInteract:null },
     { id:'SH_QUEST', name:'Stone Collector', x:12, y:15, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', onInteract:'SIDE_QUEST',
       questFlag:'Q_SH_STARTED', questDoneFlag:'Q_SH_DONE',
-      questIntro:["I study Ground-type DinoMon for Terra's gym.","Show me a Ground-type in your party and I'll reward you!"],
+      questIntro:["I study Ground-type DinoMon for Rock Hard Toonen's gym.","Show me a Ground-type in your party and I'll reward you!"],
       questReminder:["No Ground-type yet? They love to burrow out on the routes.","Come back once you've caught one."],
       questSuccess:["A fine Ground-type — marvellous specimen!","Here, take this for your trouble."],
       questThanks:["Thanks again — that Ground-type made my week!"],
@@ -988,7 +988,7 @@ ROUTE_3B: {
     { id:'R3B_TRAINER2', name:'Thorn', x:14, y:16, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_2'], trainerRef:'HIKER_THORN' },
     { id:'R3B_TIP1', name:'Pyro Expert', x:3, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:["Pyreside's gym leader Ignis specialises in Fire types!", "Make sure you have Water or Ground moves — Rock also works against Fire!"], onInteract:null },
+      movementType:'STATIONARY', dialogue:["Pyreside's gym leader Asset Toverdijk specialises in Fire types!", "Make sure you have Water or Ground moves — Rock also works against Fire!"], onInteract:null },
     { id:'R3B_TIP2', name:'Hiker', x:16, y:18, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'WANDER', dialogue:["Viperfang is rare out here but worth catching — it evolves into Miasmark!", "Poison types can be tricky, but they're great at inflicting status effects."], onInteract:null },
   ],
@@ -1818,7 +1818,7 @@ ROUTE_8A: {
     { id:'R8A_TIP1', name:'Dragon Scout', x:3, y:2, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:["Ptryx and its evolutions soar on these storm cliffs!", "Dragon types hit almost everything neutrally — very few resistances."], onInteract:null },
     { id:'R8A_TIP2', name:'Summit Climber', x:16, y:29, facing:'LEFT', spriteKey:'NPC_WOMAN',
-      movementType:'WANDER', dialogue:["Apex Summit is near — Gym 8 is the final test!", "Valdez uses a mixed team. Bring your strongest and most versatile DinoMons!"], onInteract:null },
+      movementType:'WANDER', dialogue:["Apex Summit is near — Gym 8 is the final test!", "Bipolar Fieke uses a mixed team. Bring your strongest and most versatile DinoMons!"], onInteract:null },
   ],
   encounterTable:{ grass:[
     { speciesId:'PTRYX',     minLv:44, maxLv:48, rate:35 },
@@ -2918,7 +2918,7 @@ FOSSIL_CITADEL: {
       flagToHide:'TRAINER_ELITE_EMBER_DEFEATED' },
     { id:'ELITE_EMBER_DONE', name:'Ember', x:10, y:11, facing:'DOWN',
       spriteKey:'NPC_LEADER', movementType:'STATIONARY',
-      dialogue:["Your flame surpassed mine. Terra, the earth-shaker, is next."],
+      dialogue:["Your flame surpassed mine. Rock Hard Toonen, the earth-shaker, is next."],
       requiresFlag:'TRAINER_ELITE_EMBER_DEFEATED' },
     // ── No healing inside the Citadel — the Elite Four is a no-heal gauntlet ──
     // ── Elite Four: Aurora (1st) — always accessible ──
@@ -3288,12 +3288,12 @@ DG.MAPS.SHELLCREEK_GYM = {
   ],
   npcs:[
     { id:'GYM_REX_HINT', name:'Fossil Scholar', x:7, y:16, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
-      dialogue:["Welcome to Rex's Normal-type Gym! Answer quiz questions to find your path.",
+      dialogue:["Welcome to Normal Normi's Normal-type Gym! Answer quiz questions to find your path.",
         "Correct: take the SHORT left path (1 trainer). Wrong: take the LONG right path (2 trainers)!",
         "Tip: Normal-type is immune to Ghost-type moves!"], onInteract:null },
     { id:'GYM_REX_S1_QUIZ', name:'Dino Expert', x:14, y:15, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
       onInteract:'TRIGGER_GYM_QUIZ', dialogue:["You've already answered. Move along!"],
-      quizIntroKey:null, quizQuestion:"Rex's Gym specialises in which type?",
+      quizIntroKey:null, quizQuestion:"Normal Normi's Gym specialises in which type?",
       quizOptionA:'A) Normal', quizOptionB:'B) Fighting', quizWrong:['Fighting','Rock','Ground'],
       quizCorrectFlag:'GYM_REX_S1_CORRECT', quizWrongFlag:'GYM_REX_S1_WRONG', quizDoneFlag:'GYM_REX_S1_DONE',
       correctResponse:'GYM_QUIZ_CORRECT', wrongResponse:'GYM_QUIZ_WRONG', flagToHide:'GYM_REX_S1_DONE' },
@@ -3325,7 +3325,7 @@ DG.MAPS.SHELLCREEK_GYM = {
       dialogue:['GRUNT_2'], trainerRef:'REX_S2_TW2', flagToHide:'TRAINER_REX_S2_TW2_DEFEATED' },
     { id:'GYM_REX_S3_QUIZ', name:'Dino Expert', x:14, y:5, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
       onInteract:'TRIGGER_GYM_QUIZ', dialogue:["You've already answered. Move along!"],
-      quizIntroKey:null, quizQuestion:"What is Rex's strongest DinoMon?",
+      quizIntroKey:null, quizQuestion:"What is Normal Normi's strongest DinoMon?",
       quizOptionA:'A) Herdsaur', quizOptionB:'B) Packdino', quizWrong:['Packdino','Normlet','Rampasaur'],
       quizCorrectFlag:'GYM_REX_S3_CORRECT', quizWrongFlag:'GYM_REX_S3_WRONG', quizDoneFlag:'GYM_REX_S3_DONE',
       correctResponse:'GYM_QUIZ_CORRECT', wrongResponse:'GYM_QUIZ_WRONG', flagToHide:'GYM_REX_S3_DONE' },
@@ -3339,9 +3339,9 @@ DG.MAPS.SHELLCREEK_GYM = {
       dialogue:['GRUNT_2'], trainerRef:'REX_S3_TW1', flagToHide:'TRAINER_REX_S3_TW1_DEFEATED' },
     { id:'GYM_REX_S3_TW2', name:'Scout Mira', x:26, y:3, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
       dialogue:['GRUNT_2'], trainerRef:'REX_S3_TW2', flagToHide:'TRAINER_REX_S3_TW2_DEFEATED' },
-    { id:'GYM_LEADER_REX', name:'Rex', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_REX', name:'Normal Normi', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_REX_PRE'], onInteract:'TRIGGER_GYM', trainerRef:'GYM_REX', flagToHide:'TRAINER_GYM_REX_DEFEATED' },
-    { id:'GYM_LEADER_REX_DONE', name:'Rex', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_REX_DONE', name:'Normal Normi', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_REX_POST'], onInteract:null, requiresFlag:'TRAINER_GYM_REX_DEFEATED' },
   ],
   encounterTable:{grass:[],water:[]}, events:[],
@@ -3376,7 +3376,7 @@ DG.MAPS.DUSTWALL_GYM = {
   ],
   npcs:[
     { id:'GYM_RIDLEY_HINT', name:'Fossil Scholar', x:7, y:16, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
-      dialogue:["Welcome to Ridley's Rock-type Gym! Answer quiz questions to choose your path.",
+      dialogue:["Welcome to Jam Sennings's Rock-type Gym! Answer quiz questions to choose your path.",
         "Correct: SHORT left path (1 trainer). Wrong: LONG right path (2 trainers)!",
         "Tip: Rock-type is super effective against Flying-types!"], onInteract:null },
     { id:'GYM_RIDLEY_S1_QUIZ', name:'Fossil Expert', x:14, y:15, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
@@ -3427,9 +3427,9 @@ DG.MAPS.DUSTWALL_GYM = {
       dialogue:['GRUNT_2'], trainerRef:'RIDLEY_S3_TW1', flagToHide:'TRAINER_RIDLEY_S3_TW1_DEFEATED' },
     { id:'GYM_RIDLEY_S3_TW2', name:'Prospector Clay', x:26, y:3, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
       dialogue:['GRUNT_2'], trainerRef:'RIDLEY_S3_TW2', flagToHide:'TRAINER_RIDLEY_S3_TW2_DEFEATED' },
-    { id:'GYM_LEADER_RIDLEY', name:'Ridley', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_RIDLEY', name:'Jam Sennings', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_RIDLEY_PRE'], onInteract:'TRIGGER_GYM', trainerRef:'GYM_RIDLEY', flagToHide:'TRAINER_GYM_RIDLEY_DEFEATED' },
-    { id:'GYM_LEADER_RIDLEY_DONE', name:'Ridley', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_RIDLEY_DONE', name:'Jam Sennings', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_RIDLEY_POST'], onInteract:null, requiresFlag:'TRAINER_GYM_RIDLEY_DEFEATED' },
   ],
   encounterTable:{grass:[],water:[]}, events:[],
@@ -3464,7 +3464,7 @@ DG.MAPS.PYRESIDE_GYM = {
   ],
   npcs:[
     { id:'GYM_IGNIS_HINT', name:'Fossil Scholar', x:7, y:16, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
-      dialogue:["Welcome to Ignis's Fire-type Gym! Answer correctly: SHORT left path (1 trainer).",
+      dialogue:["Welcome to Asset Toverdijk's Fire-type Gym! Answer correctly: SHORT left path (1 trainer).",
         "Answer wrong: LONG right path (2 trainers)!",
         "Tip: Scorchback is a Fire/Rock-type DinoMon!"], onInteract:null },
     { id:'GYM_IGNIS_S1_QUIZ', name:'Lava Sage', x:14, y:15, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
@@ -3515,9 +3515,9 @@ DG.MAPS.PYRESIDE_GYM = {
       dialogue:['GRUNT_2'], trainerRef:'IGNIS_S3_TW1', flagToHide:'TRAINER_IGNIS_S3_TW1_DEFEATED' },
     { id:'GYM_IGNIS_S3_TW2', name:'Lava Cinder', x:26, y:3, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
       dialogue:['GRUNT_2'], trainerRef:'IGNIS_S3_TW2', flagToHide:'TRAINER_IGNIS_S3_TW2_DEFEATED' },
-    { id:'GYM_LEADER_IGNIS', name:'Ignis', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_IGNIS', name:'Asset Toverdijk', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_IGNIS_PRE'], onInteract:'TRIGGER_GYM', trainerRef:'GYM_IGNIS', flagToHide:'TRAINER_GYM_IGNIS_DEFEATED' },
-    { id:'GYM_LEADER_IGNIS_DONE', name:'Ignis', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_IGNIS_DONE', name:'Asset Toverdijk', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_IGNIS_POST'], onInteract:null, requiresFlag:'TRAINER_GYM_IGNIS_DEFEATED' },
   ],
   encounterTable:{grass:[],water:[]}, events:[],
@@ -3640,7 +3640,7 @@ DG.MAPS.STONEHAVEN_GYM = {
   ],
   npcs:[
     { id:'GYM_TERRA_HINT', name:'Fossil Scholar', x:7, y:16, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
-      dialogue:["Welcome to Terra's Ground-type Gym! Answer correctly: SHORT left path (1 trainer).",
+      dialogue:["Welcome to Rock Hard Toonen's Ground-type Gym! Answer correctly: SHORT left path (1 trainer).",
         "Answer wrong: LONG right path (2 trainers)!",
         "Tip: Ground-type moves don't affect Flying-types at all!"], onInteract:null },
     { id:'GYM_TERRA_S1_QUIZ', name:'Canyon Guide', x:14, y:15, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
@@ -3691,9 +3691,9 @@ DG.MAPS.STONEHAVEN_GYM = {
       dialogue:['GRUNT_2'], trainerRef:'TERRA_S3_TW1', flagToHide:'TRAINER_TERRA_S3_TW1_DEFEATED' },
     { id:'GYM_TERRA_S3_TW2', name:'Ground Scout', x:26, y:3, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
       dialogue:['GRUNT_2'], trainerRef:'TERRA_S3_TW2', flagToHide:'TRAINER_TERRA_S3_TW2_DEFEATED' },
-    { id:'GYM_LEADER_TERRA', name:'Terra', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_TERRA', name:'Rock Hard Toonen', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_TERRA_PRE'], onInteract:'TRIGGER_GYM', trainerRef:'GYM_TERRA', flagToHide:'TRAINER_GYM_TERRA_DEFEATED' },
-    { id:'GYM_LEADER_TERRA_DONE', name:'Terra', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_TERRA_DONE', name:'Rock Hard Toonen', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_TERRA_POST'], onInteract:null, requiresFlag:'TRAINER_GYM_TERRA_DEFEATED' },
   ],
   encounterTable:{grass:[],water:[]}, events:[],
@@ -3728,7 +3728,7 @@ DG.MAPS.CRESTFALL_GYM = {
   ],
   npcs:[
     { id:'GYM_VOLT_HINT', name:'Fossil Scholar', x:7, y:16, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
-      dialogue:["Welcome to Volt's Electric-type Gym! Answer correctly: SHORT left path (1 trainer).",
+      dialogue:["Welcome to Beyblade Luuk's Electric-type Gym! Answer correctly: SHORT left path (1 trainer).",
         "Answer wrong: LONG right path (2 trainers)!",
         "Tip: Ground-type DinoMons are completely immune to Electric-type moves!"], onInteract:null },
     { id:'GYM_VOLT_S1_QUIZ', name:'Electrician', x:14, y:15, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
@@ -3779,9 +3779,9 @@ DG.MAPS.CRESTFALL_GYM = {
       dialogue:['GRUNT_2'], trainerRef:'VOLT_S3_TW1', flagToHide:'TRAINER_VOLT_S3_TW1_DEFEATED' },
     { id:'GYM_VOLT_S3_TW2', name:'Volt Scout', x:26, y:3, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
       dialogue:['GRUNT_2'], trainerRef:'VOLT_S3_TW2', flagToHide:'TRAINER_VOLT_S3_TW2_DEFEATED' },
-    { id:'GYM_LEADER_VOLT', name:'Volt', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_VOLT', name:'Beyblade Luuk', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_VOLT_PRE'], onInteract:'TRIGGER_GYM', trainerRef:'GYM_VOLT', flagToHide:'TRAINER_GYM_VOLT_DEFEATED' },
-    { id:'GYM_LEADER_VOLT_DONE', name:'Volt', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_VOLT_DONE', name:'Beyblade Luuk', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_VOLT_POST'], onInteract:null, requiresFlag:'TRAINER_GYM_VOLT_DEFEATED' },
   ],
   encounterTable:{grass:[],water:[]}, events:[],
@@ -3816,7 +3816,7 @@ DG.MAPS.BOGMIRE_GYM = {
   ],
   npcs:[
     { id:'GYM_MARINA_HINT', name:'Fossil Scholar', x:7, y:16, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
-      dialogue:["Welcome to Marina's Water-type Gym! Answer correctly: SHORT left path (1 trainer).",
+      dialogue:["Welcome to Surfing Peter's Water-type Gym! Answer correctly: SHORT left path (1 trainer).",
         "Answer wrong: LONG right path (2 trainers)!",
         "Tip: Mudfin evolves into Swampjaw, NOT Marshfin!"], onInteract:null },
     { id:'GYM_MARINA_S1_QUIZ', name:'Tide Sage', x:14, y:15, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
@@ -3867,9 +3867,9 @@ DG.MAPS.BOGMIRE_GYM = {
       dialogue:['GRUNT_2'], trainerRef:'MARINA_S3_TW1', flagToHide:'TRAINER_MARINA_S3_TW1_DEFEATED' },
     { id:'GYM_MARINA_S3_TW2', name:'Bog Scout', x:26, y:3, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
       dialogue:['GRUNT_2'], trainerRef:'MARINA_S3_TW2', flagToHide:'TRAINER_MARINA_S3_TW2_DEFEATED' },
-    { id:'GYM_LEADER_MARINA', name:'Marina', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_MARINA', name:'Surfing Peter', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_MARINA_PRE'], onInteract:'TRIGGER_GYM', trainerRef:'GYM_MARINA', flagToHide:'TRAINER_GYM_MARINA_DEFEATED' },
-    { id:'GYM_LEADER_MARINA_DONE', name:'Marina', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_MARINA_DONE', name:'Surfing Peter', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_MARINA_POST'], onInteract:null, requiresFlag:'TRAINER_GYM_MARINA_DEFEATED' },
   ],
   encounterTable:{grass:[],water:[]}, events:[],
@@ -3891,7 +3891,7 @@ DG.MAPS.BOGMIRE_GYM = {
     // Guard stepped aside (one tile north) after badge earned — no longer blocks the path
     { id:'SH_GUARD_W_DONE', name:'Officer', x:1, y:9, facing:'RIGHT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The Bedrock Badge — Terra's mark. Routes 6 and 7 are now open!"],
+      dialogue:["The Bedrock Badge — Rock Hard Toonen's mark. Routes 6 and 7 are now open!"],
       requiresFlag:'BADGE_5',
       onInteract: null }
   );
@@ -3929,7 +3929,7 @@ DG.MAPS.APEXSUMMIT_GYM = {
   ],
   npcs:[
     { id:'GYM_VALDEZ_HINT', name:'Fossil Scholar', x:7, y:16, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
-      dialogue:["Welcome to Valdez's Dragon-type Gym! Answer correctly: SHORT left path (1 trainer).",
+      dialogue:["Welcome to Bipolar Fieke's Dragon-type Gym! Answer correctly: SHORT left path (1 trainer).",
         "Answer wrong: LONG right path (2 trainers)!",
         "Tip: Steel-type resists Dragon-type moves!"], onInteract:null },
     { id:'GYM_VALDEZ_S1_QUIZ', name:'Dragon Sage', x:14, y:15, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
@@ -3980,9 +3980,9 @@ DG.MAPS.APEXSUMMIT_GYM = {
       dialogue:['GRUNT_2'], trainerRef:'VALDEZ_S3_TW1', flagToHide:'TRAINER_VALDEZ_S3_TW1_DEFEATED' },
     { id:'GYM_VALDEZ_S3_TW2', name:'Peak Scout', x:26, y:3, facing:'DOWN', spriteKey:'NPC_MAN', movementType:'STATIONARY',
       dialogue:['GRUNT_2'], trainerRef:'VALDEZ_S3_TW2', flagToHide:'TRAINER_VALDEZ_S3_TW2_DEFEATED' },
-    { id:'GYM_LEADER_VALDEZ', name:'Valdez', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_VALDEZ', name:'Bipolar Fieke', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_VALDEZ_PRE'], onInteract:'TRIGGER_GYM', trainerRef:'GYM_VALDEZ', flagToHide:'TRAINER_GYM_VALDEZ_DEFEATED' },
-    { id:'GYM_LEADER_VALDEZ_DONE', name:'Valdez', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
+    { id:'GYM_LEADER_VALDEZ_DONE', name:'Bipolar Fieke', x:14, y:1, facing:'DOWN', spriteKey:'NPC_LEADER', movementType:'STATIONARY',
       dialogue:['GYM_VALDEZ_POST'], onInteract:null, requiresFlag:'TRAINER_GYM_VALDEZ_DEFEATED' },
   ],
   encounterTable:{grass:[],water:[]}, events:[],
@@ -4211,21 +4211,21 @@ function _townHome(id, name, townMap, exitX, exitY, npcName, npcSprite, lines) {
   };
 }
 DG.MAPS.PYRESIDE_WEST_HOUSE = _townHome('PYRESIDE_WEST_HOUSE','Pyreside Home','PYRESIDE_CITY',3,9,
-  'Resident','NPC_WOMAN',["Pyreside sits right on the volcano — Ignis trains Fire-types here.","Stay cool out there, traveller!"]);
+  'Resident','NPC_WOMAN',["Pyreside sits right on the volcano — Asset Toverdijk trains Fire-types here.","Stay cool out there, traveller!"]);
 DG.MAPS.PYRESIDE_EAST_HOUSE = _townHome('PYRESIDE_EAST_HOUSE','Pyreside Cottage','PYRESIDE_CITY',12,9,
   'Old Miner','NPC_MAN',["The volcano's glow keeps our home warm through the night.","Dig deep and you'll find Fire DinoMon love the heat."]);
 DG.MAPS.FERNGROVE_HOUSE = _townHome('FERNGROVE_HOUSE','Ferngrove Home','FERNGROVE_TOWN',3,9,
   'Resident','NPC_WOMAN',["Welcome to Ferngrove! Our forest is full of Grass-type DinoMon.","PuKing Maarten's Gym is the heart of our little town."]);
 DG.MAPS.CRESTFALL_HOUSE = _townHome('CRESTFALL_HOUSE','Crestfall Home','CRESTFALL_TOWN',3,9,
-  'Resident','NPC_MAN',["Crestfall's storms power Volt's Electric Gym.","Mind the lightning when the sky turns dark!"]);
+  'Resident','NPC_MAN',["Crestfall's storms power Beyblade Luuk's Electric Gym.","Mind the lightning when the sky turns dark!"]);
 DG.MAPS.BOGMIRE_HOUSE = _townHome('BOGMIRE_HOUSE','Bogmire Home','BOGMIRE_CITY',3,9,
-  'Resident','NPC_WOMAN',["Bogmire's wetlands hide all sorts of Water-type DinoMon.","Marina's Gym is just across the marsh."]);
+  'Resident','NPC_WOMAN',["Bogmire's wetlands hide all sorts of Water-type DinoMon.","Surfing Peter's Gym is just across the marsh."]);
 DG.MAPS.BOGMIRE_EAST_HOUSE = _townHome('BOGMIRE_EAST_HOUSE','Market Quarter Home','BOGMIRE_CITY',22,5,
   'Trader','NPC_MAN',["We opened up the east market two years back.","Business is booming since the dock reopened!"]);
 DG.MAPS.BOGMIRE_DOCK_HOUSE = _townHome('BOGMIRE_DOCK_HOUSE','Dockside Home','BOGMIRE_CITY',22,9,
   'Fisher','NPC_WOMAN',["From our window we watch the marsh mist roll in.","Mudfin practically jump into the nets here."]);
 DG.MAPS.CRESTFALL_EAST_HOUSE = _townHome('CRESTFALL_EAST_HOUSE','Storm Quarter Home','CRESTFALL_TOWN',22,5,
-  'Technician','NPC_MAN',["We wire the whole quarter to Volt's grid.","Careful in a storm — everything here is live!"]);
+  'Technician','NPC_MAN',["We wire the whole quarter to Beyblade Luuk's grid.","Careful in a storm — everything here is live!"]);
 DG.MAPS.CRESTFALL_RIDGE_HOUSE = _townHome('CRESTFALL_RIDGE_HOUSE','Ridge Home','CRESTFALL_TOWN',22,9,
   'Climber','NPC_WOMAN',["The cliffs above town crackle with static before a storm.","Sparkhorn gather up there to feed on the lightning."]);
 DG.MAPS.STONEHAVEN_WEST_HOUSE = _townHome('STONEHAVEN_WEST_HOUSE','Quarry Home','STONEHAVEN_CITY',3,18,
@@ -4243,7 +4243,7 @@ DG.MAPS.FERNGROVE_EAST_HOUSE = _townHome('FERNGROVE_EAST_HOUSE','Grove Home','FE
 DG.MAPS.DUSTWALL_EAST_HOUSE = _townHome('DUSTWALL_EAST_HOUSE','Caravan Rest','DUSTWALL_TOWN',21,5,
   'Caravanner','NPC_MAN',["We outfit caravans bound for the deep desert.","Sandclaw make loyal companions out on the dunes."]);
 DG.MAPS.PYRESIDE_FORGE_HOUSE = _townHome('PYRESIDE_FORGE_HOUSE','Forge Home','PYRESIDE_CITY',21,5,
-  'Smith','NPC_MAN',["We temper steel in the volcano's own heat.","Ignis's Fire-types keep our forge burning hot."]);
+  'Smith','NPC_MAN',["We temper steel in the volcano's own heat.","Asset Toverdijk's Fire-types keep our forge burning hot."]);
 
 // STONEHAVEN_HOUSE1 retired — it was unreachable (no door in town) and duplicated the
 // empty, already-reachable STONEHAVEN_MUSEUM. Its historian exhibits now live in the museum.
@@ -4769,7 +4769,7 @@ DG.MAPS.CRESTFALL_TOWN = {
     // Guard stepped aside (one tile right) after badge earned — no longer blocks the path
     { id:'CF_GUARD_DONE', name:'Officer', x:7, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The Static Badge — Volt's mark. Route 8 toward Bogmire lies ahead — good luck!"],
+      dialogue:["The Static Badge — Beyblade Luuk's mark. Route 8 toward Bogmire lies ahead — good luck!"],
       requiresFlag:'BADGE_6', onInteract:null },
     // ── Storm / energy quarter (right side) ──
     { id:'CF_VENDOR', name:'Gear Vendor', x:21, y:9, facing:'DOWN', spriteKey:'NPC_SHOPKEEPER',
@@ -4777,7 +4777,7 @@ DG.MAPS.CRESTFALL_TOWN = {
       shopItems:['ULTRABALL','HYPERPOTION','REVIVE','FULLHEAL','ANTIDOTE','PARALYHEAL'] },
     { id:'CF_ENGINEER', name:'Engineer', x:24, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The whole east quarter runs on Volt's lightning grid.","One good storm could light the town for a month."], onInteract:null },
+      dialogue:["The whole east quarter runs on Beyblade Luuk's lightning grid.","One good storm could light the town for a month."], onInteract:null },
     { id:'CF_KID2', name:'Child', x:25, y:7, facing:'LEFT', spriteKey:'NPC_KID',
       movementType:'WANDER',
       dialogue:["When it thunders, the stalls' lights flicker like fireflies!"], onInteract:null },
@@ -4848,7 +4848,7 @@ DG.MAPS.BOGMIRE_CITY = {
     // Guard stepped aside (one tile right) after badge earned — no longer blocks the path
     { id:'BG_GUARD_DONE', name:'Officer', x:7, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
-      dialogue:["The Tide Badge — Marina's mark. The path to Apex Summit is open. And with Surf, the waterways are yours!"],
+      dialogue:["The Tide Badge — Surfing Peter's mark. The path to Apex Summit is open. And with Surf, the waterways are yours!"],
       requiresFlag:'BADGE_7', onInteract:null },
     { id:'BG_GYM_SIGN', name:'Sign', x:5, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'STATIONARY',
@@ -5217,14 +5217,14 @@ DG.MAPS.COMPOUND_BANK = {
   music:'SHOP_THEME', isIndoor:true, isCave:false,
   tiles:[
     [65,65,65,65,65,65,65,65,65,65,65,65,65,65],
-    [65,81,81,81,81,81,81,81,81,81,81,81,81,65],
-    [65,74,74,74,74,74,74,74,74,74,74,74,74,65],
+    [65,15,15,15,65,65,65,65,65,65,15,15,15,65], // wall-mounted Beachcoin ticker displays
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65], // teller side (Niels + teller stand here)
+    [65,74,74,74,74,74,74,74,74,74,74,74,74,65], // grand gold trading counter
+    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65, 5,16, 5, 5, 5, 5,13, 5, 5, 5,16, 5,65], // trading floor: Beachcoin monument + planters
     [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
     [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
-    [65, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,65],
+    [65,16, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,16,65],
     [65, 5, 5, 5, 5, 5,68,68, 5, 5, 5, 5, 5,65],
     [65,65,65,65,65,65,68,68,65,65,65,65,65,65],
   ],
@@ -5233,10 +5233,14 @@ DG.MAPS.COMPOUND_BANK = {
     { x:7, y:10, targetMap:'COMPOUND_CITY', targetX:4, targetY:5 },
   ],
   npcs:[
-    { id:'NIELS_BANK', name:'Daytrader Niels', x:6, y:1, facing:'DOWN', spriteKey:'NPC_PROF',
+    { id:'NIELS_BANK', name:'Daytrader Niels', x:6, y:2, facing:'DOWN', spriteKey:'NPC_PROF',
       movementType:'STATIONARY', dialogue:['NIELS_GREET'], onInteract:'BEACHCOIN' },
-    { id:'CB_TELLER', name:'Teller', x:9, y:1, facing:'DOWN', spriteKey:'NPC_WOMAN',
+    { id:'CB_TELLER', name:'Teller', x:9, y:2, facing:'DOWN', spriteKey:'NPC_WOMAN',
       movementType:'STATIONARY', dialogue:["Beachcoin's price re-rolls every time you walk in here.","Best case you cash out +50%. Worst case it crashes to zero and it's gone for good.","My advice? Sell the moment you're up. Greed gets rugged."], onInteract:null },
+    { id:'CB_BROKER', name:'Floor Broker', x:3, y:2, facing:'DOWN', spriteKey:'NPC_SHOPKEEPER',
+      movementType:'STATIONARY', dialogue:["Welcome to the DinoExchange trading floor!","Mr. Sennings only battles challengers out in the plaza — by his golden statue.","Word is his whole team is... unusually shiny."], onInteract:null },
+    { id:'CB_WHALE', name:'Diamond Hands', x:10, y:7, facing:'LEFT', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["I never sell. Up 1000%, down to zero — doesn't matter.","Diamond hands, kid. Look at this gold floor. That's conviction."], onInteract:null },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 };
@@ -5739,7 +5743,7 @@ DG.MAPS.SECRET_TUNNEL = {
       ["Our museum keeps a Frost Relic — it always points north, to the Frost Ascent.","They say only a trainer who has heard all the old tales can wake the Sovereign."],'NPC_WOMAN'),
     shrine('SHRINE_GLACIO','Frost Sage','ROUTE_10A',9,3,'GLACIODON',55,
       ['GLACIO_CLUE_1','GLACIO_CLUE_2','GLACIO_CLUE_3'],'GLACIODON_CAUGHT',
-      { dormant:'A frost-rimed altar hums faintly under the snow.',
+      { dormant:'A frost-rimed altar hums under the snow — here sleeps GLACIODON, one of the three Legendary DinoMon.',
         awaken:["The Frost Sage bows. 'You carry every legend of the Sovereign.'","Ice splinters into a roar — GLACIODON descends!"],
         rest:'The frost altar is calm. GLACIODON walks with you now.' }),
     // ── MEGAVORE — the Endless Hunger ──
@@ -5751,7 +5755,7 @@ DG.MAPS.SECRET_TUNNEL = {
       ["Niels says MEGAVORE's appetite is like compound interest — it never, ever stops.","Last sighting? A pitch-black cave off Route 3. Bring a light."],'NPC_WOMAN'),
     shrine('SHRINE_MEGA','Bone Warden','MURK_HOLLOW',6,5,'MEGAVORE',55,
       ['MEGA_CLUE_1','MEGA_CLUE_2','MEGA_CLUE_3'],'MEGAVORE_CAUGHT',
-      { dormant:'A pit of ancient bones. Something enormous breathes in the dark.',
+      { dormant:'A pit of ancient bones. Something enormous breathes in the dark — MEGAVORE, a MEGA DinoMon, a tier above any legendary.',
         awaken:["The bones rattle. 'You know its legend in full,' rasps the Warden.","From the black, MEGAVORE lunges — the Endless Hunger wakes!"],
         rest:'The bone pit is still. The Hunger answers to you now.' }),
     // ── TITANREX — the First King ──
@@ -5763,9 +5767,19 @@ DG.MAPS.SECRET_TUNNEL = {
       ["At the peak stands the King's throne, cold for a million years.","Only one who carries every legend may wake the First King."],'NPC_MAN'),
     shrine('SHRINE_TITAN','Throne Keeper','APEXSUMMIT',9,4,'TITANREX',58,
       ['TITAN_CLUE_1','TITAN_CLUE_2','TITAN_CLUE_3'],'TITANREX_CAUGHT',
-      { dormant:'A weathered stone throne, vast and empty. It thrums with old power.',
+      { dormant:'A weathered stone throne, vast and empty — the seat of TITANREX, a MEGA DinoMon, mightiest of all.',
         awaken:["The Throne Keeper kneels. 'The legends are whole. Rise, King.'","The mountain shakes — TITANREX takes its throne before you!"],
         rest:'The throne is claimed. The First King fights at your side.' }),
+    // ── Clarifying lore: a scholar in Amber Town explains the two legendary tiers ──
+    { map:'AMBERTOWN', px:9, py:8,
+      npc:{ id:'LEGEND_SCHOLAR', name:'Fossil Scholar', facing:'DOWN', spriteKey:'NPC_PROF',
+        movementType:'STATIONARY', onInteract:null, dialogue:[
+          'Pangaea hides five ancient titans, and they come in TWO tiers.',
+          'THREE are Legendary DinoMon: Crateron, Glaciodon and Primordia.',
+          'TWO are MEGA DinoMon: Megavore and Titanrex — a tier above legendary, the mightiest beasts that ever lived.',
+          'To claim them: Glaciodon, Megavore and Titanrex each sleep in a shrine. Gather their three legends from folk across the cities, then wake them.',
+          'Crateron and Primordia are different — they only stir once you have saved Pangaea from Team Extinction.',
+          'A warning: the two MEGA DinoMon are brutally hard to catch. The Champion\'s DinoMaster Ball is your surest way to hold one.' ] } },
   ];
   SPECS.forEach((s) => {
     const m = DG.MAPS[s.map]; if (!m) return;

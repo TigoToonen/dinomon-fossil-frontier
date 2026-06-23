@@ -1515,7 +1515,9 @@ MEGAVORE: _sp('MEGAVORE','Megavore',['DRAGON','DARK'],
     5,'DRAGON_DARTS',10,'DRAGON_RAGE',15,'SCALE_SHOT',22,'TWISTER',
     30,'DUAL_WINGBEAT',38,'SCALE_SHOT_PLUS',40,['DRAGON_BREATH','DRAGON_CLAW','DRAGON_PULSE','BREAKING_SWIPE'],46,'CLAW_STORM',
     54,'LEER',55,['DRACO_METEOR','MIND_DIVE','DIVE_BOMB','SPACIAL_REND'],62,'GROWL',70,'SMOKESCREEN',
-    78,'TAIL_WHIP'
+    78,'TAIL_WHIP',
+    // Signature default moveset (appended last → these are the 4 a caught Megavore starts with)
+    50,'ENDLESS_DEVOUR',50,'OUTRAGE',50,'DRAGON_DANCE',50,'CRUNCH'
   ),
   null,null,null,'Apex Predator','At battle start, lowers all opponent\'s stats by 1 stage (once)',
   1,400,'SLOW',true,true,
@@ -1529,7 +1531,9 @@ TITANREX: _sp('TITANREX','Titanrex',['ROCK','FIRE'],
     5,'ROCK_BLAST',10,'ROCK_THROW',15,'ROLLOUT',22,'ACCELEROCK',
     30,'MINERAL_BURST',38,'LEER',40,['ROCK_SLIDE','ANCIENT_POWER','SMASH_DOWN','POWER_GEM'],46,'GROWL',
     54,'SMOKESCREEN',55,['HEAD_SMASH','DIAMOND_STORM','METEOR_BEAM','ROCK_WRECKER'],62,'TAIL_WHIP',70,'WORK_UP',
-    78,'SWORDS_DANCE'
+    78,'SWORDS_DANCE',
+    // Signature default moveset (appended last → these are the 4 a caught Titanrex starts with)
+    50,'MAGMA_THRONE',50,'HEAD_SMASH',50,'SWORDS_DANCE',50,'EARTHQUAKE'
   ),
   null,null,null,'Primordial Fortress','All incoming damage halved; immune to critical hits',
   1,400,'SLOW',true,true,

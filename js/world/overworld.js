@@ -962,7 +962,7 @@ DG.Overworld = (function () {
           type: 'WILD', enemy: primordia, gameState: _gs,
           onEnd: (result) => {
             if (result === 'CAUGHT') {
-              DG.DialogueBox.show(['PRIMORDIA has joined your team!'], () => { _blocked = false; DG.SaveLoad.save(_gs); });
+              DG.DialogueBox.show(['PRIMORDIA has joined your team!', 'One of the three Legendary DinoMon now walks with you.'], () => { _blocked = false; DG.SaveLoad.save(_gs); });
             } else {
               DG.DialogueBox.show(['PRIMORDIA vanished back into the fossil vault...', 'Perhaps it will return someday.'], () => { _blocked = false; });
             }
@@ -983,7 +983,7 @@ DG.Overworld = (function () {
           onEnd: (result) => {
             if (result === 'CAUGHT') {
               DG.SaveLoad.setFlag(_gs, 'CRATERON_CAUGHT');
-              DG.DialogueBox.show(['CRATERON has joined your team!', 'The Primordial Flame burns for you now.'], () => { _blocked = false; DG.SaveLoad.save(_gs); });
+              DG.DialogueBox.show(['CRATERON has joined your team!', 'The Primordial Flame burns for you now.', 'One of the three Legendary DinoMon now fights at your side.'], () => { _blocked = false; DG.SaveLoad.save(_gs); });
             } else {
               DG.DialogueBox.show(['CRATERON retreated into the magma depths...', 'The Warden says it may return when you are stronger.'], () => { _blocked = false; });
             }
@@ -2439,6 +2439,7 @@ DG.Overworld = (function () {
       'FERNGROVE_CENTER':   'CENTER',  'STONEHAVEN_CENTER':   'CENTER',
       'CRESTFALL_CENTER':   'CENTER',  'BOGMIRE_CENTER':      'CENTER',
       'APEXSUMMIT_CENTER':  'CENTER',
+      'COMPOUND_BANK':      'GOLD',     'COMPOUND_CENTER':     'GOLD',  // gilded interiors
       // ── Special areas ────────────────────────────────────────
       'PYRESIDE_WILD':   'VOLCANIC',  'MT_CRETACEOUS':   'VOLCANIC',
       'GLACIAL_PASS_1':  'TUNDRA',    'GLACIAL_PASS_2':  'TUNDRA',
