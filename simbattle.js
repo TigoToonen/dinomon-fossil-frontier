@@ -30,7 +30,7 @@ function moveIdx(m, id){ return m.moves.findIndex(s=>s && s.moveId===id); }
 // Drive one battle to completion (or until frame cap). pick(battle)->action.
 function runBattle(party, enemyConfig, pick, opts){
   opts = opts || {};
-  const gs = { player:{ party, bag:{}, money:1000, name:'Tester', flags:{}, badges:[],
+  const gs = { player:{ party, bag: Object.assign({}, opts.bag), money:1000, name:'Tester', flags:{}, badges:[],
                         dex:{}, stats:{}, currentMap:'AMBERTOWN', x:5, y:5 },
                settings:{ textSpeed:'FAST' } };
   const log = [];
@@ -38,7 +38,7 @@ function runBattle(party, enemyConfig, pick, opts){
   const cfg = Object.assign({ gameState: gs, onEnd:(r)=>{ ended=true; result=r; } }, enemyConfig);
   B.start(cfg);
   let frames = 0, turns = 0;
-  let enemyStatusSeen = null, playerStatusSeen = null;
+  let enemyStatusSeen = null, playerStatusSeen = null, weatherSeen = null;
   const hitCounts = [];           // numbers parsed from "Hit N times!"
   const enemyHpLog = [];          // enemy hp.current snapshotted at each PLAYER_INPUT
   while(frames++ < (opts.maxFrames||8000)){
@@ -53,6 +53,7 @@ function runBattle(party, enemyConfig, pick, opts){
     if(liveBt){
       if(liveBt.enemyMon && liveBt.enemyMon.statusEffect) enemyStatusSeen = liveBt.enemyMon.statusEffect;
       if(liveBt.playerMon && liveBt.playerMon.statusEffect) playerStatusSeen = liveBt.playerMon.statusEffect;
+      if(liveBt.weather) weatherSeen = liveBt.weather;
     }
     const st = B.getState();
     if(ended || st === 'IDLE' || !B.isActive()){ break; }
@@ -70,7 +71,7 @@ function runBattle(party, enemyConfig, pick, opts){
       B.submitPlayerAction(act);
     }
   }
-  return { log, ended, result, frames, battle: B.getBattle(), enemyStatusSeen, playerStatusSeen, hitCounts, enemyHpLog };
+  return { log, ended, result, frames, battle: B.getBattle(), enemyStatusSeen, playerStatusSeen, weatherSeen, hitCounts, enemyHpLog, caught: B.getCaughtMon ? B.getCaughtMon() : null };
 }
 
 // ── Assertions framework ─────────────────────────────────────
@@ -226,6 +227,110 @@ console.log('═══ DinoMon battle simulator ═══');
   }
   const ba=avg(base), bo=avg(boosted);
   check('+2 Atk meaningfully raises damage', bo > ba*1.4, `baseline avg ${ba.toFixed(0)}, boosted avg ${bo.toFixed(0)}`);
+})();
+
+function findMove(pred){ return Object.values(DG.MOVES).find(pred); }
+function nonType(t){ return Object.keys(DG.SPECIES).find(id=>!((DG.SPECIES[id].types)||[]).includes(t)) || SP[0]; }
+
+// TEST 10 — Leech Seed drains the foe each turn.
+(function(){
+  console.log('\n[10] Leech Seed: foe loses HP each turn, no player attack needed');
+  const seed = findMove(m=>m.effect&&m.effect.type==='LEECH_SEED');
+  if(!seed){ check('LEECH_SEED move exists', false); return; }
+  const atk = mon(anySpecies(), 80, [seed.id, 'SWORDS_DANCE'], 9999);
+  const enemy = mon(nonType('GRASS'), 50, ['TACKLE'], 99999);
+  const r = runBattle([atk], { type:'WILD', enemy },
+    (bt,turn)=>({type:'MOVE', moveIndex: turn===1?0:1}), {maxTurns:5, maxFrames:6000});
+  check('foe gets seeded', r.log.some(l=>/seeded/i.test(l)));
+  check('Leech Seed saps HP each turn', r.log.some(l=>/sapped by Leech Seed/i.test(l)), 'log: '+JSON.stringify(r.log.filter(l=>/sap|seed/i.test(l)).slice(0,4)));
+})();
+
+// TEST 11 — Stealth Rock damages a switched-in foe (trainer battle, 2 mons).
+(function(){
+  console.log('\n[11] Stealth Rock: the foe\'s next mon takes entry damage');
+  const sr = findMove(m=>m.effect&&m.effect.type==='STEALTH_ROCK');
+  if(!sr){ check('STEALTH_ROCK move exists', false); return; }
+  const bag = nonType('FLYING'); // entry-damaged mon shouldn't be immune; any non-flying works
+  const atk = mon(anySpecies(), 95, [sr.id, 'TACKLE'], 99999);
+  const trainer = { name:'Tester Rival', party:[ {speciesId:bag, level:5}, {speciesId:bag, level:5} ] };
+  const r = runBattle([atk], { type:'TRAINER', trainerData: trainer },
+    (bt,turn)=>({type:'MOVE', moveIndex: turn===1?0:1}), {maxTurns:8, maxFrames:9000});
+  check('a switched-in foe is hurt by stealth rocks', r.log.some(l=>/hurt by the stealth rocks/i.test(l)), 'rock lines: '+JSON.stringify(r.log.filter(l=>/stones|stealth rocks/i.test(l))));
+})();
+
+// TEST 12 — Weather move actually sets weather.
+(function(){
+  console.log('\n[12] Weather: a SET_WEATHER move sets battle weather');
+  const w = findMove(m=>m.effect&&m.effect.type==='SET_WEATHER');
+  if(!w){ check('SET_WEATHER move exists', false); return; }
+  const atk = mon(anySpecies(), 80, [w.id, 'SWORDS_DANCE'], 9999);
+  const r = runBattle([atk], { type:'WILD', enemy: mon(SP[2]||SP[0], 40, ['TACKLE'], 99999) },
+    (bt,turn)=>({type:'MOVE', moveIndex: turn===1?0:1}), {maxTurns:3, maxFrames:4000});
+  check(`${w.id} sets weather`, !!r.weatherSeen, 'weather='+r.weatherSeen);
+})();
+
+// TEST 13 — Confusion move confuses the foe.
+(function(){
+  console.log('\n[13] Confusion: a CONFUSE move confuses the foe');
+  const c = findMove(m=>m.category==='STATUS' && m.effect&&m.effect.type==='CONFUSE');
+  if(!c){ check('CONFUSE status move exists', false); return; }
+  let conf=0, trials=8;
+  for(let i=0;i<trials;i++){
+    const atk = mon(anySpecies(), 80, [c.id], 9999);
+    const r = runBattle([atk], { type:'WILD', enemy: mon(SP[2]||SP[0], 40, ['TACKLE'], 99999) },
+      (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:3, maxFrames:4000});
+    if(r.log.some(l=>/confus/i.test(l))) conf++;
+  }
+  check(`${c.id} confuses the foe`, conf >= trials*0.7, `${conf}/${trials}`);
+})();
+
+// TEST 14 — Drain move heals the user.
+(function(){
+  console.log('\n[14] Drain: a draining move heals the user');
+  const d = findMove(m=>(m.category==='SPECIAL'||m.category==='PHYSICAL') && m.effect&&m.effect.type==='DRAIN');
+  if(!d){ check('DRAIN move exists', false); return; }
+  const atk = mon(anySpecies(), 85, [d.id], 9999);
+  atk.hp.current = 50; // hurt, so healing is observable
+  const r = runBattle([atk], { type:'WILD', enemy: mon(nonType(d.type), 40, ['TACKLE'], 99999) },
+    (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:2, maxFrames:4000});
+  check(`${d.id} drains energy`, r.log.some(l=>/drained energy/i.test(l)), 'log: '+JSON.stringify(r.log.slice(0,6)));
+})();
+
+// TEST 15 — Recoil move hurts the user.
+(function(){
+  console.log('\n[15] Recoil: a recoil move hurts the user');
+  const rc = findMove(m=>(m.category==='SPECIAL'||m.category==='PHYSICAL') && m.effect&&m.effect.type==='RECOIL');
+  if(!rc){ check('RECOIL move exists', false); return; }
+  const atk = mon(anySpecies(), 85, [rc.id], 99999);
+  const r = runBattle([atk], { type:'WILD', enemy: mon(nonType(rc.type), 50, ['TACKLE'], 99999) },
+    (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:2, maxFrames:4000});
+  check(`${rc.id} causes recoil`, r.log.some(l=>/hurt by recoil/i.test(l)), 'log: '+JSON.stringify(r.log.slice(0,6)));
+})();
+
+// TEST 16 — One-hit KO move can instantly faint a lower-level foe.
+(function(){
+  console.log('\n[16] OHKO: a one-hit KO move can instantly faint a weaker foe');
+  const o = findMove(m=>m.effect&&m.effect.type==='ONE_HIT_KO');
+  if(!o){ check('ONE_HIT_KO move exists', false); return; }
+  let ko=0, trials=20;
+  for(let i=0;i<trials;i++){
+    const atk = mon(anySpecies(), 90, [o.id], 9999);
+    const r = runBattle([atk], { type:'WILD', enemy: mon(nonType(o.type), 20, ['TACKLE'], 200) },
+      (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:5, maxFrames:5000});
+    if(r.log.some(l=>/one-hit KO/i.test(l))) ko++;
+  }
+  check(`${o.id} lands a one-hit KO sometimes`, ko >= 1, `${ko}/${trials} OHKOs (accuracy-gated)`);
+})();
+
+// TEST 17 — Master Ball always catches a wild DinoMon.
+(function(){
+  console.log('\n[17] Catch: a Master Ball catches a wild DinoMon');
+  const ballId = DG.ITEMS.MASTERBALL ? 'MASTERBALL' : (DG.ITEMS.DINOMASTERBALL ? 'DINOMASTERBALL' : null);
+  if(!ballId){ check('a 255-modifier ball exists', false); return; }
+  const atk = mon(anySpecies(), 80, null, 9999);
+  const r = runBattle([atk], { type:'WILD', enemy: mon(SP[3]||SP[0], 30, null, 9999) },
+    (bt)=>({type:'ITEM', itemId: ballId}), {maxTurns:3, maxFrames:5000, bag:{ [ballId]:5 }});
+  check('Master Ball catches', r.result==='CAUGHT' || !!r.caught || r.log.some(l=>/caught/i.test(l)), 'result='+r.result+' log: '+JSON.stringify(r.log.slice(-4)));
 })();
 
 // ── REPORT ───────────────────────────────────────────────────
