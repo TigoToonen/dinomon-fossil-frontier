@@ -791,6 +791,143 @@ DG.Menu = (function () {
     }
   }
 
+  // ── Type-themed gym badge art ─────────────────────────────────
+  function _badgeLighten(hex, amt) {
+    hex = hex.replace('#', '');
+    let r = parseInt(hex.substr(0, 2), 16), g = parseInt(hex.substr(2, 2), 16), b = parseInt(hex.substr(4, 2), 16);
+    r = Math.min(255, Math.round(r + (255 - r) * amt));
+    g = Math.min(255, Math.round(g + (255 - g) * amt));
+    b = Math.min(255, Math.round(b + (255 - b) * amt));
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+  function _badgeShapePath(ctx, shape, cx, cy, r) {
+    ctx.beginPath();
+    if (shape === 'circle') {
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    } else if (shape === 'diamond') {
+      ctx.moveTo(cx, cy - r); ctx.lineTo(cx + r, cy); ctx.lineTo(cx, cy + r); ctx.lineTo(cx - r, cy); ctx.closePath();
+    } else if (shape === 'teardrop') {
+      ctx.moveTo(cx, cy - r);
+      ctx.bezierCurveTo(cx + r * 0.95, cy - r * 0.15, cx + r * 0.7, cy + r * 0.9, cx, cy + r * 0.92);
+      ctx.bezierCurveTo(cx - r * 0.7, cy + r * 0.9, cx - r * 0.95, cy - r * 0.15, cx, cy - r);
+      ctx.closePath();
+    } else if (shape === 'leaf') {
+      ctx.moveTo(cx, cy - r);
+      ctx.quadraticCurveTo(cx + r * 0.85, cy, cx, cy + r);
+      ctx.quadraticCurveTo(cx - r * 0.85, cy, cx, cy - r);
+      ctx.closePath();
+    } else if (shape === 'shield') {
+      ctx.moveTo(cx - r * 0.85, cy - r * 0.78);
+      ctx.lineTo(cx + r * 0.85, cy - r * 0.78);
+      ctx.lineTo(cx + r * 0.85, cy + r * 0.1);
+      ctx.quadraticCurveTo(cx + r * 0.85, cy + r * 0.78, cx, cy + r);
+      ctx.quadraticCurveTo(cx - r * 0.85, cy + r * 0.78, cx - r * 0.85, cy + r * 0.1);
+      ctx.closePath();
+    } else if (shape === 'star') {
+      for (let i = 0; i < 10; i++) {
+        const rad = (i % 2 === 0) ? r : r * 0.46;
+        const ang = -Math.PI / 2 + i * Math.PI / 5;
+        const px = cx + rad * Math.cos(ang), py = cy + rad * Math.sin(ang);
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+    } else { // hex
+      for (let a = 0; a < 6; a++) {
+        const ang = (Math.PI / 3) * a - Math.PI / 6;
+        const px = cx + r * Math.cos(ang), py = cy + r * Math.sin(ang);
+        if (a === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+    }
+  }
+  function _badgeEmblem(ctx, type, cx, cy, s, color) {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    const poly = (pts) => { ctx.beginPath(); pts.forEach((p, i) => { const X = cx + p[0] * s, Y = cy + p[1] * s; if (i) ctx.lineTo(X, Y); else ctx.moveTo(X, Y); }); ctx.closePath(); ctx.fill(); };
+    const dot = (x, y, rr) => { ctx.beginPath(); ctx.arc(cx + x * s, cy + y * s, rr * s, 0, Math.PI * 2); ctx.fill(); };
+    switch (type) {
+      case 'FIRE':
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + s * 0.85);
+        ctx.bezierCurveTo(cx - s * 0.85, cy + s * 0.35, cx - s * 0.35, cy - s * 0.3, cx - s * 0.05, cy - s * 0.85);
+        ctx.bezierCurveTo(cx - s * 0.1, cy - s * 0.2, cx + s * 0.35, cy - s * 0.35, cx + s * 0.12, cy - s * 0.55);
+        ctx.bezierCurveTo(cx + s * 0.95, cy - s * 0.05, cx + s * 0.6, cy + s * 0.6, cx, cy + s * 0.85);
+        ctx.closePath(); ctx.fill();
+        break;
+      case 'WATER':
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - s * 0.9);
+        ctx.bezierCurveTo(cx + s * 0.85, cy + s * 0.1, cx + s * 0.55, cy + s * 0.85, cx, cy + s * 0.85);
+        ctx.bezierCurveTo(cx - s * 0.55, cy + s * 0.85, cx - s * 0.85, cy + s * 0.1, cx, cy - s * 0.9);
+        ctx.closePath(); ctx.fill();
+        break;
+      case 'GRASS':
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - s * 0.9);
+        ctx.quadraticCurveTo(cx + s * 0.8, cy, cx, cy + s * 0.9);
+        ctx.quadraticCurveTo(cx - s * 0.8, cy, cx, cy - s * 0.9);
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = Math.max(1, s * 0.12);
+        ctx.beginPath(); ctx.moveTo(cx, cy - s * 0.65); ctx.lineTo(cx, cy + s * 0.65); ctx.stroke();
+        break;
+      case 'ELECTRIC':
+        poly([[-0.12, -0.95], [0.42, -0.2], [0.08, -0.18], [0.28, 0.95], [-0.42, 0.05], [-0.06, 0.02]]);
+        break;
+      case 'ROCK': // fossil bone
+        ctx.strokeStyle = color; ctx.lineWidth = s * 0.32;
+        ctx.beginPath(); ctx.moveTo(cx - s * 0.38, cy - s * 0.38); ctx.lineTo(cx + s * 0.38, cy + s * 0.38); ctx.stroke();
+        dot(-0.55, -0.55, 0.27); dot(-0.32, -0.62, 0.22); dot(0.55, 0.55, 0.27); dot(0.32, 0.62, 0.22);
+        dot(-0.62, -0.32, 0.22); dot(0.62, 0.32, 0.22);
+        break;
+      case 'GROUND': // mountain range
+        poly([[-0.9, 0.65], [-0.42, -0.3], [-0.05, 0.22], [0.35, -0.7], [0.9, 0.65]]);
+        break;
+      case 'FAIRY': // heart
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + s * 0.8);
+        ctx.bezierCurveTo(cx - s * 1.0, cy - s * 0.15, cx - s * 0.4, cy - s * 0.85, cx, cy - s * 0.22);
+        ctx.bezierCurveTo(cx + s * 0.4, cy - s * 0.85, cx + s * 1.0, cy - s * 0.15, cx, cy + s * 0.8);
+        ctx.closePath(); ctx.fill();
+        break;
+      case 'DRAGON': { // three talons
+        const talon = (bx, tip) => { ctx.beginPath(); ctx.moveTo(cx + bx * s - s * 0.16, cy + s * 0.8); ctx.lineTo(cx + tip * s, cy - s * 0.85); ctx.lineTo(cx + bx * s + s * 0.16, cy + s * 0.8); ctx.closePath(); ctx.fill(); };
+        talon(-0.42, -0.62); talon(0, 0); talon(0.42, 0.62);
+        break;
+      }
+      default: // NORMAL — paw print
+        dot(0, 0.3, 0.5);
+        dot(-0.5, -0.22, 0.24); dot(-0.17, -0.5, 0.24); dot(0.17, -0.5, 0.24); dot(0.5, -0.22, 0.24);
+        break;
+    }
+    ctx.restore();
+  }
+  function _drawBadge(ctx, cx, cy, r, b, got) {
+    _badgeShapePath(ctx, b.shape || 'hex', cx, cy, r);
+    if (got) {
+      const g = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.15, cx, cy, r * 1.05);
+      g.addColorStop(0, _badgeLighten(b.col, 0.55));
+      g.addColorStop(1, b.col);
+      ctx.fillStyle = g;
+    } else {
+      ctx.fillStyle = '#15182b';
+    }
+    ctx.fill();
+    ctx.strokeStyle = got ? '#fff8e0' : '#33405e';
+    ctx.lineWidth = got ? 2 : 1;
+    ctx.stroke();
+    _badgeEmblem(ctx, b.type, cx, cy, r * 0.55, got ? '#ffffff' : '#3a4a66');
+    if (got) {
+      ctx.save();
+      ctx.globalAlpha = 0.45;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.ellipse(cx - r * 0.34, cy - r * 0.42, r * 0.3, r * 0.14, -0.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
   function _drawBadges(ctx) {
     const W = DG.CANVAS.W, H = DG.CANVAS.H;
     _drawWindow(ctx, 2, 2, W - 4, H - 4);
@@ -811,15 +948,15 @@ DG.Menu = (function () {
     ctx.textAlign = 'left';
 
     const ALL_BADGES = [
-      { name:'Herd Badge',    gym:'Normal Normi · Shellcreek',     type:'NORMAL',   col:'#aaaaaa' },
-      { name:'Fossil Badge',  gym:'Jam Sennings · Dustwall',    type:'ROCK',     col:'#aa8833' },
-      { name:'Magma Badge',   gym:'Asset Toverdijk · Pyreside',     type:'FIRE',     col:'#ff4411' },
-      { name:'Canopy Badge',  gym:'PuKing Maarten · Ferngrove',    type:'GRASS',    col:'#33aa33' },
-      { name:'Charm Badge',   gym:'AFK Jorn · Fairydell',        type:'FAIRY',    col:'#dd77aa' },
-      { name:'Bedrock Badge', gym:'Rock Hard Toonen · Stonehaven',   type:'GROUND',   col:'#cc8833' },
-      { name:'Static Badge',  gym:'Beyblade Luuk · Crestfall',     type:'ELECTRIC', col:'#ffcc00' },
-      { name:'Tide Badge',    gym:'Surfing Peter · Bogmire',     type:'WATER',    col:'#3377ff' },
-      { name:'Scale Badge',   gym:'Bipolar Fieke · Apex Summit', type:'DRAGON',   col:'#6644cc' },
+      { name:'Herd Badge',    gym:'Normal Normi · Shellcreek',      type:'NORMAL',   col:'#b8b8c0', shape:'circle'   },
+      { name:'Fossil Badge',  gym:'Jam Sennings · Dustwall',        type:'ROCK',     col:'#b0823a', shape:'hex'      },
+      { name:'Magma Badge',   gym:'Asset Toverdijk · Pyreside',     type:'FIRE',     col:'#ff4d22', shape:'teardrop' },
+      { name:'Canopy Badge',  gym:'PuKing Maarten · Ferngrove',     type:'GRASS',    col:'#3faa3f', shape:'leaf'     },
+      { name:'Charm Badge',   gym:'AFK Jorn · Fairydell',           type:'FAIRY',    col:'#e87fb6', shape:'star'     },
+      { name:'Bedrock Badge', gym:'Rock Hard Toonen · Stonehaven',  type:'GROUND',   col:'#c8923f', shape:'shield'   },
+      { name:'Static Badge',  gym:'Beyblade Luuk · Crestfall',      type:'ELECTRIC', col:'#f5c518', shape:'diamond'  },
+      { name:'Tide Badge',    gym:'Surfing Peter · Bogmire',        type:'WATER',    col:'#3a86ff', shape:'circle'   },
+      { name:'Scale Badge',   gym:'Bipolar Fieke · Apex Summit',    type:'DRAGON',   col:'#7a4fd6', shape:'shield'   },
     ];
 
     ALL_BADGES.forEach(function(b, i) {
@@ -829,28 +966,9 @@ DG.Menu = (function () {
       const by  = 32 + row * 54;
       const got = earned.includes(b.name);
 
-      // Badge hexagon
-      const cx = bx + 20, cy = by + 20, r = 17;
-      ctx.beginPath();
-      for (let a = 0; a < 6; a++) {
-        const ang = (Math.PI / 3) * a - Math.PI / 6;
-        const px  = cx + r * Math.cos(ang);
-        const py  = cy + r * Math.sin(ang);
-        if (a === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.fillStyle   = got ? b.col : '#1a1a2e';
-      ctx.fill();
-      ctx.strokeStyle = got ? '#ffffff' : '#334466';
-      ctx.lineWidth   = got ? 2 : 1;
-      ctx.stroke();
-
-      // Type initial inside hex
-      ctx.fillStyle    = got ? '#ffffff' : '#334466';
-      ctx.font         = `bold ${got ? 10 : 9}px monospace`;
-      ctx.textAlign    = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(b.type[0], cx, cy);
+      // Type-themed badge medallion
+      const cx = bx + 20, cy = by + 20, r = 18;
+      _drawBadge(ctx, cx, cy, r, b, got);
 
       // Badge name + gym info
       ctx.textAlign    = 'left';
