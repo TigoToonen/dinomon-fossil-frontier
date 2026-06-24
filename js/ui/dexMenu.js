@@ -346,6 +346,30 @@ DG.DexMenu = (function () {
         ctx.textBaseline = 'top';
         tx += tw + 6;
       }
+      // ── Tier badge: MEGA (Megavore/Titanrex) or LEGENDARY (the other three) ──
+      if (sp.isMega || sp.isLegendary) {
+        const _isM = !!sp.isMega;
+        const _lbl = _isM ? 'MEGA' : 'LEGENDARY';
+        ctx.font = 'bold 10px monospace';
+        const _bw = Math.ceil(ctx.measureText(_lbl).width) + 14;
+        ctx.save();
+        ctx.shadowColor = _isM ? '#ff3b5c' : '#b58cff';
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = _isM ? '#ff2d55' : '#7a4fd6';
+        _roundRect(ctx, tx, ty, _bw, 16, 4);
+        ctx.fill();
+        ctx.restore();
+        ctx.strokeStyle = _isM ? '#ffd24a' : '#e6d8ff';
+        ctx.lineWidth = 1;
+        _roundRect(ctx, tx, ty, _bw, 16, 4);
+        ctx.stroke();
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(_lbl, tx + _bw / 2, ty + 8);
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+      }
     } else if (isSeen) {
       // Seen but not caught: show ?? placeholders
       ctx.fillStyle = '#445566';
