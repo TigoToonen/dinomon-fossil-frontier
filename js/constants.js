@@ -119,6 +119,8 @@ DG.TILE = {
   GOLD_PLAZA:      14, // gilded marble pavement / boulevard (walkable)
   TICKER_BOARD:    15, // wall-mounted LED Beachcoin price ticker (solid)
   GOLD_PLANTER:    16, // gold pot + topiary (solid)
+  GATE_POST_L:     17, // left golden gatepost — also draws the arch + COMPOUND CITY banner (solid)
+  GATE_POST_R:     18, // right golden gatepost (solid)
   SKYLINE:         19, // distant gold-skyscraper backdrop band (solid, decorative)
   // Aliases for world/encounter/overworld modules
   PATH:         0,  // = FLOOR

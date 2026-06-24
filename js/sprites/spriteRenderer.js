@@ -1648,6 +1648,61 @@ DG.SpriteRenderer = (function () {
       ctx.fillStyle = '#7a5410'; ctx.fillRect(cx - 7, py + T - 2, 14, 1);
     }
 
+    else if (tileId === 17 || tileId === 18) {
+      // ── Grand golden gatepost (17 = left, also draws the arch + banner) ──
+      const a17 = (anim || 0), cx = px + T / 2;
+      const pulse = 0.5 + 0.5 * Math.sin(a17 * 0.12 + px * 0.05);
+      // gilded base patch
+      ctx.fillStyle = '#caa12e'; ctx.fillRect(px, py + T - 6, T, 6);
+      ctx.fillStyle = '#e8c24a'; ctx.fillRect(px, py + T - 6, T, 2);
+      // halo
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      const hg = ctx.createRadialGradient(cx, py - T * 0.4, 2, cx, py - T * 0.4, T * 0.9);
+      hg.addColorStop(0, 'rgba(255,210,110,' + (0.18 + pulse * 0.14) + ')'); hg.addColorStop(1, 'rgba(255,180,60,0)');
+      ctx.fillStyle = hg; ctx.fillRect(px - T, py - T * 1.4, T * 3, T * 2); ctx.restore();
+      // pillar shaft (rises above the tile)
+      const topY = py - T * 0.55, sw = 11;
+      const sg = ctx.createLinearGradient(cx - sw / 2, 0, cx + sw / 2, 0);
+      sg.addColorStop(0, '#9a721c'); sg.addColorStop(0.45, '#f0c258'); sg.addColorStop(0.55, '#fff0bf'); sg.addColorStop(1, '#7a5410');
+      ctx.fillStyle = sg; ctx.fillRect(cx - sw / 2, topY, sw, (py + T - 3) - topY);
+      // stone base block + capital
+      ctx.fillStyle = '#4a4150'; ctx.fillRect(cx - 9, py + T - 12, 18, 9);
+      ctx.fillStyle = '#5d5366'; ctx.fillRect(cx - 9, py + T - 12, 18, 2);
+      ctx.fillStyle = '#caa12e'; ctx.fillRect(cx - 8, topY - 3, 16, 4);            // capital
+      ctx.fillStyle = '#fff0bf'; ctx.fillRect(cx - 8, topY - 3, 16, 1);
+      // ₿ medallion mid-shaft
+      ctx.fillStyle = '#7a5410'; ctx.beginPath(); ctx.arc(cx, py + T * 0.18, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#f6c842'; ctx.beginPath(); ctx.arc(cx, py + T * 0.18, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#7a5410'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx - 1.4, py + T * 0.18 - 3); ctx.lineTo(cx - 1.4, py + T * 0.18 + 3); ctx.stroke();
+      // glowing lantern orb on top
+      ctx.fillStyle = 'rgba(255,232,150,' + (0.7 + pulse * 0.3) + ')';
+      ctx.beginPath(); ctx.arc(cx, topY - 5, 3.4 + pulse, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff8d8'; ctx.beginPath(); ctx.arc(cx, topY - 5, 1.6, 0, Math.PI * 2); ctx.fill();
+
+      if (tileId === 17) {
+        // Arch beam + hanging banner spanning RIGHT over the gateway (drawn upward → survives)
+        const beamY = topY - 1;
+        ctx.fillStyle = '#caa12e'; ctx.fillRect(cx, beamY, T * 3.0, 5);
+        ctx.fillStyle = '#fff0bf'; ctx.fillRect(cx, beamY, T * 3.0, 1.4);
+        ctx.fillStyle = '#9a721c'; ctx.fillRect(cx, beamY + 5, T * 3.0, 1.4);
+        // banner
+        const bw = T * 2.5, bx = cx + T * 0.35, by = beamY + 6, bh = T * 0.46;
+        ctx.fillStyle = '#1a1208'; ctx.fillRect(bx, by, bw, bh);
+        ctx.strokeStyle = '#e8c24a'; ctx.lineWidth = 1.5; ctx.strokeRect(bx, by, bw, bh);
+        // banner tails
+        ctx.fillStyle = '#1a1208';
+        ctx.beginPath(); ctx.moveTo(bx, by + bh); ctx.lineTo(bx, by + bh + 4); ctx.lineTo(bx + 4, by + bh); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(bx + bw, by + bh); ctx.lineTo(bx + bw, by + bh + 4); ctx.lineTo(bx + bw - 4, by + bh); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#ffe487'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('COMPOUND CITY', bx + bw / 2, by + bh / 2 + 0.5);
+      } else {
+        // Right post: short connector arm reaching left to meet the beam
+        const beamY = topY - 1;
+        ctx.fillStyle = '#caa12e'; ctx.fillRect(cx - T * 0.7, beamY, T * 0.7, 5);
+        ctx.fillStyle = '#fff0bf'; ctx.fillRect(cx - T * 0.7, beamY, T * 0.7, 1.4);
+      }
+    }
+
     else if (tileId === 15) {
       // Wall-mounted LED Beachcoin ticker (solid; mounted on a building wall)
       ctx.fillStyle = '#caa12e'; ctx.fillRect(px, py, T, T);            // gilded wall behind

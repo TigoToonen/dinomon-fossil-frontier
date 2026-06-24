@@ -801,8 +801,8 @@ ROUTE_2A: {
     [66, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2,66], // 12 open
     [66, 1, 1, 1, 1,67, 1, 1, 1, 0, 0, 1, 1, 1, 1,67, 1, 1, 1,66], // 13 sign
     [66, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,66], // 14 TRAINER 2 row
-    [66, 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,66], // 15 dense grass
-    [66,68, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2,66], // 16 Compound City door (left)
+    [66,14,17,14,14,18, 1, 1, 1, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,66], // 15 ★ golden gateway to Compound City ★
+    [66,68,14,14,14,14, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2,66], // 16 Compound City door + gold approach
     [66,66,66,66,66,66,66,66,66, 0, 0,66,66,66,66,66,66,66,66,66], // 17 bottom border
   ],
   warps:[
@@ -813,8 +813,8 @@ ROUTE_2A: {
     { x:1,  y:16, targetMap:'COMPOUND_CITY', targetX:9, targetY:13 }, // side path to Compound City
   ],
   npcs:[
-    { id:'R2A_CC_SIGN', name:'Sign', x:2, y:15, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:["◄ Side path: COMPOUND CITY","Home of Beachcoin — get rich quick, or get rugged!"], onInteract:null },
+    { id:'R2A_CC_SIGN', name:'Sign', x:6, y:15, facing:'LEFT', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:["◄ THE GOLD GATE — COMPOUND CITY","Beyond the golden arch: Beachcoin, the DinoExchange Tower and the Fossil Museum.","Get rich quick... or get rugged!"], onInteract:null },
     { id:'R2A_NIELS_FAN', name:'Crypto Bro', x:7, y:7, facing:'DOWN', spriteKey:'NPC_MAN',
       movementType:'WANDER', dialogue:["You heading to Compound City? Talk to Daytrader Niels — the man's a GENIUS.","Beachcoin's gonna go to the moon AND back. I'm all in!"], onInteract:null },
     { id:'R2A_NIELS_HATER', name:'Bitter Trainer', x:12, y:13, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -5072,7 +5072,7 @@ DG.MAPS.COMPOUND_CITY = {
     [64, 1,16, 1, 1, 1, 1, 1,14,14,14,14, 1, 1, 1, 1,16, 1, 1,64],
     [64, 1, 1, 1, 1, 1, 1, 1, 1,14,14, 1, 1, 1, 1, 1, 1, 1, 1,64], // boulevard spine to the gate
     [64, 1,12, 1, 1, 1, 1, 1, 1,14,14, 1, 1, 1, 1, 1,12, 1, 1,64],
-    [64,64, 1, 1, 1, 1, 1, 1, 1,14,14, 1, 1, 1, 1, 1, 1,64,64,64],
+    [64,64, 1, 1, 1, 1, 1, 1,17,14,14,18, 1, 1, 1, 1, 1,64,64,64], // ★ golden gateway posts + arch ★
     [64,64,64,64,64,64,64,64,64,14,14,64,64,64,64,64,64,64,64,64], // gate to Route 2A
   ],
   warps:[
