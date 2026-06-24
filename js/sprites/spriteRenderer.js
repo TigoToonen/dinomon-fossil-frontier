@@ -1563,16 +1563,29 @@ DG.SpriteRenderer = (function () {
 
     // ══ Compound City — gold-metropolis dressing (tiles 12-19, 99) ══
     else if (tileId === 14) {
-      // Gilded marble boulevard pavement (walkable)
-      ctx.fillStyle = '#b8902a'; ctx.fillRect(px, py, T, T);              // gold grout
-      const _gp = _tileRand(seed, 6);
-      ctx.fillStyle = '#ecd28a'; ctx.fillRect(px+1, py+1, T-2, T-2);      // gilded slab
-      ctx.fillStyle = 'rgba(255,250,210,0.55)'; ctx.fillRect(px+1, py+1, T-2, 2); ctx.fillRect(px+1, py+1, 2, T-2);
-      ctx.fillStyle = 'rgba(120,84,16,0.5)';    ctx.fillRect(px+1, py+T-3, T-2, 2); ctx.fillRect(px+T-3, py+1, 2, T-2);
-      // inlaid diamond + sheen
-      ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(px+T/2,py+5); ctx.lineTo(px+T-5,py+T/2); ctx.lineTo(px+T/2,py+T-5); ctx.lineTo(px+5,py+T/2); ctx.closePath(); ctx.stroke();
-      if (_gp[2] > 0.7) { ctx.fillStyle='rgba(255,252,225,0.9)'; ctx.fillRect(px+6+_gp[3]*18, py+6+_gp[4]*18, 1.5, 1.5); }
+      // Polished cream-marble plaza with thin gold seams (tiles into a clean
+      // continuous floor — kept subtle so a whole paved city reads as elegant).
+      const _gp = _tileRand(seed, 8);
+      ctx.fillStyle = '#c7a544'; ctx.fillRect(px, py, T, T);              // gold grout shows as seams
+      // marble slab, faintly varied per tile so the floor isn't dead-flat
+      const v14 = (_gp[0] - 0.5) * 10;
+      const r14 = 232 + v14, g14 = 220 + v14, b14 = 192 + v14;
+      ctx.fillStyle = 'rgb(' + (r14|0) + ',' + (g14|0) + ',' + (b14|0) + ')';
+      ctx.fillRect(px + 1, py + 1, T - 2, T - 2);
+      // soft diagonal polish sheen
+      ctx.fillStyle = 'rgba(255,252,238,0.10)';
+      ctx.beginPath(); ctx.moveTo(px + 1, py + 1); ctx.lineTo(px + T - 1, py + 1); ctx.lineTo(px + 1, py + T - 1); ctx.closePath(); ctx.fill();
+      // bevel: lit top/left seam, shadowed bottom/right → reads as inset slab
+      ctx.fillStyle = 'rgba(255,250,228,0.55)'; ctx.fillRect(px + 1, py + 1, T - 2, 1); ctx.fillRect(px + 1, py + 1, 1, T - 2);
+      ctx.fillStyle = 'rgba(120,86,20,0.40)';   ctx.fillRect(px + 1, py + T - 2, T - 2, 1); ctx.fillRect(px + T - 2, py + 1, 1, T - 2);
+      // faint marble vein on some tiles
+      if (_gp[1] > 0.6) {
+        ctx.strokeStyle = 'rgba(176,150,96,0.30)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(px + 3 + _gp[2] * 8, py + 2); ctx.quadraticCurveTo(px + T * 0.6, py + T * 0.5, px + T - 3, py + T - 3 - _gp[3] * 6); ctx.stroke();
+      }
+      // rare tiny gold inlay stud (sparse — accents, not noise)
+      if (_gp[4] > 0.9) { ctx.fillStyle = '#caa12e'; ctx.beginPath(); ctx.arc(px + T / 2, py + T / 2, 1.6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(255,248,210,0.8)'; ctx.fillRect(px + T / 2 - 1, py + T / 2 - 1, 1, 1); }
     }
 
     else if (tileId === 19) {

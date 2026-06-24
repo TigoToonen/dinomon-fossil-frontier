@@ -2369,7 +2369,7 @@ ROUTE_10A: {
     { id:'R10A_TRAINER2', name:'Vance', x:14, y:27, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_5'], trainerRef:'EXPLORER_VANCE' },
     { id:'R10A_TRAINER_VR', name:'Vesna', x:10, y:24, facing:'DOWN', spriteKey:'NPC_WOMAN',
-      movementType:'STATIONARY', dialogue:["Stop! No one reaches the Elite Four without passing me!"], trainerRef:'VR_ACE_VESNA' },
+      movementType:'STATIONARY', dialogue:["I'm steeling myself before I dare face the Elite Four.","Aurora's ice, they say, freezes the very tides of time. Are you truly ready for that?"] },
   ],
   encounterTable:{ grass:[
     { speciesId:'SWOOPTER',  minLv:54, maxLv:58, rate:20 },
@@ -2504,7 +2504,7 @@ ROUTE_10C: {
     { id:'R10C_TRAINER2', name:'Vance', x:14, y:27, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_5'], trainerRef:'EXPLORER_VANCE' },
     { id:'R10C_TRAINER_VR', name:'Bram', x:9, y:24, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:["I've scaled every ridge of this mountain. You won't pass me on the way to the Elite Four!"], trainerRef:'VR_CLIMBER_BRAM' },
+      movementType:'STATIONARY', dialogue:["I've scaled every ridge of this mountain to train.","Yet Garnet of the Elite Four can move mountains. How does anyone beat that?"] },
   ],
   encounterTable:{ grass:[
     { speciesId:'SWOOPTER',  minLv:56, maxLv:60, rate:20 },
@@ -2571,7 +2571,7 @@ ROUTE_10D: {
     { id:'R10D_TRAINER2', name:'Rook', x:14, y:27, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:['GRUNT_5'], trainerRef:'DRAGONTAMER_ROOK' },
     { id:'R10D_TRAINER_VR', name:'Cinder', x:10, y:25, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:["My flames burn even in this frost! Beat me, or forget the Elite Four!"], trainerRef:'VR_FIREBRAND_CINDER' },
+      movementType:'STATIONARY', dialogue:["I keep my fire burning even in this frost.","But Ember's flames melt steel itself. The Elite Four are on another level entirely."] },
   ],
   encounterTable:{ grass:[
     { speciesId:'SWOOPTER',  minLv:57, maxLv:61, rate:20 },
@@ -2646,7 +2646,7 @@ ROUTE_10E: {
       dialogue:["Every trainer on this mountain is chasing the same four names: Aurora, Ember, Garnet, Phantom.","Can you feel the charge in the wind? The Elite Four are close now. The whole world holds its breath for whoever reaches them."],
       onInteract:null },
     { id:'R10E_TRAINER_VR', name:'Mort', x:9, y:25, facing:'DOWN', spriteKey:'NPC_MAN',
-      movementType:'STATIONARY', dialogue:["I foresaw your coming... and your defeat. The Elite Four are not for you!"], trainerRef:'VR_SEER_MORT' },
+      movementType:'STATIONARY', dialogue:["I gazed into Phantom's shadow, and saw only my own defeat.","If you mean to pass the Elite Four, you'll need more than I ever had."] },
   ],
   encounterTable:{ grass:[
     { speciesId:'SWOOPTER',  minLv:58, maxLv:62, rate:20 },
@@ -5061,18 +5061,18 @@ DG.MAPS.COMPOUND_CITY = {
   tiles:[
     [19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19], // skyline backdrop
     [19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19],
-    [64, 1, 1,65,65,65, 1, 1,65,65,65,65, 1,65,65,65,65, 1, 1,64], // DinoExchange tower | Fossil Museum | DinoCenter
-    [64, 1, 1,65,65,65, 1, 1,65,65,65,65, 1,65,65,65,65, 1, 1,64],
-    [64, 1, 1,65,68,65, 1, 1,65,68,68,65, 1,65,68,65,65, 1, 1,64],
-    [64, 1,12, 1, 1, 1,16, 1, 1, 1, 1, 1,16, 1, 1, 1,12, 1, 1,64], // lampposts + planters
-    [64, 1, 1,14,14,14,14,14,14,14,14,14,14,14,14,14,14, 1, 1,64], // grand gold boulevard (main street)
-    [64, 1,13, 1, 1,74,74, 1, 1,14,14, 1, 1, 1,89, 1, 1, 1, 1,64], // Beachcoin monument | broker stall | gold fountain
-    [64, 1, 1, 1, 1, 1, 1, 1,14,14,14,14, 1, 1, 1, 1, 1, 1, 1,64], // statue plaza
-    [64, 1, 1, 1, 1, 1, 1, 1,14,99,14,14, 1, 1, 1, 1, 1, 1, 1,64], //   ★ golden Niels statue ★
-    [64, 1,16, 1, 1, 1, 1, 1,14,14,14,14, 1, 1, 1, 1,16, 1, 1,64],
-    [64, 1, 1, 1, 1, 1, 1, 1, 1,14,14, 1, 1, 1, 1, 1, 1, 1, 1,64], // boulevard spine to the gate
-    [64, 1,12, 1, 1, 1, 1, 1, 1,14,14, 1, 1, 1, 1, 1,12, 1, 1,64],
-    [64,64, 1, 1, 1, 1, 1, 1,17,14,14,18, 1, 1, 1, 1, 1,64,64,64], // ★ golden gateway posts + arch ★
+    [64,14,14,65,65,65,14,14,65,65,65,65,14,65,65,65,65,14,14,64], // DinoExchange tower | Fossil Museum | DinoCenter
+    [64,14,14,65,65,65,14,14,65,65,65,65,14,65,65,65,65,14,14,64],
+    [64,14,14,65,68,65,14,14,65,68,68,65,14,65,68,65,65,14,14,64],
+    [64,14,12,14,14,14,16,14,14,14,14,14,16,14,14,14,12,14,14,64], // lampposts + planters
+    [64,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,64], // continuous marble plaza
+    [64,14,13,14,14,74,74,14,14,14,14,14,14,14,89,14,14,14,14,64], // Beachcoin monument | broker stall | gold fountain
+    [64,14,14,14,14,14,14,14,11,11,11,14,14,14,14,14,14,14,14,64], // ── dark-marble medallion ──
+    [64,14,14,14,14,14,14,14,11,99,11,14,14,14,14,14,14,14,14,64], //   ★ golden Niels statue ★
+    [64,14,16,14,14,14,14,14,11,11,11,14,14,14,14,14,16,14,14,64],
+    [64,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,64],
+    [64,14,12,14,14,14,14,14,14,14,14,14,14,14,14,14,12,14,14,64],
+    [64,64,14,14,14,14,14,14,17,14,14,18,14,14,14,14,14,64,64,64], // ★ golden gateway posts + arch ★
     [64,64,64,64,64,64,64,64,64,14,14,64,64,64,64,64,64,64,64,64], // gate to Route 2A
   ],
   warps:[
