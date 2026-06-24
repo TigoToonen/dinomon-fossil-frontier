@@ -148,6 +148,29 @@ DG.BagMenu = (function () {
     }
   }
 
+  // Out-of-battle evolution target for a mon (happiness > held item > level).
+  // Returns the species id to evolve into, or null. Stone-only lines are skipped.
+  function _evoTargetFor(mon) {
+    if (!mon || mon.isEgg) return null;
+    const sp = DG.SPECIES && DG.SPECIES[mon.speciesId];
+    if (typeof DG.HAPPINESS_EVOLUTIONS !== 'undefined') {
+      const h = DG.HAPPINESS_EVOLUTIONS[mon.speciesId];
+      if (h && (mon.happiness || 0) >= h.minHappiness && DG.SPECIES[h.evolves]) return h.evolves;
+    }
+    if (mon.heldItem && typeof DG.HELD_ITEM_EVOLUTIONS !== 'undefined') {
+      const hi = DG.HELD_ITEM_EVOLUTIONS[mon.speciesId];
+      if (hi && hi.item === mon.heldItem && DG.SPECIES[hi.evolves]) return hi.evolves;
+    }
+    if (sp && sp.evolvesTo && sp.evolvesAt && (mon.level || 1) >= sp.evolvesAt && DG.SPECIES[sp.evolvesTo]) {
+      let stoneOnly = false;
+      if (typeof DG.STONE_EVOLUTIONS !== 'undefined') {
+        for (const k in DG.STONE_EVOLUTIONS) { if (DG.STONE_EVOLUTIONS[k][mon.speciesId] === sp.evolvesTo) { stoneOnly = true; break; } }
+      }
+      if (!stoneOnly) return sp.evolvesTo;
+    }
+    return null;
+  }
+
   // ── Open ─────────────────────────────────────────────────────
   function open(gameState, onClose) {
     _gs           = gameState;
@@ -395,7 +418,7 @@ DG.BagMenu = (function () {
       return;
     }
 
-    // ── Rare Candy: raise level by 1 ──
+    // ── Rare Candy: raise level by 1 (learns moves + evolves, like in battle) ──
     if (itemId === 'RARE_CANDY') {
       if (mon.isEgg) { DG.DialogueBox.show(["An egg can't use that!"], () => {}); return; }
       if ((mon.level || 1) >= 100) {
@@ -405,9 +428,38 @@ DG.BagMenu = (function () {
       mon.level = (mon.level || 1) + 1;
       DG.SaveLoad.recalcStats(mon);
       DG.SaveLoad.removeItem(_gs, itemId, 1);
+      // Learn any level-up moves for the new level that fit a free slot
+      const lines = [`${monName} grew to Lv.${mon.level}!`];
+      const lsp = DG.SPECIES && DG.SPECIES[mon.speciesId];
+      if (lsp && Array.isArray(lsp.learnset)) {
+        lsp.learnset.filter(e => e.level === mon.level).forEach(e => {
+          let mid = Array.isArray(e.move) ? e.move.filter(id => DG.MOVES && DG.MOVES[id])[0] : e.move;
+          if (!mid || !DG.MOVES[mid] || mon.moves.some(m => m.moveId === mid)) return;
+          if (mon.moves.length < 4) {
+            mon.moves.push({ moveId: mid, ppCurrent: DG.MOVES[mid].pp, ppMax: DG.MOVES[mid].pp });
+            lines.push(`${monName} learned ${DG.MOVES[mid].name || mid}!`);
+          }
+        });
+      }
+      const evoTarget = _evoTargetFor(mon);
       DG.SaveLoad.save(_gs);
       _mode = 'ITEMS'; _pendingItem = null;
-      DG.DialogueBox.show([`${monName} grew to Lv.${mon.level}!`], () => {});
+      if (evoTarget) {
+        const oldId = mon.speciesId, oldName = monName;
+        lines.push(`${oldName} is evolving!`);
+        DG.DialogueBox.show(lines, () => {
+          mon.speciesId = evoTarget;
+          DG.SaveLoad.recalcStats(mon);
+          DG.SaveLoad.markCaught(_gs, evoTarget);
+          DG.SaveLoad.save(_gs);
+          const tn = (DG.SPECIES[evoTarget] && DG.SPECIES[evoTarget].name) || evoTarget;
+          DG.DialogueBox.show([`${oldName} evolved into ${tn}!`], () => {
+            if (typeof DG.BattleUI !== 'undefined') DG.BattleUI.notify({ event: 'EVOLUTION', mon, oldSpeciesId: oldId });
+          });
+        });
+      } else {
+        DG.DialogueBox.show(lines, () => {});
+      }
       return;
     }
 
@@ -467,11 +519,11 @@ DG.BagMenu = (function () {
         return;
       }
       const targetName = DG.SPECIES[targetSpecies]?.name || targetSpecies;
+      const oldId = mon.speciesId;
       DG.SaveLoad.removeItem(_gs, itemId, 1);
       _mode = 'ITEMS'; _pendingItem = null;
       // Perform evolution
       mon.speciesId = targetSpecies;
-      mon.nickname  = mon.nickname; // keep nickname
       DG.SaveLoad.recalcStats(mon);
       DG.SaveLoad.markCaught(_gs, targetSpecies);
       DG.SaveLoad.save(_gs);
@@ -479,7 +531,9 @@ DG.BagMenu = (function () {
         `${monName} is evolving!`,
         `${monName} evolved into ${targetName}!`,
       ], () => {
-        if (typeof DG.BattleUI !== 'undefined') DG.BattleUI.notify({ event: 'EVOLUTION' });
+        // Pass old + new species so the full evolution animation actually plays
+        // (previously notify() had no data → only a sound, no animation).
+        if (typeof DG.BattleUI !== 'undefined') DG.BattleUI.notify({ event: 'EVOLUTION', mon, oldSpeciesId: oldId });
       });
       return;
     }

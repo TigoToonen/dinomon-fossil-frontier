@@ -2117,24 +2117,21 @@ DG.Battle = (function () {
       }
 
       // Catch-up evolution: if the mon is already at or above its evolution
-      // level but hasn't evolved yet (e.g. obtained via console or caught above
-      // the threshold without levelling up), trigger evolution now.
-      if (!_state.startsWith('EVO')) {
-        const catchupSp = DG.SPECIES ? DG.SPECIES[mon.speciesId] : null;
-        if (catchupSp && catchupSp.evolvesTo && catchupSp.evolvesAt && mon.level >= catchupSp.evolvesAt) {
-          let isStoneOnly = false;
-          if (typeof DG.STONE_EVOLUTIONS !== 'undefined') {
-            for (const stoneMap of Object.values(DG.STONE_EVOLUTIONS)) {
-              if (stoneMap[mon.speciesId] === catchupSp.evolvesTo) { isStoneOnly = true; break; }
-            }
-          }
-          if (!isStoneOnly) {
-            _state = BS.EVOLUTION;
-            _doEvolution(mon);
-          }
+      // level but hasn't evolved/queued yet (e.g. caught above the threshold,
+      // or evolved via Rare Candy elsewhere), queue it now.
+      if (!mon._evoQueued) {
+        const cSp = DG.SPECIES ? DG.SPECIES[mon.speciesId] : null;
+        if (cSp && cSp.evolvesTo && cSp.evolvesAt && mon.level >= cSp.evolvesAt &&
+            DG.SPECIES[cSp.evolvesTo] && !_isStoneOnly(mon.speciesId, cSp.evolvesTo)) {
+          _queueEvolution(mon, cSp.evolvesTo);
         }
       }
     });
+
+    // If any party mon queued an evolution this XP pass, enter the EVOLUTION
+    // state so _tickEvolution can play each one in sequence (was: only the
+    // FIRST mon ever evolved per battle — the cross-mon EVO guard blocked the rest).
+    if (_battle.evoQueue && _battle.evoQueue.length) _state = BS.EVOLUTION;
   }
 
   // ── EV AWARD ─────────────────────────────────────────────
@@ -2191,43 +2188,46 @@ DG.Battle = (function () {
       _learnMove(mon, moveId);
     }
 
-    // ── Evolution checks (priority: happiness > held item > level) ──
-
-    // 1. Happiness evolution
-    if (!_state.startsWith('EVO') && typeof DG.HAPPINESS_EVOLUTIONS !== 'undefined') {
-      const happyEvo = DG.HAPPINESS_EVOLUTIONS[mon.speciesId];
-      if (happyEvo && (mon.happiness || 0) >= happyEvo.minHappiness && DG.SPECIES[happyEvo.evolves]) {
-        _evolveInto(mon, happyEvo.evolves);
-        return;
+    // ── Evolution: pick the first matching trigger and QUEUE it ──
+    // (priority: happiness > held item > level). Queuing instead of evolving
+    // inline lets EVERY party mon that qualifies evolve this battle, in turn.
+    if (!mon._evoQueued) {
+      let evoTarget = null;
+      // 1. Happiness
+      if (typeof DG.HAPPINESS_EVOLUTIONS !== 'undefined') {
+        const happyEvo = DG.HAPPINESS_EVOLUTIONS[mon.speciesId];
+        if (happyEvo && (mon.happiness || 0) >= happyEvo.minHappiness && DG.SPECIES[happyEvo.evolves]) evoTarget = happyEvo.evolves;
       }
-    }
-
-    // 2. Held item evolution
-    if (!_state.startsWith('EVO') && mon.heldItem && typeof DG.HELD_ITEM_EVOLUTIONS !== 'undefined') {
-      const heldEvo = DG.HELD_ITEM_EVOLUTIONS[mon.speciesId];
-      if (heldEvo && heldEvo.item === mon.heldItem && DG.SPECIES[heldEvo.evolves]) {
-        _evolveInto(mon, heldEvo.evolves);
-        return;
+      // 2. Held item
+      if (!evoTarget && mon.heldItem && typeof DG.HELD_ITEM_EVOLUTIONS !== 'undefined') {
+        const heldEvo = DG.HELD_ITEM_EVOLUTIONS[mon.speciesId];
+        if (heldEvo && heldEvo.item === mon.heldItem && DG.SPECIES[heldEvo.evolves]) evoTarget = heldEvo.evolves;
       }
-    }
-
-    // 3. Standard level-based evolution
-    if (!_state.startsWith('EVO') && sp.evolvesTo && sp.evolvesAt && mon.level >= sp.evolvesAt) {
-      // Skip if this species requires a stone (stone evolutions handled separately)
-      let isStoneOnly = false;
-      if (typeof DG.STONE_EVOLUTIONS !== 'undefined') {
-        for (const stoneMap of Object.values(DG.STONE_EVOLUTIONS)) {
-          if (stoneMap[mon.speciesId] === sp.evolvesTo) { isStoneOnly = true; break; }
-        }
+      // 3. Standard level-based (skip stone-only lines — those need a stone)
+      if (!evoTarget && sp.evolvesTo && sp.evolvesAt && mon.level >= sp.evolvesAt &&
+          DG.SPECIES[sp.evolvesTo] && !_isStoneOnly(mon.speciesId, sp.evolvesTo)) {
+        evoTarget = sp.evolvesTo;
       }
-      if (!isStoneOnly) {
-        _state = BS.EVOLUTION;
-        _doEvolution(mon);
-      }
+      if (evoTarget) _queueEvolution(mon, evoTarget);
     }
   }
 
-  // ── Helper: evolve a mon into a new species ───────────────
+  // ── Evolution helpers ─────────────────────────────────────
+  function _isStoneOnly(speciesId, target) {
+    if (typeof DG.STONE_EVOLUTIONS === 'undefined') return false;
+    for (const stoneMap of Object.values(DG.STONE_EVOLUTIONS)) {
+      if (stoneMap[speciesId] === target) return true;
+    }
+    return false;
+  }
+  function _queueEvolution(mon, target) {
+    if (!mon || !target || !DG.SPECIES[target]) return;
+    _battle.evoQueue = _battle.evoQueue || [];
+    mon._evoQueued = true;
+    _battle.evoQueue.push({ mon, target });
+  }
+
+  // ── Helper: evolve a mon into a new species (legacy, retained) ──
   function _evolveInto(mon, targetSpeciesId) {
     const oldName = _monName(mon);
     mon.speciesId = targetSpeciesId;
@@ -2312,24 +2312,35 @@ DG.Battle = (function () {
   }
 
   // ── EVOLUTION ─────────────────────────────────────────────
-  function _doEvolution(mon) {
+  function _doEvolution(mon, target) {
     const oldName = _monName(mon);
-    const sp = DG.SPECIES[mon.speciesId];
-    if (!sp || !sp.evolvesTo) return;
+    const oldId   = mon.speciesId;
+    const sp      = DG.SPECIES[oldId];
+    const newId   = target || (sp && sp.evolvesTo);
+    if (!newId || !DG.SPECIES[newId]) { mon._evoQueued = false; return; }
 
-    mon.speciesId = sp.evolvesTo;
-    const newSp = DG.SPECIES[mon.speciesId];
+    mon.speciesId = newId;
+    mon._evoQueued = false;
+    const newSp = DG.SPECIES[newId];
     DG.SaveLoad.recalcStats(mon);
-    DG.SaveLoad.markCaught(_battle.gameState, mon.speciesId);
+    DG.SaveLoad.markCaught(_battle.gameState, newId);
 
-    _pushMessage(`Congratulations! ${oldName} evolved into ${newSp ? newSp.name : mon.speciesId}!`);
-    _notifyUI({ event: 'EVOLUTION', mon, oldSpeciesId: sp.id });
+    _pushMessage(`${oldName} is evolving!`);
+    _pushMessage(`Congratulations! ${oldName} evolved into ${newSp ? newSp.name : newId}!`);
+    _notifyUI({ event: 'EVOLUTION', mon, oldSpeciesId: oldId });
   }
 
   function _tickEvolution() {
-    // Evolution already resolved synchronously in _doEvolution.
-    // Go to FAINT_HANDLER (not EXECUTE) to avoid re-triggering the faint
-    // check loop that would call _grantExp a second time.
+    // Drain the evolution queue one mon at a time, waiting for each evolution's
+    // full-screen animation to finish before starting the next.
+    if (typeof DG.EvoAnim !== 'undefined' && DG.EvoAnim.isActive && DG.EvoAnim.isActive()) return;
+    const q = _battle.evoQueue;
+    if (q && q.length) {
+      const item = q.shift();
+      if (item && item.mon) _doEvolution(item.mon, item.target);
+      return; // stay in EVOLUTION; next tick waits for this animation
+    }
+    // Queue drained → FAINT_HANDLER (not EXECUTE) to avoid re-running _grantExp.
     _state = BS.FAINT_HANDLER;
   }
 
@@ -2637,7 +2648,7 @@ DG.Battle = (function () {
         if (!mon) continue;
         mon._infatuated = false; mon._lock = null; mon._charging = false;
         mon._chargingMoveId = null; mon._rolloutMult = 1; mon._rampageEnded = false;
-        mon._flinched = false; mon._rechargeNext = false;
+        mon._flinched = false; mon._rechargeNext = false; mon._evoQueued = false;
       }
     } catch(e) {}
 
