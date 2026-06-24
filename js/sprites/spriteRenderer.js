@@ -1711,68 +1711,90 @@ DG.SpriteRenderer = (function () {
     }
 
     else if (tileId === 99) {
-      // ── Golden statue of Daytrader Niels, of himself ──────────────
+      // ── Grand golden statue of Daytrader Niels, of himself ─────────
       ctx.fillStyle = '#3c7838'; ctx.fillRect(px, py, T, T);
       const cx = px + T / 2, a99 = (anim || 0);
       const pulse = 0.5 + 0.5 * Math.sin(a99 * 0.05);
-      // hero up-light + glow
-      const ug = ctx.createRadialGradient(cx, py - T * 0.2, 2, cx, py - T * 0.2, T * 1.3);
-      ug.addColorStop(0, 'rgba(255,205,90,' + (0.26 + pulse * 0.14) + ')');
+      // Spotlight cone from high above (survives: drawn into already-painted rows)
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      const sgc = ctx.createLinearGradient(cx, py - T * 1.9, cx, py + T * 0.4);
+      sgc.addColorStop(0, 'rgba(255,240,190,0.20)'); sgc.addColorStop(1, 'rgba(255,220,150,0)');
+      ctx.fillStyle = sgc;
+      ctx.beginPath(); ctx.moveTo(cx - T * 0.14, py - T * 1.9); ctx.lineTo(cx + T * 0.14, py - T * 1.9);
+      ctx.lineTo(cx + T * 0.5, py + T * 0.4); ctx.lineTo(cx - T * 0.5, py + T * 0.4); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      // hero up-light glow pooling at the base
+      const ug = ctx.createRadialGradient(cx, py + T * 0.2, 2, cx, py + T * 0.2, T * 1.1);
+      ug.addColorStop(0, 'rgba(255,205,90,' + (0.30 + pulse * 0.14) + ')');
       ug.addColorStop(1, 'rgba(255,170,40,0)');
       ctx.fillStyle = ug; ctx.fillRect(px - T, py - T * 2, T * 3, T * 3);
-      // marble + gold pedestal
-      const pw = T * 0.86, ph = T * 0.5, plx = cx - pw / 2, ply = py + T - ph;
-      ctx.fillStyle = '#4a4150'; ctx.fillRect(plx, ply, pw, ph);
+      // ── grand 2-tier marble+gold pedestal ──
+      const pw = T * 0.92, ph = T * 0.5, plx = cx - pw / 2, ply = py + T - ph;
+      const bw = T * 1.02, blx = cx - bw / 2;                       // wider base step
+      ctx.fillStyle = '#3a3346'; ctx.fillRect(blx, py + T - 6, bw, 6);
+      ctx.fillStyle = '#4f4658'; ctx.fillRect(blx, py + T - 6, bw, 2);
+      ctx.fillStyle = '#4a4150'; ctx.fillRect(plx, ply, pw, ph - 4);
       ctx.fillStyle = '#5d5366'; ctx.fillRect(plx, ply, pw, 3);
-      ctx.fillStyle = '#241f30'; ctx.fillRect(plx, ply + ph - 4, pw, 4);
-      ctx.fillStyle = '#caa24a'; ctx.fillRect(cx - pw * 0.36, ply + ph * 0.34, pw * 0.72, ph * 0.34); // plaque
-      ctx.fillStyle = 'rgba(255,245,200,0.7)'; ctx.fillRect(cx - pw * 0.36, ply + ph * 0.34, pw * 0.72, 1);
-      // ── the golden Niels figure (drawn above the pedestal) ──
+      ctx.fillStyle = '#605672'; ctx.fillRect(plx, ply, 3, ph - 4);  // lit edge
+      ctx.fillStyle = '#241f30'; ctx.fillRect(plx + pw - 3, ply, 3, ph - 4);
+      // gold plaque with ★ and laurels
+      ctx.fillStyle = '#caa24a'; ctx.fillRect(cx - pw * 0.36, ply + ph * 0.30, pw * 0.72, ph * 0.36);
+      ctx.fillStyle = '#8a6e2c'; ctx.strokeStyle = '#8a6e2c'; ctx.lineWidth = 1; ctx.strokeRect(cx - pw * 0.36, ply + ph * 0.30, pw * 0.72, ph * 0.36);
+      ctx.fillStyle = 'rgba(255,245,200,0.7)'; ctx.fillRect(cx - pw * 0.36, ply + ph * 0.30, pw * 0.72, 1);
+      ctx.fillStyle = '#7a5410'; ctx.font = 'bold 6px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('★ NIELS ★', cx, ply + ph * 0.30 + ph * 0.18);
+      // gold laurel sprigs flanking the plaque
+      ctx.strokeStyle = '#e8c24a'; ctx.lineWidth = 1.4;
+      [-1, 1].forEach(function (s) { const lx = cx + s * pw * 0.40;
+        ctx.beginPath(); ctx.moveTo(lx, ply + ph * 0.30); ctx.quadraticCurveTo(lx + s * 3, ply + ph * 0.5, lx, ply + ph * 0.66); ctx.stroke(); });
+      // ── sunburst halo behind the raised Beachcoin (upward → survives) ──
       const G = { dk:'#9a721c', md:'#d9a83a', lt:'#f4cf72', hi:'#fff0bf' };
-      const fy = ply - 2;                  // feet line (just above pedestal top)
-      ctx.save();
-      ctx.shadowColor = 'rgba(255,190,80,0.6)'; ctx.shadowBlur = 7;
-      // legs
-      ctx.fillStyle = G.md; ctx.fillRect(cx - 5, fy - 14, 4, 14); ctx.fillRect(cx + 1, fy - 14, 4, 14);
-      ctx.fillStyle = G.dk; ctx.fillRect(cx - 1, fy - 14, 2, 14);   // trouser crease
-      ctx.fillStyle = G.lt; ctx.fillRect(cx - 5, fy - 14, 1.4, 14);
-      // torso (suit jacket)
-      ctx.fillStyle = G.md; ctx.fillRect(cx - 7, fy - 28, 14, 15);
-      ctx.fillStyle = G.lt; ctx.fillRect(cx - 7, fy - 28, 2, 15);   // lit lapel
-      ctx.fillStyle = G.dk; ctx.fillRect(cx + 5, fy - 28, 2, 15);
-      // open jacket V + tie
-      ctx.fillStyle = G.hi; ctx.beginPath(); ctx.moveTo(cx, fy - 27); ctx.lineTo(cx - 3, fy - 18); ctx.lineTo(cx + 3, fy - 18); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = G.dk; ctx.fillRect(cx - 1, fy - 24, 2, 8);    // tie
-      // left arm down, hand on hip; right arm raised holding a coin aloft
-      ctx.fillStyle = G.md;
-      ctx.fillRect(cx - 9, fy - 27, 3, 11);                          // left upper arm
-      ctx.fillRect(cx - 10, fy - 18, 4, 4);                          // left forearm to hip
-      // raised right arm
-      ctx.save(); ctx.translate(cx + 6, fy - 26); ctx.rotate(-0.9);
-      ctx.fillStyle = G.md; ctx.fillRect(0, -3, 13, 4);
-      ctx.fillStyle = G.lt; ctx.fillRect(0, -3, 13, 1.2);
+      const fy = ply - 2;                  // feet line
+      const handX = cx + 6 + Math.cos(-0.9) * 15, handY = (fy - 30) + Math.sin(-0.9) * 15;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      const halo = ctx.createRadialGradient(handX, handY, 1, handX, handY, T * 0.7);
+      halo.addColorStop(0, 'rgba(255,235,150,' + (0.5 + pulse * 0.3) + ')'); halo.addColorStop(1, 'rgba(255,200,80,0)');
+      ctx.fillStyle = halo; ctx.fillRect(handX - T, handY - T, T * 2, T * 2);
+      ctx.strokeStyle = 'rgba(255,240,170,0.6)'; ctx.lineWidth = 1;
+      for (let r = 0; r < 8; r++) { const ang = a99 * 0.02 + r * (Math.PI / 4);
+        ctx.beginPath(); ctx.moveTo(handX + Math.cos(ang) * 6, handY + Math.sin(ang) * 6);
+        ctx.lineTo(handX + Math.cos(ang) * (10 + pulse * 4), handY + Math.sin(ang) * (10 + pulse * 4)); ctx.stroke(); }
       ctx.restore();
-      // raised hand position (compute end of arm)
-      const handX = cx + 6 + Math.cos(-0.9) * 13, handY = fy - 26 + Math.sin(-0.9) * 13;
-      // head
+      // ── the golden Niels figure (enlarged ~1.2×, raised) ──
+      ctx.save();
+      ctx.translate(cx, fy); ctx.scale(1.2, 1.2); ctx.translate(-cx, -fy);
+      ctx.shadowColor = 'rgba(255,190,80,0.6)'; ctx.shadowBlur = 6;
+      ctx.fillStyle = G.md; ctx.fillRect(cx - 5, fy - 14, 4, 14); ctx.fillRect(cx + 1, fy - 14, 4, 14);
+      ctx.fillStyle = G.dk; ctx.fillRect(cx - 1, fy - 14, 2, 14);
+      ctx.fillStyle = G.lt; ctx.fillRect(cx - 5, fy - 14, 1.4, 14);
+      ctx.fillStyle = G.md; ctx.fillRect(cx - 7, fy - 28, 14, 15);
+      ctx.fillStyle = G.lt; ctx.fillRect(cx - 7, fy - 28, 2, 15);
+      ctx.fillStyle = G.dk; ctx.fillRect(cx + 5, fy - 28, 2, 15);
+      ctx.fillStyle = G.hi; ctx.beginPath(); ctx.moveTo(cx, fy - 27); ctx.lineTo(cx - 3, fy - 18); ctx.lineTo(cx + 3, fy - 18); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = G.dk; ctx.fillRect(cx - 1, fy - 24, 2, 8);
+      ctx.fillStyle = G.md; ctx.fillRect(cx - 9, fy - 27, 3, 11); ctx.fillRect(cx - 10, fy - 18, 4, 4);
+      ctx.save(); ctx.translate(cx + 6, fy - 26); ctx.rotate(-0.9);
+      ctx.fillStyle = G.md; ctx.fillRect(0, -3, 15, 4); ctx.fillStyle = G.lt; ctx.fillRect(0, -3, 15, 1.2); ctx.restore();
       ctx.fillStyle = G.lt; ctx.beginPath(); ctx.arc(cx, fy - 33, 5, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = G.hi; ctx.beginPath(); ctx.arc(cx - 1.6, fy - 34, 2, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = G.dk; ctx.fillRect(cx - 5, fy - 37, 10, 3);    // hair sweep
-      ctx.fillStyle = G.dk; ctx.fillRect(cx - 4, fy - 33, 8, 1.4);   // sunglasses
-      // held Beachcoin aloft (glinting)
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = '#f6c842'; ctx.beginPath(); ctx.arc(handX, handY - 3, 4.5, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#fff0b0'; ctx.beginPath(); ctx.arc(handX - 1.4, handY - 4.4, 1.6, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#7a5410'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(handX, handY - 6.5); ctx.lineTo(handX, handY + 0.5); ctx.stroke();
+      ctx.fillStyle = G.dk; ctx.fillRect(cx - 5, fy - 37, 10, 3);
+      ctx.fillStyle = G.dk; ctx.fillRect(cx - 4, fy - 33, 8, 1.4);
       ctx.restore();
+      // held Beachcoin aloft (glinting ₿)
+      ctx.fillStyle = '#f6c842'; ctx.beginPath(); ctx.arc(handX, handY, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff0b0'; ctx.beginPath(); ctx.arc(handX - 1.6, handY - 1.6, 1.8, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#7a5410'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(handX, handY - 6.5); ctx.lineTo(handX, handY + 6.5); ctx.stroke();
       // gleam sweep across the statue
       const gxs = cx - 14 + ((a99 * 0.9) % 36);
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.5;
       const gg = ctx.createLinearGradient(gxs - 4, 0, gxs + 4, 0);
       gg.addColorStop(0, 'rgba(255,255,255,0)'); gg.addColorStop(0.5, 'rgba(255,255,240,0.8)'); gg.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = gg; ctx.fillRect(gxs - 4, fy - 40, 8, 42); ctx.restore();
-      // sparkle twinkle near the coin
-      if (pulse > 0.85) { ctx.fillStyle = 'rgba(255,252,220,0.95)'; ctx.fillRect(handX + 4, handY - 8, 1.5, 1.5); ctx.fillRect(handX + 5, handY - 9, 1, 1); }
+      ctx.fillStyle = gg; ctx.fillRect(gxs - 4, fy - 46, 8, 50); ctx.restore();
+      // floating sparkle twinkles around the statue
+      ctx.fillStyle = 'rgba(255,252,220,0.95)';
+      for (let s = 0; s < 3; s++) { const tw = Math.sin(a99 * 0.08 + s * 2.1);
+        if (tw > 0.7) { const sx = cx + (s - 1) * 11, sy = fy - 20 - s * 7 + Math.sin(a99 * 0.05 + s) * 2;
+          ctx.fillRect(sx - 0.5, sy - 2, 1, 4); ctx.fillRect(sx - 2, sy - 0.5, 4, 1); } }
     }
 
     // ══ Museum marble floor (tile 11) + fossil-lab decoration set ══
