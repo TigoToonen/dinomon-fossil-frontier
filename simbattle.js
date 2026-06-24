@@ -38,7 +38,7 @@ function runBattle(party, enemyConfig, pick, opts){
   const cfg = Object.assign({ gameState: gs, onEnd:(r)=>{ ended=true; result=r; } }, enemyConfig);
   B.start(cfg);
   let frames = 0, turns = 0;
-  let enemyStatusSeen = null, playerStatusSeen = null, weatherSeen = null;
+  let enemyStatusSeen = null, playerStatusSeen = null, weatherSeen = null, enemyHpAtStatus = null, enemyHpLast = null;
   const hitCounts = [];           // numbers parsed from "Hit N times!"
   const enemyHpLog = [];          // enemy hp.current snapshotted at each PLAYER_INPUT
   while(frames++ < (opts.maxFrames||8000)){
@@ -51,7 +51,8 @@ function runBattle(party, enemyConfig, pick, opts){
     // snapshot statuses DURING the battle (before it ends + nulls _battle)
     const liveBt = B.getBattle();
     if(liveBt){
-      if(liveBt.enemyMon && liveBt.enemyMon.statusEffect) enemyStatusSeen = liveBt.enemyMon.statusEffect;
+      if(liveBt.enemyMon){ enemyHpLast = liveBt.enemyMon.hp.current; }
+      if(liveBt.enemyMon && liveBt.enemyMon.statusEffect){ if(!enemyStatusSeen) enemyHpAtStatus = liveBt.enemyMon.hp.current; enemyStatusSeen = liveBt.enemyMon.statusEffect; }
       if(liveBt.playerMon && liveBt.playerMon.statusEffect) playerStatusSeen = liveBt.playerMon.statusEffect;
       if(liveBt.weather) weatherSeen = liveBt.weather;
     }
@@ -71,7 +72,7 @@ function runBattle(party, enemyConfig, pick, opts){
       B.submitPlayerAction(act);
     }
   }
-  return { log, ended, result, frames, battle: B.getBattle(), enemyStatusSeen, playerStatusSeen, weatherSeen, hitCounts, enemyHpLog, caught: B.getCaughtMon ? B.getCaughtMon() : null };
+  return { log, ended, result, frames, battle: B.getBattle(), enemyStatusSeen, enemyHpAtStatus, lastEnemyHp: enemyHpLast, playerStatusSeen, weatherSeen, hitCounts, enemyHpLog, caught: B.getCaughtMon ? B.getCaughtMon() : null };
 }
 
 // ── Assertions framework ─────────────────────────────────────
@@ -331,6 +332,68 @@ function nonType(t){ return Object.keys(DG.SPECIES).find(id=>!((DG.SPECIES[id].t
   const r = runBattle([atk], { type:'WILD', enemy: mon(SP[3]||SP[0], 30, null, 9999) },
     (bt)=>({type:'ITEM', itemId: ballId}), {maxTurns:3, maxFrames:5000, bag:{ [ballId]:5 }});
   check('Master Ball catches', r.result==='CAUGHT' || !!r.caught || r.log.some(l=>/caught/i.test(l)), 'result='+r.result+' log: '+JSON.stringify(r.log.slice(-4)));
+})();
+
+// helper: find a STATUS-category move that inflicts a given status
+function findStatusMove(status){
+  return findMove(m=>m.category==='STATUS' && m.effect && (
+    (m.effect.type==='STATUS_CHANCE' && m.effect.status===status && (m.effect.chance===undefined||m.effect.chance>=100)) ||
+    (status==='POISON' && m.effect.type==='POISON_CHANCE' && (m.effect.chance>=100)) ||
+    (status==='BURN'   && m.effect.type==='BURN_CHANCE'   && (m.effect.chance>=100)) ||
+    (status==='PARALYSIS' && m.effect.type==='PARALYSIS' && (m.effect.chance>=100))
+  ));
+}
+
+// TEST 18 — Poison chips the foe each turn (per-turn status damage works).
+(function(){
+  console.log('\n[18] Poison: a poisoned foe loses HP each turn');
+  const pm = findStatusMove('POISON');
+  if(!pm){ check('a 100% poison status move exists', false); return; }
+  const bag = nonType('POISON'), bag2 = (DG.SPECIES[bag].types||[]).includes('STEEL')?SP[0]:bag;
+  // Status moves can MISS (accuracy<100), so run several trials and only assert
+  // the chip on trials where the poison actually landed.
+  let landed=0, chippedWhenLanded=0;
+  for(let i=0;i<10;i++){
+    const atk = mon(anySpecies(), 85, [pm.id, 'SWORDS_DANCE'], 9999);
+    const enemy = mon(bag2, 50, ['LEER'], 99999);
+    const r = runBattle([atk], { type:'WILD', enemy },
+      (bt,turn)=>({type:'MOVE', moveIndex: turn===1?0:1}), {maxTurns:6, maxFrames:7000});
+    if(r.enemyStatusSeen==='POISON'||r.enemyStatusSeen==='BADPOISON'){ landed++; if(r.lastEnemyHp < r.enemyHpAtStatus) chippedWhenLanded++; }
+  }
+  // ≥80%: the only non-chip case is when the status lands on the very last turn
+  // before the harness flees (no end-of-turn left), which is a harness timing edge.
+  check(`${pm.id} poison lands then chips HP each turn`, landed>0 && chippedWhenLanded>=Math.ceil(landed*0.8), `landed ${landed}, chipped ${chippedWhenLanded}`);
+})();
+
+// TEST 19 — Burn chips the foe each turn.
+(function(){
+  console.log('\n[19] Burn: a burned foe loses HP each turn');
+  const bm = findStatusMove('BURN');
+  if(!bm){ check('a 100% burn status move exists', false); return; }
+  let landed=0, chippedWhenLanded=0;
+  for(let i=0;i<10;i++){
+    const atk = mon(anySpecies(), 85, [bm.id, 'SWORDS_DANCE'], 9999);
+    const enemy = mon(nonType('FIRE'), 50, ['LEER'], 99999);
+    const r = runBattle([atk], { type:'WILD', enemy },
+      (bt,turn)=>({type:'MOVE', moveIndex: turn===1?0:1}), {maxTurns:6, maxFrames:7000});
+    if(r.enemyStatusSeen==='BURN'){ landed++; if(r.lastEnemyHp < r.enemyHpAtStatus) chippedWhenLanded++; }
+  }
+  check(`${bm.id} burn lands then chips HP each turn`, landed>0 && chippedWhenLanded>=Math.ceil(landed*0.8), `landed ${landed}, chipped ${chippedWhenLanded}`);
+})();
+
+// TEST 20 — Levitate ability grants Ground immunity (implemented-ability sanity).
+(function(){
+  console.log('\n[20] Ability Levitate: immune to Ground moves');
+  const levSp = Object.keys(DG.SPECIES).find(id=>DG.SPECIES[id].ability==='Levitate');
+  const grd = findMove(m=>m.type==='GROUND'&&(m.category==='PHYSICAL'||m.category==='SPECIAL')&&m.power>0);
+  if(!levSp||!grd){ check('found a Levitate species + Ground move', false); return; }
+  const atk = mon(anySpecies(), 90, [grd.id], 9999);
+  const enemy = mon(levSp, 50, ['TACKLE'], 99999);
+  const startHp = enemy.hp.current;
+  const r = runBattle([atk], { type:'WILD', enemy }, (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:2, maxFrames:4000});
+  const dmg = startHp - (r.enemyHpLog.length ? r.enemyHpLog[r.enemyHpLog.length-1] : startHp);
+  check(`${grd.id} does 0 damage to Levitate ${levSp}`, dmg===0, `dealt ${dmg}`);
+  check('Levitate immunity message shown', r.log.some(l=>/floating|levitate|immune|doesn'?t affect/i.test(l)));
 })();
 
 // ── REPORT ───────────────────────────────────────────────────
