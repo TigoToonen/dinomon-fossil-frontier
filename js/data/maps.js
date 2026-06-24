@@ -4909,11 +4909,16 @@ DG.MAPS.BOGMIRE_CITY = {
   for (const key in DG.MAPS) {
     const m = DG.MAPS[key];
     if (!m || m.music !== 'GYM_THEME' || m.width !== 30 || m.height !== 18 || !m.tiles) continue;
-    [15, 10, 5].forEach((y) => { if (m.tiles[y]) m.tiles[y][15] = 65; });       // quiz-muren
+    // Use each gym's OWN border tile for the inner maze so the wall texture
+    // matches the room (Ferngrove=hedge 64, Stonehaven=rock 66, the rest keep
+    // their themed brick 65 — already colour-themed per type via DG_MAP_THEME).
+    const _bt = m.tiles[0] && m.tiles[0][0];
+    const wall = (_bt >= 64 && _bt !== 68) ? _bt : 65;
+    [15, 10, 5].forEach((y) => { if (m.tiles[y]) m.tiles[y][15] = wall; });      // quiz-muren
     [13, 8, 3].forEach((y) => {                                                  // zijpad-rijen
       if (!m.tiles[y]) return;
-      for (let x = 6;  x <= 9;  x++) m.tiles[y][x] = 65;
-      for (let x = 20; x <= 23; x++) m.tiles[y][x] = 65;
+      for (let x = 6;  x <= 9;  x++) m.tiles[y][x] = wall;
+      for (let x = 20; x <= 23; x++) m.tiles[y][x] = wall;
     });
     // FASE 9: de tweede foute-pad-trainer kijkt de gang in (LEFT) — zo spot
     // hij je via line-of-sight zodra je binnenkomt en valt hij vanzelf aan,
