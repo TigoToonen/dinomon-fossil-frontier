@@ -700,9 +700,9 @@ DG.Battle = (function () {
       playerFirst = pPrio > ePrio;
     } else {
       const pSpd = _battle.playerMon.stats.spd * DG.StatusEffects.speedMult(_battle.playerMon)
-                   * DG.stageMultiplier(_battle.playerStages.spd || 0);
+                   * DG.stageMultiplier(_battle.playerStages.spd || 0) * _abilitySpeedMult(_battle.playerMon);
       const eSpd = _battle.enemyMon.stats.spd  * DG.StatusEffects.speedMult(_battle.enemyMon)
-                   * DG.stageMultiplier(_battle.enemyStages.spd  || 0);
+                   * DG.stageMultiplier(_battle.enemyStages.spd  || 0) * _abilitySpeedMult(_battle.enemyMon);
       playerFirst = pSpd >= eSpd ? (pSpd > eSpd ? true : Math.random() < 0.5) : false;
     }
 
@@ -732,8 +732,8 @@ DG.Battle = (function () {
       const aPrio = aMove ? (aMove.priority || 0) : 0;
       const bPrio = bMove ? (bMove.priority || 0) : 0;
       if (aPrio !== bPrio) return bPrio - aPrio;
-      const aSpd = a.mon.stats.spd * DG.StatusEffects.speedMult(a.mon) * DG.stageMultiplier(a.stages.spd||0);
-      const bSpd = b.mon.stats.spd * DG.StatusEffects.speedMult(b.mon) * DG.stageMultiplier(b.stages.spd||0);
+      const aSpd = a.mon.stats.spd * DG.StatusEffects.speedMult(a.mon) * DG.stageMultiplier(a.stages.spd||0) * _abilitySpeedMult(a.mon);
+      const bSpd = b.mon.stats.spd * DG.StatusEffects.speedMult(b.mon) * DG.stageMultiplier(b.stages.spd||0) * _abilitySpeedMult(b.mon);
       return bSpd - aSpd + (Math.random() - 0.5) * 0.1;
     });
 
@@ -1376,7 +1376,7 @@ DG.Battle = (function () {
         _applyStageDelta(selfStages, eff.stat || 'def', eff.stages || -1, actorName);
       } else {
         const tgtStages = isPlayer ? _battle.enemyStages : _battle.playerStages;
-        _applyStageDelta(tgtStages, eff.stat || 'def', eff.stages || -1, targetName);
+        _applyStageDelta(tgtStages, eff.stat || 'def', eff.stages || -1, targetName, target);
       }
     }
 
@@ -1485,7 +1485,7 @@ DG.Battle = (function () {
       _applyMultiStatRaise(stages, eff, monName);
     } else if (effType === 'STAT_LOWER') {
       const stages = isPlayer ? _battle.enemyStages : _battle.playerStages;
-      _applyStageDelta(stages, eff.stat || 'def', eff.stages || -1, targetName);
+      _applyStageDelta(stages, eff.stat || 'def', eff.stages || -1, targetName, target);
     } else if (effType === 'STATUS_CHANCE') {
       _tryApplyStatus(target, eff.status || 'BURN');
     } else if (effType === 'HEAL') {
@@ -1532,7 +1532,7 @@ DG.Battle = (function () {
         ? (isPlayer ? _battle.playerStages : _battle.enemyStages)
         : (isPlayer ? _battle.enemyStages  : _battle.playerStages);
       const statKey = ({ accuracy:'acc', evasion:'eva' })[eff.stat] || eff.stat || 'acc';
-      _applyStageDelta(stStages, statKey, (eff.stages !== undefined ? eff.stages : -1), (tgt === 'self') ? actorName : targetName);
+      _applyStageDelta(stStages, statKey, (eff.stages !== undefined ? eff.stages : -1), (tgt === 'self') ? actorName : targetName, (tgt === 'self') ? actor : target);
     } else if (effType === 'NONE') {
       _pushMessage(`But it failed!`);
     } else {
@@ -1567,7 +1567,7 @@ DG.Battle = (function () {
     if (ab === 'Sand Stream' || ab === 'Sand Veil')  _setWeather('SANDSTORM', 0);
     if (ab === 'Drizzle'     || ab === 'Rain Call')  _setWeather('RAIN', 0);
     if (ab === 'Drought'     || ab === 'Sun Summon') _setWeather('SUN', 0);
-    if (ab === 'Snow Warning'|| ab === 'Ice Coat')   _setWeather('HAIL', 0);
+    if (ab === 'Snow Warning'|| ab === 'Ice Coat' || ab === 'Summons Hail when entering battle') _setWeather('HAIL', 0);
 
     // Intimidate: lower opponent's ATK by 1 stage
     if (ab === 'Intimidate' || ab === 'Alpha Roar') {
@@ -1580,6 +1580,17 @@ DG.Battle = (function () {
         _triggerAbilityAnim(ab, side, 'intimidate');
       }
     }
+  }
+
+  // Weather-speed abilities double Speed in their matching weather (turn order).
+  function _abilitySpeedMult(mon) {
+    if (!_battle || !_battle.weather || !mon) return 1;
+    const ab = (DG.SPECIES[mon.speciesId] || {}).ability, w = _battle.weather;
+    if (ab === 'Chlorophyll' && w === 'SUN')                      return 2;
+    if (ab === 'Swift Swim'  && w === 'RAIN')                     return 2;
+    if (ab === 'Sand Rush'   && w === 'SANDSTORM')                return 2;
+    if (ab === 'Slush Rush'  && (w === 'HAIL' || w === 'SNOW'))   return 2;
+    return 1;
   }
 
   // ── ENEMY SWITCH (mid-battle AI switch) ──────────────────
@@ -1609,6 +1620,14 @@ DG.Battle = (function () {
 
   function _tryApplyStatus(mon, status) {
     if (!status) return;
+    // Ability-based status immunities
+    const _ab = (DG.SPECIES[mon.speciesId] || {}).ability;
+    if (status === 'PARALYSIS' && _ab === 'Limber') {
+      _pushMessage(`${_monName(mon)}'s Limber prevents paralysis!`); return;
+    }
+    if (status === 'FREEZE' && _ab === 'Magma Armor') {
+      _pushMessage(`${_monName(mon)}'s Magma Armor prevents it from freezing!`); return;
+    }
     const res = DG.StatusEffects.apply(mon, DG.STATUS[status] || status);
     if (res.message) _pushMessage(res.message);
   }
@@ -1623,8 +1642,12 @@ DG.Battle = (function () {
     } catch(e) {}
   }
 
-  function _applyStageDelta(stages, statName, delta, monName) {
+  function _applyStageDelta(stages, statName, delta, monName, mon) {
     const stat = statName || 'atk';
+    // Keen Eye: accuracy can't be lowered by the opponent
+    if (mon && stat === 'acc' && delta < 0 && ((DG.SPECIES[mon.speciesId] || {}).ability) === 'Keen Eye') {
+      _pushMessage(`${monName}'s Keen Eye prevents accuracy loss!`); return;
+    }
     const cur = stages[stat] || 0;
     const newVal = Math.max(-6, Math.min(6, cur + delta));
     stages[stat] = newVal;
@@ -1968,6 +1991,18 @@ DG.Battle = (function () {
               break;
             }
           }
+        }
+      });
+    }
+
+    // Ice Body: heal 1/16 max HP each turn while it's hailing/snowing.
+    if (weather === 'HAIL' || weather === 'SNOW') {
+      [_battle.playerMon, _battle.enemyMon].forEach(m => {
+        if (!m || m.hp.current <= 0) return;
+        if (((DG.SPECIES[m.speciesId] || {}).ability) === 'Ice Body' && m.hp.current < m.hp.max) {
+          const heal = Math.max(1, Math.floor(m.hp.max / 16));
+          m.hp.current = Math.min(m.hp.max, m.hp.current + heal);
+          _pushMessage(`${_monName(m)} restored a little HP with Ice Body!`);
         }
       });
     }
