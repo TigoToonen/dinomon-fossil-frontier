@@ -1616,6 +1616,10 @@ DG.Battle = (function () {
         const side = isPlayer ? `the foe's` : `your`;
         _pushMessage(`Pointed stones float around ${side} team!`);
       }
+    } else if (effType === 'OMNI_RAISE') {
+      // Status-move variant (Clangorous Soul-achtig): alle stats van de gebruiker +1
+      const omniStages = isPlayer ? _battle.playerStages : _battle.enemyStages;
+      for (const s of ['atk','def','spAtk','spDef','spd']) _applyStageDelta(omniStages, s, eff.stages || 1, actorName);
     } else if (_STATUS_ALIAS[effType]) {
       // Status-category move that inflicts a status (e.g. Spore→SLEEP, Stun Spore→PARALYSIS)
       if (Math.random() * 100 < (eff.chance || 100)) _tryApplyStatus(target, _STATUS_ALIAS[effType]);
@@ -1723,6 +1727,7 @@ DG.Battle = (function () {
     const oldName = _monName(_battle.enemyMon);
     _clearLocks(_battle.enemyMon);
     _battle.enemyMon = newMon;
+    _battle.enemyPartyIndex = act.targetIndex;   // houd index in sync met de actieve mon
     _clearLocks(newMon);
     DG.SaveLoad.markSeen(_battle.gameState, newMon.speciesId);
     _battle.enemyStages = { atk:0, def:0, spAtk:0, spDef:0, spd:0, acc:0, eva:0 };
@@ -1903,9 +1908,13 @@ DG.Battle = (function () {
     // ── Enemy needs new mon (sequential order: weakest → strongest) ──
     if (_battle.enemyMon.hp.current <= 0 && enemyAlive) {
       if (_battle.type === 'TRAINER') {
-        // Advance to next party slot in sorted order
-        _battle.enemyPartyIndex = (_battle.enemyPartyIndex || 0) + 1;
-        const next = _battle.enemyParty[_battle.enemyPartyIndex];
+        // Send out the FIRST alive party member. Never rely on index+1 alone:
+        // an AI mid-battle switch (_doEnemySwitch) desyncs enemyPartyIndex, and
+        // index+1 would then skip an alive mon earlier in the array — causing an
+        // infinite faint-loop with repeated EXP awards (livelock bug, testloop it.3).
+        const aliveIdx = _battle.enemyParty.findIndex(m => m && m.hp.current > 0);
+        _battle.enemyPartyIndex = aliveIdx;
+        const next = aliveIdx >= 0 ? _battle.enemyParty[aliveIdx] : null;
         if (next && next.hp.current > 0) {
           _battle.enemyMon = next;
           DG.SaveLoad.markSeen(_battle.gameState, next.speciesId);

@@ -14,8 +14,8 @@
 - ✅ A6 Flags-integriteit (integrity_scan.js: referenced-vs-grantable, 0 warns) — quest-keten-runtime nog ⬜
 
 ### B. Gevechten
-- ⬜ B1 Alle 1005 moves 1× echt uitgevoerd
-- ⬜ B2 Alle 163 trainers volledig uitgevochten (incl. double battles)
+- ✅ B1 Alle 1005 moves 1× echt uitgevoerd (movesweep.js: 0 FAIL; 8 onbereikbare dode moves genoteerd, OMNI_RAISE-status-gat gedicht)
+- ✅ B2 Alle 163 trainers volledig uitgevochten (trainersweep.js: 160W/3L/0 FAIL) — KRITIEKE LIVELOCK GEFIXT; scripted double-battle nog ⬜
 - ⬜ B3 Alle 121 soorten: create/level/evolve/learnset/shiny
 - ⬜ B4 Status/volatile-lekken over switch & battle-einde
 - ⬜ B5 Battle-randgevallen (Struggle, forced switch, vangen→box)
@@ -55,6 +55,8 @@ _(geen)_
 ## Gefixt deze loop
 1. **MT_CRETACEOUS / GLACIAL_PASS / APEXSUMMIT_WILD: nul wilde encounters** — tabellen bestonden, maar geen enkele encounter-tegel (2/8). Fix: `_ensureEncounterTiles`-loader-patch in maps.js (149 tegels) — it.2.
 2. **STONEHAVEN_WILD: gras-tegels (2) lazen de lege grass-tabel**; de gevulde cave-tabel werd daar genegeerd. Fix: grass-tabel gevuld — it.2.
+3. **KRITIEK — oneindige faint-loop bij AI-switch**: `_doEnemySwitch` synchroniseerde `enemyPartyIndex` niet; bij de volgende faint zocht de engine alleen voorbij de index en miste de nog-levende mon ervóór → livelock + herhaalde EXP (trof o.a. Niels-rematch en gym-rematches). Fix: faint-advance zoekt de eerste levende mon + switch synct de index — it.3.
+4. **OMNI_RAISE als status-move deed niets** ("But it failed!") — case toegevoegd in `_applyStatusMove` — it.3.
 
 ## Design-vragen voor Tigo
 _(geen)_
