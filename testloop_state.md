@@ -1,5 +1,14 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 6 — ONBOARDING + POST-GAME-FEATURES, VOLLEDIG GROEN (juli 2026)
+Het echte nieuwe-speler-pad en mijn eigen features via het interactie-pad:
+- ✅ Nieuwe-speler-onboarding volledig via echte input: titel → slot → naam typen ("Bot") → starter (Tindrel lv5) → rival-gevecht → STARTER_CHOSEN + RIVAL_NAMED-flags, aankomst DinoCenter
+- ✅ Battle Tower end-to-end: Tower Master aanspreken → keuzemenu → "Tower Challenger #1" gevecht → winst → towerStreak 0→1, towerBest bijgewerkt
+- ✅ Move Relearner (Compound City): NPC bedraad, dialoog opent, logica geverifieerd (learnset-filter op ≤level & niet-geleerd, ¥3000-fee, slot-vervanging) — correct
+- ✅ Name Rater aanwezig (Compound City 15,12)
+- Diagnose-noot: 2 initiële "faal"-metingen waren beide harnas-artefacten (speler keek verkeerde kant op / blinde menu-navigatie), geen game-bugs
+- **Bugs gevonden in ronde 6: NUL** — vijfde opeenvolgende schone ronde
+
 ## RONDE 5 — ECHTE-GAMEPLAY-INTEGRATIE, VOLLEDIG GROEN (juli 2026)
 Voor het eerst alles via écht spelen (toetsen, lopen, zichtlijnen) i.p.v. programmatisch:
 - ✅ Gras-encounter door echt te LOPEN: 13 stappen in hoog gras → wilde Bugling lv5 (conform tabel), wegvluchten OK
