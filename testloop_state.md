@@ -1,4 +1,13 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
+
+## RONDE 2 — VOLLEDIG GROEN (volledige her-run vanaf het begin, juli 2026)
+Alle 12 harnesses opnieuw gedraaid + visuele her-pass + browser-checks:
+- ✅ validate_game (0 blocking) · bugcheck · integrity_scan · walkthrough (start→credits) · contentsweep · persistsweep — alle exit 0
+- ✅ movesweep (1005 moves) · trainersweep (163 trainers) · simbattle (28 checks) · edgesweep (10 checks)
+- ✅ fuzz VERSE seeds 20260702/88888/12321 — 360 nieuwe chaos-gevechten schoon (totaal 960 over 8 seeds)
+- ✅ Visuele her-pass: alle 118 maps opnieuw geschoten (r2_vis0-4) en beoordeeld — geen regressies
+- ✅ G1 input-chaos ronde 2 (menu+battle-mix) · G3 1,06 ms/frame · 0 console-warnings
+- **Bugs gevonden in ronde 2: NUL** — de 7 fixes uit ronde 1 houden stand; geen regressies uit parallel werk
 > Dit bestand is het geheugen van de bugtest-loop. Elke iteratie: lees dit,
 > pak het volgende blok, test, fix, borg regressie, commit, werk dit bij.
 > Prioriteit: speler-blokkerend > fout gedrag > cosmetisch.
