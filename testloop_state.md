@@ -26,8 +26,8 @@
 
 ### D. Visueel
 - ✅ D1 Screenshot-pass ALLE 118 maps beoordeeld (collages vis01-vis13 in .claude/shots) — geen kapotte tiles/sprites/layouts; Murk Hollow-duisternis = bedoelde Flash-mechaniek; nieuwe encounter-tegels ogen als rotspartijen (past bij thema)
-- 🔄 D2 UI-schermen: overworld/menu/party/battle-scene visueel OK (vis14_ui); bag/dex/kaart/badges recent al visueel geverifieerd door parallelle sessie — volgende ronde opnieuw schieten met betere menu-choreografie
-- ⬜ D3 Tekst-overflow (12-char namen, ¥, substituties)
+- ✅ D2 UI-schermen: party/bag/battle/shop visueel geverifieerd met extreme data (d3_*-shots, it.9); dex/kaart/badges eerder al door parallelle sessie
+- ✅ D3 Tekst-overflow: 12×W-namen passen in party + battle-nameplates; ¥9.999.999 nu netjes — 2 BUGS GEFIXT: ¥-glyph ontbrak in pixelfont (baseline-verschoven fallback-rendering) + shopgeld verdween achter de SAVED-badge
 
 ### E. Verhaal & Dialogen
 - ✅ E1 Elke dialogue-key bestaat (integrity_scan.js: NPC's + trainers, 0 missing)
@@ -44,9 +44,9 @@
 - ⬜ F5 Opties persisteren
 
 ### G. Techniek
-- ⬜ G1 Input-misbruik / transitions
+- ✅ G1 Input-misbruik: key-spam tijdens warp-transities, raw bursts en battle-intro's (3 rondes) — 0 errors, staat herstelt netjes (it.9)
 - ✅ G2 Console-hygiëne: 0 errors/warnings over boot + save-load + 118 map-warps + menu's + live gevecht (preview-sessie it.6)
-- ⬜ G3 Performance / canvas-scaling
+- ✅ G3 Performance: 1,38 ms/frame gemeten over 600 frames (12× marge op 60fps-budget) — canvas-scaling mobiel nog ⬜
 - ✅ G4 Audio-keys bestaan overal (integrity_scan.js: playMusic-calls + map.music, 0 missing)
 
 ### H. Verdieping (loop ♻️)
@@ -65,6 +65,8 @@ _(geen)_
 3. **KRITIEK — oneindige faint-loop bij AI-switch**: `_doEnemySwitch` synchroniseerde `enemyPartyIndex` niet; bij de volgende faint zocht de engine alleen voorbij de index en miste de nog-levende mon ervóór → livelock + herhaalde EXP (trof o.a. Niels-rematch en gym-rematches). Fix: faint-advance zoekt de eerste levende mon + switch synct de index — it.3.
 4. **OMNI_RAISE als status-move deed niets** ("But it failed!") — case toegevoegd in `_applyStatusMove` — it.3.
 5. **KRITIEK — egg-blackout-softlock**: een EI telde als "levende mon" in de blackout-check; party = alle mons fainted + ei → geen blackout én niet kunnen wisselen → speler zat voor eeuwig vast in het switch-scherm. Fix: eggs uitgesloten in beide alive-checks + engine-guards tegen egg-switches — it.8 (fuzz-vondst, 360/360 gevechten daarna schoon).
+6. **¥-teken rendere verschoven** (pixelfont miste de glyph; fallback negeerde de baseline) — ¥-glyph toegevoegd aan uiKit + fallback-baseline-fix — it.9.
+7. **Shopgeld verdween achter de SAVED-badge** bij hoge bedragen — rechts uitgelijnd vóór de badge-zone — it.9.
 
 ## Design-vragen voor Tigo
 _(geen)_

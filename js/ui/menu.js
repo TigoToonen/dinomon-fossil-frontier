@@ -1140,7 +1140,11 @@ DG.Menu = (function () {
     ctx.fillStyle = _shopMode === 'SELL' ? '#FFE050' : '#aaaaaa';
     ctx.fillText('SELL ►', 125, 12);
     ctx.fillStyle = '#aaffaa';
-    ctx.fillText(`¥${_gs.player.money}`, W - 90, 12);
+    // rechts uitlijnen en ruimte laten voor de SAVED-badge rechtsboven,
+    // zodat een dikke portemonnee (¥9.999.999) er nooit achter verdwijnt
+    ctx.textAlign = 'right';
+    ctx.fillText(`¥${_gs.player.money}`, W - 72, 12);
+    ctx.textAlign = 'left';
 
     if (_shopMode === 'BUY') {
       _shopItems.forEach((item, i) => {
