@@ -1,5 +1,11 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 4 — DUBBELGEVECHT-CHAOS, VOLLEDIG GROEN (juli 2026)
+- ✅ doublefuzz.js (nieuw): 80 chaos-2v2-gevechten over 2 seeds (random trainer-trio's, random targeting via switchDoubleTarget, ongeldige moves/switches, gewonde parties) — 0 hangs/exceptions; de double-faint-logica bevat GEEN variant van de single-battle-livelock
+- ✅ Tower-teamgeneratie: alle streak-tiers 0-50 leveren geldige teams (lv-cap 95)
+- ✅ Beachcoin-invarianten hercheckt (20k simulaties): cap exact ≤1,5×, nooit negatief
+- **Bugs gevonden in ronde 4: NUL** — derde opeenvolgende schone ronde
+
 ## RONDE 3 — VERDIEPING, VOLLEDIG GROEN (juli 2026)
 Nieuwe dimensies (geen herhaling):
 - ✅ deepsweep.js (nieuw, 22 checks): corrupt-save-robuustheid (7 soorten kapotte JSON → nooit een crash, listSlots overleeft), evolutie via échte battle-EXP (TINDREL→TINDRAK op lv16, queue werkt), soak van 25 opeenvolgende gevechten op één gamestate (beloning elke keer exact, geen volatile-restanten)
