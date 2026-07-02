@@ -50,7 +50,11 @@
 - ✅ G4 Audio-keys bestaan overal (integrity_scan.js: playMusic-calls + map.music, 0 missing)
 
 ### H. Verdieping (loop ♻️)
-- ♻️ H1 Combinatie-stress + fuzz; terug naar A met nieuwe kennis
+- ♻️ H1 Fuzz (fuzz.js, seedbaar): 360 chaos-gevechten over 3 seeds — 0 hangs/0 exceptions na egg-blackout-fix; elke ronde nieuwe seeds draaien
+
+### F3 (uit F-blok)
+- ✅ F3 Eggs: hatch-flow/daycare-structuur gereviewd; eggs geblokkeerd in battle-switch (UI én engine-guards); egg-blackout-softlock gefixt — fossiel-incubatie-runtime nog ⬜
+- ✅ F5 Opties persisteren (persistsweep) + Battle FX werkt (simbattle-sessie)
 
 ## Gevonden bugs (open)
 _(geen)_
@@ -60,6 +64,7 @@ _(geen)_
 2. **STONEHAVEN_WILD: gras-tegels (2) lazen de lege grass-tabel**; de gevulde cave-tabel werd daar genegeerd. Fix: grass-tabel gevuld — it.2.
 3. **KRITIEK — oneindige faint-loop bij AI-switch**: `_doEnemySwitch` synchroniseerde `enemyPartyIndex` niet; bij de volgende faint zocht de engine alleen voorbij de index en miste de nog-levende mon ervóór → livelock + herhaalde EXP (trof o.a. Niels-rematch en gym-rematches). Fix: faint-advance zoekt de eerste levende mon + switch synct de index — it.3.
 4. **OMNI_RAISE als status-move deed niets** ("But it failed!") — case toegevoegd in `_applyStatusMove` — it.3.
+5. **KRITIEK — egg-blackout-softlock**: een EI telde als "levende mon" in de blackout-check; party = alle mons fainted + ei → geen blackout én niet kunnen wisselen → speler zat voor eeuwig vast in het switch-scherm. Fix: eggs uitgesloten in beide alive-checks + engine-guards tegen egg-switches — it.8 (fuzz-vondst, 360/360 gevechten daarna schoon).
 
 ## Design-vragen voor Tigo
 _(geen)_

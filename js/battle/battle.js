@@ -560,7 +560,7 @@ DG.Battle = (function () {
   // ── Free switch-in after faint (no enemy turn consumed) ──────
   function _doForcedSwitch(act) {
     const newMon = _battle.playerParty[act.targetIndex];
-    if (!newMon || newMon.hp.current <= 0) {
+    if (!newMon || newMon.hp.current <= 0 || newMon.isEgg) {
       // Should not happen (party menu filters fainted mons), but guard anyway
       _battle.isForcedSwitch = true;
       _state = BS.PLAYER_INPUT;
@@ -1880,7 +1880,9 @@ DG.Battle = (function () {
 
   // ── FAINT HANDLER ─────────────────────────────────────────
   function _tickFaintHandler() {
-    const playerAlive = _battle.playerParty.some(m => m.hp.current > 0);
+    // NB: een EI telt niet als levende mon — anders geen blackout terwijl je ook
+    // niet kunt wisselen (eeuwig vast in het switch-scherm; fuzz-vondst it.8).
+    const playerAlive = _battle.playerParty.some(m => m && !m.isEgg && m.hp.current > 0);
     const enemyAlive  = _battle.enemyParty.some(m  => m.hp.current > 0);
 
     // ── All player mons down → black out ─────────────────────
@@ -2020,9 +2022,9 @@ DG.Battle = (function () {
       }
     }
 
-    // Player fainted — force switch or lose
+    // Player fainted — force switch or lose (eggs tellen niet als levend)
     if (pFainted) {
-      const hasAlive = _battle.playerParty.some(m => m && m.hp.current > 0);
+      const hasAlive = _battle.playerParty.some(m => m && !m.isEgg && m.hp.current > 0);
       if (!hasAlive) {
         _pushMessage(`You blacked out!`);
         _endBattle('LOSE');
@@ -2693,7 +2695,7 @@ DG.Battle = (function () {
   // ── SWITCH ────────────────────────────────────────────────
   function _doSwitch(act) {
     const newMon = _battle.playerParty[act.targetIndex];
-    if (!newMon || newMon.hp.current <= 0) {
+    if (!newMon || newMon.hp.current <= 0 || newMon.isEgg) {
       _pushMessage(`That DinoMon can't battle!`);
       _continueExecution();
       return;
