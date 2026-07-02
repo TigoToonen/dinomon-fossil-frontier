@@ -1,5 +1,15 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 8 — BALANS-AUDIT: ECHTE DIFFICULTY-SPIKE GEVONDEN (juli 2026)
+Eerste ronde die géén "groen/rood" is maar een DESIGN-bevinding. gymgauntlet.js (nieuw): simuleert per gym N=40 gevechten met de speler-kant door de echte BattleAI (tier 3, competent, geen items), 3 team-modellen ter controle.
+- **Vondst**: de moeilijkheid maakt een CLIFF na Terra. Eerste 6 gyms ✓ (prepared speler ~100%). Laatste 3 blijven over ALLE modellen een spike:
+  - Volt (lv50): 43–45% win, 47–65 beurten, haalt regelmatig de turn-cap (draws) — verlamming-spam (4×Thunder Wave+3×Static) + 2×Lightning Rod muurt Electric-teams
+  - Marina (lv58): 8–18% win
+  - Valdez (lv68): 3% win — bijna onwinbaar zelfs voor een type-counter, over-leveld, sterk team
+- **Vals alarm opgelost**: AFK Jorn leek een spike (40%) maar was mijn kale random-model; met een fatsoenlijk team 80–98% → gebalanceerd.
+- Caveat in het model: geen items/revives (echte speler heeft die wel), dus absolute % is een ondergrens; de RELATIEVE cliff is het echte signaal.
+- **Status: DESIGN-VRAAG aan Tigo** (gyms zijn vriend-thematisch; moeilijkheid = zijn keuze, niet unilateraal aanpassen). Geen code-bug.
+
 ## RONDE 7 — MECHANISCHE CORRECTHEID, VOLLEDIG GROEN (juli 2026)
 Nieuwe dimensie: niet "crasht niet" maar "doet het JUISTE". mechsweep.js (nieuw, 11 checks) met vastgezette RNG + synthetische soorten (gecontroleerde types/stats):
 - ✅ STAB = exact 1,5× · super-effectief = 2× + juist label · niet-erg = 0,5× · immuniteit = 0 damage
@@ -115,4 +125,4 @@ _(geen)_
 7. **Shopgeld verdween achter de SAVED-badge** bij hoge bedragen — rechts uitgelijnd vóór de badge-zone — it.9.
 
 ## Design-vragen voor Tigo
-_(geen)_
+- **Late-game difficulty-cliff (ronde 8)**: Volt→Marina→Valdez zijn fors zwaarder dan de eerste 6 gyms, zelfs voor een voorbereide speler. Wil je de curve verzachten (bv. Valdez 1 mon minter / -2 tot -4 levels op de laatste drie, of Volts verlamming-spam temperen), of is dit de bedoelde eindpittigheid (speler moet items/grinden inzetten)? Zie gymgauntlet.js.
