@@ -22,7 +22,7 @@
 
 ### C. Items & Economie
 - ✅ C1 Item-effecten: heal/cure/revive incl. weigering op ongeldig doel, ballen, stenen (contentsweep.js: 0 FAIL) — shop-koop/verkoop-UI nog ⬜
-- ✅ C2 Economie-flows (edgesweep.js: blackout op ¥0 blijft 0, beloning exact, Compound Card ×1.5 exact 1×) — shop-UI-koop/verkoop nog ⬜
+- ✅ C2 Economie-flows (edgesweep.js) + shop-UI beide richtingen live geverifieerd: koop exact −¥3000, SELL exact +¥150 (halve prijs), voorraad klopt (it.9/11). Fly-runtime end-to-end OK (bestemmingen op VISITED_-flags, cutscene, aankomst voor DinoCenter — it.11)
 
 ### D. Visueel
 - ✅ D1 Screenshot-pass ALLE 118 maps beoordeeld (collages vis01-vis13 in .claude/shots) — geen kapotte tiles/sprites/layouts; Murk Hollow-duisternis = bedoelde Flash-mechaniek; nieuwe encounter-tegels ogen als rotspartijen (past bij thema)
@@ -37,7 +37,7 @@
 - ✅ F4 Hard Mode actief: heal-items geweigerd in battle, ballen toegestaan (edgesweep.js)
 
 ### F. Systemen & Persistentie
-- ✅ F1 Save/load-roundtrip (persistsweep.js: 23 checks — party/status/shiny/held/bag/geld/badges/flags/dex/box/beachcoin/tower/locatie/settings + dubbele roundtrip + slot-onafhankelijkheid + delete) — legacy-migratie nog ⬜
+- ✅ F1 Save/load-roundtrip (persistsweep.js: 23 checks) + legacy-migratie werkt bij page-load (oude single-save → slot 0, geladen met naam/geld/mons intact — it.11)
 - ⬜ F2 PC/Box vol + laatste mon
 - ⬜ F3 Eggs & fossiel-incubatie
 - ⬜ F4 Difficulty modes echt actief
@@ -46,7 +46,7 @@
 ### G. Techniek
 - ✅ G1 Input-misbruik: key-spam tijdens warp-transities, raw bursts en battle-intro's (3 rondes) — 0 errors, staat herstelt netjes (it.9)
 - ✅ G2 Console-hygiëne: 0 errors/warnings over boot + save-load + 118 map-warps + menu's + live gevecht (preview-sessie it.6)
-- ✅ G3 Performance: 1,38 ms/frame gemeten over 600 frames (12× marge op 60fps-budget) — canvas-scaling mobiel nog ⬜
+- ✅ G3 Performance: 1,38 ms/frame (12× marge op 60fps) + mobiele canvas-scaling OK (375px: aspect behouden, touch-controls + knoppen zichtbaar — it.11)
 - ✅ G4 Audio-keys bestaan overal (integrity_scan.js: playMusic-calls + map.music, 0 missing)
 
 ### H. Verdieping (loop ♻️)
