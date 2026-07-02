@@ -15,7 +15,7 @@
 
 ### B. Gevechten
 - ✅ B1 Alle 1005 moves 1× echt uitgevoerd (movesweep.js: 0 FAIL; 8 onbereikbare dode moves genoteerd, OMNI_RAISE-status-gat gedicht)
-- ✅ B2 Alle 163 trainers volledig uitgevochten (trainersweep.js: 160W/3L/0 FAIL) — KRITIEKE LIVELOCK GEFIXT; scripted double-battle nog ⬜
+- ✅ B2 Alle 163 trainers volledig uitgevochten (trainersweep.js: 160W/3L/0 FAIL) — KRITIEKE LIVELOCK GEFIXT; scripted 2v2-double-battle (Flint+Morax vs Cretaceous) headless WIN na 123 beurten (it.10)
 - ✅ B3 Alle 121 soorten: create lv5/36/71/100, stats/moves geldig, evolutie- en steen-ketens kloppen (contentsweep.js: 0 FAIL/0 WARN)
 - ✅ B4 Status/volatile-lekken (simbattle test 4 + battle-einde-strip)
 - ✅ B5 Battle-randgevallen (edgesweep.js: Struggle bij PP-op, vangen→party/box/box-vol-release, bal-op-trainer geweigerd — 0 FAIL)
@@ -50,10 +50,10 @@
 - ✅ G4 Audio-keys bestaan overal (integrity_scan.js: playMusic-calls + map.music, 0 missing)
 
 ### H. Verdieping (loop ♻️)
-- ♻️ H1 Fuzz (fuzz.js, seedbaar): 360 chaos-gevechten over 3 seeds — 0 hangs/0 exceptions na egg-blackout-fix; elke ronde nieuwe seeds draaien
+- ♻️ H1 Fuzz (fuzz.js, seedbaar): 600 chaos-gevechten over 5 seeds (424242/777/31337/90210/555) — 0 hangs/0 exceptions; elke ronde nieuwe seeds draaien
 
 ### F3 (uit F-blok)
-- ✅ F3 Eggs: hatch-flow/daycare-structuur gereviewd; eggs geblokkeerd in battle-switch (UI én engine-guards); egg-blackout-softlock gefixt — fossiel-incubatie-runtime nog ⬜
+- ✅ F3 Eggs: hatch-flow/daycare-structuur gereviewd; eggs geblokkeerd in battle-switch (UI én engine-guards); egg-blackout-softlock gefixt; fossiel-incubatie-logica gereviewd (steps→FOSSIL_READY→lab-revive, beide meldingspaden kloppen) — it.10
 - ✅ F5 Opties persisteren (persistsweep) + Battle FX werkt (simbattle-sessie)
 
 ## Gevonden bugs (open)
