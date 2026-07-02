@@ -16,12 +16,12 @@
 ### B. Gevechten
 - ✅ B1 Alle 1005 moves 1× echt uitgevoerd (movesweep.js: 0 FAIL; 8 onbereikbare dode moves genoteerd, OMNI_RAISE-status-gat gedicht)
 - ✅ B2 Alle 163 trainers volledig uitgevochten (trainersweep.js: 160W/3L/0 FAIL) — KRITIEKE LIVELOCK GEFIXT; scripted double-battle nog ⬜
-- ⬜ B3 Alle 121 soorten: create/level/evolve/learnset/shiny
-- ⬜ B4 Status/volatile-lekken over switch & battle-einde
+- ✅ B3 Alle 121 soorten: create lv5/36/71/100, stats/moves geldig, evolutie- en steen-ketens kloppen (contentsweep.js: 0 FAIL/0 WARN)
+- ✅ B4 Status/volatile-lekken (simbattle test 4 + battle-einde-strip)
 - ⬜ B5 Battle-randgevallen (Struggle, forced switch, vangen→box)
 
 ### C. Items & Economie
-- ⬜ C1 Elk item kopen/verkopen/gebruiken (geldig + ongeldig doel)
+- ✅ C1 Item-effecten: heal/cure/revive incl. weigering op ongeldig doel, ballen, stenen (contentsweep.js: 0 FAIL) — shop-koop/verkoop-UI nog ⬜
 - ⬜ C2 Economie-flows (geen negatief/overflow, prijzen consistent)
 
 ### D. Visueel
