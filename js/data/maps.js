@@ -3153,11 +3153,17 @@ STONEHAVEN_WILD: {
       dialogue:["Stonehaven Mountain Footpath", "Rock, Fighting and Ground types hide in these crags."],
       onInteract:null },
   ],
+  // NB: de vloer hier is TALL_GRASS (tegel 2) — die leest de grass-tabel, niet
+  // de cave-tabel. Beide gevuld zodat encounters op elke ondergrond werken.
   encounterTable:{ cave:[
     { speciesId:'FIGHTCLAW', minLv:34, maxLv:38, rate:30 },
     { speciesId:'TUNNELDON', minLv:33, maxLv:37, rate:35 },
     { speciesId:'STEELBACK', minLv:33, maxLv:37, rate:35 },
-  ], grass:[], water:[]},
+  ], grass:[
+    { speciesId:'FIGHTCLAW', minLv:34, maxLv:38, rate:30 },
+    { speciesId:'TUNNELDON', minLv:33, maxLv:37, rate:35 },
+    { speciesId:'STEELBACK', minLv:33, maxLv:37, rate:35 },
+  ], water:[]},
   events:[],
 },
 
@@ -5953,6 +5959,36 @@ DG.MAPS.SECRET_TUNNEL = {
     q.npc.x = pos.x; q.npc.y = pos.y;
     m.npcs.push(q.npc);
   });
+})();
+
+// ── Encounter-tegel-garantie: maps mét een gevulde encounter-tabel maar
+// ZONDER encounter-tegels (2/8) kregen stilletjes nooit wilde gevechten
+// (o.a. Mt. Cretaceous, Glacial Pass, Apex Summit Cavern). Deze patch strooit
+// deterministisch ~1 op 4 vlakke vloertegels om naar CAVE_FLOOR (8), zodat de
+// bestaande tabellen werken. Steden/dorpen worden overgeslagen.
+(function _ensureEncounterTiles() {
+  const SKIP = /CITY|TOWN|HAMLET|CENTER|SHOP|HOUSE|GYM|LAB|BANK|MUSEUM|GATEWAY|CITADEL|CHAMBER|TOWER/;
+  let patched = 0;
+  for (const id in DG.MAPS) {
+    if (SKIP.test(id)) continue;
+    const m = DG.MAPS[id];
+    const et = m.encounterTable || {};
+    const hasTable = (et.grass || []).length > 0 || (et.cave || []).length > 0;
+    if (!hasTable) continue;
+    const hasEncTile = (m.tiles || []).some(row => row.some(t => t === 2 || t === 8));
+    if (hasEncTile) continue;
+    // strooi: elke (x+2y)%4===0 vlakke vloertegel (0/1/4/5/6) wordt 8, behalve
+    // randen en warp-aankomsttegels (de sanitizer hieronder draait erna).
+    for (let y = 1; y < m.height - 1; y++) {
+      for (let x = 1; x < m.width - 1; x++) {
+        const t = m.tiles[y][x];
+        if ((t === 0 || t === 1 || t === 4 || t === 5 || t === 6) && (x + 2 * y) % 4 === 0) {
+          m.tiles[y][x] = 8; patched++;
+        }
+      }
+    }
+  }
+  if (patched) console.log('[DinoMon] Encounter tiles ensured: ' + patched);
 })();
 
 // ── Warp-arrival sanitizer: guarantee every warp lands you on a walkable,

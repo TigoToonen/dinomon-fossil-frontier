@@ -10,8 +10,8 @@
 - ✅ A2 Softlock-jacht map-niveau (terugweg-scan in walkthrough.js: 0 warnings) — NB: duw-states van Strength-rotsen niet modelleerbaar, handmatige playtest-notitie
 - ⬜ A3 Alle field-move-gates per map (83-87) + fly naar elke stad
 - ⬜ A4 Overworld-fysica (collision, ice, lava, warps 2-richtingen)
-- ⬜ A5 Encounter-tabellen (rates/levels), fishing, safari, repel
-- ⬜ A6 Flags-integriteit + quest-ketens end-to-end
+- ✅ A5 Encounter-tabellen (integrity_scan.js) — 3 BUGS GEFIXT: MT_CRETACEOUS/GLACIAL_PASS/APEXSUMMIT_WILD hadden 0 encounter-tegels (tabellen dood), STONEHAVEN_WILD lege grass-tabel; loader-patch `_ensureEncounterTiles` + tabel-fix. Fishing/safari/repel nog ⬜
+- ✅ A6 Flags-integriteit (integrity_scan.js: referenced-vs-grantable, 0 warns) — quest-keten-runtime nog ⬜
 
 ### B. Gevechten
 - ⬜ B1 Alle 1005 moves 1× echt uitgevoerd
@@ -30,7 +30,7 @@
 - ⬜ D3 Tekst-overflow (12-char namen, ¥, substituties)
 
 ### E. Verhaal & Dialogen
-- ⬜ E1 Elke dialogue-key bestaat / geen rauwe keys op scherm
+- ✅ E1 Elke dialogue-key bestaat (integrity_scan.js: NPC's + trainers, 0 missing)
 - ⬜ E2 Quiz-gyms: vragen/shuffle/fout-pad/reset
 
 ### F. Systemen & Persistentie
@@ -44,7 +44,7 @@
 - ⬜ G1 Input-misbruik / transitions
 - ⬜ G2 Console-hygiëne volledige playthrough
 - ⬜ G3 Performance / canvas-scaling
-- ⬜ G4 Audio-keys bestaan overal
+- ✅ G4 Audio-keys bestaan overal (integrity_scan.js: playMusic-calls + map.music, 0 missing)
 
 ### H. Verdieping (loop ♻️)
 - ♻️ H1 Combinatie-stress + fuzz; terug naar A met nieuwe kennis
@@ -53,7 +53,8 @@
 _(geen)_
 
 ## Gefixt deze loop
-_(nog geen)_
+1. **MT_CRETACEOUS / GLACIAL_PASS / APEXSUMMIT_WILD: nul wilde encounters** — tabellen bestonden, maar geen enkele encounter-tegel (2/8). Fix: `_ensureEncounterTiles`-loader-patch in maps.js (149 tegels) — it.2.
+2. **STONEHAVEN_WILD: gras-tegels (2) lazen de lege grass-tabel**; de gevulde cave-tabel werd daar genegeerd. Fix: grass-tabel gevuld — it.2.
 
 ## Design-vragen voor Tigo
 _(geen)_
