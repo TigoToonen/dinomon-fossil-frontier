@@ -196,7 +196,17 @@ DG.BagMenu = (function () {
 
   function _getAllItems() {
     const bag = _gs.player.bag;
-    return Object.entries(bag).filter(([, qty]) => qty > 0);
+    // Auto-sort: group by category (Heal → Battle → Balls → Key), then by name,
+    // so the bag stays tidy without manual sorting.
+    const catOrder = { HEAL: 0, BATTLE: 1, BALLS: 2, KEY: 3 };
+    const dispName = (id) => (ITEM_DEFS[id] && ITEM_DEFS[id].name) || (DG.ITEMS[id] && DG.ITEMS[id].name) || id;
+    return Object.entries(bag)
+      .filter(([, qty]) => qty > 0)
+      .sort((a, b) => {
+        const ca = catOrder[_getItemCategory(a[0])] ?? 9, cb = catOrder[_getItemCategory(b[0])] ?? 9;
+        if (ca !== cb) return ca - cb;
+        return dispName(a[0]).localeCompare(dispName(b[0]));
+      });
   }
 
   function _getItems() {

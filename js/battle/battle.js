@@ -62,6 +62,8 @@ DG.Battle = (function () {
 
   function start(battleConfig) {
     const gs = battleConfig.gameState;
+    // Sync the Battle FX setting (Options) so it also applies right after load.
+    window._BATTLE_FX_OFF = !!(gs.settings && gs.settings.battleFx === 'OFF');
     const playerParty = gs.player.party;
 
     // ── Build trainer party sorted weakest→strongest ──────────

@@ -44,7 +44,7 @@ DG.Menu = (function () {
   let _shopQty      = 1;
 
   // Options / settings
-  const OPTIONS_LIST = ['Text Speed', 'Music Volume', 'SFX Volume', 'RESTART GAME', 'BACK'];
+  const OPTIONS_LIST = ['Text Speed', 'Battle FX', 'Music Volume', 'SFX Volume', 'RESTART GAME', 'BACK'];
   let _optCursor      = 0;
   let _confirmCursor  = 0; // 0 = NO, 1 = YES
 
@@ -178,6 +178,13 @@ DG.Menu = (function () {
         const speeds = ['SLOW', 'NORMAL', 'FAST'];
         const cur = speeds.indexOf(_gs.settings.textSpeed || 'NORMAL');
         _gs.settings.textSpeed = speeds[(cur + 1) % speeds.length];
+        _dirty = true;
+      }
+    } else if (opt === 'Battle FX') {
+      // ON = full move animations; OFF = skip them for much faster battles.
+      if (DG.Input.isPressed('LEFT') || DG.Input.isPressed('RIGHT') || DG.Input.isPressed('A')) {
+        _gs.settings.battleFx = (_gs.settings.battleFx === 'OFF') ? 'ON' : 'OFF';
+        window._BATTLE_FX_OFF = (_gs.settings.battleFx === 'OFF');
         _dirty = true;
       }
     } else if (opt === 'Music Volume') {
@@ -1031,6 +1038,8 @@ DG.Menu = (function () {
       let value = '';
       if (opt === 'Text Speed') {
         value = _gs.settings.textSpeed || 'NORMAL';
+      } else if (opt === 'Battle FX') {
+        value = _gs.settings.battleFx || 'ON';
       } else if (opt === 'Music Volume') {
         const v = Math.round((_gs.settings.musicVolume || 0.6) * 10);
         value = '▓'.repeat(v) + '░'.repeat(10 - v);

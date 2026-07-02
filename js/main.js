@@ -465,6 +465,12 @@ window.DG = window.DG || {};
 
   // ── OVERWORLD ─────────────────────────────────────────────
   function _updateOverworld(dt) {
+    // Name Rater: overworld requested a rename → open the nickname screen.
+    if (window._PENDING_RENAME && window._NICKNAME_MON) {
+      window._PENDING_RENAME = false;
+      _state = DG.STATE.NICKNAME_ENTRY;
+      return;
+    }
     if (DG.Battle.isActive()) {
       _state = DG.STATE.BATTLE;
       try { DG.Audio.playMusic(_battleMusicTrack()); } catch(e) {}

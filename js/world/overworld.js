@@ -447,6 +447,69 @@ DG.Overworld = (function () {
       return;
     }
 
+    // onInteract: MOVE_RELEARNER — relearn a forgotten learnset move for a fee.
+    if (npc.onInteract === 'MOVE_RELEARNER') {
+      const FEE = 3000;
+      const party = (_gs.player.party || []).filter(m => m && !m.isEgg);
+      if (!party.length) { DG.DialogueBox.show(['Bring me a DinoMon and I can reteach it moves it once knew.'], () => { _blocked = false; }); return; }
+      DG.DialogueBox.show([
+        "Move Tutor: I can make a DinoMon remember any move from its learnset — even ones it never picked up.",
+        `My fee is ¥${FEE} per move. Who shall we teach?`], () => {
+        const monOpts = party.map(m => (m.nickname || (DG.SPECIES[m.speciesId] || {}).name || m.speciesId) + ' Lv.' + m.level).concat(['Cancel']);
+        DG.Menu.showChoiceMenu('Teach which DinoMon?', monOpts, (idx) => {
+          if (idx >= party.length) { _blocked = false; return; }
+          const mon = party[idx];
+          const sp = DG.SPECIES[mon.speciesId] || {};
+          const known = new Set((mon.moves || []).map(s => s.moveId));
+          // Candidates: learnset moves at/below current level that it doesn't know.
+          const seen = new Set(); const cand = [];
+          const ls = (sp.learnset || []).filter(L => L.level <= mon.level && !known.has(L.move) && DG.MOVES[L.move]);
+          for (let i = ls.length - 1; i >= 0; i--) {           // newest first
+            if (!seen.has(ls[i].move)) { seen.add(ls[i].move); cand.push(ls[i]); }
+          }
+          const top = cand.slice(0, 8);
+          if (!top.length) { DG.DialogueBox.show([`${monOpts[idx].split(' Lv.')[0]} already knows everything I can teach it.`], () => { _blocked = false; }); return; }
+          if ((_gs.player.money || 0) < FEE) { DG.DialogueBox.show([`You need ¥${FEE}. Come back with more funds.`], () => { _blocked = false; }); return; }
+          const mvOpts = top.map(L => DG.MOVES[L.move].name + '  (Lv.' + L.level + ')').concat(['Cancel']);
+          DG.Menu.showChoiceMenu('Remember which move?\n(fee ¥' + FEE + ')', mvOpts, (mi) => {
+            if (mi >= top.length) { _blocked = false; return; }
+            const moveId = top[mi].move, mv = DG.MOVES[moveId];
+            const learn = (slot) => {
+              _gs.player.money = Math.max(0, (_gs.player.money || 0) - FEE);
+              const entry = { moveId, ppCurrent: mv.pp || 10, ppMax: mv.pp || 10 };
+              if (slot === -1) mon.moves.push(entry); else mon.moves[slot] = entry;
+              DG.SaveLoad.save(_gs);
+              DG.DialogueBox.show([`It remembered ${mv.name}!`, 'Pleasure doing business.'], () => { _blocked = false; });
+            };
+            if ((mon.moves || []).length < 4) { learn(-1); return; }
+            const fOpts = mon.moves.map(s => (DG.MOVES[s.moveId] || {}).name || s.moveId).concat(['Cancel']);
+            DG.Menu.showChoiceMenu('Forget which move?', fOpts, (fi) => {
+              if (fi >= mon.moves.length) { _blocked = false; return; }
+              learn(fi);
+            });
+          });
+        });
+      });
+      return;
+    }
+
+    // onInteract: NAME_RATER — rename a party DinoMon (reuses the nickname screen).
+    if (npc.onInteract === 'NAME_RATER') {
+      const party = (_gs.player.party || []).filter(m => m && !m.isEgg);
+      if (!party.length) { DG.DialogueBox.show(['A name shapes a soul! Bring me a DinoMon to rename.'], () => { _blocked = false; }); return; }
+      DG.DialogueBox.show(['Name Rater: Every legend deserves a fitting name.', 'Whose name shall we reconsider — free of charge?'], () => {
+        const opts = party.map(m => (m.nickname || (DG.SPECIES[m.speciesId] || {}).name || m.speciesId) + ' Lv.' + m.level).concat(['Cancel']);
+        DG.Menu.showChoiceMenu('Rename which DinoMon?', opts, (idx) => {
+          if (idx >= party.length) { _blocked = false; return; }
+          window._NICKNAME_MON    = party[idx];
+          window._NICKNAME_BUFFER = '';
+          window._PENDING_RENAME  = true;   // polled by main.js → opens the nickname screen
+          _blocked = false;
+        });
+      });
+      return;
+    }
+
     // onInteract: NIELS_CHALLENGE — beat the interns, then battle Niels for the
     // Compound Card (+50% prize money). After he's beaten he runs the Beachcoin exchange.
     if (npc.onInteract === 'NIELS_CHALLENGE') {

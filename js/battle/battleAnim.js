@@ -3093,6 +3093,8 @@ DG.BattleAnim = (function () {
   // ════════════════════════════════════════════════════════════
 
   function trigger(moveType, isPlayer, category, animStyle, power, moveId) {
+    // Battle FX OFF (Options): skip move animations entirely for fast battles.
+    if (window._BATTLE_FX_OFF) return;
     if (_active || _gapTimer > 0) {
       _animQueue.push({ moveType, isPlayer, category, animStyle, power, moveId });
     } else {
