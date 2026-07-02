@@ -141,10 +141,17 @@ DG.TypeChart = (function () {
   }
 
   // ── Accuracy Check ────────────────────────────────────────
+  // Accuracy/evasion stages use the 3/3-based table (×0.33..×3.0), NOT the stat
+  // stage table (×0.25..×4.0) — buffs/debuffs were slightly too extreme before.
+  function _accStageMult(stage) {
+    const s = Math.max(-6, Math.min(6, stage || 0));
+    return s >= 0 ? (3 + s) / 3 : 3 / (3 - s);
+  }
+
   function accuracyCheck(move, attackerAccStage, defenderEvaStage) {
     if (!move.accuracy || move.accuracy >= 999) return true; // always hits
-    const accMult = DG.stageMultiplier(attackerAccStage || 0);
-    const evaMult = DG.stageMultiplier(defenderEvaStage || 0);
+    const accMult = _accStageMult(attackerAccStage || 0);
+    const evaMult = _accStageMult(defenderEvaStage || 0);
     const finalAcc = Math.floor(move.accuracy * accMult / evaMult);
     return Math.floor(Math.random() * 100) < finalAcc;
   }
