@@ -25,8 +25,8 @@
 - ⬜ C2 Economie-flows (geen negatief/overflow, prijzen consistent)
 
 ### D. Visueel
-- ⬜ D1 Screenshot-pass alle maps (ik beoordeel elk beeld)
-- ⬜ D2 Alle UI-schermen
+- ✅ D1 Screenshot-pass ALLE 118 maps beoordeeld (collages vis01-vis13 in .claude/shots) — geen kapotte tiles/sprites/layouts; Murk Hollow-duisternis = bedoelde Flash-mechaniek; nieuwe encounter-tegels ogen als rotspartijen (past bij thema)
+- 🔄 D2 UI-schermen: overworld/menu/party/battle-scene visueel OK (vis14_ui); bag/dex/kaart/badges recent al visueel geverifieerd door parallelle sessie — volgende ronde opnieuw schieten met betere menu-choreografie
 - ⬜ D3 Tekst-overflow (12-char namen, ¥, substituties)
 
 ### E. Verhaal & Dialogen
@@ -42,7 +42,7 @@
 
 ### G. Techniek
 - ⬜ G1 Input-misbruik / transitions
-- ⬜ G2 Console-hygiëne volledige playthrough
+- ✅ G2 Console-hygiëne: 0 errors/warnings over boot + save-load + 118 map-warps + menu's + live gevecht (preview-sessie it.6)
 - ⬜ G3 Performance / canvas-scaling
 - ✅ G4 Audio-keys bestaan overal (integrity_scan.js: playMusic-calls + map.music, 0 missing)
 
