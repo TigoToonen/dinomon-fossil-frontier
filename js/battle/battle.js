@@ -1046,8 +1046,21 @@ DG.Battle = (function () {
       return;
     }
 
+    // ── Accuracy-modifying abilities ─────────────────────────
+    const _accAtkAb = ((DG.SPECIES[actor.speciesId] || {}).ability) || '';
+    const _accDefAb = (target && ((DG.SPECIES[target.speciesId] || {}).ability)) || '';
+    // No Guard (either side) / Predator's Mind (attacker): moves never miss.
+    const _skipAcc = (_accAtkAb === 'No Guard' || _accDefAb === 'No Guard' || _accAtkAb === "Predator's Mind");
+    let _accMove = move;
+    if (!_skipAcc && move.accuracy && move.accuracy < 999) {
+      let _accMult = 1;
+      if (_accAtkAb === 'Compound Eyes') _accMult *= 1.3;                                   // +30% accuracy
+      if (_accAtkAb === 'Hustle' && move.category === 'PHYSICAL') _accMult *= 0.8;          // -20% on physical
+      if (_accMult !== 1) _accMove = Object.assign({}, move, { accuracy: Math.min(100, move.accuracy * _accMult) });
+    }
+
     // Accuracy check
-    if (!DG.TypeChart.accuracyCheck(move, actorStages.acc || 0, targetStages.eva || 0)) {
+    if (!_skipAcc && !DG.TypeChart.accuracyCheck(_accMove, actorStages.acc || 0, targetStages.eva || 0)) {
       _pushMessage(`${actorName}'s attack missed!`);
       // Rollout breaks on a miss: drop the lock and reset its escalating power.
       if (move.id === 'ROLLOUT' && actor._lock && actor._lock.kind === 'ROLLOUT') {
@@ -1079,13 +1092,17 @@ DG.Battle = (function () {
     const defSp  = DG.SPECIES[target.speciesId];
     const atkAb  = atkSp?.ability || '';
     const defAb  = defSp?.ability || '';
+    // Pixilate: Normal-type moves become Fairy-type and gain 20% power (local clone).
+    if (atkAb === 'Pixilate' && move.type === 'NORMAL' && move.category !== 'STATUS' && (move.power || 0) > 0) {
+      move = Object.assign({}, move, { type: 'FAIRY', power: Math.floor(move.power * 1.2) });
+    }
     const hpPct  = actor.hp.current / actor.hp.max;
     const defSide = isPlayer ? 'enemy' : 'player';
     const actSide = isPlayer ? 'player' : 'enemy';
 
     // ── Priority B: Absorb / Immunity abilities ─────────────────────────────
     // Levitate / Hover: immune to all GROUND-type moves
-    if (move.type === 'GROUND' &&
+    if (move.type === 'GROUND' && atkAb !== 'Mold Breaker' &&
         (defAb === 'Levitate' || defAb === 'Hover' || defAb === 'Air Body' || defAb === 'Balloon')) {
       _pushMessage(`${targetName} is floating — ${defAb} made it immune!`);
       _triggerAbilityAnim(defAb, defSide, 'levitate');
@@ -1148,11 +1165,24 @@ DG.Battle = (function () {
     if (atkAb === 'Guts' && actor.statusEffect && move.category === 'PHYSICAL') abilityMult *= 1.5;
     // Flash Fire active: 1.5× FIRE power after absorbing a FIRE move
     if (actor._flashFireActive && move.type === 'FIRE') abilityMult *= 1.5;
+    // ── Attacker ability damage modifiers (A1-batch, per abilityDesc) ──
+    if (atkAb === 'Hustle' && move.category === 'PHYSICAL') abilityMult *= 1.5;              // acc penalty in _resolveMoveEffect
+    if (atkAb === 'Technician' && (move.power || 0) > 0 && move.power <= 60) abilityMult *= 1.5;
+    if (atkAb === 'Ancient Power') abilityMult *= 1.15;                                       // all moves +15%
+    if (atkAb === 'Jungle King' && (move.type === 'GRASS' || move.type === 'FIGHTING')) abilityMult *= 1.15;
+    if (atkAb === 'Stone Garden' && (move.type === 'ROCK'  || move.type === 'GRASS'))    abilityMult *= 1.15;
+    if (atkAb === 'Swamp King'  && (move.type === 'WATER' || move.type === 'GROUND'))    abilityMult *= 1.15;
+    if (atkAb === 'Sand Force' && _battle.weather === 'SANDSTORM' &&
+        (move.type === 'ROCK' || move.type === 'GROUND' || move.type === 'STEEL')) abilityMult *= 1.3;
+    if (atkAb === 'Diamond Dome' && move.type === 'ROCK') abilityMult *= 1.2;                 // own Rock moves +20%
+    if (atkAb === 'Pixilate' && move.type === 'FAIRY') { /* power already boosted in the clone above */ }
 
     // Defender ability modifiers
     let defAbilityMult = 1.0;
     const thickFatAbilities = ['Thick Fat','Insulated','Thermal Shell'];
     if (thickFatAbilities.includes(defAb) && (move.type === 'FIRE' || move.type === 'ICE')) defAbilityMult = 0.5;
+    if (defAb === 'Immovable' && move.type === 'ROCK') defAbilityMult *= 0.75;   // incoming Rock -25%
+    if (atkAb === 'Mold Breaker') defAbilityMult = 1.0;                          // ignore defender ability mods
 
     // Held item bonuses
     let heldMult = 1.0;
@@ -1206,7 +1236,9 @@ DG.Battle = (function () {
           weather: _battle.weather,
           abilityMult: totalAtkerMult,
           defAbilityMult,
+          critStage: (atkAb === "Predator's Mind") ? 1 : 0,
         });
+        _abilityDefPost(res, target, defAb, atkAb);
         if (res.effectiveness === 0) break;       // immune — stop immediately
         effectiveness = res.effectiveness;
         if (res.crit) crit = true;
@@ -1234,6 +1266,24 @@ DG.Battle = (function () {
           actualDamage = targetHpBefore - 1;
           target._sashUsed = true;
           hitDamages._sturdyMsg = `${targetName}s Focus Sash let it survive!`;
+        } else if (defAb === 'Immortal Flame' && !target._immortalUsed) {
+          // Survive one lethal hit per battle at 1 HP, then scorch the attacker.
+          const excess = actualDamage - (targetHpBefore - 1);
+          hitDamages[hitDamages.length - 1] = Math.max(0, hitDamages[hitDamages.length - 1] - excess);
+          actualDamage = targetHpBefore - 1;
+          target._immortalUsed = true;
+          hitDamages._sturdyMsg = `${targetName}'s Immortal Flame refused to go out!`;
+          const ifBurst = Math.max(1, Math.floor(actor.hp.max / 8));
+          actor.hp.current = Math.max(0, actor.hp.current - ifBurst);
+          _pushMessage(`${actorName} was scorched by the fire burst!`);
+        } else if (defAb === 'Time Lock' && !target._timeLockUsed) {
+          // Once per battle: instead of fainting, time rewinds to half HP.
+          const half = Math.max(1, Math.floor(target.hp.max / 2));
+          const excess = actualDamage - (targetHpBefore - half);
+          hitDamages[hitDamages.length - 1] = Math.max(0, hitDamages[hitDamages.length - 1] - excess);
+          actualDamage = Math.max(0, targetHpBefore - half);
+          target._timeLockUsed = true;
+          hitDamages._sturdyMsg = `${targetName}'s Time Lock turned back time — it returned at half HP!`;
         }
       }
 
@@ -1252,7 +1302,9 @@ DG.Battle = (function () {
         weather: _battle.weather,
         abilityMult: totalAtkerMult,
         defAbilityMult,
+        critStage: (atkAb === "Predator's Mind") ? 1 : 0,
       });
+      _abilityDefPost(res, target, defAb, atkAb);
       effectiveness = res.effectiveness;
       crit = res.crit;
       actualDamage = res.damage;
@@ -1297,6 +1349,18 @@ DG.Battle = (function () {
           actualDamage = target.hp.current - 1;
           target._sashUsed = true;
           _pushMessage(`${targetName}'s Focus Sash let it survive!`);
+        } else if (defAb === 'Immortal Flame' && !target._immortalUsed) {
+          actualDamage = target.hp.current - 1;
+          target._immortalUsed = true;
+          _pushMessage(`${targetName}'s Immortal Flame refused to go out!`);
+          const ifBurst = Math.max(1, Math.floor(actor.hp.max / 8));
+          actor.hp.current = Math.max(0, actor.hp.current - ifBurst);
+          _pushMessage(`${actorName} was scorched by the fire burst!`);
+        } else if (defAb === 'Time Lock' && !target._timeLockUsed) {
+          const half = Math.max(1, Math.floor(target.hp.max / 2));
+          actualDamage = Math.max(0, target.hp.current - half);
+          target._timeLockUsed = true;
+          _pushMessage(`${targetName}'s Time Lock turned back time — it returned at half HP!`);
         }
       }
       target.hp.current = Math.max(0, target.hp.current - actualDamage);
@@ -1357,18 +1421,39 @@ DG.Battle = (function () {
       _pushMessage(`${targetName}'s Lum Berry cured its status!`);
     }
 
-    // Secondary: Status chance
+    // Secondary: Status chance (Corrosion may poison even Steel/Poison types)
+    const _corr = (atkAb === 'Corrosion');
     if (effType === 'STATUS_CHANCE' && Math.random() * 100 < (eff.chance || 30)) {
-      _tryApplyStatus(target, eff.status || 'BURN');
+      const _st = eff.status || 'BURN';
+      _tryApplyStatus(target, _st, _corr && (_st === 'POISON' || _st === 'BADPOISON'));
     }
     // Secondary: status via alias type names (BURN_CHANCE/FREEZE_CHANCE/POISON_CHANCE/PARALYSIS/SLEEP)
     if (_STATUS_ALIAS[effType] && Math.random() * 100 < (eff.chance || 30)) {
-      _tryApplyStatus(target, _STATUS_ALIAS[effType]);
+      const _st2 = _STATUS_ALIAS[effType];
+      _tryApplyStatus(target, _st2, _corr && _st2 === 'POISON');
     }
 
-    // Secondary: Flinch (only if target hasn't moved yet this turn)
+    // Secondary: Flinch (only if target hasn't moved yet this turn; Immovable is immune)
     if (effType === 'FLINCH' && Math.random() * 100 < (eff.chance || 30)) {
-      target._flinched = true;
+      if (defAb === 'Immovable') _pushMessage(`${targetName} is Immovable — it can't flinch!`);
+      else target._flinched = true;
+    }
+
+    // Corrosive Ground: Ground moves always lower the target's Defense by 1.
+    if (atkAb === 'Corrosive Ground' && move.type === 'GROUND' && target.hp.current > 0) {
+      const cgStages = isPlayer ? _battle.enemyStages : _battle.playerStages;
+      _applyStageDelta(cgStages, 'def', -1, targetName, target);
+    }
+    // Tidal Surge: Water moves deal an extra splash hit at 30% power.
+    if (atkAb === 'Tidal Surge' && move.type === 'WATER' && actualDamage > 0 && target.hp.current > 0) {
+      const splash = Math.max(1, Math.floor(actualDamage * 0.3));
+      target.hp.current = Math.max(0, target.hp.current - splash);
+      _pushMessage(`A tidal splash hit ${targetName} again!`);
+    }
+    // Magma Armor: being hit by a Fire move raises Defense.
+    if (defAb === 'Magma Armor' && move.type === 'FIRE' && target.hp.current > 0) {
+      const maStages = isPlayer ? _battle.enemyStages : _battle.playerStages;
+      _applyStageDelta(maStages, 'def', 1, targetName);
     }
 
     // Secondary: Stat lower on target or self
@@ -1437,6 +1522,13 @@ DG.Battle = (function () {
         actor.hp.current = Math.max(0, actor.hp.current - rsDmg);
         _pushMessage(`${actorName} was hurt by ${defAb}!`);
         _triggerAbilityAnim(defAb, defSide, 'contact_damage');
+      }
+      // Absolute Zero: 20% chance to freeze attackers on contact
+      if (defAb === 'Absolute Zero' && !actor.statusEffect) {
+        if (Math.random() < 0.20) {
+          _tryApplyStatus(actor, 'FREEZE');
+          _triggerAbilityAnim(defAb, defSide, 'freeze');
+        }
       }
       // Cute Charm / Allure: 30% infatuate attacker
       if ((defAb === 'Cute Charm' || defAb === 'Allure') && !actor._infatuated) {
@@ -1577,9 +1669,35 @@ DG.Battle = (function () {
       const opponent  = monIsPlayer ? _battle.enemyMon     : _battle.playerMon;
       const side = monIsPlayer ? 'player' : 'enemy';
       if (opponent && opponent.hp.current > 0) {
-        _applyStageDelta(oppStages, 'atk', -1, _monName(opponent));
+        _applyStageDelta(oppStages, 'atk', -1, _monName(opponent), opponent);
         _pushMessage(`${_monName(mon)}'s ${ab} lowered ${_monName(opponent)}'s attack!`);
         _triggerAbilityAnim(ab, side, 'intimidate');
+      }
+    }
+
+    // Apex Predator: at battle start, lowers ALL of the opponent's stats by 1 (once).
+    if (ab === 'Apex Predator') {
+      const apKey = monIsPlayer ? '_apexDonePlayer' : '_apexDoneEnemy';
+      if (!_battle[apKey]) {
+        _battle[apKey] = true;
+        const oppStages = monIsPlayer ? _battle.enemyStages : _battle.playerStages;
+        const opponent  = monIsPlayer ? _battle.enemyMon    : _battle.playerMon;
+        if (opponent && opponent.hp.current > 0) {
+          _pushMessage(`${_monName(mon)}'s Apex Predator radiates dominance!`);
+          ['atk','def','spAtk','spDef','spd'].forEach(s => _applyStageDelta(oppStages, s, -1, _monName(opponent), opponent));
+          _triggerAbilityAnim(ab, monIsPlayer ? 'player' : 'enemy', 'intimidate');
+        }
+      }
+    }
+
+    // Herd Leader: boosts own Attack when entering battle as the last one standing.
+    if (ab === 'Herd Leader') {
+      const party = monIsPlayer ? _battle.playerParty : _battle.enemyParty;
+      const aliveOthers = (party || []).filter(m => m && m !== mon && m.hp.current > 0).length;
+      if (aliveOthers === 0) {
+        const ownStages = monIsPlayer ? _battle.playerStages : _battle.enemyStages;
+        _pushMessage(`${_monName(mon)} leads the herd alone — its Attack rose!`);
+        _applyStageDelta(ownStages, 'atk', 1, _monName(mon));
       }
     }
   }
@@ -1620,17 +1738,32 @@ DG.Battle = (function () {
     _continueExecution();
   }
 
-  function _tryApplyStatus(mon, status) {
+  // Result-dependent defender ability modifiers, applied to a calcDamage result
+  // in place (crit-, effectiveness- and HP-conditional — can't go into defAbilityMult).
+  function _abilityDefPost(res, target, defAb, atkAb) {
+    if (!res || res.damage <= 0 || atkAb === 'Mold Breaker') return;
+    let d = res.damage;
+    if (defAb === 'Filter' && res.effectiveness > 1) d = Math.floor(d * 0.75);        // super-effective -25%
+    if (defAb === 'Shadow Shield' && target.hp.current === target.hp.max) d = Math.floor(d * 0.5); // half at full HP
+    if (defAb === 'Primordial Fortress') {                                            // all damage halved, no crits
+      d = Math.floor(d * 0.5);
+      if (res.crit) { d = Math.floor(d / 1.5); res.crit = false; }
+    }
+    if (defAb === 'Diamond Dome' && res.crit) d = Math.floor(d * 0.5);                // crits -50%
+    res.damage = Math.max(1, d);
+  }
+
+  function _tryApplyStatus(mon, status, force) {
     if (!status) return;
-    // Ability-based status immunities
+    // Ability-based status immunities (bypassed by Corrosion's force flag for poison)
     const _ab = (DG.SPECIES[mon.speciesId] || {}).ability;
     if (status === 'PARALYSIS' && _ab === 'Limber') {
       _pushMessage(`${_monName(mon)}'s Limber prevents paralysis!`); return;
     }
-    if (status === 'FREEZE' && _ab === 'Magma Armor') {
-      _pushMessage(`${_monName(mon)}'s Magma Armor prevents it from freezing!`); return;
+    if (status === 'BURN' && _ab === 'Magma Armor') {
+      _pushMessage(`${_monName(mon)}'s Magma Armor prevents burns!`); return;
     }
-    const res = DG.StatusEffects.apply(mon, DG.STATUS[status] || status);
+    const res = DG.StatusEffects.apply(mon, DG.STATUS[status] || status, force);
     if (res.message) _pushMessage(res.message);
   }
 
@@ -1649,6 +1782,10 @@ DG.Battle = (function () {
     // Keen Eye: accuracy can't be lowered by the opponent
     if (mon && stat === 'acc' && delta < 0 && ((DG.SPECIES[mon.speciesId] || {}).ability) === 'Keen Eye') {
       _pushMessage(`${monName}'s Keen Eye prevents accuracy loss!`); return;
+    }
+    // Ancient Power: immune to stat drops from foes (mon is only passed on foe-directed calls)
+    if (mon && delta < 0 && ((DG.SPECIES[mon.speciesId] || {}).ability) === 'Ancient Power') {
+      _pushMessage(`${monName}'s Ancient Power shrugged off the stat drop!`); return;
     }
     const cur = stages[stat] || 0;
     const newVal = Math.max(-6, Math.min(6, cur + delta));
@@ -2582,6 +2719,22 @@ DG.Battle = (function () {
       _continueExecution();
       return;
     }
+    // Run Away: always escapes wild battles successfully.
+    const _runAb = ((DG.SPECIES[_battle.playerMon.speciesId] || {}).ability) || '';
+    if (_runAb === 'Run Away') {
+      _battle.fled = true;
+      _pushMessage(`${_monName(_battle.playerMon)} ran away with Run Away!`);
+      _endBattle('RUN');
+      return;
+    }
+    // Arena Trap (wild foe): non-Flying DinoMons cannot flee.
+    const _trapAb = ((DG.SPECIES[_battle.enemyMon.speciesId] || {}).ability) || '';
+    const _pTypes = ((DG.SPECIES[_battle.playerMon.speciesId] || {}).types) || [];
+    if (_trapAb === 'Arena Trap' && !_pTypes.includes('FLYING')) {
+      _pushMessage(`${_monName(_battle.enemyMon)}'s Arena Trap prevents escape!`);
+      _continueExecution();
+      return;
+    }
     _battle.runAttempts++;
     const pSpd = _battle.playerMon.stats.spd;
     const eSpd = _battle.enemyMon.stats.spd;
@@ -2686,6 +2839,8 @@ DG.Battle = (function () {
         mon._infatuated = false; mon._lock = null; mon._charging = false;
         mon._chargingMoveId = null; mon._rolloutMult = 1; mon._rampageEnded = false;
         mon._flinched = false; mon._rechargeNext = false; mon._evoQueued = false;
+        mon._sashUsed = false; mon._immortalUsed = false; mon._timeLockUsed = false;
+        mon._flashFireActive = false; mon._seeded = false;
       }
     } catch(e) {}
 

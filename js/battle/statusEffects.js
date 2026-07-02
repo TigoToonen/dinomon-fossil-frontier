@@ -6,18 +6,20 @@ window.DG = window.DG || {};
 DG.StatusEffects = (function () {
 
   // Apply a status condition to a DinoMon. Returns {applied:bool, message:string}
-  function apply(mon, status) {
+  function apply(mon, status, force) {
     if (!mon || mon.hp.current <= 0) return { applied: false, message: '' };
     if (mon.statusEffect) return { applied: false, message: `${_name(mon)} already has a condition!` };
 
-    // Type immunities
+    // Type immunities (`force` = Corrosion-style bypass: can poison any type)
     const types = DG.SPECIES[mon.speciesId] ? DG.SPECIES[mon.speciesId].types : [];
-    if (status === DG.STATUS.BURN    && types.includes('FIRE'))     return { applied: false, message: `${_name(mon)} can't be burned!` };
-    if (status === DG.STATUS.POISON  && (types.includes('POISON') || types.includes('STEEL'))) return { applied: false, message: `${_name(mon)} can't be poisoned!` };
-    if (status === DG.STATUS.PARALYSIS && types.includes('ELECTRIC')) return { applied: false, message: `${_name(mon)} can't be paralysed!` };
-    if (status === DG.STATUS.FREEZE  && types.includes('ICE'))      return { applied: false, message: `${_name(mon)} can't be frozen!` };
-    if ((status === DG.STATUS.POISON || status === DG.STATUS.BADPOISON) && types.includes('STEEL')) {
-      return { applied: false, message: `${_name(mon)} can't be poisoned!` };
+    if (!force) {
+      if (status === DG.STATUS.BURN    && types.includes('FIRE'))     return { applied: false, message: `${_name(mon)} can't be burned!` };
+      if (status === DG.STATUS.POISON  && (types.includes('POISON') || types.includes('STEEL'))) return { applied: false, message: `${_name(mon)} can't be poisoned!` };
+      if (status === DG.STATUS.PARALYSIS && types.includes('ELECTRIC')) return { applied: false, message: `${_name(mon)} can't be paralysed!` };
+      if (status === DG.STATUS.FREEZE  && types.includes('ICE'))      return { applied: false, message: `${_name(mon)} can't be frozen!` };
+      if ((status === DG.STATUS.POISON || status === DG.STATUS.BADPOISON) && types.includes('STEEL')) {
+        return { applied: false, message: `${_name(mon)} can't be poisoned!` };
+      }
     }
 
     mon.statusEffect = status;

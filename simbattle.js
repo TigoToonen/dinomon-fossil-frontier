@@ -495,6 +495,59 @@ function speciesWith(ability){ return Object.keys(DG.SPECIES).find(id=>DG.SPECIE
   check(`Chlorophyll ${sp} outspeeds faster foe ${foe} in sun`, evalSun>0 && sunPlayerFirst>=Math.ceil(evalSun*0.8), `${sunPlayerFirst}/${evalSun} sun-turns player-first (base spd ${baseSpd} vs ${DG.SPECIES[foe].baseStats.spd})`);
 })();
 
+// TEST 25 — Apex Predator (MEGAVORE): lowers ALL opponent stats at battle start.
+(function(){
+  console.log('\n[25] Ability Apex Predator: entry stat-drop on the opponent');
+  if(!DG.SPECIES.MEGAVORE){ check('MEGAVORE exists', false); return; }
+  const atk = mon(anySpecies(), 80, ['TACKLE'], 99999);
+  const r = runBattle([atk], { type:'WILD', enemy: mon('MEGAVORE', 60, ['TACKLE'], 99999) },
+    (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:2, maxFrames:4000});
+  check('Apex Predator fires at battle start', r.log.some(l=>/radiates dominance/i.test(l)), 'log: '+JSON.stringify(r.log.slice(0,6)));
+})();
+
+// TEST 26 — Time Lock (GLACIODON): survives a KO once, returning at half HP.
+(function(){
+  console.log('\n[26] Ability Time Lock: returns at half HP instead of fainting (once)');
+  if(!DG.SPECIES.GLACIODON){ check('GLACIODON exists', false); return; }
+  let seen=0;
+  for(let i=0;i<6;i++){
+    const atk = mon(anySpecies(), 99, ['HYPER_BEAM'], 99999);
+    const enemy = mon('GLACIODON', 8, ['TACKLE'], 60);   // tiny → any hit is lethal
+    const r = runBattle([atk], { type:'WILD', enemy }, (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:6, maxFrames:7000});
+    if(r.log.some(l=>/turned back time/i.test(l))) seen++;
+  }
+  check('Time Lock triggers on a lethal hit', seen>0, `${seen}/6 battles`);
+})();
+
+// TEST 27 — No Guard (RAMPASAUR): its moves never miss (FISSURE 30%-acc lands every time).
+(function(){
+  console.log('\n[27] Ability No Guard: low-accuracy moves always hit');
+  if(!DG.SPECIES.RAMPASAUR || !DG.MOVES.FISSURE){ check('RAMPASAUR + FISSURE exist', false); return; }
+  let misses=0, kos=0, trials=8;
+  for(let i=0;i<trials;i++){
+    const atk = mon('RAMPASAUR', 90, ['FISSURE'], 99999);
+    const enemy = mon(nonType('FLYING'), 20, ['LEER'], 500);
+    const r = runBattle([atk], { type:'WILD', enemy }, (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:3, maxFrames:5000});
+    if(r.log.some(l=>/missed/i.test(l))) misses++;
+    if(r.log.some(l=>/one-hit KO/i.test(l))) kos++;
+  }
+  check('No Guard: zero misses + OHKOs land', misses===0 && kos>=trials*0.8, `misses ${misses}, KOs ${kos}/${trials}`);
+})();
+
+// TEST 28 — Pixilate (FLOROSAUR): Normal moves become Fairy → they now HIT Ghost types.
+(function(){
+  console.log('\n[28] Ability Pixilate: Normal move hits a Ghost type (as Fairy)');
+  const pix = Object.keys(DG.SPECIES).find(id=>DG.SPECIES[id].ability==='Pixilate');
+  const ghost = Object.keys(DG.SPECIES).find(id=>((DG.SPECIES[id].types)||[]).includes('GHOST') && DG.SPECIES[id].ability!=='Primordial Fortress');
+  if(!pix||!ghost||!DG.MOVES.TACKLE){ check('found Pixilate species + Ghost target', false); return; }
+  const atk = mon(pix, 85, ['TACKLE'], 99999);
+  const enemy = mon(ghost, 50, ['LEER'], 99999);
+  const startHp = enemy.hp.current;
+  const r = runBattle([atk], { type:'WILD', enemy }, (bt)=>({type:'MOVE', moveIndex:0}), {maxTurns:2, maxFrames:4000});
+  const dmg = startHp - (r.lastEnemyHp !== null ? r.lastEnemyHp : startHp);
+  check(`Pixilate ${pix} TACKLE damages Ghost ${ghost}`, dmg>0 && !r.log.some(l=>/no effect/i.test(l)), `dealt ${dmg}`);
+})();
+
 // ── REPORT ───────────────────────────────────────────────────
 console.log('\n═══ result ═══');
 if(!fails.length){ console.log('✅ all runtime checks passed'); process.exit(0); }
