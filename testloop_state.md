@@ -1,5 +1,14 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 9 — GROTE ENGINE-BUG: ~helft van de roster kon niet aanvallen (juli 2026)
+De Elite-Four-gauntlet-audit (e4gauntlet.js, nieuw) legde een 0%-clear bloot; instrumentatie leidde naar de echte oorzaak, NIET balans maar een engine-bug:
+- **BUG (kritiek, hele game): `createDinoMon` gaf auto-movesets via `learnedAll.slice(-4)` = laatste 4 learnset-moves, zonder damage-garantie. 56 van de 121 soorten (incl. starter PYROCERATH, TITANOSAUR, GHOSTBONE, MEGASTONE, SKYFANG) spawnden met UITSLUITEND setup-moves (Swords Dance/Bulk Up/Work Up...) → konden niet aanvallen.** Wild stonden ze eeuwig te buffen; gevangen was de mon nutteloos tot handmatig herleren.
+- **FIX** (saveload.js v82): auto-derive begint met recentste 4 maar garandeert tot 2 damage-moves door oudste status-slots te ruilen. Na fix: 0/121 soorten zonder aanval. Setup-flavor blijft (2 damage + 2 setup).
+- Dit verklaarde ook de "onwinbare" E4: mijn gauntlet-teams zaten er vol mee. Aparte balans-vraag (E4 attrition-zwaarte) pas te beoordelen ná deze fix.
+- Nieuw permanent meet-instrument e4gauntlet.js (no-heal 5-battle attrition-model, COVERAGE/SMART/ITEMS-modi).
+- **Impact-bewijs** (competente speler, e4gauntlet): Aurora faalde 26/40 vóór → 3/40 ná de fix; de gauntlet loopt nu vloeiend door tot Phantom/Champion (logische no-heal-eindmuur). Regressie na fix: validate 0-blocking, bugcheck 0, contentsweep 0. saveload.js v82.
+- Open (informatief, geen bug): de E4 blijft een steile no-heal-attrition; volledige 0% auto-clears is puur mijn item-loze model (echte speler met potions cleart Phantom/Corvus). Balans-oordeel pas na playtesting.
+
 ## RONDE 8 — BALANS-AUDIT: ECHTE DIFFICULTY-SPIKE GEVONDEN (juli 2026)
 Eerste ronde die géén "groen/rood" is maar een DESIGN-bevinding. gymgauntlet.js (nieuw): simuleert per gym N=40 gevechten met de speler-kant door de echte BattleAI (tier 3, competent, geen items), 3 team-modellen ter controle.
 - **Vondst**: de moeilijkheid maakt een CLIFF na Terra. Eerste 6 gyms ✓ (prepared speler ~100%). Laatste 3 blijven over ALLE modellen een spike:
@@ -129,6 +138,7 @@ _(geen)_
 5. **KRITIEK — egg-blackout-softlock**: een EI telde als "levende mon" in de blackout-check; party = alle mons fainted + ei → geen blackout én niet kunnen wisselen → speler zat voor eeuwig vast in het switch-scherm. Fix: eggs uitgesloten in beide alive-checks + engine-guards tegen egg-switches — it.8 (fuzz-vondst, 360/360 gevechten daarna schoon).
 6. **¥-teken rendere verschoven** (pixelfont miste de glyph; fallback negeerde de baseline) — ¥-glyph toegevoegd aan uiKit + fallback-baseline-fix — it.9.
 7. **Shopgeld verdween achter de SAVED-badge** bij hoge bedragen — rechts uitgelijnd vóór de badge-zone — it.9.
+8. **KRITIEK — 56/121 soorten konden niet aanvallen**: `createDinoMon` auto-moveset = `learnedAll.slice(-4)` pakte de 4 hoogste learnset-moves, vaak allemaal setup. Wild-encounters stonden eeuwig te buffen; gevangen mons waren nutteloos. Fix: damage-move-garantie (tot 2) in de auto-derive — ronde 9. Gevonden via de Elite-Four-attrition-audit.
 
 ## Design-vragen voor Tigo
 - ✅ AFGEHANDELD: late-game difficulty-cliff → Tigo koos "matig verzachten", doorgevoerd it.8 (zie ronde 8 hierboven). Open vervolg: Marina bleef in het model taai (~10-13%) omdat de nerf alleen levels/Toxic raakte, niet de bulk van SWAMPJAW/TIDANOSAURUS — als playtesting het bevestigt kan een extra pass Marina's bulk/coverage temperen.

@@ -221,7 +221,24 @@ DG.SaveLoad = (function () {
       }
       if (!chosen.length) chosen = learnedAll.slice(-4);
     } else {
+      // Auto-derive from the learnset. Naïef "laatste 4" laat ~de helft van de
+      // soorten zonder aanval achter: hun hoogste learnset-moves zijn allemaal
+      // setup (Swords Dance, Bulk Up, Work Up...). Zulke mons staan wild eeuwig
+      // te buffen en zijn gevangen nutteloos. Daarom: begin met de recentste 4,
+      // maar garandeer tot 2 damage-moves door de oudste status-slots te ruilen.
+      const isDmg = id => { const m = DG.MOVES[id]; return m && m.category !== 'STATUS' && (m.power || 0) > 0; };
       chosen = learnedAll.slice(-4);
+      const dmgAll = learnedAll.filter(isDmg);
+      let have = chosen.filter(isDmg).length;
+      const target = Math.min(2, dmgAll.length);
+      for (let d = dmgAll.length - 1; d >= 0 && have < target; d--) {
+        const cand = dmgAll[d];
+        if (chosen.indexOf(cand) >= 0) continue;
+        const swapIdx = chosen.findIndex(id => !isDmg(id));  // ruil een oudste niet-damage-slot
+        if (swapIdx < 0) break;
+        chosen[swapIdx] = cand;
+        have++;
+      }
     }
     const moves = chosen.slice(0, 4).map(moveId => {
       const mv = DG.MOVES[moveId];
