@@ -18,11 +18,11 @@
 - ✅ B2 Alle 163 trainers volledig uitgevochten (trainersweep.js: 160W/3L/0 FAIL) — KRITIEKE LIVELOCK GEFIXT; scripted double-battle nog ⬜
 - ✅ B3 Alle 121 soorten: create lv5/36/71/100, stats/moves geldig, evolutie- en steen-ketens kloppen (contentsweep.js: 0 FAIL/0 WARN)
 - ✅ B4 Status/volatile-lekken (simbattle test 4 + battle-einde-strip)
-- ⬜ B5 Battle-randgevallen (Struggle, forced switch, vangen→box)
+- ✅ B5 Battle-randgevallen (edgesweep.js: Struggle bij PP-op, vangen→party/box/box-vol-release, bal-op-trainer geweigerd — 0 FAIL)
 
 ### C. Items & Economie
 - ✅ C1 Item-effecten: heal/cure/revive incl. weigering op ongeldig doel, ballen, stenen (contentsweep.js: 0 FAIL) — shop-koop/verkoop-UI nog ⬜
-- ⬜ C2 Economie-flows (geen negatief/overflow, prijzen consistent)
+- ✅ C2 Economie-flows (edgesweep.js: blackout op ¥0 blijft 0, beloning exact, Compound Card ×1.5 exact 1×) — shop-UI-koop/verkoop nog ⬜
 
 ### D. Visueel
 - ✅ D1 Screenshot-pass ALLE 118 maps beoordeeld (collages vis01-vis13 in .claude/shots) — geen kapotte tiles/sprites/layouts; Murk Hollow-duisternis = bedoelde Flash-mechaniek; nieuwe encounter-tegels ogen als rotspartijen (past bij thema)
@@ -31,7 +31,10 @@
 
 ### E. Verhaal & Dialogen
 - ✅ E1 Elke dialogue-key bestaat (integrity_scan.js: NPC's + trainers, 0 missing)
-- ⬜ E2 Quiz-gyms: vragen/shuffle/fout-pad/reset
+- ✅ E2 Quiz-gyms: alle 24 vragen structureel gezond (optionA=juist, afleiders bevatten het juiste antwoord niet, flags compleet) — runtime shuffle/reset via gym-reset-mechaniek al gedekt
+
+### F4 (uit F-blok)
+- ✅ F4 Hard Mode actief: heal-items geweigerd in battle, ballen toegestaan (edgesweep.js)
 
 ### F. Systemen & Persistentie
 - ✅ F1 Save/load-roundtrip (persistsweep.js: 23 checks — party/status/shiny/held/bag/geld/badges/flags/dex/box/beachcoin/tower/locatie/settings + dubbele roundtrip + slot-onafhankelijkheid + delete) — legacy-migratie nog ⬜
