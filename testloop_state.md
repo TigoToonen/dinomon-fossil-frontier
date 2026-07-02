@@ -1,5 +1,14 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 5 — ECHTE-GAMEPLAY-INTEGRATIE, VOLLEDIG GROEN (juli 2026)
+Voor het eerst alles via écht spelen (toetsen, lopen, zichtlijnen) i.p.v. programmatisch:
+- ✅ Gras-encounter door echt te LOPEN: 13 stappen in hoog gras → wilde Bugling lv5 (conform tabel), wegvluchten OK
+- ✅ Trainer-line-of-sight volledig: stap in Bretts zichtlijn → alert → auto-engage → gevecht → winst → defeat-flag → exact ¥200
+- ✅ Alle 3 veldmove-gates door echt gameplay geklaard: Rock Smash (Route 3A), Cut (Route 5A), Strength (Safari Zone) — tegel 84/85/86 → vloer
+- ✅ Alle 15 animatiestijlen afgevuurd in de echte renderer — 0 errors
+- ✅ Audio produceert echt signaal (getLevel 0.0055) · 0 console-warnings
+- **Bugs gevonden in ronde 5: NUL** — vierde opeenvolgende schone ronde
+
 ## RONDE 4 — DUBBELGEVECHT-CHAOS, VOLLEDIG GROEN (juli 2026)
 - ✅ doublefuzz.js (nieuw): 80 chaos-2v2-gevechten over 2 seeds (random trainer-trio's, random targeting via switchDoubleTarget, ongeldige moves/switches, gewonde parties) — 0 hangs/exceptions; de double-faint-logica bevat GEEN variant van de single-battle-livelock
 - ✅ Tower-teamgeneratie: alle streak-tiers 0-50 leveren geldige teams (lv-cap 95)
