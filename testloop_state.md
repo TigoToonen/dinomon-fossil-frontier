@@ -34,7 +34,7 @@
 - ⬜ E2 Quiz-gyms: vragen/shuffle/fout-pad/reset
 
 ### F. Systemen & Persistentie
-- ⬜ F1 Save/load-roundtrip na elke systeemactie; slots; legacy
+- ✅ F1 Save/load-roundtrip (persistsweep.js: 23 checks — party/status/shiny/held/bag/geld/badges/flags/dex/box/beachcoin/tower/locatie/settings + dubbele roundtrip + slot-onafhankelijkheid + delete) — legacy-migratie nog ⬜
 - ⬜ F2 PC/Box vol + laatste mon
 - ⬜ F3 Eggs & fossiel-incubatie
 - ⬜ F4 Difficulty modes echt actief
