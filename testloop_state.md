@@ -1,5 +1,11 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 3 — VERDIEPING, VOLLEDIG GROEN (juli 2026)
+Nieuwe dimensies (geen herhaling):
+- ✅ deepsweep.js (nieuw, 22 checks): corrupt-save-robuustheid (7 soorten kapotte JSON → nooit een crash, listSlots overleeft), evolutie via échte battle-EXP (TINDREL→TINDRAK op lv16, queue werkt), soak van 25 opeenvolgende gevechten op één gamestate (beloning elke keer exact, geen volatile-restanten)
+- ✅ Mode-fuzz (fuzz.js: HARD=1 / WEATHER=<key> env-support): 480 extra chaos-gevechten onder Hard Mode, SANDSTORM, BLIZZARD en HARD+ASH_FALL — 0 hangs/exceptions. Fuzz-totaal: 1440 gevechten over 12 seeds/modes
+- **Bugs gevonden in ronde 3: NUL**
+
 ## RONDE 2 — VOLLEDIG GROEN (volledige her-run vanaf het begin, juli 2026)
 Alle 12 harnesses opnieuw gedraaid + visuele her-pass + browser-checks:
 - ✅ validate_game (0 blocking) · bugcheck · integrity_scan · walkthrough (start→credits) · contentsweep · persistsweep — alle exit 0

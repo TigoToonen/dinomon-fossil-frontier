@@ -15,6 +15,11 @@ function L(f){ (0,eval)(fs.readFileSync(f,'utf8')); }
 DG.BattleAnim = noop; DG.Audio = noop; DG.Input = noop;
 DG.DialogueBox = { show:(m,cb)=>{ if(typeof cb==='function') cb(); }, update:()=>{} };
 
+// Modes (ronde 3+): HARD=1 → Hard Mode (AI+1, item-ban); WEATHER=<key> → map-
+// ambient weer bij battle-start (SANDSTORM/SUNNY/BLIZZARD/ASH_FALL/...).
+if (process.env.HARD === '1') window._CURRENT_DIFFICULTY = 'HARD';
+if (process.env.WEATHER) window.DG_MAP_WEATHER = process.env.WEATHER;
+
 // deterministische RNG (seed reproduceert een gevonden crash)
 const SEED = parseInt(process.argv[2] || '424242', 10);
 let _s = SEED >>> 0;
