@@ -2370,4 +2370,37 @@ DG.TRAINERS.VALDEZ_S3_TW2 = {
   aiTier:2, location:'APEXSUMMIT_GYM',
 };
 
+// ── POST-GAME: gym-leader rematch teams (act 2) ─────────────────
+// Auto-derived from each leader's original team: same species & moves, levels
+// raised to the low-to-high 70s, triple reward and top AI. Triggered by talking
+// to a defeated leader after CHAMPION_DEFEATED (see overworld.js), repeatable.
+(function _buildGymRematches() {
+  for (const id of Object.keys(DG.TRAINERS)) {
+    const t = DG.TRAINERS[id];
+    if (!t.isGymLeader) continue;
+    const n = t.party.length;
+    DG.TRAINERS[id + '_R'] = {
+      id: id + '_R',
+      name: t.name,
+      class: 'Gym Leader',
+      isGymLeader: false,           // no second badge
+      isRematch: true,
+      preBattleDialogue: [
+        `${t.name}: The Champion themselves, back in MY gym!`,
+        "No badge on the line this time — just pride. My team has grown. Show me yours has too!"],
+      postBattleDialogue: [`${t.name}: Magnificent! You really are the Champion. Come back for another round any time.`],
+      winDialogue: 'Ha! Even Champions stumble. Heal up and try me again!',
+      reward: (t.reward || 3000) * 3,
+      party: t.party.map((p, i) => ({
+        speciesId: p.speciesId,
+        // spread levels 72..80 across the team, ace on top
+        level: Math.max(72, Math.min(80, 72 + Math.round((i / Math.max(1, n - 1)) * 8))),
+        moves: p.moves,
+      })),
+      aiTier: 3,
+      location: t.location,
+    };
+  }
+})();
+
 console.log('[DinoMon] Trainers loaded: ' + Object.keys(DG.TRAINERS).length);

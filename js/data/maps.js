@@ -5315,6 +5315,10 @@ DG.MAPS.COMPOUND_BANK = {
       movementType:'STATIONARY', dialogue:["Welcome to the DinoExchange trading floor!","Mr. Sennings only battles challengers out in the plaza — by his golden statue.","Word is his whole team is... unusually shiny."], onInteract:null },
     { id:'CB_WHALE', name:'Diamond Hands', x:10, y:7, facing:'LEFT', spriteKey:'NPC_MAN',
       movementType:'STATIONARY', dialogue:["I never sell. Up 1000%, down to zero — doesn't matter.","Diamond hands, kid. Look at this gold floor. That's conviction."], onInteract:null },
+    { id:'CB_TOWER_MASTER', name:'Tower Master', x:2, y:7, facing:'RIGHT', spriteKey:'NPC_LEADER',
+      movementType:'STATIONARY',
+      dialogue:["The Exchange Tower Challenge: endless battles, endless payouts — for Champions only."],
+      onInteract:'BATTLE_TOWER' },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
 };

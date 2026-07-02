@@ -493,6 +493,64 @@ DG.Overworld = (function () {
       return;
     }
 
+    // onInteract: BATTLE_TOWER — post-game streak challenge (Compound City).
+    // Random opponents that scale with your streak; payouts scale too, a Rare
+    // Candy every 5 wins, and a loss resets the streak. Repeatable forever.
+    if (npc.onInteract === 'BATTLE_TOWER') {
+      if (!DG.SaveLoad.getFlag(_gs, 'CHAMPION_DEFEATED')) {
+        DG.DialogueBox.show([
+          'Tower Master: The Exchange Tower Challenge is for Champions only.',
+          'Defeat the Grand Archon in the Fossil Citadel, then return.'], () => { _blocked = false; });
+        return;
+      }
+      const streak = _gs.player.towerStreak || 0;
+      const best   = _gs.player.towerBest || 0;
+      DG.DialogueBox.show([
+        `Tower Master: Welcome to the Exchange Tower Challenge, Champion!`,
+        `Current streak: ${streak}  |  Best: ${best}.`,
+        'Each win pays better than the last — every 5th win earns a Rare Candy.',
+        'But lose once, and the streak resets to zero. Ready?'], () => {
+        DG.Menu.showChoiceMenu('Take on challenger #' + (streak + 1) + '?', ['Fight!', 'Not now'], (idx) => {
+          if (idx !== 0) { _blocked = false; return; }
+          // Generate a random scaling opponent (3 mons, lv 65 + 2/streak, cap 95)
+          const ids = Object.keys(DG.SPECIES);
+          const lvl = Math.min(95, 65 + streak * 2);
+          const party = [0, 1, 2].map(i => ({
+            speciesId: ids[Math.floor(Math.random() * ids.length)],
+            level: Math.max(5, lvl - 2 + i * 2),
+          }));
+          const towerT = {
+            id: 'TOWER_CHALLENGER', name: 'Tower Challenger #' + (streak + 1), class: 'Tower Challenger',
+            preBattleDialogue: null, reward: 1500 + streak * 500, aiTier: 3, party,
+          };
+          const firstEnemy = DG.SaveLoad.createDinoMon(party[0].speciesId, party[0].level);
+          DG.Battle.start({
+            type: 'TRAINER', enemy: firstEnemy, trainerData: towerT, gameState: _gs,
+            onEnd: (result) => {
+              if (result === 'WIN') {
+                _gs.player.towerStreak = streak + 1;
+                _gs.player.towerBest = Math.max(best, streak + 1);
+                const lines = [`Tower Master: Win #${streak + 1}! The floor is yours.`];
+                if ((streak + 1) % 5 === 0) {
+                  _gs.player.bag = _gs.player.bag || {};
+                  _gs.player.bag.RARE_CANDY = (_gs.player.bag.RARE_CANDY || 0) + 1;
+                  lines.push('Milestone bonus: you received a RARE CANDY!');
+                }
+                lines.push('Talk to me for the next challenger — they only get tougher.');
+                DG.DialogueBox.show(lines, () => { _blocked = false; DG.SaveLoad.save(_gs); });
+              } else {
+                _gs.player.towerStreak = 0;
+                DG.DialogueBox.show([
+                  'Tower Master: The tower claims another streak. Back to zero!',
+                  `Your best remains ${Math.max(best, streak)}. Return when you have healed.`], () => { _blocked = false; DG.SaveLoad.save(_gs); });
+              }
+            }
+          });
+        });
+      });
+      return;
+    }
+
     // onInteract: NAME_RATER — rename a party DinoMon (reuses the nickname screen).
     if (npc.onInteract === 'NAME_RATER') {
       const party = (_gs.player.party || []).filter(m => m && !m.isEgg);
@@ -1219,6 +1277,26 @@ DG.Overworld = (function () {
             const post = (result === 'WIN')
               ? (_rl(rTrainer.postBattleDialogue) || ['Good bout! Talk to me whenever you want another round.'])
               : (_rl(rTrainer.winDialogue) || ['Rest up at the attendant and try me again!']);
+            DG.DialogueBox.show(post, () => { _blocked = false; DG.SaveLoad.save(_gs); });
+          }
+        });
+      });
+      return;
+    }
+
+    // ── POST-GAME gym-leader rematch ─────────────────────────
+    // Talking to a DEFEATED gym leader after beating the Champion starts their
+    // act-2 team (<ID>_R, built in trainers.js). Repeatable, no badge, 3× reward.
+    const _rmId = npc.trainerRef || npc.trainerId;
+    if (_rmId && DG.SaveLoad.getFlag(_gs, `TRAINER_${_rmId}_DEFEATED`) &&
+        DG.SaveLoad.getFlag(_gs, 'CHAMPION_DEFEATED') && DG.TRAINERS[_rmId + '_R']) {
+      const rmT = DG.TRAINERS[_rmId + '_R'];
+      DG.DialogueBox.show(rmT.preBattleDialogue, () => {
+        const firstEnemy = DG.SaveLoad.createDinoMon(rmT.party[0].speciesId, rmT.party[0].level, null, rmT.party[0].moves);
+        DG.Battle.start({
+          type: 'TRAINER', enemy: firstEnemy, trainerData: rmT, gameState: _gs,
+          onEnd: (result) => {
+            const post = (result === 'WIN') ? rmT.postBattleDialogue : [rmT.winDialogue];
             DG.DialogueBox.show(post, () => { _blocked = false; DG.SaveLoad.save(_gs); });
           }
         });
