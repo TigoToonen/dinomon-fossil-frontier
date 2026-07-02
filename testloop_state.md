@@ -14,6 +14,7 @@ Eerste ronde die géén "groen/rood" is maar een DESIGN-bevinding. gymgauntlet.j
   - Valdez: 6→5 mons (dubbele TEMPESTFANG eruit), levels −3 → win 3→18% bij vast speler-level
   - trainers.js v101. Methodologie-noot: het model verbiedt items/strategisch wisselen, dus absolute % is een pessimistische ONDERGRENS — bewust NIET najagen tot exact 55-70% om de finale niet kapot te nerfen voor echte spelers (die items hebben). De relatieve cliff is nu fors zachter.
 - Nieuw meet-inzicht in gymgauntlet.js: speler-level = ROUTE_LEVEL (los van gym-ace) zodat een gym-nerf de speler niet meeverzwakt.
+- **Eindverificatie na rebalans**: trainersweep 160W/3L/**0 FAIL** (identiek aan vóór; geen kapotte movesets/exceptions). 3 aangepaste gyms los verslaanbaar (Volt 35/Marina 15/Valdez 10 beurten met sterk team). Valdez→E4-gap gecheckt: Valdez ace 65 → eerste Elite (Aurora) 80; die +15 bestond al (+12 met oude lv68) en wordt overbrugd door Fossil Training Grounds + rematches → GEEN nieuwe cliff door mijn −3.
 
 ## RONDE 7 — MECHANISCHE CORRECTHEID, VOLLEDIG GROEN (juli 2026)
 Nieuwe dimensie: niet "crasht niet" maar "doet het JUISTE". mechsweep.js (nieuw, 11 checks) met vastgezette RNG + synthetische soorten (gecontroleerde types/stats):
