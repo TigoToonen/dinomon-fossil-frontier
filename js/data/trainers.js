@@ -1188,6 +1188,67 @@ DG.TRAINERS.EXPLORER_VANCE = {
 
 
 // ============================================================
+// TRAINING GROUNDS — rematchable sparring masters (pre-E4 grind).
+// Each mirrors one Elite Four member's typing so players can practice matchups.
+// ============================================================
+
+DG.TRAINERS.ASPIRANT_FROST = {
+  id:'ASPIRANT_FROST', name:'Sparring Master Isolde', class:'Sparring Master',
+  preBattleDialogue: ["Isolde: I drill challengers in Aurora's style — deep water, deeper cold.", 'Show me a team that will not freeze!'],
+  postBattleDialogue: ['Isolde: Sharp! Aurora will still hit harder — come sharpen again any time.'],
+  winDialogue: 'Frozen solid. Heal up with the medic and step back in.',
+  reward: 5000,
+  party: [
+    { speciesId:'CRYOPHIN',   level:65, moves:['SURF','ICE_SHARD','AQUA_JET','ICE_BEAM'] },
+    { speciesId:'GLACIOHORN', level:67, moves:['ICE_BEAM','SURF','CRYSTAL_BEAM','ICY_WIND'] },
+    { speciesId:'PERMAFROST', level:69, moves:['BLIZZARD','HYDRO_PUMP','ICE_BEAM','GLACIAL_MIND'] },
+  ],
+  aiTier: 2, location: 'FOSSIL_TRAINING_GROUNDS',
+};
+
+DG.TRAINERS.ASPIRANT_BLAZE = {
+  id:'ASPIRANT_BLAZE', name:'Sparring Master Brand', class:'Sparring Master',
+  preBattleDialogue: ["Brand: Ember's inferno breaks most teams before they swing.", 'Prove your DinoMons can stand in the fire!'],
+  postBattleDialogue: ['Brand: Not bad! Remember — Ember opens with overwhelming heat. Again whenever you like.'],
+  winDialogue: 'Burned out. Rest and return — the fire is patient.',
+  reward: 5000,
+  party: [
+    { speciesId:'SCORCHBACK',  level:65, moves:['FLAMETHROWER','ROCK_SLIDE','FIRE_BLAST','FLAME_CHARGE'] },
+    { speciesId:'PYROCERATH',  level:67, moves:['FLAMETHROWER','DRAGON_CLAW','OVERHEAT','CRUNCH'] },
+    { speciesId:'LAVACLAW',    level:69, moves:['FIRE_BLAST','EARTHQUAKE','FLAMETHROWER','ROCK_SLIDE'] },
+  ],
+  aiTier: 2, location: 'FOSSIL_TRAINING_GROUNDS',
+};
+
+DG.TRAINERS.ASPIRANT_TERRA = {
+  id:'ASPIRANT_TERRA', name:'Sparring Master Gruff', class:'Sparring Master',
+  preBattleDialogue: ["Gruff: Garnet's bedrock defense has outlasted a thousand challengers.", 'Crack my wall if you can!'],
+  postBattleDialogue: ['Gruff: Solid work. Garnet hits with twice that weight — keep training.'],
+  winDialogue: 'Crushed. Shake off the dust and come back.',
+  reward: 5000,
+  party: [
+    { speciesId:'TERRADON',  level:65, moves:['EARTHQUAKE','STONE_EDGE','STEALTH_ROCK','ROCK_SLIDE'] },
+    { speciesId:'OSSIFANG',  level:67, moves:['SKULL_SLAM','EARTHQUAKE','STONE_EDGE','IRON_DEFENSE'] },
+    { speciesId:'MEGASTONE', level:69, moves:['STONE_EDGE','EARTHQUAKE','ROCK_SLIDE','ANCIENT_POWER'] },
+  ],
+  aiTier: 2, location: 'FOSSIL_TRAINING_GROUNDS',
+};
+
+DG.TRAINERS.ASPIRANT_SHADE = {
+  id:'ASPIRANT_SHADE', name:'Sparring Master Vesper', class:'Sparring Master',
+  preBattleDialogue: ["Vesper: Phantom's darkness swallows the unprepared whole.", 'Face me, and learn to fight what you cannot see!'],
+  postBattleDialogue: ['Vesper: You pierce shadows well. Phantom is crueler — return and harden your nerve.'],
+  winDialogue: 'Swallowed by the dark. Breathe, heal, retry.',
+  reward: 5000,
+  party: [
+    { speciesId:'NIGHTREX',   level:65, moves:['CRUNCH','DARK_PULSE','NIGHT_SLASH','CLOSE_COMBAT'] },
+    { speciesId:'PHANTOSAUR', level:67, moves:['SHADOW_CLAW','DRAGON_PULSE','PHANTOM_FORCE','HEX'] },
+    { speciesId:'OBSIDIUDON', level:69, moves:['SHADOW_BALL','DARK_PULSE','CRUNCH','DRAGON_PULSE'] },
+  ],
+  aiTier: 2, location: 'FOSSIL_TRAINING_GROUNDS',
+};
+
+// ============================================================
 // ELITE FOUR (4 trainers before Champion)
 // ============================================================
 

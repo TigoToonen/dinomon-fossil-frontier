@@ -2788,7 +2788,7 @@ FOSSIL_GATEWAY: {
     [66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,66],
     [66, 0, 0,73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,73, 0, 0, 0,66],
     [66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,66],
-    [66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,66],
+    [68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,66], // y5: west door → Training Grounds
     [66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,66],
     [66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,66],
     [66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,66],
@@ -2799,6 +2799,7 @@ FOSSIL_GATEWAY: {
     { x:10, y:0, targetMap:'FOSSIL_CITADEL', targetX:10,targetY:13 },
     { x:9,  y:9, targetMap:'APEXSUMMIT',     targetX:9, targetY:2  },
     { x:10, y:9, targetMap:'APEXSUMMIT',     targetX:10,targetY:2  },
+    { x:0,  y:5, targetMap:'FOSSIL_TRAINING_GROUNDS', targetX:17, targetY:7 },
   ],
   npcs:[
     { id:'GATE_WARDEN', name:'Gate Warden', x:9, y:3, facing:'DOWN', spriteKey:'NPC_MAN',
@@ -2817,8 +2818,68 @@ FOSSIL_GATEWAY: {
       movementType:'STATIONARY',
       dialogue:["You've climbed every route and earned every badge to stand here. This is the end of the road — and its hardest stretch.","Four stadiums, four masters, no mercy and no second chances between them. Steel yourself. Beyond that gate, legends are made or broken."],
       onInteract:null },
+    { id:'GATEWAY_TG_SIGN', name:'Sign', x:2, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["◄ TRAINING GROUNDS","The Elite Four fight at Lv.75 and beyond. Wild titans, sparring masters, free healing and a supply post await inside.","Do not enter the Citadel unprepared."],
+      onInteract:null },
   ],
   encounterTable:{ grass:[], water:[] }, events:[],
+},
+
+// ── FOSSIL TRAINING GROUNDS — pre-Elite-Four grind cave ─────────
+// Bridges the level gap between badge 9 (~Lv.55) and the Elite Four (Lv.75+):
+// high-level wilds, four REMATCH sparring masters (one per E4 typing), a free
+// healer and a supply post — everything needed to prep for the no-heal gauntlet.
+FOSSIL_TRAINING_GROUNDS: {
+  id:'FOSSIL_TRAINING_GROUNDS', name:'Training Grounds', width:20, height:14,
+  music:'GYM_THEME', isIndoor:true, isCave:true,
+  tiles:[
+    [72,72,72,72,72,72,72,72,72,72,72,72,72,72,72,72,72,72,72,72], // 0
+    [72, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,72], // 1 nurse + vendor row
+    [72, 5, 8, 8, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 8, 8, 5, 5,72], // 2 encounter patches
+    [72, 5, 8, 8, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 8, 8, 5, 5,72], // 3
+    [72, 5, 8, 8, 8, 5, 5, 5,73, 5, 5,73, 5, 5, 8, 8, 8, 5, 5,72], // 4 statues mid
+    [72, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,72], // 5 sparring row 1
+    [72, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,72], // 6
+    [72, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,68,72], // 7 east door → Gateway
+    [72, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,72], // 8 sparring row 2
+    [72, 5, 8, 8, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 8, 8, 5, 5,72], // 9 encounter patches
+    [72, 5, 8, 8, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 8, 8, 5, 5,72], // 10
+    [72, 5, 8, 8, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 8, 8, 5, 5,72], // 11
+    [72, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,72], // 12
+    [72,72,72,72,72,72,72,72,72,72,72,72,72,72,72,72,72,72,72,72], // 13
+  ],
+  warps:[
+    { x:18, y:7, targetMap:'FOSSIL_GATEWAY', targetX:1, targetY:5 },
+  ],
+  npcs:[
+    { id:'TG_NURSE', name:'Field Medic', x:4, y:1, facing:'DOWN', spriteKey:'NPC_HEALER',
+      movementType:'STATIONARY', dialogue:['HEALER_GREET'], onInteract:'HEAL_PARTY' },
+    { id:'TG_VENDOR', name:'Quartermaster', x:15, y:1, facing:'DOWN', spriteKey:'NPC_SHOPKEEPER',
+      movementType:'STATIONARY', dialogue:['SHOP_GREET'], onInteract:'OPEN_SHOP',
+      shopItems:['FULLRESTORE','MAXPOTION','MAXREVIVE','HYPERPOTION','REVIVE','ULTRABALL','FULLHEAL'] },
+    { id:'TG_SIGN', name:'Sign', x:9, y:1, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY',
+      dialogue:["TRAINING GROUNDS — sanctioned by the Primordial League.","The four Sparring Masters mirror each Elite Four member. They battle as often as you like — no charge, full prize money.","Wild titans here range Lv.60-72. The Field Medic heals for free."],
+      onInteract:null },
+    { id:'TG_FROST', name:'Sparring Master Isolde', x:6, y:5, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:['TG_FROST_GREET'], onInteract:'REMATCH_TRAINER', trainerRef:'ASPIRANT_FROST' },
+    { id:'TG_BLAZE', name:'Sparring Master Brand', x:13, y:5, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:['TG_BLAZE_GREET'], onInteract:'REMATCH_TRAINER', trainerRef:'ASPIRANT_BLAZE' },
+    { id:'TG_TERRA', name:'Sparring Master Gruff', x:6, y:8, facing:'DOWN', spriteKey:'NPC_MAN',
+      movementType:'STATIONARY', dialogue:['TG_TERRA_GREET'], onInteract:'REMATCH_TRAINER', trainerRef:'ASPIRANT_TERRA' },
+    { id:'TG_SHADE', name:'Sparring Master Vesper', x:13, y:8, facing:'DOWN', spriteKey:'NPC_WOMAN',
+      movementType:'STATIONARY', dialogue:['TG_SHADE_GREET'], onInteract:'REMATCH_TRAINER', trainerRef:'ASPIRANT_SHADE' },
+  ],
+  encounterTable:{ grass:[
+    { speciesId:'MEGASTONE',  minLv:60, maxLv:68, rate:22 },
+    { speciesId:'LAVACLAW',   minLv:60, maxLv:68, rate:22 },
+    { speciesId:'BLIZZHORN',  minLv:60, maxLv:68, rate:22 },
+    { speciesId:'IRONSCALE',  minLv:62, maxLv:70, rate:17 },
+    { speciesId:'DUSKFANG',   minLv:62, maxLv:70, rate:12 },
+    { speciesId:'TITANOSAUR', minLv:66, maxLv:72, rate:5  },
+  ], water:[]},
+  events:[],
 },
 
 FOSSIL_CITADEL: {

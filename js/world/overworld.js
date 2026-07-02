@@ -1141,6 +1141,28 @@ DG.Overworld = (function () {
       return;
     }
 
+    // onInteract: REMATCH_TRAINER — Training Grounds sparring partner. Battles every
+    // time you talk to them (defeat flag is ignored and never set), so players can
+    // grind EXP/money to bridge the gap up to the Elite Four.
+    if (npc.onInteract === 'REMATCH_TRAINER' && npc.trainerRef) {
+      const rTrainer = DG.TRAINERS[npc.trainerRef];
+      if (!rTrainer) { _blocked = false; return; }
+      const _rl = (d) => !d ? null : (typeof d === 'string' ? (DG.STORY.DIALOGUES[d] || [d]) : d);
+      DG.DialogueBox.show(_rl(rTrainer.preBattleDialogue) || [`${rTrainer.name} wants to battle!`], () => {
+        const firstEnemy = DG.SaveLoad.createDinoMon(rTrainer.party[0].speciesId, rTrainer.party[0].level, null, rTrainer.party[0].moves);
+        DG.Battle.start({
+          type: 'TRAINER', enemy: firstEnemy, trainerData: rTrainer, gameState: _gs,
+          onEnd: (result) => {
+            const post = (result === 'WIN')
+              ? (_rl(rTrainer.postBattleDialogue) || ['Good bout! Talk to me whenever you want another round.'])
+              : (_rl(rTrainer.winDialogue) || ['Rest up at the attendant and try me again!']);
+            DG.DialogueBox.show(post, () => { _blocked = false; DG.SaveLoad.save(_gs); });
+          }
+        });
+      });
+      return;
+    }
+
     // Trainer / Gym leader battle (support both trainerId and trainerRef)
     const trainerId = npc.trainerRef || npc.trainerId;
     if (trainerId && !DG.SaveLoad.getFlag(_gs, `TRAINER_${trainerId}_DEFEATED`)) {
@@ -1251,6 +1273,8 @@ DG.Overworld = (function () {
     for (const npc of _mapData.npcs) {
       // Only trainers with a trainerRef that haven't been defeated
       if (!npc.trainerRef) continue;
+      // Rematch sparring partners never auto-engage — interaction only.
+      if (npc.onInteract === 'REMATCH_TRAINER') continue;
       const flagKey = `TRAINER_${npc.trainerRef}_DEFEATED`;
       if (DG.SaveLoad.getFlag(_gs, flagKey)) continue;
 

@@ -759,9 +759,17 @@ DG.STORY.DIALOGUES = {
     "A DinoMon with Cut could clear it — earn the Canopy Badge first.",
   ],
 
+  // Training Grounds sparring masters — short overworld greetings
+  TG_FROST_GREET: ["Isolde, sparring master of the frost. Talk to me whenever you want a bout — I never tire."],
+  TG_BLAZE_GREET: ["Brand, sparring master of the flame. Every fight with me pays full prize money. Ready?"],
+  TG_TERRA_GREET: ["Gruff, sparring master of the bedrock. Hit me as often as you like — that's what I'm here for."],
+  TG_SHADE_GREET: ["Vesper, sparring master of the dark. The Elite Four show no mercy... so I won't either."],
+
   FOSSIL_GATE_OPEN: [
     "GATE WARDEN: All nine badges... You truly have surpassed every Gym in the land.",
     "Then pass, Trainer. The Grand Archon awaits you inside the Fossil Citadel.",
+    "A word of caution: the Elite Four battle at Lv.75 and beyond, with no healing between bouts.",
+    "The Training Grounds through the west door offer wild titans, sparring masters and free healing. Use them.",
     "May the Primordial Aura guide your path.",
   ],
 
