@@ -106,7 +106,11 @@ for (let gi = 0; gi < GYMS.length; gi++){
   const gid = GYMS[gi];
   const t = DG.TRAINERS[gid];
   const ace = Math.max(...t.party.map(p=>p.level));
-  const plvl = ace + (REALISTIC || COUNTER ? 2 : 0);
+  // Speler-level = wat de ROUTE levert bij aankomst (los van de gym-ace, zodat
+  // een gym-nerf niet stiekem ook de speler verzwakt). Route-curve = originele
+  // aces vóór de ronde-8-rebalans.
+  const ROUTE_LEVEL = [14,22,32,38,44,42,50,58,68];
+  const plvl = ROUTE_LEVEL[gi] + (REALISTIC || COUNTER ? 2 : 0);
   const pool = poolFor(gi, t);
   const size = Math.min(6, t.party.length + 1);   // speler mag 1 mon meer dan de gym
   let wins = 0, turnsum = 0, losses = 0, draws = 0;

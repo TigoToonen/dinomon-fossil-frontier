@@ -8,7 +8,12 @@ Eerste ronde die géén "groen/rood" is maar een DESIGN-bevinding. gymgauntlet.j
   - Valdez (lv68): 3% win — bijna onwinbaar zelfs voor een type-counter, over-leveld, sterk team
 - **Vals alarm opgelost**: AFK Jorn leek een spike (40%) maar was mijn kale random-model; met een fatsoenlijk team 80–98% → gebalanceerd.
 - Caveat in het model: geen items/revives (echte speler heeft die wel), dus absolute % is een ondergrens; de RELATIEVE cliff is het echte signaal.
-- **Status: DESIGN-VRAAG aan Tigo** (gyms zijn vriend-thematisch; moeilijkheid = zijn keuze, niet unilateraal aanpassen). Geen code-bug.
+- **BESLIST (Tigo): matig verzachten** → doorgevoerd it.8:
+  - Volt: verlamming-spam 4×→1× Thunder Wave (rest offensief), levels −2 → stall grotendeels weg (draws sterk omlaag, win 43→80% bij vast speler-level)
+  - Marina: Toxic-stall 3×→1×, levels −3
+  - Valdez: 6→5 mons (dubbele TEMPESTFANG eruit), levels −3 → win 3→18% bij vast speler-level
+  - trainers.js v101. Methodologie-noot: het model verbiedt items/strategisch wisselen, dus absolute % is een pessimistische ONDERGRENS — bewust NIET najagen tot exact 55-70% om de finale niet kapot te nerfen voor echte spelers (die items hebben). De relatieve cliff is nu fors zachter.
+- Nieuw meet-inzicht in gymgauntlet.js: speler-level = ROUTE_LEVEL (los van gym-ace) zodat een gym-nerf de speler niet meeverzwakt.
 
 ## RONDE 7 — MECHANISCHE CORRECTHEID, VOLLEDIG GROEN (juli 2026)
 Nieuwe dimensie: niet "crasht niet" maar "doet het JUISTE". mechsweep.js (nieuw, 11 checks) met vastgezette RNG + synthetische soorten (gecontroleerde types/stats):
@@ -125,4 +130,4 @@ _(geen)_
 7. **Shopgeld verdween achter de SAVED-badge** bij hoge bedragen — rechts uitgelijnd vóór de badge-zone — it.9.
 
 ## Design-vragen voor Tigo
-- **Late-game difficulty-cliff (ronde 8)**: Volt→Marina→Valdez zijn fors zwaarder dan de eerste 6 gyms, zelfs voor een voorbereide speler. Wil je de curve verzachten (bv. Valdez 1 mon minter / -2 tot -4 levels op de laatste drie, of Volts verlamming-spam temperen), of is dit de bedoelde eindpittigheid (speler moet items/grinden inzetten)? Zie gymgauntlet.js.
+- ✅ AFGEHANDELD: late-game difficulty-cliff → Tigo koos "matig verzachten", doorgevoerd it.8 (zie ronde 8 hierboven). Open vervolg: Marina bleef in het model taai (~10-13%) omdat de nerf alleen levels/Toxic raakte, niet de bulk van SWAMPJAW/TIDANOSAURUS — als playtesting het bevestigt kan een extra pass Marina's bulk/coverage temperen.
