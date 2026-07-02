@@ -1,5 +1,12 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 7 — MECHANISCHE CORRECTHEID, VOLLEDIG GROEN (juli 2026)
+Nieuwe dimensie: niet "crasht niet" maar "doet het JUISTE". mechsweep.js (nieuw, 11 checks) met vastgezette RNG + synthetische soorten (gecontroleerde types/stats):
+- ✅ STAB = exact 1,5× · super-effectief = 2× + juist label · niet-erg = 0,5× · immuniteit = 0 damage
+- ✅ +2 aanval-stage ≈ 2× damage · crit vuurt bij lage roll en verhoogt · burn = 0,5× op fysiek
+- ✅ Gedrag in echte gevechten: +prio-move slaat eerst ondanks lage speed · recoil beschadigt gebruiker · 34 multi-hit-moves hebben geldige hit-ranges (1-5) · geen OHKO-moves (n.v.t.)
+- **Bugs gevonden in ronde 7: NUL** — de damage-formule is nu bewezen correct, niet alleen crash-vrij
+
 ## RONDE 6 — ONBOARDING + POST-GAME-FEATURES, VOLLEDIG GROEN (juli 2026)
 Het echte nieuwe-speler-pad en mijn eigen features via het interactie-pad:
 - ✅ Nieuwe-speler-onboarding volledig via echte input: titel → slot → naam typen ("Bot") → starter (Tindrel lv5) → rival-gevecht → STARTER_CHOSEN + RIVAL_NAMED-flags, aankomst DinoCenter
