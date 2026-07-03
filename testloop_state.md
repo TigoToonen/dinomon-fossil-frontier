@@ -1,5 +1,13 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 10 — SOORT-BALANS-AUDIT: tweede createDinoMon-bug (array-pool-moves) (juli 2026)
+Betrouwbare soort-power-audit ná de move-fix (speciesrating.js, nieuw): elke soort met sterkste loadout vs een 12-soorten-panel. Beeld overwegend GEZOND — kracht volgt BST (legendaries top, fodder bodem, geen enkele "sterk-ondanks-lage-BST"-outlier).
+- **BUG #2 in createDinoMon**: learnset-entries kunnen ARRAYS zijn ("leert één van deze"-pool, bv. lv41 `[PSYCHIC_MOVE,PSYSHOCK,...]`). De battle-level-up-code kiest er correct één, maar `createDinoMon`'s auto-derive deed `DG.MOVES[array]`=undefined → alle pool-moves (juist de sterke signatures!) werden weggegooid. Wild/gegenereerde mons met pool-moves spawnden veel te zwak. Onthuld doordat TOXICARNO (BST495) op 27% zat.
+- **FIX** (saveload.js v83): array-entries worden geresolveerd naar hun eerste geldige pool-move. Na fix krijgen TOXICARNO→Psychic pw90, VOLTHORN→Thunderbolt pw90, GLACIOHORN→Waterfall pw80 i.p.v. niks.
+- Nieuw permanent instrument: speciesrating.js.
+- Na de fix: TOXICARNO uit de outlier-lijst. Resterende lage scores (SCORCHBACK 17% Fire/Rock) zijn TYPING-gedreven (Fire/Rock = 4× zwak tegen Water, panel is Water-zwaar) + evolutie-stadium (sterke moves komen later) — legitiem ontwerp, GEEN bug. Roster-verdict: gezond, geen unilaterale soort-tweaks nodig.
+- Regressie na fix: contentsweep GROEN, bugcheck GROEN.
+
 ## RONDE 9 — GROTE ENGINE-BUG: ~helft van de roster kon niet aanvallen (juli 2026)
 De Elite-Four-gauntlet-audit (e4gauntlet.js, nieuw) legde een 0%-clear bloot; instrumentatie leidde naar de echte oorzaak, NIET balans maar een engine-bug:
 - **BUG (kritiek, hele game): `createDinoMon` gaf auto-movesets via `learnedAll.slice(-4)` = laatste 4 learnset-moves, zonder damage-garantie. 56 van de 121 soorten (incl. starter PYROCERATH, TITANOSAUR, GHOSTBONE, MEGASTONE, SKYFANG) spawnden met UITSLUITEND setup-moves (Swords Dance/Bulk Up/Work Up...) → konden niet aanvallen.** Wild stonden ze eeuwig te buffen; gevangen was de mon nutteloos tot handmatig herleren.

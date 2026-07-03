@@ -209,9 +209,14 @@ DG.SaveLoad = (function () {
     // derive from the learnset (last 4 moves learned at or before this level). Unknown move
     // IDs are skipped and the set is topped up from the learnset, so a mon never ends up with
     // fewer than 4 usable moves when its learnset allows.
+    // NB: een learnset-entry kan een ARRAY zijn ("leert één van deze"-pool, bv.
+    // [PSYCHIC_MOVE, PSYSHOCK, ...]). De level-up-code kiest er dan één; hier
+    // pakken we de eerste geldige pool-move als representant. Zonder dit werd
+    // DG.MOVES[array] = undefined en verdwenen de sterke signature-moves, waardoor
+    // wild/gegenereerde mons met pool-moves veel te zwak spawnden (bv. TOXICARNO).
     const learnedAll = species.learnset
       .filter(e => e.level <= level)
-      .map(e => e.move)
+      .map(e => Array.isArray(e.move) ? e.move.find(id => DG.MOVES[id]) : e.move)
       .filter(id => DG.MOVES[id]);
     let chosen;
     if (Array.isArray(movesOverride) && movesOverride.length) {
