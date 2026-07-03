@@ -553,7 +553,7 @@ GLACIOKING: _sp('GLACIOKING','Glacioking',['ICE','ROCK'],
     34,'ABSOLUTE_ZERO',40,'GROWL',41,['ICE_BEAM','FREEZE_DRY','ICICLE_CRASH','FROST_BREATH'],46,'SMOKESCREEN',
     52,'TAIL_WHIP',54,['BLIZZARD','ICE_HAMMER','MOUNTAIN_GALE','BLIZZARD_LANCE'],58,'WORK_UP',64,'SWORDS_DANCE'
   ),
-  null,null,'Snow Warning','Summons Hail when entering battle',
+  null,null,'BLIZZHORN','Snow Warning','Summons Hail when entering battle',
   20,245,'SLOW',false,false,
   'A glacial titan. Where it walks, blizzards follow.',
   '#B2EBF2','#546E7A'),

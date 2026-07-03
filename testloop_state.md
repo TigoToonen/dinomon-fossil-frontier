@@ -1,5 +1,11 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 13 — DATA-BUG: verschoven _sp-argumenten bij GLACIOKING (juli 2026)
+Ability-dekkingsscan (welke ability-namen hebben code-referentie) → één ability was een BESCHRIJVINGSTEKST i.p.v. naam → leidde naar een verschoven `_sp()`-argumentenlijst.
+- **BUG**: GLACIOKING's `_sp`-aanroep miste het `prevForm`-argument → alles erna schoof één plek op. ZES foute velden uit één ontbrekend token: prevForm='Snow Warning'(→BLIZZHORN), ability=beschrijvingstekst(→'Snow Warning'), abilityDesc=245(→beschrijving), **catchRate=245 i.p.v. 20 (12× te makkelijk te vangen)**, **expYield='SLOW'-string i.p.v. 245 (kapotte EXP)**, expCurve=false→MEDIUM i.p.v. SLOW.
+- **FIX** (dinomons.js v87): `'BLIZZHORN',` ingevoegd als prevForm → alle 6 velden weer correct. Geverifieerd.
+- **PERMANENTE GUARD** (bugcheck.js 4f): type/range-controle per soort-veld (catchRate 1-255, expYield numeriek, geldige curve, prevForm/evolvesTo bestaan, ability niet beschrijving-achtig) → vangt elke toekomstige verschoven _sp-lijst. Scan over alle 121 soorten: GLACIOKING was het ENIGE slachtoffer.
+
 ## RONDE 12 — SAVE-REPARATIE voor bestaande kapotte mons (juli 2026)
 De twee createDinoMon-fixes (R9/R10) raken alleen NIEUW gegenereerde mons. Spelers die al speelden hebben mons met de oude kapotte movesets vastgevroren in hun save (kan niet aanvallen).
 - **FIX** (saveload.js v84): `sanitizeParty` repareert bij het laden elke party- én box-mon die GEEN damage-move heeft, mits de learnset er een biedt — vervangt alleen de laatste slot door de sterkste (STAB-gewogen) damage-move. Puur additief; werkende mons blijven ongemoeid.

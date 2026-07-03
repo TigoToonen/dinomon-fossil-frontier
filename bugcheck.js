@@ -126,6 +126,20 @@ const add = (sev, area, msg) => issues.push({ sev, area, msg });
   });}
   // 4e. starters / fossil revivals exist
   (DG.STARTERS||[]).forEach(s=>{ const sid=typeof s==='string'?s:(s&&s.speciesId); if(sid&&!S[sid]) add('HIGH','content',`starter '${sid}' missing from species`); });
+  // 4f. species-veld-integriteit — vangt een verschoven _sp()-argumentenlijst
+  //     (zoals GLACIOKING had: ontbrekend prevForm-arg schoof catchRate/expYield/
+  //      ability/curve allemaal een plek op). Puur type/range-controle per veld.
+  const VALIDCURVE = new Set(['SLOW','MEDIUM','FAST','MEDIUM_SLOW','MEDIUM_FAST','ERRATIC','FLUCTUATING','SLOW_THEN_VERY_FAST']);
+  for(const id in S){ const sp=S[id]; if(sp.speciesCategory==='FORME') continue;
+    if(sp.catchRate!==undefined && (typeof sp.catchRate!=='number' || sp.catchRate<1 || sp.catchRate>255)) add('HIGH','content',`species ${id}: catchRate ${JSON.stringify(sp.catchRate)} (verschoven _sp-veld?)`);
+    if(sp.expYield!==undefined && typeof sp.expYield!=='number') add('HIGH','content',`species ${id}: expYield ${JSON.stringify(sp.expYield)} niet numeriek (verschoven _sp-veld?)`);
+    if(sp.expCurve!==undefined && !VALIDCURVE.has(sp.expCurve)) add('MED','content',`species ${id}: onbekende expCurve ${JSON.stringify(sp.expCurve)}`);
+    if(sp.prevForm && !S[sp.prevForm]) add('HIGH','content',`species ${id}: prevForm '${sp.prevForm}' bestaat niet (verschoven _sp-veld?)`);
+    if(sp.evolvesTo && !S[sp.evolvesTo]) add('HIGH','content',`species ${id}: evolvesTo '${sp.evolvesTo}' bestaat niet`);
+    if(sp.evolvesAt!==undefined && sp.evolvesAt!==null && typeof sp.evolvesAt!=='number') add('HIGH','content',`species ${id}: evolvesAt ${JSON.stringify(sp.evolvesAt)} niet numeriek`);
+    if(sp.isLegendary!==undefined && typeof sp.isLegendary!=='boolean') add('MED','content',`species ${id}: isLegendary niet-boolean ${JSON.stringify(sp.isLegendary)}`);
+    if(sp.ability && (/\b(when|chance|increases|summons|heals|immune|each turn|stage)\b/i.test(sp.ability) || sp.ability.length>22)) add('MED','content',`species ${id}: ability lijkt beschrijvingstekst "${sp.ability}" (verschoven _sp-veld?)`);
+  }
 })();
 
 // ── REPORT ───────────────────────────────────────────────────
