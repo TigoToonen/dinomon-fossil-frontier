@@ -1,5 +1,10 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 12 — SAVE-REPARATIE voor bestaande kapotte mons (juli 2026)
+De twee createDinoMon-fixes (R9/R10) raken alleen NIEUW gegenereerde mons. Spelers die al speelden hebben mons met de oude kapotte movesets vastgevroren in hun save (kan niet aanvallen).
+- **FIX** (saveload.js v84): `sanitizeParty` repareert bij het laden elke party- én box-mon die GEEN damage-move heeft, mits de learnset er een biedt — vervangt alleen de laatste slot door de sterkste (STAB-gewogen) damage-move. Puur additief; werkende mons blijven ongemoeid.
+- Geverifieerd: kapotte TITANOSAUR (4× setup) → Steel Beam erin; box-GHOSTBONE → Shadow Ball; werkende PYROCERATH exact ongemoeid. Regressie: persistsweep/contentsweep/bugcheck/learnsweep groen.
+
 ## RONDE 11 — MOVESET-DATA-INTEGRITEIT: SCHOON (juli 2026)
 learnsweep.js (nieuw): valideert dat geen enkel move-ID stil wordt weggegooid door een typo.
 - ✅ [1] 1454 learnset-entries (150 array-pools) — 0 ongeldige move-IDs

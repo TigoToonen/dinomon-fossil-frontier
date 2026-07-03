@@ -317,8 +317,36 @@ DG.SaveLoad = (function () {
 
   // ── Save Sanitizer ────────────────────────────────────────
   // Repairs party DinoMons that have null/undefined HP (from old or broken saves)
+  // Repareer een mon die door de oude createDinoMon-moveset-bugs GEEN enkele
+  // damage-move heeft (alle slots setup/status). Puur additief: alleen als de
+  // learnset er een biedt, vervangen we de laatste slot door de sterkste
+  // (STAB-gewogen) damage-move die de mon zou kennen. Laat werkende mons met rust.
+  function _repairBrokenMoveset(mon) {
+    const species = DG.SPECIES[mon && mon.speciesId];
+    if (!species || !Array.isArray(mon.moves) || !mon.moves.length) return false;
+    const isDmg = id => { const m = DG.MOVES[id]; return m && m.category !== 'STATUS' && (m.power||0) > 0; };
+    if (mon.moves.some(mv => mv && isDmg(mv.moveId))) return false;   // heeft al een aanval
+    const types = species.types || [];
+    const dmgLearn = (species.learnset || [])
+      .filter(e => e.level <= (mon.level || 100))
+      .map(e => Array.isArray(e.move) ? e.move.find(id => DG.MOVES[id]) : e.move)
+      .filter(isDmg);
+    if (!dmgLearn.length) return false;
+    dmgLearn.sort((a, b) => {
+      const ma = DG.MOVES[a], mb = DG.MOVES[b];
+      return (mb.power * (types.includes(mb.type) ? 1.5 : 1)) - (ma.power * (types.includes(ma.type) ? 1.5 : 1));
+    });
+    const best = dmgLearn[0], md = DG.MOVES[best];
+    mon.moves[mon.moves.length - 1] = { moveId: best, ppCurrent: md.pp, ppMax: md.pp };
+    return true;
+  }
+
   function sanitizeParty(gameState) {
     if (!gameState || !gameState.player || !gameState.player.party) return;
+    // Herstel ook box-mons die niet konden aanvallen (oude moveset-bug).
+    if (Array.isArray(gameState.player.box)) {
+      for (const bm of gameState.player.box) { if (bm) _repairBrokenMoveset(bm); }
+    }
     for (let i = 0; i < gameState.player.party.length; i++) {
       const mon = gameState.player.party[i];
       if (!mon) continue;
@@ -355,6 +383,8 @@ DG.SaveLoad = (function () {
           }
         }
       }
+      // Herstel party-mons die door de oude moveset-bug niet konden aanvallen.
+      _repairBrokenMoveset(mon);
     }
   }
 
