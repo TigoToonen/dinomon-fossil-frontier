@@ -1,5 +1,13 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 11 — MOVESET-DATA-INTEGRITEIT: SCHOON (juli 2026)
+learnsweep.js (nieuw): valideert dat geen enkel move-ID stil wordt weggegooid door een typo.
+- ✅ [1] 1454 learnset-entries (150 array-pools) — 0 ongeldige move-IDs
+- ✅ [2] Alle soorten × 6 levels (5-100) — 0 zonder damage-move → beide createDinoMon-fixes (R9+R10) bevestigd over de HELE roster
+- ✅ [3] 1103 trainer-party-moves — 0 ongeldig; 494 "buiten learnset" gekarakteriseerd als legitiem handwerk (universele basics + correcte STAB/coverage, geen foute types) — geen bug
+- ✅ [4] 31 TM/HM — 0 ongeldig
+- Optionele observatie (geen bug): sommige voor de hand liggende moves (Tackle, Earthquake op een Rock/Ground) ontbreken in soort-learnsets terwijl trainer-versies ze wel hebben; een speler kan die dan niet natuurlijk leren. Learnset-uitbreiding = subjectieve ontwerpkeuze voor Tigo, niet unilateraal.
+
 ## RONDE 10 — SOORT-BALANS-AUDIT: tweede createDinoMon-bug (array-pool-moves) (juli 2026)
 Betrouwbare soort-power-audit ná de move-fix (speciesrating.js, nieuw): elke soort met sterkste loadout vs een 12-soorten-panel. Beeld overwegend GEZOND — kracht volgt BST (legendaries top, fodder bodem, geen enkele "sterk-ondanks-lage-BST"-outlier).
 - **BUG #2 in createDinoMon**: learnset-entries kunnen ARRAYS zijn ("leert één van deze"-pool, bv. lv41 `[PSYCHIC_MOVE,PSYSHOCK,...]`). De battle-level-up-code kiest er correct één, maar `createDinoMon`'s auto-derive deed `DG.MOVES[array]`=undefined → alle pool-moves (juist de sterke signatures!) werden weggegooid. Wild/gegenereerde mons met pool-moves spawnden veel te zwak. Onthuld doordat TOXICARNO (BST495) op 27% zat.
