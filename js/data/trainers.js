@@ -188,33 +188,30 @@ DG.TRAINERS.GYM_VOLT = {
   winDialogue:        "Stand still and you lose. Move — always keep moving! Can you match my lightning speed?",
   loseDialogue:       "Crackling! The Static Badge is yours. Your DinoMons can now Fly between visited cities!",
   reward:             4200,
-  // Balans (ronde 8): verlamming-spam getemperd van 4x naar 1x Thunder Wave
-  // (rest offensief) en levels -2, zodat gevechten beslissend zijn i.p.v.
-  // 60+ beurten door dubbele paralyse + Lightning Rod. Blijft de speed/shock-gym.
   party: [
     {
       speciesId: 'SPARKHORN',
-      level:     42,
+      level:     44,
       moves:     ['THUNDERBOLT', 'THUNDER_WAVE', 'SPARK', 'QUICK_ATTACK'],
     },
     {
       speciesId: 'STORMWING',
-      level:     44,
-      moves:     ['THUNDERBOLT', 'WING_ATTACK', 'SPARK', 'QUICK_ATTACK'],
+      level:     46,
+      moves:     ['THUNDERBOLT', 'WING_ATTACK', 'SPARK', 'THUNDER_WAVE'],
     },
     {
       speciesId: 'VOLTHORN',
-      level:     45,
-      moves:     ['THUNDERBOLT', 'SPARK', 'WING_ATTACK', 'QUICK_ATTACK'],
+      level:     47,
+      moves:     ['THUNDERBOLT', 'SPARK', 'THUNDER_WAVE', 'QUICK_ATTACK'],
     },
     {
       speciesId: 'TEMPESTFANG',
-      level:     46,
+      level:     48,
       moves:     ['THUNDERBOLT', 'WING_ATTACK', 'SPARK', 'AIR_SLASH'],
     },
     {
       speciesId: 'THUNDERSAUR',
-      level:     48,
+      level:     50,
       moves:     ['THUNDER', 'THUNDERBOLT', 'DRAGON_BREATH', 'RAIN_DANCE'],
     },
   ],
@@ -235,33 +232,30 @@ DG.TRAINERS.GYM_MARINA = {
   winDialogue:        "The water remembers everything. It never forgets. Let's see what it remembers of you...",
   loseDialogue:       "You've calmed the tide. The Tide Badge is yours. Surf can now be used to cross water!",
   reward:             5200,
-  // Balans (ronde 8): Toxic-stall getemperd van 3x naar 1x en levels -3,
-  // zodat het gevecht niet in een gif-uitputtingsslag verzandt. Blijft de
-  // bulk/water-gym met TIDANOSAURUS als taaie ace.
   party: [
     {
       speciesId: 'MUDFIN',
-      level:     49,
+      level:     52,
       moves:     ['SURF', 'BULLDOZE', 'MUD_SLAP', 'WATER_GUN'],
     },
     {
       speciesId: 'SWAMPJAW',
-      level:     51,
-      moves:     ['HYDRO_PUMP', 'EARTHQUAKE', 'SURF', 'MUD_SLAP'],
+      level:     54,
+      moves:     ['HYDRO_PUMP', 'EARTHQUAKE', 'SURF', 'TOXIC'],
     },
     {
       speciesId: 'MARSHFIN',
-      level:     50,
+      level:     53,
       moves:     ['SURF', 'WATER_GUN', 'MUD_SLAP', 'TOXIC'],
     },
     {
       speciesId: 'SEAFANG',
-      level:     53,
-      moves:     ['HYDRO_PUMP', 'SURF', 'CRUNCH', 'MUD_SLAP'],
+      level:     56,
+      moves:     ['HYDRO_PUMP', 'SURF', 'CRUNCH', 'TOXIC'],
     },
     {
       speciesId: 'TIDANOSAURUS',
-      level:     55,
+      level:     58,
       moves:     ['HYDRO_PUMP', 'DRAGON_PULSE', 'SURF', 'ANCIENT_TORRENT'],
     },
   ],
@@ -282,33 +276,35 @@ DG.TRAINERS.GYM_VALDEZ = {
   winDialogue:        "Dragons ruled before mankind came. After you fall, they will still rule. Come then — prove yourself.",
   loseDialogue:       "Astonishing. The Scale Badge is yours, and with it, Dive can take you to the deepest waters.",
   reward:             6400,
-  // Balans (ronde 8): teruggebracht van 6 naar 5 mons (de dubbele TEMPESTFANG
-  // — ook al in Volts team — verwijderd) en levels -3. Blijft de zwaarste gym
-  // met een pure Dragon-line en SKYFANG + Draco Meteor als klap-op-de-vuurpijl.
   party: [
     {
       speciesId: 'SWOOPTER',
-      level:     57,
+      level:     60,
       moves:     ['DRAGON_CLAW', 'AIR_SLASH', 'DIVE_BOMB', 'DRAGON_DANCE'],
     },
     {
       speciesId: 'GLIDEREX',
-      level:     61,
+      level:     64,
       moves:     ['DRAGON_CLAW', 'DIVE_BOMB', 'AERIAL_ACE', 'DRAGON_BREATH'],
     },
     {
       speciesId: 'SKYMASTER',
-      level:     62,
+      level:     65,
       moves:     ['AIR_SLASH', 'DRAGON_CLAW', 'AERIAL_ACE', 'DRAGON_BREATH'],
     },
     {
       speciesId: 'RAMPASAUR',
-      level:     63,
+      level:     66,
       moves:     ['STONE_EDGE', 'EARTHQUAKE', 'DRAGON_CLAW', 'CLUB_SMASH'],
     },
     {
+      speciesId: 'TEMPESTFANG',
+      level:     67,
+      moves:     ['THUNDERBOLT', 'AIR_SLASH', 'WING_ATTACK', 'SPARK'],
+    },
+    {
       speciesId: 'SKYFANG',
-      level:     65,
+      level:     68,
       moves:     ['DRACO_METEOR', 'MIND_DIVE', 'DRAGON_CLAW', 'PSYCHIC_MOVE'],
     },
   ],
