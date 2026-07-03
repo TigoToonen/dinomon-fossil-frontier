@@ -562,6 +562,11 @@ DG.PartyMenu = (function () {
       ctx.font = '9px monospace';
       ctx.fillText(`Lv.${mon.level}`, 48, y + 16);
 
+      // EVO-STAGE: fossiel-pips achter het level
+      if (DG.UIKit && DG.UIKit.drawStagePips) {
+        DG.UIKit.drawStagePips(ctx, 82, y + 17, mon.speciesId, { size: 6, gap: 3 });
+      }
+
       // ── HP bar with gradient ─────────────────────────────────
       const hpPct = mon.hp.current / mon.hp.max;
       const barW  = 90;
@@ -706,6 +711,11 @@ DG.PartyMenu = (function () {
     }
     ctx.fillStyle = '#8ed8f8';
     ctx.fillText(`${name}  Lv.${mon.level}`, hx, 8);
+    // EVO-STAGE: fossiel-pips naast naam+level in de header
+    if (DG.UIKit && DG.UIKit.drawStagePips) {
+      const _hw = ctx.measureText(`${name}  Lv.${mon.level}`).width;
+      DG.UIKit.drawStagePips(ctx, hx + _hw + 10, 11, mon.speciesId, { size: 7, gap: 3 });
+    }
     // Type badges in header
     if (sp && sp.types) {
       let bx = W - 80;
@@ -723,6 +733,18 @@ DG.PartyMenu = (function () {
     } else {
       ctx.fillStyle = sp?.color || '#555';
       ctx.fillRect(20, 38, 70, 70);
+    }
+
+    // EVO-STAGE: compacte evolutielijn onder de sprite (silhouet voor ongezien)
+    if (DG.UIKit && DG.UIKit.drawEvoChainStrip) {
+      const _evoInfo = DG.EvoChain ? DG.EvoChain.get(mon.speciesId) : null;
+      if (_evoInfo && _evoInfo.total > 1) {
+        ctx.fillStyle = '#8ed8f8';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText(`STAGE ${_evoInfo.stage}/${_evoInfo.total}`, 10, 124);
+        DG.UIKit.drawEvoChainStrip(ctx, 4, 136, 102, mon.speciesId, _gs,
+          { nodeSize: 24, showHows: false, showNames: false });
+      }
     }
 
     // Nature (color-coded)

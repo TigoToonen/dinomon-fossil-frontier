@@ -455,16 +455,37 @@ DG.BagMenu = (function () {
       DG.SaveLoad.save(_gs);
       _mode = 'ITEMS'; _pendingItem = null;
       if (evoTarget) {
+        // EVO-CINEMATIC (Fase A): aankondiging → animatie → felicitatie.
+        // Annuleerbaar met B; dan draaien we de species-wissel terug (Fase E).
         const oldId = mon.speciesId, oldName = monName;
-        lines.push(`${oldName} is evolving!`);
+        lines.push(`What? ${oldName} is evolving!`);
         DG.DialogueBox.show(lines, () => {
+          const oldStats = Object.assign({}, mon.stats || {});
           mon.speciesId = evoTarget;
           DG.SaveLoad.recalcStats(mon);
-          DG.SaveLoad.markCaught(_gs, evoTarget);
-          DG.SaveLoad.save(_gs);
+          const statDiff = {};
+          for (const k of ['hp','atk','def','spAtk','spDef','spd']) {
+            statDiff[k] = (mon.stats[k] || 0) - (oldStats[k] || 0);
+          }
+          const dexNew = !((_gs.player.caught || []).includes(evoTarget));
           const tn = (DG.SPECIES[evoTarget] && DG.SPECIES[evoTarget].name) || evoTarget;
-          DG.DialogueBox.show([`${oldName} evolved into ${tn}!`], () => {
-            if (typeof DG.BattleUI !== 'undefined') DG.BattleUI.notify({ event: 'EVOLUTION', mon, oldSpeciesId: oldId });
+          if (typeof DG.BattleUI !== 'undefined') DG.BattleUI.notify({
+            event: 'EVOLUTION', mon, oldSpeciesId: oldId, newSpeciesId: evoTarget,
+            statDiff, cancellable: true,
+            onComplete: (cancelled) => {
+              if (cancelled) {
+                mon.speciesId = oldId;
+                DG.SaveLoad.recalcStats(mon);
+                DG.SaveLoad.save(_gs);
+                DG.DialogueBox.show([`Huh? ${oldName} stopped evolving!`], () => {});
+              } else {
+                DG.SaveLoad.markCaught(_gs, evoTarget);
+                DG.SaveLoad.save(_gs);
+                const after = [`Congratulations! ${oldName} evolved into ${tn}!`];
+                if (dexNew) after.push(`${tn} was registered in the DinoDex!`);
+                DG.DialogueBox.show(after, () => {});
+              }
+            },
           });
         });
       } else {
@@ -532,18 +553,28 @@ DG.BagMenu = (function () {
       const oldId = mon.speciesId;
       DG.SaveLoad.removeItem(_gs, itemId, 1);
       _mode = 'ITEMS'; _pendingItem = null;
-      // Perform evolution
-      mon.speciesId = targetSpecies;
-      DG.SaveLoad.recalcStats(mon);
-      DG.SaveLoad.markCaught(_gs, targetSpecies);
-      DG.SaveLoad.save(_gs);
-      DG.DialogueBox.show([
-        `${monName} is evolving!`,
-        `${monName} evolved into ${targetName}!`,
-      ], () => {
-        // Pass old + new species so the full evolution animation actually plays
-        // (previously notify() had no data → only a sound, no animation).
-        if (typeof DG.BattleUI !== 'undefined') DG.BattleUI.notify({ event: 'EVOLUTION', mon, oldSpeciesId: oldId });
+      // EVO-CINEMATIC (Fase A): aankondiging → animatie → felicitatie.
+      // Steen-evoluties zijn — zoals klassiek — NIET annuleerbaar.
+      DG.DialogueBox.show([`What? ${monName} is evolving!`], () => {
+        const oldStats = Object.assign({}, mon.stats || {});
+        mon.speciesId = targetSpecies;
+        DG.SaveLoad.recalcStats(mon);
+        const statDiff = {};
+        for (const k of ['hp','atk','def','spAtk','spDef','spd']) {
+          statDiff[k] = (mon.stats[k] || 0) - (oldStats[k] || 0);
+        }
+        const dexNew = !((_gs.player.caught || []).includes(targetSpecies));
+        DG.SaveLoad.markCaught(_gs, targetSpecies);
+        DG.SaveLoad.save(_gs);
+        if (typeof DG.BattleUI !== 'undefined') DG.BattleUI.notify({
+          event: 'EVOLUTION', mon, oldSpeciesId: oldId, newSpeciesId: targetSpecies,
+          statDiff, cancellable: false,
+          onComplete: () => {
+            const after = [`Congratulations! ${monName} evolved into ${targetName}!`];
+            if (dexNew) after.push(`${targetName} was registered in the DinoDex!`);
+            DG.DialogueBox.show(after, () => {});
+          },
+        });
       });
       return;
     }

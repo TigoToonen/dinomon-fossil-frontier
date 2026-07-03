@@ -635,6 +635,9 @@ window.DG = window.DG || {};
 
   // ── MENU ──────────────────────────────────────────────────
   function _updateMenu(dt) {
+    // EVO-CINEMATIC: tijdens de evolutie-animatie (Rare Candy/steen vanuit de
+    // tas) geen menu-input — anders sluit B tegelijk de tas én de evolutie
+    if (typeof DG.EvoAnim !== 'undefined' && DG.EvoAnim.isActive()) return;
     if (!DG.Menu.isOpen()) {
       _state = DG.STATE.OVERWORLD;
       return;
@@ -648,11 +651,19 @@ window.DG = window.DG || {};
     notify: function(data) {
       if (!data) return;
       if (data.event === 'EVOLUTION') {
-        // Full-screen Fossil Awakening animation
+        // EVO-CINEMATIC: Fossil Awakening 2.0 — met stat-kaart, B-annulering
+        // en een onComplete-callback voor de afronding (congrats/dex/terugdraai)
         if (typeof DG.EvoAnim !== 'undefined' && data.oldSpeciesId && data.mon) {
-          DG.EvoAnim.start(data.oldSpeciesId, data.mon.speciesId, null, data.mon.isShiny);
+          DG.EvoAnim.start(
+            data.oldSpeciesId,
+            data.newSpeciesId || data.mon.speciesId,
+            data.onComplete || null,
+            data.mon.isShiny,
+            { statDiff: data.statDiff || null, cancellable: data.cancellable !== false }
+          );
         } else {
           try { DG.Audio.playEvolution(); } catch(e) {}
+          if (typeof data.onComplete === 'function') data.onComplete(false);
         }
       } else if (data.event === 'BATTLE_END') {
         // Handled in _updateBattle via isActive() check

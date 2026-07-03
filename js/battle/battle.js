@@ -2497,33 +2497,92 @@ DG.Battle = (function () {
   }
 
   // ── EVOLUTION ─────────────────────────────────────────────
-  function _doEvolution(mon, target) {
-    const oldName = _monName(mon);
-    const oldId   = mon.speciesId;
-    const sp      = DG.SPECIES[oldId];
-    const newId   = target || (sp && sp.evolvesTo);
+  // EVO-CINEMATIC (Fase A): regie in drie stappen —
+  // 1) ANNOUNCE: "X is evolving!" wordt volledig getoond VÓÓR de animatie start
+  // 2) ANIM:     species muteren + animatie starten; wachten tot die klaar is
+  //              (B annuleert — dan draaien we alles terug, Fase E)
+  // 3) daarna:   "Congratulations!" + dex-registratie pas NÁ de animatie
+  function _startEvolution(mon, target) {
+    const oldId = mon.speciesId;
+    const sp    = DG.SPECIES[oldId];
+    const newId = target || (sp && sp.evolvesTo);
     if (!newId || !DG.SPECIES[newId]) { mon._evoQueued = false; return; }
+    _battle.evoPending = {
+      mon, oldId, newId,
+      oldName: _monName(mon),
+      phase: 'ANNOUNCE',
+      statDiff: null,
+    };
+    _pushMessage(`What? ${_monName(mon)} is evolving!`);
+  }
 
-    mon.speciesId = newId;
+  function _applyEvolution(pend) {
+    const mon = pend.mon;
+    const oldStats = Object.assign({}, mon.stats || {});
+    mon.speciesId  = pend.newId;
     mon._evoQueued = false;
-    const newSp = DG.SPECIES[newId];
     DG.SaveLoad.recalcStats(mon);
-    DG.SaveLoad.markCaught(_battle.gameState, newId);
+    // Stat-winst voor het kaartje in de animatie
+    pend.statDiff = {};
+    for (const k of ['hp','atk','def','spAtk','spDef','spd']) {
+      pend.statDiff[k] = (mon.stats[k] || 0) - (oldStats[k] || 0);
+    }
+    _notifyUI({
+      event: 'EVOLUTION', mon,
+      oldSpeciesId: pend.oldId,
+      newSpeciesId: pend.newId,
+      statDiff: pend.statDiff,
+      cancellable: true,
+    });
+  }
 
-    _pushMessage(`${oldName} is evolving!`);
-    _pushMessage(`Congratulations! ${oldName} evolved into ${newSp ? newSp.name : newId}!`);
-    _notifyUI({ event: 'EVOLUTION', mon, oldSpeciesId: oldId });
+  // Fase E: B ingedrukt tijdens de animatie → alles terugdraaien
+  function _revertEvolution(pend) {
+    const mon = pend.mon;
+    mon.speciesId = pend.oldId;
+    DG.SaveLoad.recalcStats(mon);
+    mon._evoQueued = false;
   }
 
   function _tickEvolution() {
     // Drain the evolution queue one mon at a time, waiting for each evolution's
     // full-screen animation to finish before starting the next.
     if (typeof DG.EvoAnim !== 'undefined' && DG.EvoAnim.isActive && DG.EvoAnim.isActive()) return;
+
+    const pend = _battle.evoPending;
+    if (pend) {
+      if (pend.phase === 'ANNOUNCE') {
+        // Aankondiging is gelezen → nu pas de animatie starten
+        pend.phase = 'ANIM';
+        _applyEvolution(pend);
+        return;
+      }
+      if (pend.phase === 'ANIM') {
+        // Animatie klaar (of geannuleerd met B)
+        _battle.evoPending = null;
+        const cancelled = typeof DG.EvoAnim !== 'undefined' &&
+                          DG.EvoAnim.wasCancelled && DG.EvoAnim.wasCancelled();
+        if (cancelled) {
+          _revertEvolution(pend);
+          _pushMessage(`Huh? ${pend.oldName} stopped evolving!`);
+        } else {
+          const gs    = _battle.gameState;
+          const newSp = DG.SPECIES[pend.newId];
+          const newNm = newSp ? newSp.name : pend.newId;
+          const dexNew = !(gs.player.caught && gs.player.caught.includes(pend.newId));
+          DG.SaveLoad.markCaught(gs, pend.newId);
+          _pushMessage(`Congratulations! ${pend.oldName} evolved into ${newNm}!`);
+          if (dexNew) _pushMessage(`${newNm} was registered in the DinoDex!`);
+        }
+        return; // berichten tonen; volgende tick pakt de volgende in de queue
+      }
+    }
+
     const q = _battle.evoQueue;
     if (q && q.length) {
       const item = q.shift();
-      if (item && item.mon) _doEvolution(item.mon, item.target);
-      return; // stay in EVOLUTION; next tick waits for this animation
+      if (item && item.mon) _startEvolution(item.mon, item.target);
+      return; // stay in EVOLUTION; next tick waits for the announce message
     }
     // Queue drained → FAINT_HANDLER (not EXECUTE) to avoid re-running _grantExp.
     _state = BS.FAINT_HANDLER;

@@ -238,6 +238,10 @@ DG.DexMenu = (function () {
         ctx.fillStyle = '#40c040';
         ctx.font = '10px monospace';
         ctx.fillText('●', W - 22, y + 5);
+        // EVO-STAGE: fossiel-pips rechts in de rij (alleen bij caught)
+        if (DG.UIKit && DG.UIKit.drawStagePips) {
+          DG.UIKit.drawStagePips(ctx, W - 66, y + 9, id, { size: 6, gap: 3 });
+        }
       } else if (isSeen) {
         ctx.fillStyle = '#888';
         ctx.font = '10px monospace';
@@ -424,11 +428,18 @@ DG.DexMenu = (function () {
     }
 
     // ── Evolution chain ───────────────────────────────────────
-    if (isCaught && sp.evolvesTo) {
-      const evo = DG.SPECIES[sp.evolvesTo];
-      ctx.fillStyle = '#ffcc44';
-      ctx.font = '10px monospace';
-      ctx.fillText(`Evolves → ${evo ? evo.name : sp.evolvesTo} at Lv.${sp.evolvesAt}`, 12, H - 26);
+    // EVO-STAGE: volledige lijn met mini-sprites + voorwaarde per stap.
+    // Dekt ook steen/happiness/ruil/item-lijnen (de oude regel kende alleen
+    // level-evoluties); niet-geziene vormen blijven silhouet met "?".
+    if (isCaught && DG.UIKit && DG.UIKit.drawEvoChainStrip) {
+      const _evoInfo = DG.EvoChain ? DG.EvoChain.get(id) : null;
+      if (_evoInfo && _evoInfo.total > 1) {
+        ctx.fillStyle = '#ffcc44';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText(`EVOLUTION LINE — STAGE ${_evoInfo.stage}/${_evoInfo.total}`, 12, H - 112);
+        DG.UIKit.drawEvoChainStrip(ctx, 12, H - 100, W - 24, id, _gs,
+          { nodeSize: 36, showHows: true });
+      }
     }
 
     ctx.fillStyle = '#556677';

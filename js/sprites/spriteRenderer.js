@@ -6612,6 +6612,11 @@ DG.SpriteRenderer = (function () {
     ctx.font = '11px monospace';
     ctx.fillText(`Lv.${mon.level}`, x + 148, y + 6);
 
+    // EVO-STAGE: fossiel-pips (stage X van Y) onder het level
+    if (DG.UIKit && DG.UIKit.drawStagePips) {
+      DG.UIKit.drawStagePips(ctx, x + 154, y + 23, mon.speciesId, { size: 6, gap: 3 });
+    }
+
     // HP bar label
     ctx.fillStyle = '#7ab8e8';
     ctx.font = '10px monospace';

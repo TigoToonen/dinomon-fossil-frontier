@@ -257,6 +257,10 @@ DG.BoxUI = (function () {
         ctx.fillStyle = '#8888cc';
         ctx.font = '9px monospace';
         ctx.fillText(`Lv.${mon.level}`, PAX + 6, sy + 16);
+        // EVO-STAGE: fossiel-pips achter het level
+        if (DG.UIKit && DG.UIKit.drawStagePips) {
+          DG.UIKit.drawStagePips(ctx, PAX + 42, sy + 17, mon.speciesId, { size: 5, gap: 2 });
+        }
         // HP bar
         const hpPct = mon.hp.current / mon.hp.max;
         ctx.fillStyle = '#333';
@@ -359,6 +363,11 @@ DG.BoxUI = (function () {
           ctx.fillText(`Lv${mon.level}`, cx + CELL_W - 4, cy + CELL_H - 2);
           ctx.textAlign = 'left';
           ctx.textBaseline = 'alphabetic';
+          // EVO-STAGE: mini-pips linksboven in de cel (naast de shiny-ster)
+          if (DG.UIKit && DG.UIKit.drawStagePips) {
+            DG.UIKit.drawStagePips(ctx, cx + (mon.isShiny ? 11 : 2), cy + 3,
+              mon.speciesId, { size: 4, gap: 1 });
+          }
         }
       }
     }

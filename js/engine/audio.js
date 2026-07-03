@@ -1421,11 +1421,13 @@ DG.Audio = (function () {
   }
 
   // ── Evolution fanfare ─────────────────────────────────────
+  // EVO-CINEMATIC (Fase D): verlengd met een tweede frase + slotakkoord
   function playEvolution() {
     _ensureInit();
     if (!_ctx) return;
-    _duck(1.0, 0.55); // FASE 3
-    [523, 659, 784, 880, 1047, 880, 784, 1047].forEach((n, i) => {
+    _duck(2.4, 0.55);
+    const notes = [523, 659, 784, 880, 1047, 880, 784, 1047, 1175, 1319, 1047, 1319];
+    notes.forEach((n, i) => {
       setTimeout(() => {
         try {
           const osc = _ctx.createOscillator();
@@ -1438,6 +1440,211 @@ DG.Audio = (function () {
         } catch(e) {}
       }, i * 85);
     });
+    // Slotakkoord (C-majeur breed) met echo op de delay-bus
+    setTimeout(() => {
+      try {
+        const t = _ctx.currentTime;
+        [523, 659, 784, 1319].forEach((f) => {
+          const osc = _ctx.createOscillator();
+          const env = _ctx.createGain();
+          osc.type = 'triangle'; osc.frequency.value = f;
+          env.gain.setValueAtTime(0.0001, t);
+          env.gain.linearRampToValueAtTime(0.20, t + 0.02);
+          env.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+          osc.connect(env); env.connect(_sfxGain);
+          if (_delaySend) env.connect(_delaySend);
+          osc.start(t); osc.stop(t + 0.95);
+        });
+      } catch(e) {}
+    }, notes.length * 85 + 40);
+  }
+
+  // ── EVO-CINEMATIC (Fase D): fase-gesynchroniseerde evolutie-score ──
+  // Tension-loop: lage pulserende kwinten; het tempo en de toonhoogte kruipen
+  // omhoog via setEvoTensionRate(0..1), gestuurd door de animatiefases.
+  let _evoTension = null; // { handle, rate, step }
+
+  function playEvoTension() {
+    _ensureInit();
+    if (!_ctx) return;
+    stopEvoTension();
+    _evoTension = { rate: 0.1, step: 0, handle: null };
+    const tick = () => {
+      if (!_evoTension) return;
+      const r = _evoTension.rate;
+      try {
+        const t = _ctx.currentTime;
+        const root = 110 * (1 + r * 0.5); // basis kruipt omhoog met de spanning
+        const s = _evoTension.step++;
+        const freqs = (s % 4 === 3) ? [root, root * 1.5] : [root];
+        freqs.forEach((f, i) => {
+          const osc = _ctx.createOscillator(); const env = _ctx.createGain();
+          osc.type = i === 0 ? 'square' : 'triangle';
+          osc.frequency.value = f * (s % 2 === 0 ? 1 : 0.5);
+          const vol = 0.09 + r * 0.10;
+          env.gain.setValueAtTime(0.0001, t);
+          env.gain.linearRampToValueAtTime(vol, t + 0.015);
+          env.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+          osc.connect(env); env.connect(_sfxGain);
+          osc.start(t); osc.stop(t + 0.18);
+        });
+        _duck(0.6, 0.6); // hoofd-muziek blijft weggedrukt zolang de loop tikt
+      } catch(e) {}
+      const delay = Math.max(90, 420 - _evoTension.rate * 330);
+      _evoTension.handle = setTimeout(tick, delay);
+    };
+    tick();
+  }
+
+  function setEvoTensionRate(r) {
+    if (_evoTension) _evoTension.rate = Math.max(0, Math.min(1, r));
+  }
+
+  function stopEvoTension() {
+    if (_evoTension) {
+      if (_evoTension.handle) clearTimeout(_evoTension.handle);
+      _evoTension = null;
+    }
+  }
+
+  // Korte morph-tik — toonhoogte stijgt met de morph-voortgang (0..1)
+  function playEvoMorphTick(progress) {
+    _ensureInit();
+    if (!_ctx) return;
+    try {
+      const t = _ctx.currentTime;
+      const f = 500 + 900 * Math.max(0, Math.min(1, progress || 0));
+      const osc = _ctx.createOscillator(); const env = _ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(f, t);
+      osc.frequency.exponentialRampToValueAtTime(f * 1.4, t + 0.06);
+      env.gain.setValueAtTime(0.16, t);
+      env.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+      osc.connect(env); env.connect(_sfxGain);
+      osc.start(t); osc.stop(t + 0.10);
+    } catch(e) {}
+  }
+
+  // De klap na de stilte-beat: diepe boom + noise-crunch + stijgende shimmer
+  function playEvoFlash() {
+    _ensureInit();
+    if (!_ctx) return;
+    _duck(1.6, 0.85);
+    const t = _ctx.currentTime;
+    try { // boom
+      const osc = _ctx.createOscillator(); const env = _ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(220, t);
+      osc.frequency.exponentialRampToValueAtTime(38, t + 0.5);
+      env.gain.setValueAtTime(0.0001, t);
+      env.gain.linearRampToValueAtTime(0.9, t + 0.012);
+      env.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+      osc.connect(env); env.connect(_sfxGain);
+      osc.start(t); osc.stop(t + 0.85);
+    } catch(e) {}
+    try { // noise-crunch
+      const len = Math.floor(_ctx.sampleRate * 0.25);
+      const buf = _ctx.createBuffer(1, len, _ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * (1 - i/len);
+      const src = _ctx.createBufferSource(); src.buffer = buf;
+      const env = _ctx.createGain();
+      env.gain.setValueAtTime(0.5, t);
+      env.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+      src.connect(env); env.connect(_sfxGain);
+      src.start(t);
+    } catch(e) {}
+    try { // shimmer omhoog, met echo op de delay-bus
+      [880, 1175, 1568, 2093].forEach((f, i) => {
+        const ot = t + 0.10 + i * 0.05;
+        const osc = _ctx.createOscillator(); const env = _ctx.createGain();
+        osc.type = 'sine'; osc.frequency.value = f;
+        env.gain.setValueAtTime(0.14, ot);
+        env.gain.exponentialRampToValueAtTime(0.001, ot + 0.5);
+        osc.connect(env); env.connect(_sfxGain);
+        if (_delaySend) env.connect(_delaySend);
+        osc.start(ot); osc.stop(ot + 0.55);
+      });
+    } catch(e) {}
+  }
+
+  // Geannuleerde evolutie — dalende mineur-sweep (Fase E)
+  function playEvoCancel() {
+    _ensureInit();
+    if (!_ctx) return;
+    const t = _ctx.currentTime;
+    [392, 311, 262].forEach((f, i) => {  // G4 → Es4 → C4
+      try {
+        const ot = t + i * 0.16;
+        const osc = _ctx.createOscillator(); const env = _ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, ot);
+        osc.frequency.linearRampToValueAtTime(f * 0.94, ot + 0.22);
+        env.gain.setValueAtTime(0.22, ot);
+        env.gain.exponentialRampToValueAtTime(0.001, ot + 0.26);
+        osc.connect(env); env.connect(_sfxGain);
+        osc.start(ot); osc.stop(ot + 0.28);
+      } catch(e) {}
+    });
+  }
+
+  // ── EVO-CINEMATIC (Fase D): procedurele cry per soort ──────
+  // Toonhoogte uit de BST (groter = lager), timbre uit het primaire type,
+  // en een species-hash zodat elke dino een eigen, consistente stem heeft.
+  // Ook bruikbaar bij battle-intro en dex-weergave.
+  function playCry(speciesId) {
+    _ensureInit();
+    if (!_ctx || !speciesId) return;
+    const sp = (DG.SPECIES && DG.SPECIES[speciesId]) || null;
+    const bst = sp ? Object.values(sp.baseStats || {}).reduce((a,b)=>a+b,0) : 400;
+    const type = (sp && sp.types && sp.types[0]) || 'NORMAL';
+    let h = 0;
+    for (let i = 0; i < speciesId.length; i++) h = (h * 31 + speciesId.charCodeAt(i)) | 0;
+    h = Math.abs(h);
+    // 700-BST-reus ≈ 70 Hz, 300-BST-baby ≈ 210 Hz, plus hash-variatie
+    const base = Math.max(60, 320 - bst * 0.36) * (0.9 + (h % 20) / 100);
+    const bright = ['ICE','FAIRY','PSYCHIC','FLYING','BUG','ELECTRIC'].includes(type);
+    const t = _ctx.currentTime;
+    const dur = 0.55 + (h % 3) * 0.1;
+    try {
+      const osc = _ctx.createOscillator(); const env = _ctx.createGain();
+      const lp = _ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = bright ? 3200 : 1400; lp.Q.value = 4;
+      osc.type = bright ? 'triangle' : 'sawtooth';
+      const f0 = base * (bright ? 2.2 : 1);
+      // Roep-contour: opzwellen, kort omhoog, dan afzakkende brul
+      osc.frequency.setValueAtTime(f0 * 0.8, t);
+      osc.frequency.linearRampToValueAtTime(f0 * 1.35, t + dur * 0.3);
+      osc.frequency.linearRampToValueAtTime(f0 * 0.7, t + dur);
+      // Vibrato
+      const lfo = _ctx.createOscillator(); const lfoG = _ctx.createGain();
+      lfo.frequency.value = 9 + (h % 7); lfoG.gain.value = f0 * 0.05;
+      lfo.connect(lfoG); lfoG.connect(osc.frequency);
+      env.gain.setValueAtTime(0.0001, t);
+      env.gain.linearRampToValueAtTime(0.5, t + 0.05);
+      env.gain.setValueAtTime(0.5, t + dur * 0.6);
+      env.gain.exponentialRampToValueAtTime(0.001, t + dur + 0.1);
+      osc.connect(lp); lp.connect(env); env.connect(_sfxGain);
+      if (_revSendSfx) env.connect(_revSendSfx);
+      lfo.start(t); lfo.stop(t + dur + 0.1);
+      osc.start(t); osc.stop(t + dur + 0.12);
+    } catch(e) {}
+    if (!bright) {
+      try { // grote dino's krijgen een extra adem/gegrom-laag
+        const len = Math.floor(_ctx.sampleRate * dur);
+        const buf = _ctx.createBuffer(1, len, _ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * 0.4 * (1 - i/len);
+        const src = _ctx.createBufferSource(); src.buffer = buf;
+        const bp = _ctx.createBiquadFilter();
+        bp.type = 'bandpass'; bp.frequency.value = base * 3; bp.Q.value = 1.2;
+        const env = _ctx.createGain();
+        env.gain.setValueAtTime(0.25, t);
+        env.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        src.connect(bp); bp.connect(env); env.connect(_sfxGain);
+        src.start(t);
+      } catch(e) {}
+    }
   }
 
   // ── Critical hit SFX ─────────────────────────────────────
@@ -2033,5 +2240,8 @@ DG.Audio = (function () {
     playCatchSfx,
     // FASE 10: stijl-accenten
     playStyleAccent,
+    // EVO-CINEMATIC: evolutie-score + cries
+    playEvoTension, setEvoTensionRate, stopEvoTension,
+    playEvoMorphTick, playEvoFlash, playEvoCancel, playCry,
   };
 })();

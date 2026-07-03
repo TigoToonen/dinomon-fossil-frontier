@@ -65,6 +65,10 @@ DG.Overworld = (function () {
       return;
     }
 
+    // EVO-CINEMATIC: evolutie-animatie (steen/Rare Candy in de overworld)
+    // blokkeert alle overworld-input; de animatie leest zelf B (stop) en Z (sneller)
+    if (typeof DG.EvoAnim !== 'undefined' && DG.EvoAnim.isActive()) return;
+
     // Transition fade — MUST run even if _mapData is null (e.g. loading new map)
     // Previously, the !_mapData guard above would prevent this from running,
     // leaving the transition permanently stuck at black screen.

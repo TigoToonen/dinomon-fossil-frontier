@@ -348,6 +348,129 @@ DG.UIKit = (function () {
     }
   }
 
+  // ── EVO-STAGE: fossiel-pips ◆◆◇ — stage X van Y in één oogopslag ──
+  // Gevuld amber = bereikt, holle outline = nog te gaan; laatste pip van een
+  // voltooide lijn krijgt een gouden rand. Tekent niets bij total ≤ 1.
+  // Geeft de getekende breedte terug (0 als er niets is getekend).
+  function drawStagePips(ctx, x, y, speciesId, opts) {
+    opts = opts || {};
+    if (typeof DG.EvoChain === 'undefined') return 0;
+    const info = DG.EvoChain.get(speciesId);
+    if (!info || info.total <= 1) return 0;
+    const s = opts.size || 7;
+    const gap = opts.gap !== undefined ? opts.gap : 3;
+    const half = s / 2;
+    ctx.save();
+    for (let i = 0; i < info.total; i++) {
+      const cx = x + half + i * (s + gap);
+      const cy = y + half;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - half);
+      ctx.lineTo(cx + half, cy);
+      ctx.lineTo(cx, cy + half);
+      ctx.lineTo(cx - half, cy);
+      ctx.closePath();
+      if (i < info.stage) {
+        ctx.fillStyle = '#f0a030';
+        ctx.fill();
+        if (info.stage === info.total && i === info.total - 1) {
+          ctx.strokeStyle = COLORS.GOLD;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+      } else {
+        ctx.strokeStyle = '#8a6a3a';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+    return info.total * (s + gap) - gap;
+  }
+
+  // ── EVO-STAGE: evolutielijn-strip met mini-sprites ─────────
+  // Hele lijn als rij sprites met pijlen; huidige vorm in amber kader;
+  // nog niet GEZIENE vormen als donker silhouet met "?" (spoiler-safe).
+  // opts: { nodeSize (px, default 34), showHows (default true) }
+  // Geeft de gebruikte hoogte terug (0 als er geen lijn is).
+  function drawEvoChainStrip(ctx, x, y, w, speciesId, gs, opts) {
+    opts = opts || {};
+    if (typeof DG.EvoChain === 'undefined') return 0;
+    const info = DG.EvoChain.get(speciesId);
+    if (!info || info.total <= 1) return 0;
+    const N = info.chain.length;
+    const node = opts.nodeSize || 34;
+    const showHows = opts.showHows !== false;
+    const arrowW = showHows ? 40 : 14;
+    const totalW = N * node + (N - 1) * arrowW;
+    let cx = Math.round(x + Math.max(0, (w - totalW) / 2));
+    const seenArr = (gs && gs.player && gs.player.seen) || [];
+    const dexObj  = (gs && gs.player && gs.player.dex) || {};
+
+    ctx.save();
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    for (let i = 0; i < N; i++) {
+      const id = info.chain[i];
+      const isCur = id === speciesId;
+      const seen = isCur || seenArr.includes(id) || !!(dexObj[id] && dexObj[id].seen);
+
+      // Kader
+      ctx.fillStyle = isCur ? 'rgba(58,42,14,0.92)' : 'rgba(16,22,50,0.92)';
+      ctx.fillRect(cx, y, node, node);
+      ctx.strokeStyle = isCur ? '#f0a030' : '#2a3560';
+      ctx.lineWidth = isCur ? 2 : 1;
+      ctx.strokeRect(cx, y, node, node);
+
+      // Sprite (of silhouet met "?")
+      if (typeof DG.SpriteRenderer !== 'undefined') {
+        const sc = (node - 10) / 33;                    // sprite ≈ 33*scale breed
+        const dx = cx + node / 2 - sc * 3.2;            // drawMon-anker ≈ center - 3.2*scale
+        const dy = y + node - 4 - 36 * sc;              // voeten 4px boven de onderrand
+        ctx.save();
+        if (!seen) { ctx.filter = 'brightness(0)'; ctx.globalAlpha = 0.8; }
+        try { DG.SpriteRenderer.drawMon(ctx, id, dx, dy, sc); } catch(e) {}
+        ctx.restore();
+      }
+      if (!seen) {
+        ctx.fillStyle = '#4a5580';
+        ctx.font = 'bold 11px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('?', cx + node / 2, y + node / 2 - 5);
+        ctx.textAlign = 'left';
+      }
+
+      // Naam onder het kader (huidige vorm in amber, ongezien = ???)
+      if (opts.showNames !== false) {
+        ctx.font = '8px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = isCur ? '#f0c060' : (seen ? '#9ab4d4' : '#4a5580');
+        const sp = DG.SPECIES && DG.SPECIES[id];
+        const label = seen ? ((sp && sp.name) || id) : '???';
+        ctx.fillText(label.substring(0, 10), cx + node / 2, y + node + 3);
+        ctx.textAlign = 'left';
+      }
+
+      // Pijl + voorwaarde naar de volgende stap
+      if (i < N - 1) {
+        const ax = cx + node + arrowW / 2;
+        ctx.fillStyle = '#f0c060';
+        ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('→', ax, y + node / 2 - 9);
+        if (showHows) {
+          ctx.font = '7px monospace';
+          ctx.fillStyle = '#c8a060';
+          ctx.fillText(String(info.hows[i] || ''), ax, y + node / 2 + 3);
+        }
+        ctx.textAlign = 'left';
+      }
+      cx += node + arrowW;
+    }
+    ctx.restore();
+    return node + (opts.showNames !== false ? 12 : 0); // kader (+ naamregel)
+  }
+
   // ── Easing helpers (voor transities/juice elders) ──────────
   function easeOutCubic(t) { t = Math.max(0, Math.min(1, t)); return 1 - Math.pow(1 - t, 3); }
   function easeOutBack(t)  {
@@ -362,6 +485,9 @@ DG.UIKit = (function () {
     battleWipe,
     easeOutCubic,
     easeOutBack,
+    // EVO-STAGE: stage-indicatoren
+    drawStagePips,
+    drawEvoChainStrip,
     setPixelFont: function (on) { _enabled = !!on; },
     isPixelFont:  function () { return _enabled; },
   };
