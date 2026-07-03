@@ -1,5 +1,11 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 14 — ABILITY-LAAG: functioneel gezond (juli 2026)
+abilitysweep.js (nieuw): (A) statische dekking — heeft elke soort-ability exact-matchende battle-code? (B) functionele spot-checks via synthetische soorten in echte gevechten.
+- ✅ [A] 63 unieke soort-abilities — 0 zonder code-match (geen stille no-ops; vangt GLACIOKING-achtige naam-mismatches permanent)
+- ✅ [B] Rock Head voorkomt recoil (met referentie-control die bewijst de move wél recoil geeft), Swift Swim verdubbelt speed in regen (trage mon slaat eerst)
+- Test-artefact netjes gecorrigeerd: eerste Rock Head-"fail" was vijand-Tackle-schade i.p.v. recoil → vijand kreeg een status-move + referentiegroep toegevoegd. Geen game-bug.
+
 ## RONDE 13 — DATA-BUG: verschoven _sp-argumenten bij GLACIOKING (juli 2026)
 Ability-dekkingsscan (welke ability-namen hebben code-referentie) → één ability was een BESCHRIJVINGSTEKST i.p.v. naam → leidde naar een verschoven `_sp()`-argumentenlijst.
 - **BUG**: GLACIOKING's `_sp`-aanroep miste het `prevForm`-argument → alles erna schoof één plek op. ZES foute velden uit één ontbrekend token: prevForm='Snow Warning'(→BLIZZHORN), ability=beschrijvingstekst(→'Snow Warning'), abilityDesc=245(→beschrijving), **catchRate=245 i.p.v. 20 (12× te makkelijk te vangen)**, **expYield='SLOW'-string i.p.v. 245 (kapotte EXP)**, expCurve=false→MEDIUM i.p.v. SLOW.
