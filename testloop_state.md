@@ -1,5 +1,11 @@
 # 🔁 Testloop-staat — oneindige feedback-loop
 
+## RONDE 15 — MOVE-EFFECTEN: functioneel geverifieerd (juli 2026)
+effectsweep.js (nieuw): (A) alle 17 effect-types hebben ≥1 code-referentie (geen totale no-op zoals OMNI_RAISE ooit); (B) functionele checks in echte gevechten.
+- ✅ SET_WEATHER (Rain Dance zet regen), LEECH_SEED (vijand verliest HP + gebruiker heelt — instrumentatie bevestigde over 3 vijand-types: 100k→~50k, gebruiker vol), HEAL (Recover), DRAIN (Giga Drain heelt aanvaller), ONE_HIT_KO (Fissure KO't in 1 klap)
+- **Dekkingsgat in eigen harnas gedicht**: ronde-7 mechsweep checkte OHKO op type 'OHKO' i.p.v. de echte 'ONE_HIT_KO' → testte die 4 moves nooit. Nu wél geverifieerd.
+- 2 test-artefacten netjes gediagnosticeerd (DRAIN: vijand-schade i.p.v. drain; LEECH_SEED: enkele-run-flakiness) → status-move-vijand + meer beurten; stabiel groen over 3 runs. Geen game-bug.
+
 ## RONDE 14 — ABILITY-LAAG: functioneel gezond (juli 2026)
 abilitysweep.js (nieuw): (A) statische dekking — heeft elke soort-ability exact-matchende battle-code? (B) functionele spot-checks via synthetische soorten in echte gevechten.
 - ✅ [A] 63 unieke soort-abilities — 0 zonder code-match (geen stille no-ops; vangt GLACIOKING-achtige naam-mismatches permanent)
