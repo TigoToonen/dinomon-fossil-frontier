@@ -39,7 +39,7 @@ console.log('═══ Item-sweep (ronde 16): held items ═══');
 (function(){
   const atk = mk('TITANOSAUR', 60, ['GROWL','GROWL','GROWL','GROWL'], 'LEFTOVERS');
   atk.hp.current = Math.floor(atk.hp.max/2);
-  const enemy = mk('BUGLING', 5, ['GROWL']); enemy.hp.max=99999; enemy.hp.current=99999;
+  const enemy = mk('BUGLING', 5, ['GROWL','GROWL','GROWL','GROWL']); enemy.hp.max=99999; enemy.hp.current=99999;
   const before = atk.hp.current;
   const { log } = drive(gsFor(atk), enemy, 0, 3);
   check('Leftovers: heelt per beurt', atk.hp.current > before || log.some(l=>/Leftovers/i.test(l)), `hp ${atk.hp.current} (was ${before})`);
@@ -70,7 +70,7 @@ console.log('═══ Item-sweep (ronde 16): held items ═══');
 (function(){
   const atk = mk('PYROCERATH', 80, ['FLAMETHROWER','FLAMETHROWER','FLAMETHROWER','FLAMETHROWER'], 'SHELL_BELL');
   atk.hp.current = Math.floor(atk.hp.max/2);
-  const enemy = mk('TITANOSAUR', 60, ['GROWL']); enemy.hp.max=99999; enemy.hp.current=99999;
+  const enemy = mk('TITANOSAUR', 60, ['GROWL','GROWL','GROWL','GROWL']); enemy.hp.max=99999; enemy.hp.current=99999;
   const before = atk.hp.current;
   drive(gsFor(atk), enemy, 0, 1);
   check('Shell Bell: aanvaller heelt op schade', atk.hp.current > before, `hp ${atk.hp.current} (was ${before})`);
@@ -79,7 +79,7 @@ console.log('═══ Item-sweep (ronde 16): held items ═══');
 // Life Orb: recoil op de aanvaller (10% max HP)
 (function(){
   const atk = mk('PYROCERATH', 80, ['FLAMETHROWER','FLAMETHROWER','FLAMETHROWER','FLAMETHROWER'], 'LIFE_ORB');
-  const enemy = mk('TITANOSAUR', 60, ['GROWL']); enemy.hp.max=99999; enemy.hp.current=99999;
+  const enemy = mk('TITANOSAUR', 60, ['GROWL','GROWL','GROWL','GROWL']); enemy.hp.max=99999; enemy.hp.current=99999;
   const before = atk.hp.current;
   drive(gsFor(atk), enemy, 0, 1);
   check('Life Orb: recoil op aanvaller', atk.hp.current < before, `hp ${atk.hp.current} (was ${before})`);

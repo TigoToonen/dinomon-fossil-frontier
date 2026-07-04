@@ -90,9 +90,11 @@ console.log('═══ DinoMon battle simulator ═══');
 // TEST 1 — status via alias type (SLEEP status move, e.g. SPORE_CLOUD) applies.
 (function(){
   console.log('\n[1] Status-alias: a SLEEP/PARALYSIS status move actually inflicts status');
-  // find a STATUS-category move with alias type SLEEP or PARALYSIS, chance>=100
-  const cand = Object.values(DG.MOVES).find(m=>m.category==='STATUS' && (m.effect&&(m.effect.type==='SLEEP'||m.effect.type==='PARALYSIS')) && (m.effect.chance===undefined||m.effect.chance>=100));
-  if(!cand){ check('found a 100% status-alias move', false, 'none in data'); return; }
+  // find a STATUS-category move die SLEEP of PARALYSIS oplegt (>=100%).
+  // Encoding sinds de move-refactor: STATUS_CHANCE met een .status-veld.
+  const cand = Object.values(DG.MOVES).find(m=>m.category==='STATUS' && m.effect && m.effect.type==='STATUS_CHANCE'
+    && (m.effect.status==='SLEEP'||m.effect.status==='PARALYSIS') && (m.effect.chance===undefined||m.effect.chance>=100));
+  if(!cand){ check('found a 100% status-move', false, 'none in data'); return; }
   let applied=0, trials=12;
   for(let i=0;i<trials;i++){
     const atk = mon(anySpecies(), 80, [cand.id], 9999);
@@ -152,9 +154,10 @@ console.log('═══ DinoMon battle simulator ═══');
 
 // TEST 5 — BURN_CHANCE secondary on a DAMAGE move actually burns (alias fix).
 (function(){
-  console.log('\n[5] Secondary status: a BURN_CHANCE damage move inflicts burn over many hits');
-  const cand = Object.values(DG.MOVES).find(m=>(m.category==='SPECIAL'||m.category==='PHYSICAL') && m.effect&&m.effect.type==='BURN_CHANCE');
-  if(!cand){ check('found a BURN_CHANCE damage move', false); return; }
+  console.log('\n[5] Secondary status: a BURN-inflicting damage move burns over many hits');
+  // Encoding sinds de move-refactor: STATUS_CHANCE met status='BURN' op een damage-move.
+  const cand = Object.values(DG.MOVES).find(m=>(m.category==='SPECIAL'||m.category==='PHYSICAL') && m.effect && m.effect.type==='STATUS_CHANCE' && m.effect.status==='BURN');
+  if(!cand){ check('found a BURN damage move', false); return; }
   // enemy must NOT be Fire-type (immune to burn). Find a Normal-ish punching bag.
   const bagId = Object.keys(DG.SPECIES).find(id=>{ const t=DG.SPECIES[id].types||[]; return !t.includes('FIRE'); }) || SP[0];
   let burned=0, trials=10;
