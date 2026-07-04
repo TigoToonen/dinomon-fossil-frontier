@@ -59,12 +59,16 @@ const add = (sev, area, msg) => issues.push({ sev, area, msg });
   // Definitive list of effect.type values the battle engine implements (verified
   // by reading battle.js _applyDamageMove/_applyStatusMove, June 2026), incl. the
   // status aliases now routed through _STATUS_ALIAS.
+  // Basislijst = de status-alias-types die via _STATUS_ALIAS lopen (verschijnen
+  // NIET als een letterlijke === 'TYPE'-check in battle.js).
   const handled = new Set([
-    'NONE','MULTI','ONE_HIT_KO','RECOIL','DRAIN','STATUS_CHANCE','FLINCH',
-    'STAT_LOWER','STAT_RAISE','CONFUSE','RECHARGE','OMNI_RAISE','TWO_TURN',
-    'HEAL','SET_WEATHER','LEECH_SEED','STEALTH_ROCK','STAT',
     'BURN_CHANCE','FREEZE_CHANCE','POISON_CHANCE','PARALYSIS','SLEEP',
   ]);
+  // Union met DYNAMISCHE detectie: elke effect-type met een expliciete
+  // `=== 'TYPE'` of `case 'TYPE'` handler in battle.js. Zo hoeft deze lijst niet
+  // handmatig bijgewerkt te worden als de engine een nieuw effect-type krijgt —
+  // voorheen gaf dat een false positive (bv. SUCKER, toegevoegd door Fase 2a).
+  for (const m of battleSrc.matchAll(/(?:===|case)\s*['"]([A-Z_]+)['"]/g)) handled.add(m[1]);
   // sanity: the engine source really does define the alias map we rely on
   if(!/_STATUS_ALIAS\s*=/.test(battleSrc)) add('HIGH','moves','battle.js no longer defines _STATUS_ALIAS — status-alias moves will silently no-op');
   const usedTypes = {};
