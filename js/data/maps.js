@@ -4779,6 +4779,11 @@ DG.MAPS.FERNGROVE_TOWN = {
       questSuccess:["Ahh, a lovely Grass-type — just like the old days.","Take these, with my thanks."],
       questThanks:["Thank you again — the grove feels brighter."],
       questCheck:{ type:'HAS_TYPE', value:'GRASS' }, reward:{ item:'ULTRABALL', qty:2 } },
+    // BATTLE-STRATEGY Fase 1½: de Sap Farm — harsboer Bram tapt de oude
+    // araucaria's in de oostgrove. Koopt Resins in voor 75%, verkoopt het
+    // volle assortiment + een dagelijkse "vers getapte" special (events.js).
+    { id:'FN_SAP_FARMER', name:'Sap Farmer Bram', x:23, y:7, facing:'LEFT', spriteKey:'NPC_SHOPKEEPER',
+      movementType:'STATIONARY', dialogue:null, onInteract:'OPEN_SAP_FARM' },
   ],
   encounterTable:{ grass:[
     { speciesId:'FRONDLET',  minLv:24, maxLv:28, rate:35 },

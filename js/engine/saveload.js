@@ -51,12 +51,31 @@ DG.SaveLoad = (function () {
       if (!raw) { _lastLoadError = 'No data in localStorage for slot ' + id; return null; }
       const data = JSON.parse(raw);
       sanitizeParty(data);
+      _migrateLumBerry(data);
       return data;
     } catch(e) {
       _lastLoadError = (e && e.message) ? e.message : String(e);
       console.error('[SaveLoad] loadSlot failed:', e);
       return null;
     }
+  }
+
+  // BATTLE-STRATEGY Fase 1½: Lum Berry → Golden Resin — dezelfde werking,
+  // nieuw thema. Migreert de tas én alle gedragen exemplaren (party, box,
+  // daycare) zodat niemand zijn item kwijtraakt.
+  function _migrateLumBerry(gs) {
+    if (!gs || !gs.player) return;
+    const bag = gs.player.bag;
+    if (bag && bag.LUM_BERRY > 0) {
+      bag.GOLDEN_RESIN = (bag.GOLDEN_RESIN || 0) + bag.LUM_BERRY;
+      bag.LUM_BERRY = 0;
+    }
+    const migrate = (mon) => {
+      if (mon && mon.heldItem === 'LUM_BERRY') mon.heldItem = 'GOLDEN_RESIN';
+    };
+    (gs.player.party || []).forEach(migrate);
+    (gs.player.box || []).forEach(migrate);
+    (gs.player.daycare || []).forEach(migrate);
   }
 
   function saveToSlot(gameState, id) {
@@ -410,6 +429,7 @@ DG.SaveLoad = (function () {
       if (!raw) return null;
       const data = JSON.parse(raw);
       sanitizeParty(data);
+      _migrateLumBerry(data);
       return data;
     } catch(e) { return null; }
   }

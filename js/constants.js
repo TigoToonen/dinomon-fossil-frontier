@@ -407,10 +407,24 @@ DG.ITEMS = {
   LEFTOVERS:    { name: 'Leftovers',   price: 0, type: 'HELD', effect: 'LEFTOVERS' },
   CHOICE_BAND:  { name: 'Choice Band', price: 0, type: 'HELD', effect: 'CHOICE_BAND' },
   CHOICE_SPECS: { name: 'Choice Specs',price: 0, type: 'HELD', effect: 'CHOICE_SPECS' },
-  LUM_BERRY:    { name: 'Lum Berry',   price: 0, type: 'HELD', effect: 'LUM_BERRY' },
+  LUM_BERRY:    { name: 'Lum Berry',   price: 0, type: 'HELD', effect: 'LUM_BERRY' }, // legacy — saves migreren naar GOLDEN_RESIN
   FOCUS_SASH:   { name: 'Focus Sash',  price: 0, type: 'HELD', effect: 'FOCUS_SASH' },
   ROCKY_HELMET: { name: 'Rocky Helmet',price: 0, type: 'HELD', effect: 'ROCKY_HELMET' },
   SHELL_BELL:   { name: 'Shell Bell',  price: 0, type: 'HELD', effect: 'SHELL_BELL' },
+
+  // ── BATTLE-STRATEGY Fase 1½: Primal Resins ─────────────────
+  // Hars van getapte oerbomen (barnsteen-thema). Dubbel bruikbaar:
+  // • uit de tas: geneest direct (kost in battle je beurt);
+  // • als draag-item: wordt automatisch opgegeten zodra de conditie oploopt.
+  // badgeTier bepaalt vanaf hoeveel badges winkels hem verkopen.
+  COOLING_RESIN:   { name: 'Cooling Resin',   price: 150, type: 'RESIN', cures: ['BURN'], badgeTier: 0 },
+  CLEANSING_RESIN: { name: 'Cleansing Resin', price: 150, type: 'RESIN', cures: ['POISON','BADPOISON'], badgeTier: 0 },
+  SUPPLE_RESIN:    { name: 'Supple Resin',    price: 150, type: 'RESIN', cures: ['PARALYSIS'], badgeTier: 0 },
+  ROUSING_RESIN:   { name: 'Rousing Resin',   price: 250, type: 'RESIN', cures: ['SLEEP'], badgeTier: 3 },
+  THAWING_RESIN:   { name: 'Thawing Resin',   price: 250, type: 'RESIN', cures: ['FREEZE'], badgeTier: 3 },
+  VITAL_RESIN:     { name: 'Vital Resin',     price: 400, type: 'RESIN', healPct: 0.25, badgeTier: 3 },
+  CLARITY_RESIN:   { name: 'Clarity Resin',   price: 500, type: 'RESIN', cures: ['CONFUSION'], badgeTier: 6 },
+  GOLDEN_RESIN:    { name: 'Golden Resin',    price: 800, type: 'RESIN', cures: 'ALL', badgeTier: 6 },
 };
 
 // ── Facing Directions ─────────────────────────────────────────

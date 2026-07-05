@@ -616,10 +616,12 @@ DG.Battle = (function () {
       }
     }
 
+    // BATTLE-STRATEGY Fase 4: badge-aantal mee — trainers schalen in slimheid
+    const _aiSt = { badges: ((_battle.gameState.player || {}).badges || []).length };
     if (_battle.type === 'WILD') {
-      _battle.enemyAction = DG.BattleAI.chooseAction(null, activeMon, playerMon, {});
+      _battle.enemyAction = DG.BattleAI.chooseAction(null, activeMon, playerMon, _aiSt);
     } else {
-      _battle.enemyAction = DG.BattleAI.chooseAction(trainer, activeMon, playerMon, {});
+      _battle.enemyAction = DG.BattleAI.chooseAction(trainer, activeMon, playerMon, _aiSt);
     }
   }
 
@@ -1028,7 +1030,7 @@ DG.Battle = (function () {
     if (actor._rampageEnded) {
       actor._rampageEnded = false;
       const cr = DG.StatusEffects.applyConfusion(actor);
-      if (cr.applied) _pushMessage(`${actorName} became confused due to fatigue!`);
+      if (cr.applied) { _pushMessage(`${actorName} became confused due to fatigue!`); _autoResin(actor); }
     }
   }
 
@@ -1086,6 +1088,28 @@ DG.Battle = (function () {
 
     const eff = move.effect || {};
     const effType = eff.type || 'NONE';
+
+    // BATTLE-STRATEGY Fase 2a: Sucker Punch-conditie — faalt als het doelwit
+    // deze beurt geen schade-move koos (status-move, item, switch of run).
+    if (effType === 'SUCKER') {
+      const targetAct = isPlayer ? _battle.enemyAction : _battle.playerAction;
+      const targetSlot = (targetAct && targetAct.type === 'MOVE') ? target.moves[targetAct.moveIndex] : null;
+      const targetMove = targetSlot ? DG.MOVES[targetSlot.moveId] : null;
+      if (!targetMove || !(targetMove.power > 0)) {
+        _pushMessage(`But it failed! ${targetName} wasn't readying an attack.`);
+        _continueExecution();
+        return;
+      }
+    }
+
+    // Fase 2d: anti-priority abilities — de schaar sluit zich.
+    // Ancient Guard: volledig immuun voor priority-aanvallen.
+    if ((move.priority || 0) > 0 && ((DG.SPECIES[target.speciesId] || {}).ability) === 'Ancient Guard') {
+      _pushMessage(`${targetName}'s Ancient Guard blocks priority attacks!`);
+      _triggerAbilityAnim('Ancient Guard', isPlayer ? 'enemy' : 'player', 'block');
+      _continueExecution();
+      return;
+    }
 
     // Compute ability and held-item bonuses for damage
     const atkSp  = DG.SPECIES[actor.speciesId];
@@ -1238,7 +1262,7 @@ DG.Battle = (function () {
           defAbilityMult,
           critStage: (atkAb === "Predator's Mind") ? 1 : 0,
         });
-        _abilityDefPost(res, target, defAb, atkAb);
+        _abilityDefPost(res, target, defAb, atkAb, move);
         if (res.effectiveness === 0) break;       // immune — stop immediately
         effectiveness = res.effectiveness;
         if (res.crit) crit = true;
@@ -1304,7 +1328,7 @@ DG.Battle = (function () {
         defAbilityMult,
         critStage: (atkAb === "Predator's Mind") ? 1 : 0,
       });
-      _abilityDefPost(res, target, defAb, atkAb);
+      _abilityDefPost(res, target, defAb, atkAb, move);
       effectiveness = res.effectiveness;
       crit = res.crit;
       actualDamage = res.damage;
@@ -1414,23 +1438,47 @@ DG.Battle = (function () {
       _pushMessage(`${actorName} was hurt by Rocky Helmet!`);
     }
 
-    // Lum Berry: auto-cure status on holder
+    // King's Rock: 10% kans om het doel te laten terugdeinzen na een damage-move
+    // (mits de move niet al zelf flinch geeft en het doel nog leeft). Het item
+    // was gedefinieerd als held-item (effect FLINCH) maar had geen implementatie.
+    if (actor.heldItem === 'KINGS_ROCK' && actualDamage > 0 && effType !== 'FLINCH'
+        && target.hp.current > 0 && !target._flinched && Math.random() < 0.10) {
+      const _dSp = DG.SPECIES[target.speciesId];
+      if (_dSp && _dSp.ability === 'Immovable') {
+        _pushMessage(`${targetName} is Immovable — it can't flinch!`);
+      } else {
+        target._flinched = true;
+        _pushMessage(`${targetName} flinched from the King's Rock!`);
+      }
+    }
+
+    // Lum Berry: auto-cure status on holder (legacy — saves migreren naar Golden Resin)
     if (target.heldItem === 'LUM_BERRY' && target.statusEffect && target.hp.current > 0) {
       DG.StatusEffects.cure(target, 'ALL');
       target.heldItem = null;
       _pushMessage(`${targetName}'s Lum Berry cured its status!`);
     }
 
+    // Fase 1½: gedragen Resin — Vital triggert onder halve HP na deze klap,
+    // status-resins vangen een conditie op die er al vóór de klap was
+    _autoResin(target);
+
+    // BATTLE-STRATEGY Fase 1b: een fire-hit ontdooit een bevroren doelwit
+    if (target.statusEffect === DG.STATUS.FREEZE && move.type === 'FIRE' && actualDamage > 0) {
+      DG.StatusEffects.cure(target, DG.STATUS.FREEZE);
+      _pushMessage(`${targetName} was thawed out by the fire!`);
+    }
+
     // Secondary: Status chance (Corrosion may poison even Steel/Poison types)
     const _corr = (atkAb === 'Corrosion');
     if (effType === 'STATUS_CHANCE' && Math.random() * 100 < (eff.chance || 30)) {
       const _st = eff.status || 'BURN';
-      _tryApplyStatus(target, _st, _corr && (_st === 'POISON' || _st === 'BADPOISON'));
+      _tryApplyStatus(target, _st, _corr && (_st === 'POISON' || _st === 'BADPOISON'), actor);
     }
     // Secondary: status via alias type names (BURN_CHANCE/FREEZE_CHANCE/POISON_CHANCE/PARALYSIS/SLEEP)
     if (_STATUS_ALIAS[effType] && Math.random() * 100 < (eff.chance || 30)) {
       const _st2 = _STATUS_ALIAS[effType];
-      _tryApplyStatus(target, _st2, _corr && _st2 === 'POISON');
+      _tryApplyStatus(target, _st2, _corr && _st2 === 'POISON', actor);
     }
 
     // Secondary: Flinch (only if target hasn't moved yet this turn; Immovable is immune)
@@ -1477,7 +1525,7 @@ DG.Battle = (function () {
     if (effType === 'CONFUSE' && Math.random() * 100 < (eff.chance || 30)) {
       const confTarget = (eff.target === 'self') ? actor : target;
       const confRes = DG.StatusEffects.applyConfusion(confTarget);
-      if (confRes.applied) _pushMessage(confRes.message);
+      if (confRes.applied) { _pushMessage(confRes.message); _autoResin(confTarget); }
     }
 
     // Recharge next turn (Hyper Beam)
@@ -1544,7 +1592,7 @@ DG.Battle = (function () {
     if (move.category === 'PHYSICAL' && !isStruggle && target.hp.current > 0 && !target.statusEffect) {
       if (atkAb === 'Poison Touch' || atkAb === 'Venom Grip') {
         if (Math.random() < 0.30) {
-          _tryApplyStatus(target, 'POISON');
+          _tryApplyStatus(target, 'POISON', false, actor);
           _triggerAbilityAnim(atkAb, actSide, 'poison');
         }
       }
@@ -1581,7 +1629,7 @@ DG.Battle = (function () {
       const stages = isPlayer ? _battle.enemyStages : _battle.playerStages;
       _applyStageDelta(stages, eff.stat || 'def', eff.stages || -1, targetName, target);
     } else if (effType === 'STATUS_CHANCE') {
-      _tryApplyStatus(target, eff.status || 'BURN');
+      _tryApplyStatus(target, eff.status || 'BURN', false, actor);
     } else if (effType === 'HEAL') {
       const fraction = eff.fraction || 0.5;
       const heal = Math.max(1, Math.floor(actor.hp.max * fraction));
@@ -1589,7 +1637,7 @@ DG.Battle = (function () {
       _pushMessage(`${actorName} restored HP!`);
     } else if (effType === 'CONFUSE') {
       const confRes = DG.StatusEffects.applyConfusion(target);
-      if (confRes.applied) _pushMessage(confRes.message);
+      if (confRes.applied) { _pushMessage(confRes.message); _autoResin(target); }
       else _pushMessage(`But it failed!`);
     } else if (effType === 'SET_WEATHER') {
       _setWeather(eff.weather);
@@ -1622,7 +1670,7 @@ DG.Battle = (function () {
       for (const s of ['atk','def','spAtk','spDef','spd']) _applyStageDelta(omniStages, s, eff.stages || 1, actorName);
     } else if (_STATUS_ALIAS[effType]) {
       // Status-category move that inflicts a status (e.g. Spore→SLEEP, Stun Spore→PARALYSIS)
-      if (Math.random() * 100 < (eff.chance || 100)) _tryApplyStatus(target, _STATUS_ALIAS[effType]);
+      if (Math.random() * 100 < (eff.chance || 100)) _tryApplyStatus(target, _STATUS_ALIAS[effType], false, actor);
       else _pushMessage(`But it failed!`);
     } else if (effType === 'STAT') {
       // Lower/raise a target stat incl. accuracy/evasion (e.g. Flash → -accuracy)
@@ -1745,10 +1793,12 @@ DG.Battle = (function () {
 
   // Result-dependent defender ability modifiers, applied to a calcDamage result
   // in place (crit-, effectiveness- and HP-conditional — can't go into defAbilityMult).
-  function _abilityDefPost(res, target, defAb, atkAb) {
+  function _abilityDefPost(res, target, defAb, atkAb, move) {
     if (!res || res.damage <= 0 || atkAb === 'Mold Breaker') return;
     let d = res.damage;
     if (defAb === 'Filter' && res.effectiveness > 1) d = Math.floor(d * 0.75);        // super-effective -25%
+    // Fase 2d: Tremor Sense — voelt priority-aanvallen aankomen: halve schade
+    if (defAb === 'Tremor Sense' && move && (move.priority || 0) > 0) d = Math.floor(d * 0.5);
     if (defAb === 'Shadow Shield' && target.hp.current === target.hp.max) d = Math.floor(d * 0.5); // half at full HP
     if (defAb === 'Primordial Fortress') {                                            // all damage halved, no crits
       d = Math.floor(d * 0.5);
@@ -1758,7 +1808,8 @@ DG.Battle = (function () {
     res.damage = Math.max(1, d);
   }
 
-  function _tryApplyStatus(mon, status, force) {
+  // `source` (optioneel): de veroorzaker — nodig voor Synchronize (Fase 3c)
+  function _tryApplyStatus(mon, status, force, source) {
     if (!status) return;
     // Ability-based status immunities (bypassed by Corrosion's force flag for poison)
     const _ab = (DG.SPECIES[mon.speciesId] || {}).ability;
@@ -1770,6 +1821,51 @@ DG.Battle = (function () {
     }
     const res = DG.StatusEffects.apply(mon, DG.STATUS[status] || status, force);
     if (res.message) _pushMessage(res.message);
+    // Fase 1½: gedragen Resin eet zichzelf direct op als hij dit geneest
+    if (res.applied) _autoResin(mon);
+    // Fase 3c: Synchronize — kaatst BRN/PSN/TOX/PAR terug naar de veroorzaker
+    // (geen source doorgeven bij de bounce zelf → geen oneindige lus)
+    if (res.applied && source && source !== mon && _ab === 'Synchronize' &&
+        ['BURN','POISON','BADPOISON','PARALYSIS'].includes(status)) {
+      _pushMessage(`${_monName(mon)}'s Synchronize bounces it back!`);
+      _triggerAbilityAnim('Synchronize', mon === _battle.playerMon ? 'player' : 'enemy', 'bounce');
+      _tryApplyStatus(source, status);
+    }
+  }
+
+  // ── BATTLE-STRATEGY Fase 1½: held Resin — auto-consume ────
+  // Geneest de gedragen Resin de huidige conditie (of lage HP bij Vital),
+  // dan eet de mon hem meteen op. Eén keer — daarna is het item weg.
+  function _autoResin(mon) {
+    if (!mon || !mon.heldItem || mon.hp.current <= 0) return false;
+    const def = DG.ITEMS && DG.ITEMS[mon.heldItem];
+    if (!def || def.type !== 'RESIN') return false;
+    const name = def.name || mon.heldItem;
+    // Vital Resin: opeten zodra HP onder de helft zakt
+    if (def.healPct) {
+      if (mon.hp.current >= mon.hp.max / 2) return false;
+      mon.heldItem = null;
+      const heal = Math.max(1, Math.floor(mon.hp.max * def.healPct));
+      mon.hp.current = Math.min(mon.hp.max, mon.hp.current + heal);
+      _pushMessage(`${_monName(mon)} ate its ${name} and restored ${heal} HP!`);
+      return true;
+    }
+    // Status-genezers
+    let canCure = false;
+    if (def.cures === 'ALL') {
+      canCure = !!(mon.statusEffect || mon.confusionTurns > 0);
+    } else if (Array.isArray(def.cures)) {
+      canCure = def.cures.includes('CONFUSION')
+        ? mon.confusionTurns > 0
+        : def.cures.includes(mon.statusEffect);
+    }
+    if (!canCure) return false;
+    mon.heldItem = null;
+    if (def.cures === 'ALL') { DG.StatusEffects.cure(mon, 'ALL'); }
+    else if (def.cures.includes('CONFUSION')) { mon.confusionTurns = 0; }
+    else { DG.StatusEffects.cure(mon, def.cures); }
+    _pushMessage(`${_monName(mon)} ate its ${name} — cured!`);
+    return true;
   }
 
   // ── ABILITY ANIM HELPER ───────────────────────────────────
@@ -2229,6 +2325,12 @@ DG.Battle = (function () {
         _triggerAbilityAnim(sp.ability, side, 'speed_boost');
       }
     });
+
+    // Fase 1½: end-of-turn vangnet voor gedragen Resins — vangt condities
+    // die niet via _tryApplyStatus binnenkwamen (gif-tik onder 50% voor
+    // Vital, verwardheid, status van vóór het gevecht)
+    _autoResin(_battle.playerMon);
+    _autoResin(_battle.enemyMon);
   }
 
   // Kept for backward-compat with any direct callers — delegates cleanly
@@ -2725,7 +2827,8 @@ DG.Battle = (function () {
     const used = _useHealItem(gs, target, itemId);
     if (used) {
       DG.SaveLoad.removeItem(gs, itemId, 1);
-      _pushMessage(`You used ${itemId} on ${_monName(target)}!`);
+      const _iNm = (DG.ITEMS && DG.ITEMS[itemId] && DG.ITEMS[itemId].name) || itemId;
+      _pushMessage(`You used ${_iNm} on ${_monName(target)}!`);
     } else {
       _pushMessage(`It had no effect!`);
     }
@@ -2734,6 +2837,29 @@ DG.Battle = (function () {
 
   function _useHealItem(gs, mon, itemId) {
     if (mon.hp.current <= 0 && itemId !== 'REVIVE' && itemId !== 'MAXREVIVE') return false;
+    // BATTLE-STRATEGY Fase 1½: Resins — generiek via de DG.ITEMS-data
+    const _rdef = DG.ITEMS && DG.ITEMS[itemId];
+    if (_rdef && _rdef.type === 'RESIN') {
+      if (_rdef.healPct) {
+        if (mon.hp.current >= mon.hp.max) return false;
+        mon.hp.current = Math.min(mon.hp.max, mon.hp.current + Math.max(1, Math.floor(mon.hp.max * _rdef.healPct)));
+        return true;
+      }
+      if (_rdef.cures === 'ALL') {
+        if (!mon.statusEffect && !(mon.confusionTurns > 0)) return false;
+        DG.StatusEffects.cure(mon, 'ALL');
+        return true;
+      }
+      if (Array.isArray(_rdef.cures)) {
+        if (_rdef.cures.includes('CONFUSION')) {
+          if (!(mon.confusionTurns > 0)) return false;
+          mon.confusionTurns = 0;
+          return true;
+        }
+        return !!DG.StatusEffects.cure(mon, _rdef.cures);
+      }
+      return false;
+    }
     switch (itemId) {
       case 'POTION':      mon.hp.current = Math.min(mon.hp.max, mon.hp.current + 20);  return true;
       case 'SUPERPOTION': mon.hp.current = Math.min(mon.hp.max, mon.hp.current + 50);  return true;

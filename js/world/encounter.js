@@ -54,6 +54,22 @@ DG.Encounter = (function () {
     const mon = DG.SaveLoad.createDinoMon(entry.speciesId, level);
     if (!mon) return null;
 
+    // BATTLE-STRATEGY Fase 1½: wilde mons dragen soms een Resin die past
+    // bij hun primaire type (8%; Golden 1% extra) — vangen loont.
+    const _RESIN_BY_TYPE = {
+      FIRE:'COOLING_RESIN', POISON:'CLEANSING_RESIN', BUG:'CLEANSING_RESIN',
+      ELECTRIC:'SUPPLE_RESIN', GRASS:'ROUSING_RESIN', ICE:'THAWING_RESIN',
+      PSYCHIC:'CLARITY_RESIN', FAIRY:'CLARITY_RESIN', NORMAL:'VITAL_RESIN',
+      GROUND:'VITAL_RESIN',
+    };
+    if (!mon.heldItem) {
+      const _sp = DG.SPECIES[entry.speciesId];
+      const _t = _sp && _sp.types && _sp.types[0];
+      const _roll = Math.random();
+      if (_roll < 0.01) mon.heldItem = 'GOLDEN_RESIN';
+      else if (_roll < 0.09 && _RESIN_BY_TYPE[_t]) mon.heldItem = _RESIN_BY_TYPE[_t];
+    }
+
     DG.SaveLoad.markSeen(gameState, entry.speciesId);
     return mon;
   }

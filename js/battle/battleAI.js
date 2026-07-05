@@ -62,21 +62,27 @@ DG.BattleAI = (function () {
     return { type: 'MOVE', moveIndex: activeMon.moves.indexOf(scored[0].slot) };
   }
 
-  // ── Tier 3: Scored optimal (gym leaders 5-8, bosses) ────
-  function tier3(activeMon, targetMon, aiState) {
+  // Ruwe schadeschatting van één move (zelfde formule als de oude tier3-check)
+  function _roughDmg(attacker, defender, move) {
+    if (!move || move.category === 'STATUS' || !(move.power > 0)) return 0;
+    const eff = _effAgainst(move, defender);
+    if (eff === 0) return 0;
+    const atkTypes = (DG.SPECIES[attacker.speciesId] || {}).types || ['NORMAL'];
+    const stab = atkTypes.includes(move.type) ? DG.BATTLE.STAB_BONUS : 1.0;
+    return Math.floor((2 * attacker.level / 5 + 2) * move.power *
+      (attacker.stats[move.category === 'PHYSICAL' ? 'atk' : 'spAtk'] || 50) /
+      ((defender.stats[move.category === 'PHYSICAL' ? 'def' : 'spDef'] || 50) * 50) + 2) * eff * stab;
+  }
+
+  // ── Gedeelde move-scoring (basis voor tier 3 en 4) ───────
+  // Geeft [{slot, score, roughDmg, move}] terug, ongesorteerd.
+  function _scoreMoves(activeMon, targetMon, aiState) {
     const usable = activeMon.moves.filter(m => m.ppCurrent > 0);
-    if (!usable.length) return { type: 'MOVE', moveIndex: -1 };
-
-    const targetSpecies = DG.SPECIES[targetMon.speciesId];
-    const attackerSpecies = DG.SPECIES[activeMon.speciesId];
-    const defTypes = targetSpecies ? targetSpecies.types : ['NORMAL'];
-    const atkTypes = attackerSpecies ? attackerSpecies.types : ['NORMAL'];
-
-    const scored = usable.map(slot => {
+    return usable.map(slot => {
       const move = DG.MOVES[slot.moveId];
-      if (!move) return { slot, score: 0 };
+      if (!move) return { slot, score: 0, roughDmg: 0, move: null };
 
-      let score = 0;
+      let score = 0, roughDmg = 0;
       // NOTE: move.effect is an OBJECT — read its .type (the old string compare never matched).
       const effType = (move.effect && move.effect.type) || 'NONE';
 
@@ -90,17 +96,24 @@ DG.BattleAI = (function () {
         else score = 10;
       } else {
         const eff = _effAgainst(move, targetMon);
-        if (eff === 0) return { slot, score: 0 };
+        if (eff === 0) return { slot, score: 0, roughDmg: 0, move };
 
+        const atkTypes = (DG.SPECIES[activeMon.speciesId] || {}).types || ['NORMAL'];
         const stab = atkTypes.includes(move.type) ? DG.BATTLE.STAB_BONUS : 1.0;
         const power = move.power || 40;
         score = power * eff * stab;
 
         // Rough KO check: prefer a guaranteed finisher over overkill setup.
-        const roughDmg = Math.floor((2 * activeMon.level / 5 + 2) * power *
-          (activeMon.stats[move.category === 'PHYSICAL' ? 'atk' : 'spAtk'] || 50) /
-          ((targetMon.stats[move.category === 'PHYSICAL' ? 'def' : 'spDef'] || 50) * 50) + 2) * eff * stab;
+        roughDmg = _roughDmg(activeMon, targetMon, move);
         if (roughDmg >= targetMon.hp.current) score *= 1.5;
+
+        // BATTLE-STRATEGY Fase 2e: vanguard-finish — als een priority-aanval
+        // de KO haalt, gaat hij vóór alles (de snellere speler slaat dan nooit
+        // meer terug). Ook zonder KO-garantie licht bonus tegen lage HP.
+        if ((move.priority || 0) > 0) {
+          if (roughDmg >= targetMon.hp.current) score *= 4;
+          else if (targetMon.hp.current < targetMon.hp.max * 0.25) score *= 1.4;
+        }
 
         // bonus for secondary effects
         if (effType === 'FLINCH')  score *= 1.1;
@@ -114,8 +127,14 @@ DG.BattleAI = (function () {
         }
       }
 
-      return { slot, score };
+      return { slot, score, roughDmg, move };
     });
+  }
+
+  // ── Tier 3: Scored optimal (gym leaders, late trainers) ──
+  function tier3(activeMon, targetMon, aiState) {
+    const scored = _scoreMoves(activeMon, targetMon, aiState);
+    if (!scored.length) return { type: 'MOVE', moveIndex: -1 };
 
     scored.sort((a, b) => b.score - a.score);
 
@@ -132,12 +151,66 @@ DG.BattleAI = (function () {
     return { type: 'MOVE', moveIndex: activeMon.moves.indexOf(pick.slot) };
   }
 
+  // ── BATTLE-STRATEGY Fase 4: Tier 4 — één beurt vooruitdenken ──
+  // (E4/Champion/eindbazen.) Schat de sterkste klap van de tegenstander in en
+  // weegt beurtvolgorde (snelheid + priority) mee: een dodelijke klap die éérst
+  // landt wint altijd; setup terwijl de tegenstander jou deze beurt KO't is
+  // zelfmoord; ruime HP-marge maakt status/setup juist aantrekkelijker.
+  // Deterministisch beste keuze — geen 70%-dobbelsteen.
+  function tier4(activeMon, targetMon, aiState) {
+    const scored = _scoreMoves(activeMon, targetMon, aiState);
+    if (!scored.length) return { type: 'MOVE', moveIndex: -1 };
+
+    // Sterkste verwachte klap van de tegenstander (met diens priority)
+    let theirBest = 0, theirBestPrio = 0;
+    for (const mv of (targetMon.moves || [])) {
+      if (!mv || mv.ppCurrent <= 0) continue;
+      const m = DG.MOVES[mv.moveId];
+      const dmg = _roughDmg(targetMon, activeMon, m);
+      if (dmg > theirBest) { theirBest = dmg; theirBestPrio = m.priority || 0; }
+    }
+    const spdMult = (mon) => (DG.StatusEffects && DG.StatusEffects.speedMult) ? DG.StatusEffects.speedMult(mon) : 1;
+    const theyOutspeed = (targetMon.stats.spd * spdMult(targetMon)) > (activeMon.stats.spd * spdMult(activeMon));
+    const theyCanKO = theirBest >= activeMon.hp.current;
+
+    for (const s of scored) {
+      if (!s.move) continue;
+      const prio = s.move.priority || 0;
+      const actsFirst = prio > theirBestPrio || (prio === theirBestPrio && !theyOutspeed);
+      // Dodelijke klap die vóór hun beurt landt → altijd doen
+      if (s.roughDmg >= targetMon.hp.current && actsFirst) s.score *= 10;
+      if (theyCanKO && theyOutspeed) {
+        // Zij KO'en ons eerst: alleen wat vóór hen landt telt nog
+        if (!actsFirst) s.score *= 0.1;
+        if (s.move.category === 'STATUS') s.score *= 0.05;
+      } else if (theirBest > 0 && activeMon.hp.current / theirBest >= 3 && s.move.category === 'STATUS') {
+        // Ruime marge (3+ beurten overleven): investeren in status/setup loont
+        s.score *= 1.4;
+      }
+    }
+
+    scored.sort((a, b) => b.score - a.score);
+    const viable = scored.filter(x => x.score > 0);
+    const pool   = viable.length ? viable : scored;
+    return { type: 'MOVE', moveIndex: activeMon.moves.indexOf(pool[0].slot) };
+  }
+
   // ── Public: choose action for an AI trainer ─────────────
   // Returns { type:'MOVE', moveIndex:N }
+  // aiState.badges (Fase 4): trainers schalen mee met de voortgang van de
+  // speler — moeilijker wordt slímmer, niet alleen hoger van level.
   function chooseAction(trainer, activeMon, targetMon, aiState) {
     let tier = trainer ? (trainer.aiTier || 1) : 1;
-    // Hard mode: all enemies get +1 AI tier (capped at 3)
-    if (window._CURRENT_DIFFICULTY === 'HARD') tier = Math.min(3, tier + 1);
+    if (trainer) {
+      const badges = (aiState && aiState.badges) || 0;
+      if (badges >= 6)      tier = Math.max(tier, 3);
+      else if (badges >= 3) tier = Math.max(tier, 2);
+      // E4 en de Champion denken altijd één beurt vooruit
+      if (trainer.class === 'Elite Four' || trainer.class === 'Champion') tier = 4;
+    }
+    // Hard mode: all enemies get +1 AI tier (capped at 4)
+    if (window._CURRENT_DIFFICULTY === 'HARD') tier = Math.min(4, tier + 1);
+    if (tier >= 4) return tier4(activeMon, targetMon, aiState);
     if (tier >= 3) return tier3(activeMon, targetMon, aiState);
     if (tier >= 2) return tier2(activeMon, targetMon);
     return tier1(activeMon);

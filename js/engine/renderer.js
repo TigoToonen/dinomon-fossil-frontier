@@ -2901,59 +2901,13 @@ DG.Renderer = (function () {
   }
 
   // ── Effect-text helpers (mirrors the copy in spriteRenderer) ──────────────
-  function _effectText(eff) {
-    if (!eff || eff.type === 'NONE') return null;
-    const sn = { atk:'Atk', def:'Def', spAtk:'Sp.Atk', spDef:'Sp.Def', spd:'Speed', acc:'Accuracy' };
-    const st = { BURN:'burn', POISON:'poison', PARALYSIS:'paralysis', SLEEP:'sleep', FREEZE:'freeze' };
-    switch (eff.type) {
-      case 'STATUS_CHANCE': {
-        const s = st[eff.status] || eff.status.toLowerCase();
-        return eff.chance >= 100 ? `Inflicts ${s}` : `${eff.chance}% chance: ${s}`;
-      }
-      case 'FLINCH':   return eff.chance >= 100 ? 'Causes flinch' : `${eff.chance}% flinch`;
-      case 'CONFUSE':  return eff.chance >= 100 ? 'Causes confusion' : `${eff.chance}% confusion`;
-      case 'STAT_RAISE': {
-        const t = (!eff.target || eff.target === 'self') ? 'user' : 'foe';
-        const stat = sn[eff.stat] || eff.stat;
-        const pct  = (eff.chance && eff.chance < 100) ? ` (${eff.chance}%)` : '';
-        return `Raises ${t}'s ${stat} +${eff.stages}${pct}`;
-      }
-      case 'STAT_LOWER': {
-        const t = (eff.target === 'opponent') ? "foe's" : "user's";
-        const stat = sn[eff.stat] || eff.stat;
-        const stg  = eff.stages < 0 ? String(eff.stages) : `-${eff.stages}`;
-        const pct  = (eff.chance && eff.chance < 100) ? ` (${eff.chance}%)` : '';
-        return `Lowers ${t} ${stat} ${stg}${pct}`;
-      }
-      case 'RECOIL':     return `User takes ${Math.round(eff.fraction * 100)}% recoil`;
-      case 'DRAIN':      return `Drains ${Math.round(eff.fraction * 100)}% of damage dealt`;
-      case 'HEAL':       return `Heals user for ${Math.round(eff.fraction * 100)}% HP`;
-      case 'LEECH_SEED': return 'Seeds foe — drains HP each turn';
-      case 'RECHARGE':   return 'User must recharge next turn';
-      case 'TWO_TURN':   return '2-turn move (charge then strike)';
-      case 'ONE_HIT_KO': return 'One-hit KO!';
-      case 'SET_WEATHER': {
-        const w = { SUN:'Sets harsh sunlight', RAIN:'Sets heavy rain', HAIL:'Sets hail', SANDSTORM:'Sets sandstorm' };
-        return w[eff.weather] || ('Weather: ' + eff.weather);
-      }
-      case 'MULTI': return eff.hits ? `Hits ${eff.hits[0]}-${eff.hits[1]} times` : null;
-      default: return null;
-    }
+  // BATTLE-STRATEGY Fase 1c: delegeert naar de canonieke generator in uiKit —
+  // één bron van waarheid, inclusief de status-regels (schade/beurt, malus).
+  function _effectText(eff, move) {
+    return (DG.UIKit && DG.UIKit.moveEffectLabel) ? DG.UIKit.moveEffectLabel(eff, move) : null;
   }
-  function _effectColor(eff) {
-    if (!eff || eff.type === 'NONE') return '#aaaacc';
-    switch (eff.type) {
-      case 'STATUS_CHANCE': {
-        const c = { BURN:'#ff8833', POISON:'#cc55ff', PARALYSIS:'#ffdd22', SLEEP:'#6688ff', FREEZE:'#44ddff' };
-        return c[eff.status] || '#ffaa44';
-      }
-      case 'FLINCH': return '#ddddcc'; case 'CONFUSE': return '#ff88cc';
-      case 'STAT_RAISE': return '#44ff88'; case 'STAT_LOWER': return '#ff8844';
-      case 'RECOIL': return '#ff5544'; case 'DRAIN': case 'HEAL': return '#44ffcc';
-      case 'LEECH_SEED': return '#88ff44'; case 'ONE_HIT_KO': return '#ff4444';
-      case 'SET_WEATHER': return '#88ccff'; case 'MULTI': return '#ffcc44';
-      default: return '#aaaacc';
-    }
+  function _effectColor(eff, move) {
+    return (DG.UIKit && DG.UIKit.moveEffectColor) ? DG.UIKit.moveEffectColor(eff, move) : '#aaaacc';
   }
 
   // ── Move-learn UI dispatcher ──────────────────────────────
@@ -3078,9 +3032,9 @@ DG.Renderer = (function () {
     descLines.slice(0, 2).forEach((line, i) => ctx.fillText(line, hx + 6, nmBy + 55 + i * 12));
 
     // Effect line
-    const effTxt = _effectText(move.effect);
+    const effTxt = _effectText(move.effect, move);
     if (effTxt) {
-      ctx.fillStyle = _effectColor(move.effect);
+      ctx.fillStyle = _effectColor(move.effect, move);
       ctx.font = 'bold 9px monospace';
       ctx.fillText('⚡ ' + effTxt, hx + 6, nmBy + 80);
     }
@@ -3409,8 +3363,16 @@ DG.Renderer = (function () {
     ctx.textBaseline = 'top';
     ctx.fillText(`PWR:${pwr}  ACC:${acc}  ${pp}`, x, y + 14);
 
-    // Description (truncated to fit)
-    if (move.description) {
+    // BATTLE-STRATEGY Fase 1c: effectregel uit de data gaat vóór flavour-tekst —
+    // in het gevecht wil je de regels zien ("30% chance: burn — 1/16 HP/turn"),
+    // de flavour staat in de summary.
+    const _fx = _effectText(move.effect, move);
+    if (_fx) {
+      ctx.fillStyle = _effectColor(move.effect, move);
+      ctx.font = '8px monospace';
+      const fxLine = _fx.length > 58 ? _fx.slice(0, 55) + '...' : _fx;
+      ctx.fillText(fxLine, x, y + 24);
+    } else if (move.description) {
       ctx.fillStyle = '#667788';
       ctx.font = '8px monospace';
       const desc = move.description.length > 58 ? move.description.slice(0, 55) + '...' : move.description;

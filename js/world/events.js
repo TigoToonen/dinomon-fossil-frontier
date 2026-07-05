@@ -269,12 +269,106 @@ DG.Events = (function () {
   }
 
   // ── Shop ──────────────────────────────────────────────────
+  // BATTLE-STRATEGY Fase 1½: elke gewone winkel (herkenbaar aan ballen/potions
+  // in het assortiment) krijgt een Resins-plank die meegroeit met je badges.
+  function _resinShelf(gameState) {
+    const badges = (gameState && gameState.player && gameState.player.badges || []).length;
+    const shelf = [];
+    for (const id in DG.ITEMS) {
+      const def = DG.ITEMS[id];
+      if (def.type === 'RESIN' && badges >= (def.badgeTier || 0)) shelf.push(id);
+    }
+    return shelf;
+  }
+
   function shopMenu(shopItems, gameState, onDone) {
     if (typeof DG.Menu !== 'undefined') {
-      DG.Menu.showShop(shopItems, gameState, onDone);
+      let items = shopItems || [];
+      const isMart = items.some(id => {
+        const d = DG.ITEMS && DG.ITEMS[id];
+        return d && (d.type === 'BALL' || d.type === 'HEAL');
+      });
+      if (isMart) {
+        const shelf = _resinShelf(gameState).filter(id => !items.includes(id));
+        if (shelf.length) items = items.concat(shelf);
+      }
+      DG.Menu.showShop(items, gameState, onDone);
     } else {
       if (onDone) onDone();
     }
+  }
+
+  // ── BATTLE-STRATEGY Fase 1½: de Sap Farm (harsboer, Ferngrove) ──
+  // Verkoopt het volledige Resin-assortiment van jouw badge-tier + één
+  // "vers getapte" Resin van een tier hoger die per dag rouleert. Koopt
+  // Resins in voor 75% (via resinBonus). Quest: 5 Resins → Golden Resin
+  // + permanente Golden-voorraad (flag SAP_FARM_GOLDEN).
+  function _dayOfYear() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    return Math.floor((now - start) / 86400000);
+  }
+
+  function sapFarmMenu(gameState, onDone) {
+    if (typeof DG.Menu === 'undefined') { if (onDone) onDone(); return; }
+    const badges = (gameState.player.badges || []).length;
+    let items = _resinShelf(gameState);
+    // Vers getapt vandaag: één Resin van boven je huidige tier, rouleert per dag
+    const above = [];
+    for (const id in DG.ITEMS) {
+      const def = DG.ITEMS[id];
+      if (def.type === 'RESIN' && (def.badgeTier || 0) > badges) above.push(id);
+    }
+    if (above.length) {
+      const special = above[_dayOfYear() % above.length];
+      if (!items.includes(special)) items = items.concat([special]);
+    }
+    // Quest-beloning: Golden Resin permanent in het assortiment
+    if (DG.SaveLoad.getFlag(gameState, 'SAP_FARM_GOLDEN') && !items.includes('GOLDEN_RESIN')) {
+      items = items.concat(['GOLDEN_RESIN']);
+    }
+    DG.Menu.showShop(items, gameState, onDone, { resinBonus: true });
+  }
+
+  // De boer-interactie zelf: quest-check + begroeting, daarna de winkel
+  function sapFarmInteract(gameState, onDone) {
+    const RESIN_IDS = Object.keys(DG.ITEMS).filter(id => DG.ITEMS[id].type === 'RESIN');
+    const bag = gameState.player.bag || {};
+    const questDone = DG.SaveLoad.getFlag(gameState, 'SAP_FARM_GOLDEN');
+    const totalResins = RESIN_IDS.reduce((s, id) => s + (bag[id] || 0), 0);
+
+    if (!questDone && totalResins >= 5) {
+      // Quest inleveren: 5 Resins (Golden zelf telt niet mee) → Golden Resin
+      let toTake = 5;
+      for (const id of RESIN_IDS) {
+        if (id === 'GOLDEN_RESIN') continue;
+        while (toTake > 0 && (bag[id] || 0) > 0) { DG.SaveLoad.removeItem(gameState, id, 1); toTake--; }
+      }
+      if (toTake > 0) {
+        // niet genoeg niet-gouden resins — quest blijft open
+        DG.DialogueBox.show([
+          "Bram: Bring me 5 resins you tapped or found out there,",
+          "and I'll trade you something golden...",
+        ], () => sapFarmMenu(gameState, onDone));
+        return;
+      }
+      DG.SaveLoad.addItem(gameState, 'GOLDEN_RESIN', 1);
+      DG.SaveLoad.setFlag(gameState, 'SAP_FARM_GOLDEN');
+      DG.SaveLoad.save(gameState);
+      DG.DialogueBox.show([
+        "Bram: Five resins?! You've got a forager's eye!",
+        "Here — a GOLDEN RESIN, aged thirty years in an amber vat.",
+        "And I'll keep a jar of the golden stuff on the shelf for you, always.",
+      ], () => sapFarmMenu(gameState, onDone));
+      return;
+    }
+
+    const greet = questDone
+      ? ["Bram: Ah, my best customer! The trees are dripping today.", "Fresh tap of the day is on the shelf — and I pay top coin for your spare resins!"]
+      : ["Bram: Welcome to the Sap Farm! These old araucarias drip the finest resin in the region.",
+         "I pay 75% for any resin you bring me — better than any city shop.",
+         "Oh, and bring me 5 resins someday... I'll make it worth your while."];
+    DG.DialogueBox.show(greet, () => sapFarmMenu(gameState, onDone));
   }
 
   // ── Cutscene system ──────────────────────────────────────────
@@ -426,6 +520,8 @@ DG.Events = (function () {
     starterSelection,
     healParty,
     shopMenu,
+    sapFarmMenu,
+    sapFarmInteract,
     checkCutsceneTriggers: _checkCutsceneTriggers,
     isCutscenePlaying,
   };

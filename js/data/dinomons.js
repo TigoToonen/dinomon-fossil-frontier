@@ -300,7 +300,7 @@ BONEBACK: _sp('BONEBACK','Boneback',['ROCK'],
     10,['ROCK_SLIDE','ANCIENT_POWER','SMASH_DOWN','POWER_GEM'],14,'ACCELEROCK',20,'MINERAL_BURST',28,'LEER',
     36,'GROWL'
   ),
-  'STONESKULL',22,null,'Sturdy','Survives one-hit KO moves with 1 HP',
+  'STONESKULL',22,null,'Tremor Sense','Priority attacks deal only half damage to it',
   100,58,'MEDIUM',false,false,
   'A pachycephalosaur with a reinforced mineral dome. Headbutts everything.',
   '#9E9E9E','#F5F5DC'),
@@ -312,7 +312,7 @@ STONESKULL: _sp('STONESKULL','Stoneskull',['ROCK','GROUND'],
     10,'ROLLOUT',16,'MINERAL_BURST',22,'LEER',24,['ROCK_SLIDE','ANCIENT_POWER','SMASH_DOWN','POWER_GEM'],
     28,'GROWL',34,'SMOKESCREEN',40,'TAIL_WHIP',48,'WORK_UP'
   ),
-  'OSSIFANG',38,'BONEBACK','Sturdy','Survives one-hit KO moves with 1 HP',
+  'OSSIFANG',38,'BONEBACK','Ancient Guard','Completely blocks priority attacks',
   60,128,'MEDIUM',false,false,
   'Fossilised spikes have emerged across its body like a living geological formation.',
   '#757575','#D4D4B4'),
@@ -869,7 +869,7 @@ GEMLET: _sp('GEMLET','Gemlet',['FAIRY'],
     1,'FAIRY_WIND',1,'TACKLE',5,'DISARMING_VOICE',9,'DRAINING_KISS',
     13,'CHARM',17,'DAZZLING_GLEAM',22,'PIXIE_STRIKE',28,'PLAY_ROUGH'
   ),
-  'GEMHORN',18,null,'Cute Charm','30% chance to infatuate foes that make contact',
+  'GEMHORN',18,null,'Synchronize','Passes burns, poison and paralysis back to the attacker',
   130,52,'MEDIUM',false,false,
   'Its frill is studded with raw gemstones that chime softly when it is happy.',
   '#9FE7F5','#5AC8E0'),
@@ -880,7 +880,7 @@ GEMHORN: _sp('GEMHORN','Gemhorn',['FAIRY'],
     1,'FAIRY_WIND',1,'DISARMING_VOICE',9,'DRAINING_KISS',13,'CHARM',
     18,'DAZZLING_GLEAM',24,'PIXIE_STRIKE',30,'PLAY_ROUGH',38,'SPIRIT_BREAK'
   ),
-  'PRISMACERA',36,'GEMLET','Cute Charm','30% chance to infatuate foes that make contact',
+  'PRISMACERA',36,'GEMLET','Synchronize','Passes burns, poison and paralysis back to the attacker',
   75,120,'MEDIUM',false,false,
   'The gems on its crown refract light into dazzling rainbows that mesmerise prey.',
   '#7FD8EE','#3FB0D8'),
@@ -1064,7 +1064,7 @@ LAVACLAW: _sp('LAVACLAW','Lavaclaw',['FIRE','GROUND'],
     16,'FIRE_SPIN',22,'FIREWORKS',24,['FLAME_CHARGE','FLAMETHROWER','LAVA_PLUME','FRILL_FLARE'],28,'IMMOLATION',
     34,'FIRECRACKER',40,'LEER',48,'TAIL_WHIP',56,'WORK_UP'
   ),
-  'MAGMADON',36,'FIRECOAL','Blaze','Fire moves +50% when HP below 33%',
+  'MAGMADON',36,'FIRECOAL','Flame Body','10% chance to burn foes that make contact',
   70,124,'MEDIUM',false,false,
   'Bathes in lava pools to shed old scales and emerge stronger. Burns through solid rock.',
   '#E64A19','#4E342E'),
@@ -1298,7 +1298,7 @@ ROCKFLIP: _sp('ROCKFLIP','Rockflip',['ROCK'],
     10,['ROCK_SLIDE','ANCIENT_POWER','SMASH_DOWN','POWER_GEM'],14,'ACCELEROCK',20,'MINERAL_BURST',28,'LEER',
     36,'GROWL'
   ),
-  'BOULDERDON',26,null,'Sturdy','Survives one-hit KO moves with 1 HP',
+  'BOULDERDON',26,null,'Tremor Sense','Priority attacks deal only half damage to it',
   120,56,'SLOW',false,false,
   'A turtle-shaped ankylosaur that retracts into its shell when threatened.',
   '#9E9E9E','#616161'),
@@ -1376,14 +1376,14 @@ BOGZILLA: _sp('BOGZILLA','Bogzilla',['WATER','POISON'],
 AMBERLITE: _sp('AMBERLITE','Amberlite',['BUG','ROCK'],
   {hp:45,atk:50,def:60,spAtk:40,spDef:50,spd:38},
   _ls(1,'TACKLE',1,'HARDEN',6,'ROCK_THROW',10,'BUG_BITE',16,'ANCIENT_POWER',24,'ROCK_SLIDE'),
-  'AMBERWING',32,null,'Sturdy','Survives a KO with 1 HP when at full health.',
+  'AMBERWING',32,null,'Shed Skin','30% chance each turn to shed any status condition',
   45,62,'MEDIUM',false,false,
   'Trapped in amber for eons. Its shell still hums with prehistoric energy.',
   '#d9a441','#8a5a18'),
 AMBERWING: _sp('AMBERWING','Amberwing',['BUG','ROCK'],
   {hp:70,atk:82,def:90,spAtk:55,spDef:70,spd:58},
   _ls(1,'TACKLE',1,'ROCK_THROW',16,'BUG_BITE',24,'ANCIENT_POWER',34,'X_SCISSOR',40,'ROCK_SLIDE',48,'STONE_EDGE'),
-  null,null,'AMBERLITE','Sturdy','Survives a KO with 1 HP when at full health.',
+  null,null,'AMBERLITE','Shed Skin','30% chance each turn to shed any status condition',
   45,168,'MEDIUM',false,false,
   'Its amber wings glint like stained glass. A living relic of the first age.',
   '#e8b84a','#7a4e14'),
@@ -1392,14 +1392,14 @@ AMBERWING: _sp('AMBERWING','Amberwing',['BUG','ROCK'],
 TARCLAW: _sp('TARCLAW','Tarclaw',['DARK','ROCK'],
   {hp:50,atk:58,def:52,spAtk:42,spDef:45,spd:48},
   _ls(1,'TACKLE',1,'SAND_ATTACK',6,'BITE',10,'ROCK_THROW',16,'ANCIENT_POWER',24,'ROCK_SLIDE'),
-  'TARRASAUR',34,null,'Sturdy','Survives a KO with 1 HP when at full health.',
+  'TARRASAUR',34,null,'Poison Heal','Poison heals it: +1/8 HP per turn instead of damage',
   45,64,'MEDIUM',false,false,
   'Hauled from a tar pit. Black ooze still drips from its claws.',
   '#2a2620','#1a140a'),
 TARRASAUR: _sp('TARRASAUR','Tarrasaur',['DARK','ROCK'],
   {hp:78,atk:95,def:80,spAtk:55,spDef:68,spd:62},
   _ls(1,'BITE',1,'ROCK_THROW',16,'ANCIENT_POWER',24,'CRUNCH',34,'ROCK_SLIDE',40,'EARTHQUAKE',48,'STONE_EDGE'),
-  null,null,'TARCLAW','Sturdy','Survives a KO with 1 HP when at full health.',
+  null,null,'TARCLAW','Poison Heal','Poison heals it: +1/8 HP per turn instead of damage',
   45,172,'MEDIUM',false,false,
   'A tar-soaked predator. The ooze hardens into armor when it hunts.',
   '#1a1814','#3a2a10'),
@@ -1415,7 +1415,7 @@ CRYOSHELL: _sp('CRYOSHELL','Cryoshell',['ICE','ROCK'],
 CRYOSAUR: _sp('CRYOSAUR','Cryosaur',['ICE','ROCK'],
   {hp:85,atk:70,def:100,spAtk:65,spDef:80,spd:42},
   _ls(1,'ICE_SHARD',1,'ROCK_THROW',16,'ANCIENT_POWER',24,'ICE_FANG',34,'ROCK_SLIDE',40,'ICE_BEAM',48,'STONE_EDGE'),
-  null,null,'CRYOSHELL','Sturdy','Survives a KO with 1 HP when at full health.',
+  null,null,'CRYOSHELL','Ancient Guard','Completely blocks priority attacks',
   45,172,'MEDIUM',false,false,
   'An ice-age titan. Its breath drops the temperature for metres around.',
   '#9fd8ee','#3f7090'),
@@ -1440,14 +1440,14 @@ ABYSSHELL: _sp('ABYSSHELL','Abysshell',['WATER','ROCK'],
 AEROLITH: _sp('AEROLITH','Aerolith',['FLYING','ROCK'],
   {hp:48,atk:55,def:50,spAtk:45,spDef:45,spd:62},
   _ls(1,'TACKLE',1,'QUICK_ATTACK',6,'ROCK_THROW',10,'WING_ATTACK',16,'ANCIENT_POWER',24,'ROCK_SLIDE'),
-  'AERODON',34,null,'Sturdy','Survives a KO with 1 HP when at full health.',
+  'AERODON',34,null,'Quick Feet','Status conditions boost its Speed ×1.5 (no paralysis slowdown)',
   45,64,'MEDIUM',false,false,
   'A stone-winged flyer. Somehow these heavy wings once caught the wind.',
   '#b8a890','#6a5a40'),
 AERODON: _sp('AERODON','Aerodon',['FLYING','ROCK'],
   {hp:75,atk:88,def:72,spAtk:60,spDef:65,spd:95},
   _ls(1,'WING_ATTACK',1,'ROCK_THROW',16,'ANCIENT_POWER',24,'AIR_SLASH',34,'AERIAL_ACE',40,'ROCK_SLIDE',48,'STONE_EDGE'),
-  null,null,'AEROLITH','Sturdy','Survives a KO with 1 HP when at full health.',
+  null,null,'AEROLITH','Quick Feet','Status conditions boost its Speed ×1.5 (no paralysis slowdown)',
   45,174,'MEDIUM',false,false,
   'The apex of the ancient skies, reborn. Its stone wings shatter the sound barrier.',
   '#c8b89a','#5a4a30'),
@@ -1689,6 +1689,36 @@ TITANREX: _sp('TITANREX','Titanrex',['ROCK','FIRE'],
     if (s.evolvesTo && DG.SPECIES[s.evolvesTo]) {
       DG.SPECIES[s.evolvesTo].prevForm = id;
     }
+  }
+})();
+
+// ── BATTLE-STRATEGY Fase 2d: vanguard-learnset-injectie ─────────
+// Elke soort leert rond Lv.24 de vanguard (priority-aanval) van zijn
+// primaire type — zo heeft élke speler het gereedschap om een snellere
+// tegenstander vóór te zijn. Runtime-injectie: één plek, geen 121
+// handmatige learnset-edits; wordt overgeslagen als de soort de move
+// al kent of er al een eigen priority-aanval in de learnset heeft.
+DG.VANGUARDS = {
+  NORMAL:'QUICK_ATTACK', FIRE:'FIRECRACKER',  WATER:'AQUA_JET',
+  GRASS:'LEAF_DART',     ELECTRIC:'STATIC_JAB', ICE:'ICE_SHARD',
+  FIGHTING:'MACH_PUNCH', POISON:'VENOM_DART', GROUND:'MUD_DART',
+  FLYING:'SWIFT_WING',   PSYCHIC:'MIND_FLICK', BUG:'SKITTER',
+  ROCK:'ACCELEROCK',     GHOST:'SHADOW_SNEAK', DRAGON:'TAIL_FEINT',
+  DARK:'SUCKER_PUNCH',   STEEL:'BULLET_PUNCH', FAIRY:'PIXIE_STRIKE',
+};
+(function() {
+  const VANGUARD_IDS = new Set(Object.values(DG.VANGUARDS));
+  for (const id in DG.SPECIES) {
+    const s = DG.SPECIES[id];
+    const t = s.types && s.types[0];
+    const vg = t && DG.VANGUARDS[t];
+    if (!vg) continue;
+    if (!Array.isArray(s.learnset)) s.learnset = [];
+    const hasVanguard = s.learnset.some(e => {
+      const mv = Array.isArray(e.move) ? e.move : [e.move];
+      return mv.some(m => VANGUARD_IDS.has(m));
+    });
+    if (!hasVanguard) s.learnset.push({ level: 24, move: vg });
   }
 })();
 

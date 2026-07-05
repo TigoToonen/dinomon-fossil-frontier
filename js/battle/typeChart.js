@@ -82,6 +82,9 @@ DG.TypeChart = (function () {
     const critStage = opts.critStage || 0;
     let critChance = critStage >= 2 ? 0.5 : critStage >= 1 ? 0.125 : 0.0625;
     if (move.highCrit) critChance = Math.min(0.5, critChance * 2);
+    // BATTLE-STRATEGY Fase 3a: Predator's Mind — de +10% crit die de
+    // ability-omschrijving al beloofde (never-miss zat al in battle.js)
+    if (attackerSpecies.ability === "Predator's Mind") critChance = Math.min(0.5, critChance + 0.10);
     const crit = critRoll < critChance;
     const critMult = crit ? 1.5 : 1.0;
 

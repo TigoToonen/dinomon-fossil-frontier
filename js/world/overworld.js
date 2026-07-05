@@ -647,6 +647,12 @@ DG.Overworld = (function () {
       return;
     }
 
+    // onInteract: OPEN_SAP_FARM — Fase 1½: de harsboer (quest + koop/verkoop)
+    if (npc.onInteract === 'OPEN_SAP_FARM') {
+      DG.Events.sapFarmInteract(_gs, () => { _blocked = false; DG.SaveLoad.save(_gs); });
+      return;
+    }
+
     // onInteract: TRIGGER_STARTER (Dokter Timo gives starter DinoMon)
     if (npc.onInteract === 'TRIGGER_STARTER') {
       const dialogue = _getDialogue(npc);
@@ -2165,24 +2171,26 @@ DG.Overworld = (function () {
   }
 
   // ── Ground items per map (dinoball pickups; hidden:true = invisible) ──
+  // BATTLE-STRATEGY Fase 1½: elke route heeft 1-2 Resins passend bij het
+  // gebied (gif-moeras → Cleansing, vulkaan → Cooling, ijs → Thawing, ...)
   var _GROUND_ITEMS = {
-    ROUTE_1A: [{x:2,y:7,id:'POTION'},      {x:19,y:9,id:'DINOBALL',qty:3}],
-    ROUTE_1B: [{x:3,y:9,id:'SUPERPOTION'}, {x:17,y:11,id:'ANTIDOTE',hidden:true}],
-    ROUTE_2A: [{x:2,y:2,id:'SUPERBALL',qty:2}, {x:17,y:17,id:'RARE_CANDY',hidden:true}],
-    ROUTE_3A: [{x:2,y:2,id:'REVIVE'},      {x:17,y:8,id:'SUPERBALL'}],
-    ROUTE_4A: [{x:2,y:2,id:'HYPERPOTION'}, {x:16,y:8,id:'RARE_CANDY',hidden:true}],
-    ROUTE_5A: [{x:2,y:2,id:'ULTRABALL'},   {x:16,y:17,id:'FIRE_STONE',hidden:true}],
-    ROUTE_6A: [{x:2,y:2,id:'RARE_CANDY'},  {x:17,y:8,id:'ULTRABALL'},     {x:3,y:8,id:'AMBER_FOSSIL'}],
-    ROUTE_7A: [{x:2,y:2,id:'HYPERPOTION'}, {x:9,y:8,id:'THUNDER_STONE',hidden:true}, {x:16,y:3,id:'SEA_FOSSIL'}],
-    ROUTE_8A: [{x:3,y:3,id:'TAR_FOSSIL'},  {x:16,y:16,id:'ULTRABALL',hidden:true}],
-    ROUTE_9A: [{x:3,y:3,id:'ICE_FOSSIL'},  {x:16,y:16,id:'RARE_CANDY',hidden:true}],
-    ROUTE_10E:[{x:3,y:3,id:'SKY_FOSSIL'}],
+    ROUTE_1A: [{x:2,y:7,id:'POTION'},      {x:19,y:9,id:'DINOBALL',qty:3},   {x:10,y:12,id:'SUPPLE_RESIN'}],
+    ROUTE_1B: [{x:3,y:9,id:'SUPERPOTION'}, {x:17,y:11,id:'ANTIDOTE',hidden:true}, {x:8,y:5,id:'CLEANSING_RESIN'}],
+    ROUTE_2A: [{x:2,y:2,id:'SUPERBALL',qty:2}, {x:17,y:17,id:'RARE_CANDY',hidden:true}, {x:9,y:10,id:'COOLING_RESIN'}],
+    ROUTE_3A: [{x:2,y:2,id:'REVIVE'},      {x:17,y:8,id:'SUPERBALL'},        {x:9,y:5,id:'CLEANSING_RESIN',hidden:true}],
+    ROUTE_4A: [{x:2,y:2,id:'HYPERPOTION'}, {x:16,y:8,id:'RARE_CANDY',hidden:true}, {x:8,y:12,id:'ROUSING_RESIN'}],
+    ROUTE_5A: [{x:2,y:2,id:'ULTRABALL'},   {x:16,y:17,id:'FIRE_STONE',hidden:true}, {x:10,y:9,id:'COOLING_RESIN'}],
+    ROUTE_6A: [{x:2,y:2,id:'RARE_CANDY'},  {x:17,y:8,id:'ULTRABALL'},     {x:3,y:8,id:'AMBER_FOSSIL'}, {x:11,y:12,id:'VITAL_RESIN',hidden:true}],
+    ROUTE_7A: [{x:2,y:2,id:'HYPERPOTION'}, {x:9,y:8,id:'THUNDER_STONE',hidden:true}, {x:16,y:3,id:'SEA_FOSSIL'}, {x:6,y:12,id:'SUPPLE_RESIN'}],
+    ROUTE_8A: [{x:3,y:3,id:'TAR_FOSSIL'},  {x:16,y:16,id:'ULTRABALL',hidden:true}, {x:9,y:9,id:'CLARITY_RESIN',hidden:true}],
+    ROUTE_9A: [{x:3,y:3,id:'ICE_FOSSIL'},  {x:16,y:16,id:'RARE_CANDY',hidden:true}, {x:8,y:10,id:'THAWING_RESIN'}],
+    ROUTE_10E:[{x:3,y:3,id:'SKY_FOSSIL'},  {x:9,y:9,id:'GOLDEN_RESIN',hidden:true}],
   };
   // Loot pools by route progression tier (parsed from ROUTE_<n>)
   var _LOOT_TIERS = {
-    early: ['POTION','POTION','DINOBALL','SUPERPOTION','ANTIDOTE','DINOBALL'],
-    mid:   ['SUPERPOTION','SUPERBALL','HYPERPOTION','REVIVE','SUPERBALL','RARE_CANDY'],
-    late:  ['HYPERPOTION','ULTRABALL','HYPERPOTION','MAXREVIVE','ULTRABALL','RARE_CANDY','FULLHEAL'],
+    early: ['POTION','POTION','DINOBALL','SUPERPOTION','ANTIDOTE','DINOBALL','COOLING_RESIN','CLEANSING_RESIN','SUPPLE_RESIN'],
+    mid:   ['SUPERPOTION','SUPERBALL','HYPERPOTION','REVIVE','SUPERBALL','RARE_CANDY','ROUSING_RESIN','THAWING_RESIN','VITAL_RESIN'],
+    late:  ['HYPERPOTION','ULTRABALL','HYPERPOTION','MAXREVIVE','ULTRABALL','RARE_CANDY','FULLHEAL','CLARITY_RESIN','GOLDEN_RESIN'],
   };
   function _routeTier(id) {
     var m = id.match(/ROUTE_(\d+)/); var n = m ? parseInt(m[1], 10) : 1;

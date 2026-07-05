@@ -25,23 +25,26 @@ DG.StatusEffects = (function () {
     mon.statusEffect = status;
     mon.statusTurns = 0;
 
-    // All time-limited statuses last 1–3 turns (random at application time)
-    if (status === DG.STATUS.SLEEP     ||
-        status === DG.STATUS.BURN      ||
-        status === DG.STATUS.POISON    ||
-        status === DG.STATUS.PARALYSIS ||
-        status === DG.STATUS.FREEZE) {
+    // BATTLE-STRATEGY Fase 1b — het 20%-herstelmodel:
+    // • SLEEP: statusTurns = resterende beurten (1–3), ZICHTBAAR in de HUD.
+    // • BADPOISON: statusTurns = escalatie-teller (start 0, +1 per beurt).
+    // • BURN/POISON/PARALYSIS: statusTurns telt verstreken end-of-turns;
+    //   de status blijft tot genezen, maar herstelt vanaf de 2e beurt met
+    //   20% kans per beurt (TOX 10%). De eerste beurt is dus gegarandeerd.
+    // • FREEZE: geen duur — alleen de 20% ontdooikans per beweegpoging
+    //   (freezeCheck) of een fire-hit.
+    if (status === DG.STATUS.SLEEP) {
       mon.statusTurns = 1 + Math.floor(Math.random() * 3);
     }
-    // BADPOISON: statusTurns is used as an escalating counter (starts at 0, grows each turn)
 
+    // Meldingen mét getallen — de speler moet de regels kunnen leren
     const msgs = {
-      [DG.STATUS.BURN]:      `${_name(mon)} was burned!`,
-      [DG.STATUS.PARALYSIS]: `${_name(mon)} is paralysed! It may be unable to move!`,
-      [DG.STATUS.POISON]:    `${_name(mon)} was poisoned!`,
-      [DG.STATUS.BADPOISON]: `${_name(mon)} was badly poisoned!`,
-      [DG.STATUS.SLEEP]:     `${_name(mon)} fell asleep!`,
-      [DG.STATUS.FREEZE]:    `${_name(mon)} was frozen solid!`,
+      [DG.STATUS.BURN]:      `${_name(mon)} was burned! (1/16 HP/turn, ATK halved — 20%/turn recovery)`,
+      [DG.STATUS.PARALYSIS]: `${_name(mon)} is paralysed! (SPD halved, 25% skip — 20%/turn recovery)`,
+      [DG.STATUS.POISON]:    `${_name(mon)} was poisoned! (1/8 HP/turn — 20%/turn recovery)`,
+      [DG.STATUS.BADPOISON]: `${_name(mon)} was badly poisoned! (rising damage — only 10%/turn recovery)`,
+      [DG.STATUS.SLEEP]:     `${_name(mon)} fell asleep! (${mon.statusTurns} turn${mon.statusTurns > 1 ? 's' : ''})`,
+      [DG.STATUS.FREEZE]:    `${_name(mon)} was frozen solid! (20%/turn thaw — fire hits thaw instantly)`,
     };
     return { applied: true, message: msgs[status] || `${_name(mon)} was afflicted!` };
   }
@@ -108,58 +111,74 @@ DG.StatusEffects = (function () {
     const msgs = [];
     const maxHP = mon.hp.max;
     const name  = _name(mon);
+    const _ab   = (DG.SPECIES[mon.speciesId] || {}).ability;
 
-    // ── Burn (1-3 turn duration, 1/16 HP per turn) ────────────
+    // BATTLE-STRATEGY Fase 3c: Shed Skin — 30% kans per beurt om élke status
+    // af te werpen (vervelt vóór de schade-tik van deze beurt)
+    if (_ab === 'Shed Skin' && mon.statusEffect && Math.random() < 0.30) {
+      mon.statusEffect = null;
+      mon.statusTurns = 0;
+      msgs.push({ message: `${name} shed its skin and its condition!`, damage: 0 });
+    }
+
+    // BATTLE-STRATEGY Fase 1b — 20%-herstelmodel.
+    // Herstelkans geldt pas vanaf de 2e end-of-turn (eerste beurt gegarandeerd);
+    // rolt NA de schade van deze beurt, zodat herstellen nooit een tik scheelt.
+    const RECOVER = 0.20, RECOVER_TOX = 0.10;
+    const _tryRecover = (chance, msg) => {
+      if (mon.statusTurns >= 1 && Math.random() < chance) {
+        mon.statusEffect = null;
+        mon.statusTurns = 0;
+        msgs.push({ message: msg, damage: 0 });
+        return true;
+      }
+      mon.statusTurns++;
+      return false;
+    };
+
+    // ── Burn (1/16 HP per beurt, ATK ×0,5 — tot genezen/herstel) ──
     if (mon.statusEffect === DG.STATUS.BURN) {
       const dmg = Math.max(1, Math.floor(maxHP / 16));
       mon.hp.current = Math.max(0, mon.hp.current - dmg);
       msgs.push({ message: `${name} is hurt by its burn! (-${dmg} HP)`, damage: dmg, statusAnim: 'BURN' });
-      if (mon.statusTurns > 0) {
-        mon.statusTurns--;
-        if (mon.statusTurns <= 0) {
+      _tryRecover(RECOVER, `${name}'s burn faded away!`);
+
+    // ── Poison (1/8 HP per beurt — tot genezen/herstel) ───────
+    } else if (mon.statusEffect === DG.STATUS.POISON || mon.statusEffect === DG.STATUS.BADPOISON) {
+      // Fase 3c: Poison Heal — gif voedt in plaats van schaadt (+1/8 HP/beurt);
+      // geen zelfherstel-roll: deze mon WIL vergiftigd blijven.
+      if (_ab === 'Poison Heal') {
+        if (mon.hp.current < maxHP) {
+          const heal = Math.max(1, Math.floor(maxHP / 8));
+          mon.hp.current = Math.min(maxHP, mon.hp.current + heal);
+          msgs.push({ message: `${name}'s Poison Heal restored ${heal} HP!`, damage: -heal });
+        }
+      } else if (mon.statusEffect === DG.STATUS.POISON) {
+        const dmg = Math.max(1, Math.floor(maxHP / 8));
+        mon.hp.current = Math.max(0, mon.hp.current - dmg);
+        msgs.push({ message: `${name} is hurt by poison! (-${dmg} HP)`, damage: dmg, statusAnim: 'POISON' });
+        _tryRecover(RECOVER, `${name} recovered from poison!`);
+
+      // ── Bad Poison (escalerend n/16; slechts 10% herstel) ───
+      } else {
+        mon.statusTurns = (mon.statusTurns || 0) + 1;
+        const dmg = Math.max(1, Math.floor(maxHP * mon.statusTurns / 16));
+        mon.hp.current = Math.max(0, mon.hp.current - dmg);
+        msgs.push({ message: `${name} is badly poisoned! (-${dmg} HP)`, damage: dmg, statusAnim: 'BADPOISON' });
+        // teller is al ≥1 na de eerste tik; herstelkans dus vanaf de 2e beurt
+        if (mon.statusTurns >= 2 && Math.random() < RECOVER_TOX) {
           mon.statusEffect = null;
-          msgs.push({ message: `${name}'s burn faded away!`, damage: 0 });
+          mon.statusTurns = 0;
+          msgs.push({ message: `${name} shook off the toxic poison!`, damage: 0 });
         }
       }
 
-    // ── Poison (1-3 turn duration, 1/8 HP per turn) ───────────
-    } else if (mon.statusEffect === DG.STATUS.POISON) {
-      const dmg = Math.max(1, Math.floor(maxHP / 8));
-      mon.hp.current = Math.max(0, mon.hp.current - dmg);
-      msgs.push({ message: `${name} is hurt by poison! (-${dmg} HP)`, damage: dmg, statusAnim: 'POISON' });
-      if (mon.statusTurns > 0) {
-        mon.statusTurns--;
-        if (mon.statusTurns <= 0) {
-          mon.statusEffect = null;
-          msgs.push({ message: `${name} recovered from poison!`, damage: 0 });
-        }
-      }
-
-    // ── Bad Poison (escalating, indefinite) ───────────────────
-    } else if (mon.statusEffect === DG.STATUS.BADPOISON) {
-      mon.statusTurns = (mon.statusTurns || 0) + 1;
-      const dmg = Math.max(1, Math.floor(maxHP * mon.statusTurns / 16));
-      mon.hp.current = Math.max(0, mon.hp.current - dmg);
-      msgs.push({ message: `${name} is badly poisoned! (-${dmg} HP)`, damage: dmg, statusAnim: 'BADPOISON' });
+    // ── Paralysis (SPD ×0,5 + 25% skip — tot genezen/herstel) ─
+    } else if (mon.statusEffect === DG.STATUS.PARALYSIS) {
+      _tryRecover(RECOVER, `${name} recovered from paralysis!`);
     }
-
-    // ── Paralysis: tick duration, auto-cure when expired ──────
-    if (mon.statusEffect === DG.STATUS.PARALYSIS && mon.statusTurns > 0) {
-      mon.statusTurns--;
-      if (mon.statusTurns <= 0) {
-        mon.statusEffect = null;
-        msgs.push({ message: `${name} recovered from paralysis!`, damage: 0 });
-      }
-    }
-
-    // ── Freeze: tick duration, auto-thaw when expired ─────────
-    if (mon.statusEffect === DG.STATUS.FREEZE && mon.statusTurns > 0) {
-      mon.statusTurns--;
-      if (mon.statusTurns <= 0) {
-        mon.statusEffect = null;
-        msgs.push({ message: `${name} thawed out!`, damage: 0 });
-      }
-    }
+    // FREEZE heeft hier bewust géén pad meer: ontdooien gebeurt via de 20%
+    // kans per beweegpoging (freezeCheck) of een fire-hit (battle.js).
 
     // ── Weather damage ─────────────────────────────────────────
     const species = DG.SPECIES[mon.speciesId];
@@ -208,6 +227,10 @@ DG.StatusEffects = (function () {
 
   // Get Speed multiplier from status
   function speedMult(mon) {
+    // Fase 3c: Quick Feet — een status maakt hem juist SNELLER (×1,5),
+    // en de paralysis-vertraging vervalt volledig
+    const _ab = mon && (DG.SPECIES[mon.speciesId] || {}).ability;
+    if (_ab === 'Quick Feet' && mon.statusEffect) return 1.5;
     if (mon.statusEffect === DG.STATUS.PARALYSIS) return 0.5;
     return 1.0;
   }
@@ -233,6 +256,16 @@ DG.StatusEffects = (function () {
     return names[status] || '';
   }
 
+  // BATTLE-STRATEGY Fase 1c: badge-tekst mét teller — SLP toont de resterende
+  // beurten (zichtbare aftelklok), TOX de escalatie-stand (×n).
+  function badgeText(mon) {
+    if (!mon || !mon.statusEffect) return '';
+    const base = displayName(mon.statusEffect);
+    if (mon.statusEffect === DG.STATUS.SLEEP && mon.statusTurns > 0) return base + ' ' + mon.statusTurns;
+    if (mon.statusEffect === DG.STATUS.BADPOISON && mon.statusTurns > 0) return base + '×' + mon.statusTurns;
+    return base;
+  }
+
   // Status colour for UI badge
   function displayColor(status) {
     const cols = {
@@ -247,6 +280,6 @@ DG.StatusEffects = (function () {
   return {
     apply, applyConfusion, confusionCheck, paralysisCheck,
     sleepCheck, freezeCheck, endOfTurnTick, cure,
-    speedMult, attackMult, displayName, displayColor,
+    speedMult, attackMult, displayName, displayColor, badgeText,
   };
 })();

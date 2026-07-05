@@ -47,66 +47,14 @@ DG.PartyMenu = (function () {
   };
 
   // ── Effect text helpers ───────────────────────────────────────
-  function _effectText(eff) {
-    if (!eff || eff.type === 'NONE') return null;
-    const sn = { atk:'Atk', def:'Def', spAtk:'Sp.Atk', spDef:'Sp.Def', spd:'Speed', acc:'Accuracy' };
-    const st = { BURN:'burn', POISON:'poison', PARALYSIS:'paralysis', SLEEP:'sleep', FREEZE:'freeze' };
-    switch (eff.type) {
-      case 'STATUS_CHANCE': {
-        const s = st[eff.status] || eff.status.toLowerCase();
-        return eff.chance >= 100 ? `Inflicts ${s}` : `${eff.chance}% chance: ${s}`;
-      }
-      case 'FLINCH':   return eff.chance >= 100 ? 'Causes flinch' : `${eff.chance}% flinch`;
-      case 'CONFUSE':  return eff.chance >= 100 ? 'Causes confusion' : `${eff.chance}% confusion`;
-      case 'STAT_RAISE': {
-        const t = (!eff.target || eff.target === 'self') ? 'user' : 'foe';
-        const stat = sn[eff.stat] || eff.stat;
-        const pct  = (eff.chance && eff.chance < 100) ? ` (${eff.chance}%)` : '';
-        return `Raises ${t}'s ${stat} +${eff.stages}${pct}`;
-      }
-      case 'STAT_LOWER': {
-        const t = (eff.target === 'opponent') ? "foe's" : "user's";
-        const stat = sn[eff.stat] || eff.stat;
-        const stg  = eff.stages < 0 ? String(eff.stages) : `-${eff.stages}`;
-        const pct  = (eff.chance && eff.chance < 100) ? ` (${eff.chance}%)` : '';
-        return `Lowers ${t} ${stat} ${stg}${pct}`;
-      }
-      case 'RECOIL':     return `User takes ${Math.round(eff.fraction * 100)}% recoil`;
-      case 'DRAIN':      return `Drains ${Math.round(eff.fraction * 100)}% of damage dealt`;
-      case 'HEAL':       return `Heals user for ${Math.round(eff.fraction * 100)}% HP`;
-      case 'LEECH_SEED': return 'Seeds foe — drains HP each turn';
-      case 'RECHARGE':   return 'User must recharge next turn';
-      case 'TWO_TURN':   return '2-turn move (charge then strike)';
-      case 'ONE_HIT_KO': return 'One-hit KO!';
-      case 'SET_WEATHER': {
-        const w = { SUN:'Sets harsh sunlight', RAIN:'Sets heavy rain', HAIL:'Sets hail', SANDSTORM:'Sets sandstorm' };
-        return w[eff.weather] || ('Weather: ' + eff.weather);
-      }
-      case 'MULTI': return eff.hits ? `Hits ${eff.hits[0]}-${eff.hits[1]} times` : null;
-      default: return null;
-    }
+  // BATTLE-STRATEGY Fase 1c: delegeert naar de canonieke generator in uiKit —
+  // één bron van waarheid, inclusief de status-regels (schade/beurt, malus).
+  function _effectText(eff, move) {
+    return (DG.UIKit && DG.UIKit.moveEffectLabel) ? DG.UIKit.moveEffectLabel(eff, move) : null;
   }
 
-  function _effectColor(eff) {
-    if (!eff || eff.type === 'NONE') return '#aaaaaa';
-    const STATUS_COLORS = { BURN:'#ff7733', POISON:'#cc66ff', PARALYSIS:'#ffee44', SLEEP:'#aabbcc', FREEZE:'#88eeff' };
-    switch (eff.type) {
-      case 'STATUS_CHANCE': return STATUS_COLORS[eff.status] || '#ffaaaa';
-      case 'FLINCH':        return '#ffcc44';
-      case 'CONFUSE':       return '#ee88ff';
-      case 'STAT_RAISE':    return '#66ff99';
-      case 'STAT_LOWER':    return '#ff8844';
-      case 'RECOIL':        return '#ff6666';
-      case 'DRAIN':         return '#88ffbb';
-      case 'HEAL':          return '#88ff88';
-      case 'LEECH_SEED':    return '#88dd44';
-      case 'RECHARGE':      return '#ffcc66';
-      case 'TWO_TURN':      return '#aaddff';
-      case 'ONE_HIT_KO':    return '#ff4444';
-      case 'SET_WEATHER':   return '#99ccff';
-      case 'MULTI':         return '#ffdd88';
-      default:              return '#cccccc';
-    }
+  function _effectColor(eff, move) {
+    return (DG.UIKit && DG.UIKit.moveEffectColor) ? DG.UIKit.moveEffectColor(eff, move) : '#aaaaaa';
   }
 
   // ── Helpers ───────────────────────────────────────────────────
@@ -600,13 +548,16 @@ DG.PartyMenu = (function () {
       ctx.font = '9px monospace';
       ctx.fillText(`${mon.hp.current}/${mon.hp.max}`, barX, y + 20);
 
-      // Status badge
+      // Status badge — Fase 1c: mét teller (SLP = resterende beurten, TOX = ×n)
       if (mon.statusEffect) {
+        const _bTxt = DG.StatusEffects.badgeText ? DG.StatusEffects.badgeText(mon)
+                     : DG.StatusEffects.displayName(mon.statusEffect);
+        const _bW = Math.max(28, _bTxt.length * 6 + 6);
         ctx.fillStyle = DG.StatusEffects.displayColor(mon.statusEffect);
-        ctx.fillRect(W - 42, y + 3, 28, 11);
+        ctx.fillRect(W - 14 - _bW, y + 3, _bW, 11);
         ctx.fillStyle = '#000';
         ctx.font = '8px monospace';
-        ctx.fillText(DG.StatusEffects.displayName(mon.statusEffect), W - 41, y + 4);
+        ctx.fillText(_bTxt, W - 12 - _bW, y + 4);
       }
 
       // Ball indicator (top-right corner)
@@ -912,6 +863,12 @@ DG.PartyMenu = (function () {
         ctx.font = '10px monospace';
         ctx.fillText(catIcon, 18 + nameW + 30, my);
 
+        // BATTLE-STRATEGY Fase 2: priority-indicator (▲ eerst / ▼ laatst)
+        if ((mvDef.priority || 0) !== 0) {
+          ctx.fillStyle = mvDef.priority > 0 ? '#ffd75e' : '#8899bb';
+          ctx.fillText(mvDef.priority > 0 ? '▲' : '▼', 18 + nameW + 42, my);
+        }
+
         // PP
         ctx.fillStyle = '#666';
         ctx.fillText(`PP:${mv.ppCurrent}/${mv.ppMax}`, 138, my);
@@ -1047,7 +1004,7 @@ DG.PartyMenu = (function () {
     ctx.stroke();
 
     // ── Effect ───────────────────────────────────────────────────
-    const effTxt = _effectText(mvDef.effect);
+    const effTxt = _effectText(mvDef.effect, mvDef);
     let effectSectionH = 0;
     if (effTxt) {
       const effRowY = divY + 10;
@@ -1055,7 +1012,7 @@ DG.PartyMenu = (function () {
       ctx.font = 'bold 9px monospace';
       ctx.textAlign = 'left';
       ctx.fillText('Effect:', 10, effRowY);
-      ctx.fillStyle = _effectColor(mvDef.effect);
+      ctx.fillStyle = _effectColor(mvDef.effect, mvDef);
       ctx.font = 'bold 9px monospace';
       ctx.fillText(effTxt, 68, effRowY);
       effectSectionH = 20;

@@ -348,6 +348,91 @@ DG.UIKit = (function () {
     }
   }
 
+  // ── BATTLE-STRATEGY Fase 1c: canonieke effectregel-generator ──
+  // Eén bron van waarheid voor "wat doet deze move" — automatisch uit de
+  // effect-data, dus de tekst kan nooit meer liegen. Status-effecten tonen
+  // hun REGELS (schade/beurt, malus) i.p.v. alleen een naam.
+  const _FX_STATUS_RULE = {
+    BURN:      'burn — 1/16 HP/turn, ATK ½',
+    POISON:    'poison — 1/8 HP/turn',
+    BADPOISON: 'toxic — rising dmg/turn (only 10% recovery)',
+    PARALYSIS: 'paralysis — SPD ½, 25% skip',
+    SLEEP:     'sleep — 1-3 turns',
+    FREEZE:    'freeze — can\'t move, 20% thaw',
+  };
+  // Optionele 2e param `move`: neemt priority mee in de regel — "▲ Priority +1"
+  // is strategische kerninfo (Fase 2 vanguards) en hoort net zo zichtbaar te
+  // zijn als een status-effect.
+  function moveEffectLabel(eff, move) {
+    const base = _effectLabelBase(eff);
+    const prio = move ? (move.priority || 0) : 0;
+    if (prio > 0)  return `▲ Priority +${prio} — strikes first` + (base ? ` · ${base}` : '');
+    if (prio < 0)  return `▼ Priority ${prio} — moves last` + (base ? ` · ${base}` : '');
+    return base;
+  }
+  function _effectLabelBase(eff) {
+    if (!eff || eff.type === 'NONE') return null;
+    const sn = { atk:'Atk', def:'Def', spAtk:'Sp.Atk', spDef:'Sp.Def', spd:'Speed', acc:'Accuracy', accuracy:'Accuracy', eva:'Evasion' };
+    switch (eff.type) {
+      case 'SUCKER': return "fails if the target isn't attacking";
+      case 'STATUS_CHANCE': {
+        const rule = _FX_STATUS_RULE[eff.status] || (eff.status || '').toLowerCase();
+        return (eff.chance >= 100) ? `Inflicts ${rule}` : `${eff.chance}% chance: ${rule}`;
+      }
+      case 'FLINCH':   return eff.chance >= 100 ? 'Causes flinch' : `${eff.chance}% flinch`;
+      case 'CONFUSE':  return eff.chance >= 100 ? 'Causes confusion (2-5 turns)' : `${eff.chance}% confusion (2-5 turns)`;
+      case 'STAT_RAISE': {
+        const t = (!eff.target || eff.target === 'self') ? 'user' : 'foe';
+        const pct = (eff.chance && eff.chance < 100) ? ` (${eff.chance}%)` : '';
+        return `Raises ${t}'s ${sn[eff.stat] || eff.stat} +${eff.stages}${pct}`;
+      }
+      case 'STAT_LOWER':
+      case 'STAT': {
+        const t = (eff.target === 'opponent' || eff.target === 'FOE') ? "foe's" : "user's";
+        const stg = eff.stages < 0 ? String(eff.stages) : `-${eff.stages}`;
+        const pct = (eff.chance && eff.chance < 100) ? ` (${eff.chance}%)` : '';
+        return `Lowers ${t} ${sn[eff.stat] || eff.stat} ${stg}${pct}`;
+      }
+      case 'RECOIL':     return `User takes ${Math.round(eff.fraction * 100)}% recoil`;
+      case 'DRAIN':      return `Drains ${Math.round(eff.fraction * 100)}% of damage dealt`;
+      case 'HEAL':       return `Heals user for ${Math.round(eff.fraction * 100)}% HP`;
+      case 'LEECH_SEED': return 'Seeds foe — drains 1/8 HP each turn';
+      case 'RECHARGE':   return 'User must recharge next turn';
+      case 'TWO_TURN':   return '2-turn move (charge then strike)';
+      case 'ONE_HIT_KO': return 'One-hit KO!';
+      case 'OMNI_RAISE': return (eff.chance && eff.chance < 100) ? `${eff.chance}% chance: all stats +1` : 'Raises all stats +1';
+      case 'STEALTH_ROCK': return 'Floating rocks damage foes on switch-in';
+      case 'SET_WEATHER': {
+        const w = { SUN:'Sets harsh sunlight', RAIN:'Sets heavy rain', HAIL:'Sets hail', SANDSTORM:'Sets sandstorm' };
+        return w[eff.weather] || ('Weather: ' + eff.weather);
+      }
+      case 'MULTI': return eff.hits ? `Hits ${eff.hits[0]}-${eff.hits[1]} times` : null;
+      default: return null;
+    }
+  }
+  function moveEffectColor(eff, move) {
+    // Priority-regels kleuren amber, tenzij het effect zelf een kleur heeft
+    if ((!eff || eff.type === 'NONE' || eff.type === 'SUCKER') && move && (move.priority || 0) !== 0) {
+      return '#ffd75e';
+    }
+    if (!eff || eff.type === 'NONE') return '#aaaacc';
+    switch (eff.type) {
+      case 'SUCKER': return '#c07be0';
+      case 'STATUS_CHANCE': {
+        const c = { BURN:'#ff8833', POISON:'#cc55ff', BADPOISON:'#b23aee', PARALYSIS:'#ffdd22', SLEEP:'#6688ff', FREEZE:'#44ddff' };
+        return c[eff.status] || '#ffaa44';
+      }
+      case 'FLINCH': return '#ddddcc'; case 'CONFUSE': return '#ff88cc';
+      case 'STAT_RAISE': case 'OMNI_RAISE': return '#44ff88';
+      case 'STAT_LOWER': case 'STAT': return '#ff8844';
+      case 'RECOIL': return '#ff5544'; case 'DRAIN': case 'HEAL': return '#44ffcc';
+      case 'LEECH_SEED': return '#88ff44'; case 'ONE_HIT_KO': return '#ff4444';
+      case 'SET_WEATHER': return '#88ccff'; case 'MULTI': return '#ffcc44';
+      case 'STEALTH_ROCK': return '#ccaa88';
+      default: return '#aaaacc';
+    }
+  }
+
   // ── EVO-STAGE: fossiel-pips ◆◆◇ — stage X van Y in één oogopslag ──
   // Gevuld amber = bereikt, holle outline = nog te gaan; laatste pip van een
   // voltooide lijn krijgt een gouden rand. Tekent niets bij total ≤ 1.
@@ -488,6 +573,9 @@ DG.UIKit = (function () {
     // EVO-STAGE: stage-indicatoren
     drawStagePips,
     drawEvoChainStrip,
+    // BATTLE-STRATEGY: effectregel-generator (één bron van waarheid)
+    moveEffectLabel,
+    moveEffectColor,
     setPixelFont: function (on) { _enabled = !!on; },
     isPixelFont:  function () { return _enabled; },
   };

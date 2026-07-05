@@ -30,6 +30,7 @@ DG.BagMenu = (function () {
     if (id.includes('BALL')) return 'BALLS';
     if (id.includes('POTION') || id.includes('REVIVE') || id.includes('ANTIDOTE') ||
         id.includes('HEAL') || id.includes('ELIXIR') || id.includes('ETHER') ||
+        id.includes('RESIN') ||
         id.includes('BURNHEAL') || id.includes('PARALYHEAL') || id.includes('AWAKENING') ||
         id.includes('FULLRESTORE') || id.includes('FULLHEAL')) return 'HEAL';
     if (id.includes('TM') || id.includes('HM') || id.includes('BERRY') ||
@@ -63,6 +64,9 @@ DG.BagMenu = (function () {
     'LUM_BERRY','FOCUS_SASH','ROCKY_HELMET','SHELL_BELL',
   ];
   const REPELS    = ['REPEL','SUPER_REPEL','MAX_REPEL'];
+  // BATTLE-STRATEGY Fase 1½: Primal Resins — genezen uit de tas óf dragen
+  const RESINS    = ['COOLING_RESIN','CLEANSING_RESIN','SUPPLE_RESIN','ROUSING_RESIN',
+                     'THAWING_RESIN','VITAL_RESIN','CLARITY_RESIN','GOLDEN_RESIN'];
   const KEY_ITEMS = ['OLD_ROD','GOOD_ROD','SUPER_ROD','RUNNING_SHOES','BIKE',
     'AMBER_FOSSIL','TAR_FOSSIL','ICE_FOSSIL','SEA_FOSSIL','SKY_FOSSIL','GOLD_TEETH','COMPOUND_CARD'];
 
@@ -126,11 +130,44 @@ DG.BagMenu = (function () {
     FOCUS_SASH:     { name:'Focus Sash',    desc:'Hold item — survives one hit from full HP.' },
     ROCKY_HELMET:   { name:'Rocky Helmet',  desc:'Hold item — damages attacker on contact.' },
     SHELL_BELL:     { name:'Shell Bell',    desc:'Hold item — restores HP when dealing damage.' },
+    // Primal Resins — hars van oerbomen; gebruiken geneest nu, geven = verzekering
+    COOLING_RESIN:   { name:'Cooling Resin',   desc:'Cures burn. Or let a DinoMon hold it — auto-cures once.' },
+    CLEANSING_RESIN: { name:'Cleansing Resin', desc:'Cures poison & toxic. Or hold it — auto-cures once.' },
+    SUPPLE_RESIN:    { name:'Supple Resin',    desc:'Cures paralysis. Or hold it — auto-cures once.' },
+    ROUSING_RESIN:   { name:'Rousing Resin',   desc:'Wakes a sleeping DinoMon. Or hold it — auto-cures once.' },
+    THAWING_RESIN:   { name:'Thawing Resin',   desc:'Thaws a frozen DinoMon. Or hold it — auto-cures once.' },
+    VITAL_RESIN:     { name:'Vital Resin',     desc:'Restores 25% HP. Held: eaten below half HP.' },
+    CLARITY_RESIN:   { name:'Clarity Resin',   desc:'Cures confusion. Or hold it — auto-cures once.' },
+    GOLDEN_RESIN:    { name:'Golden Resin',    desc:'Cures ANY condition. Or hold it — auto-cures once.' },
   };
 
   // ── Heal item logic ──────────────────────────────────────────
   function _applyHealItem(mon, itemId) {
     if (mon.hp.current <= 0 && itemId !== 'REVIVE' && itemId !== 'MAXREVIVE') return false;
+    // BATTLE-STRATEGY Fase 1½: Resins — generiek via de DG.ITEMS-data
+    const _rdef = DG.ITEMS && DG.ITEMS[itemId];
+    if (_rdef && _rdef.type === 'RESIN') {
+      if (_rdef.healPct) {
+        if (mon.hp.current < mon.hp.max) {
+          mon.hp.current = Math.min(mon.hp.max, mon.hp.current + Math.max(1, Math.floor(mon.hp.max * _rdef.healPct)));
+          return true;
+        }
+        return false;
+      }
+      if (_rdef.cures === 'ALL') {
+        if (mon.statusEffect || mon.confusionTurns > 0) { DG.StatusEffects.cure(mon, 'ALL'); return true; }
+        return false;
+      }
+      if (Array.isArray(_rdef.cures)) {
+        if (_rdef.cures.includes('CONFUSION')) {
+          if (mon.confusionTurns > 0) { mon.confusionTurns = 0; return true; }
+          return false;
+        }
+        if (_rdef.cures.includes(mon.statusEffect)) { DG.StatusEffects.cure(mon, _rdef.cures); return true; }
+        return false;
+      }
+      return false;
+    }
     switch (itemId) {
       case 'POTION':     if (mon.hp.current < mon.hp.max) { mon.hp.current = Math.min(mon.hp.max, mon.hp.current + 20); return true; } return false;
       case 'SUPERPOTION':if (mon.hp.current < mon.hp.max) { mon.hp.current = Math.min(mon.hp.max, mon.hp.current + 50); return true; } return false;
@@ -274,6 +311,8 @@ DG.BagMenu = (function () {
   function _isBattleUsable(itemId) {
     const HEAL = ['POTION','SUPERPOTION','HYPERPOTION','MAXPOTION','FULLRESTORE',
                   'REVIVE','MAXREVIVE','ANTIDOTE','BURNHEAL','PARALYHEAL','AWAKENING','FULLHEAL'];
+    // Fase 1½: Resins zijn in battle bruikbaar (genezen kost je beurt)
+    if (DG.ITEMS && DG.ITEMS[itemId] && DG.ITEMS[itemId].type === 'RESIN') return true;
     return HEAL.includes(itemId);
   }
 
@@ -389,6 +428,13 @@ DG.BagMenu = (function () {
     }
     // Held items — equip to a party mon
     if (HELD_ITEMS.includes(itemId)) {
+      _pendingItem = itemId;
+      _monCursor   = 0;
+      _mode        = 'SELECT_MON';
+      return;
+    }
+    // Fase 1½: Resins — kies een mon; genezen als het nú helpt, anders geven
+    if (RESINS.includes(itemId)) {
       _pendingItem = itemId;
       _monCursor   = 0;
       _mode        = 'SELECT_MON';
@@ -576,6 +622,39 @@ DG.BagMenu = (function () {
           },
         });
       });
+      return;
+    }
+
+    // ── Fase 1½: Resin — slim gebruiken-of-geven ──
+    // Geneest hij NU een conditie (of HP bij Vital) → direct gebruiken;
+    // anders geven om te dragen (auto-consume verzekering in battle).
+    if (RESINS.includes(itemId)) {
+      const rName = ITEM_DEFS[itemId]?.name || itemId;
+      if (_applyHealItem(mon, itemId)) {
+        DG.SaveLoad.removeItem(_gs, itemId, 1);
+        DG.SaveLoad.save(_gs);
+        _mode = 'ITEMS'; _pendingItem = null;
+        DG.DialogueBox.show([`${monName} licked the ${rName} — all better!`], () => {});
+        return;
+      }
+      const old = mon.heldItem;
+      if (old === itemId) {
+        mon.heldItem = null;
+        DG.SaveLoad.addItem(_gs, itemId, 1);
+        DG.SaveLoad.save(_gs);
+        _mode = 'ITEMS'; _pendingItem = null;
+        DG.DialogueBox.show([`Took back ${rName} from ${monName}.`], () => {});
+        return;
+      }
+      if (old) DG.SaveLoad.addItem(_gs, old, 1);
+      DG.SaveLoad.removeItem(_gs, itemId, 1);
+      mon.heldItem = itemId;
+      DG.SaveLoad.save(_gs);
+      _mode = 'ITEMS'; _pendingItem = null;
+      const oldNm = old ? (ITEM_DEFS[old]?.name || old) : null;
+      DG.DialogueBox.show([old
+        ? `Took ${oldNm} and gave ${rName} to ${monName} to hold.`
+        : `Gave ${rName} to ${monName} to hold — it'll eat it when needed.`], () => {});
       return;
     }
 

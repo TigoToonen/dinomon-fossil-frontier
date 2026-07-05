@@ -38,6 +38,7 @@ DG.Menu = (function () {
 
   // Shop
   let _shopItems    = [];
+  let _shopOpts     = {};   // Fase 1½: { resinBonus } voor de harsboer
   let _shopCursor   = 0;
   let _shopMode     = 'BUY';
   let _shopSubMode  = 'BROWSE'; // 'BROWSE' | 'QTY'
@@ -77,9 +78,12 @@ DG.Menu = (function () {
   }
 
   // ── Public: show shop ─────────────────────────────────────
-  function showShop(shopItems, gameState, onClose) {
+  // opts (Fase 1½): { resinBonus: true } — de harsboer betaalt 75% i.p.v. 50%
+  // voor Resins bij verkoop
+  function showShop(shopItems, gameState, onClose, opts) {
     _gs      = gameState;
     _onClose = onClose;
+    _shopOpts = opts || {};
     _shopItems = (shopItems || []).map(function(item) {
       if (typeof item === 'string') {
         const def = DG.ITEMS[item] || { name: item, price: 0 };
@@ -273,7 +277,9 @@ DG.Menu = (function () {
       .filter(([, qty]) => qty > 0)
       .map(([id, qty]) => {
         const def = DG.ITEMS[id] || { name: id, price: 0, type: 'MISC' };
-        return { id, name: def.name, qty, sellPrice: Math.floor((def.price || 0) / 2), type: def.type };
+        // Fase 1½: de harsboer (resinBonus) betaalt 75% voor Resins; normaal 50%
+        const mult = (_shopOpts && _shopOpts.resinBonus && def.type === 'RESIN') ? 0.75 : 0.5;
+        return { id, name: def.name, qty, sellPrice: Math.floor((def.price || 0) * mult), type: def.type };
       })
       .filter(item => item.type !== 'KEY' && item.sellPrice > 0);
   }
