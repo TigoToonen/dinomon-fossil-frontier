@@ -191,6 +191,11 @@ DG.Battle = (function () {
     // Battle start sound
     try { if (typeof DG.Audio !== 'undefined') DG.Audio.playSfx('BATTLE_START'); } catch(e) {}
 
+    // Cry van de wilde mon bij verschijnen (trainer-mons krijgen hem ná het VS-scherm)
+    if (battleConfig.type === 'WILD') {
+      try { if (DG.Audio && DG.Audio.playCry) DG.Audio.playCry(_battle.enemyMon.speciesId); } catch(e) {}
+    }
+
     // Shiny sparkle for shiny mons
     if (typeof DG.BattleAnim !== 'undefined' && DG.BattleAnim.triggerShiny) {
       try {
@@ -531,6 +536,8 @@ DG.Battle = (function () {
       _battle.introTimer = Math.max(0, (_battle.introTimer || 0) - 1);
       if (_battle.introTimer > 0) return; // keep showing VS screen
       _battle.introPhase = 'BATTLE';
+      // Cry van de eerste trainer-mon zodra het VS-scherm wijkt
+      try { if (DG.Audio && DG.Audio.playCry) DG.Audio.playCry(_battle.enemyMon.speciesId); } catch(e) {}
       // FASE 4: nu pas de ball-throw intro starten (zichtbaar ná het VS-scherm)
       if (_battle._pendingIntro && typeof DG.BattleAnim !== 'undefined' && DG.BattleAnim.triggerBattleIntro) {
         try { DG.BattleAnim.triggerBattleIntro(_battle._pendingIntro.isTrainer, _battle._pendingIntro.name); } catch(e) {}
@@ -1173,6 +1180,11 @@ DG.Battle = (function () {
         _continueExecution();
         return;
       }
+    }
+
+    // Telemetrie: priority-aanval gekozen (vanguard-gebruik meten)
+    if ((move.priority || 0) > 0 && (move.power || 0) > 0) {
+      _track('vanguard_used', { moveId: move.id, side: isPlayer ? 'player' : 'enemy' });
     }
 
     // Fase 2d: anti-priority abilities — de schaar sluit zich.
@@ -1856,6 +1868,8 @@ DG.Battle = (function () {
     const tName = _battle.trainerData?.name || 'Trainer';
     _pushMessage(`${tName} withdrew ${oldName}!`);
     _pushMessage(`${tName} sent out ${_monName(newMon)}!`);
+    // Cry van de nieuwe mon
+    try { if (DG.Audio && DG.Audio.playCry) DG.Audio.playCry(newMon.speciesId); } catch(e) {}
     // Enemy ball throw animation
     if (typeof DG.BattleAnim !== 'undefined') {
       try { DG.BattleAnim.triggerEnemySwitchIn(); } catch(e) {}
@@ -1894,6 +1908,7 @@ DG.Battle = (function () {
     }
     const res = DG.StatusEffects.apply(mon, DG.STATUS[status] || status, force);
     if (res.message) _pushMessage(res.message);
+    if (res.applied) _track('status_applied', { status, side: mon === _battle.playerMon ? 'player' : 'enemy' });
     // Fase 1½: gedragen Resin eet zichzelf direct op als hij dit geneest
     if (res.applied) _autoResin(mon);
     // Fase 3c: Synchronize — kaatst BRN/PSN/TOX/PAR terug naar de veroorzaker
@@ -1914,6 +1929,7 @@ DG.Battle = (function () {
     const def = DG.ITEMS && DG.ITEMS[mon.heldItem];
     if (!def || def.type !== 'RESIN') return false;
     const name = def.name || mon.heldItem;
+    const _resinId = mon.heldItem;
     // Vital Resin: opeten zodra HP onder de helft zakt
     if (def.healPct) {
       if (mon.hp.current >= mon.hp.max / 2) return false;
@@ -1921,6 +1937,7 @@ DG.Battle = (function () {
       const heal = Math.max(1, Math.floor(mon.hp.max * def.healPct));
       mon.hp.current = Math.min(mon.hp.max, mon.hp.current + heal);
       _pushMessage(`${_monName(mon)} ate its ${name} and restored ${heal} HP!`);
+      _track('resin_auto', { itemId: _resinId });
       return true;
     }
     // Status-genezers
@@ -1938,6 +1955,7 @@ DG.Battle = (function () {
     else if (def.cures.includes('CONFUSION')) { mon.confusionTurns = 0; }
     else { DG.StatusEffects.cure(mon, def.cures); }
     _pushMessage(`${_monName(mon)} ate its ${name} — cured!`);
+    _track('resin_auto', { itemId: _resinId });
     return true;
   }
 
@@ -2740,6 +2758,7 @@ DG.Battle = (function () {
         if (cancelled) {
           _revertEvolution(pend);
           _pushMessage(`Huh? ${pend.oldName} stopped evolving!`);
+          _track('evo_cancelled', { speciesId: pend.oldId });
         } else {
           const gs    = _battle.gameState;
           const newSp = DG.SPECIES[pend.newId];
@@ -2902,6 +2921,7 @@ DG.Battle = (function () {
       DG.SaveLoad.removeItem(gs, itemId, 1);
       const _iNm = (DG.ITEMS && DG.ITEMS[itemId] && DG.ITEMS[itemId].name) || itemId;
       _pushMessage(`You used ${_iNm} on ${_monName(target)}!`);
+      _track('battle_item_used', { itemId });
     } else {
       _pushMessage(`It had no effect!`);
     }
@@ -2918,6 +2938,7 @@ DG.Battle = (function () {
     const used  = mon && mon.hp.current > 0 && _useHealItem(_battle.gameState, mon, act.itemId);
     if (used) {
       _pushMessage(`${tName} used a ${iNm} on ${_monName(mon)}!`);
+      _track('enemy_item_used', { itemId: act.itemId });
     } else {
       _pushMessage(`${tName} reached for an item... but hesitated!`);
     }
@@ -3160,6 +3181,12 @@ DG.Battle = (function () {
     if (!mon) return '?';
     const sp = DG.SPECIES[mon.speciesId];
     return mon.nickname || (sp ? sp.name : mon.speciesId);
+  }
+
+  // Telemetrie voor de strategie-laag: meet of spelers de nieuwe systemen
+  // (Resins, vanguards, status) echt gebruiken — voor datagedreven balans.
+  function _track(ev, props) {
+    try { if (DG.Analytics && DG.Analytics.track) DG.Analytics.track(ev, props || {}); } catch(e) {}
   }
 
   // dmgAction (optional): { target, damage } — applied when the message is displayed,

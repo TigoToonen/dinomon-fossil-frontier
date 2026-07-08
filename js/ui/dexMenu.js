@@ -75,7 +75,13 @@ DG.DexMenu = (function () {
     }
     if (DG.Input.isPressed('A')) {
       const id = _speciesList[_cursor];
-      if (id && _gs.player.dex[id]) _detail = true;
+      if (id && _gs.player.dex[id]) {
+        _detail = true;
+        // Cry bij het openen van een gezien exemplaar — zo leer je zijn stem kennen
+        if (_gs.player.dex[id].seen) {
+          try { if (DG.Audio && DG.Audio.playCry) DG.Audio.playCry(id); } catch(e) {}
+        }
+      }
     }
     if (DG.Input.isPressed('B') || DG.Input.isPressed('START')) {
       const cb = _onClose; _onClose = null;
