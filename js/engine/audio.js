@@ -1588,62 +1588,104 @@ DG.Audio = (function () {
     });
   }
 
-  // ── EVO-CINEMATIC (Fase D): procedurele cry per soort ──────
-  // Toonhoogte uit de BST (groter = lager), timbre uit het primaire type,
-  // en een species-hash zodat elke dino een eigen, consistente stem heeft.
-  // Ook bruikbaar bij battle-intro en dex-weergave.
-  function playCry(speciesId) {
-    _ensureInit();
-    if (!_ctx || !speciesId) return;
+  // ── Procedurele cry — een échte eigen stem per soort ───────
+  // Toonhoogte uit de BST (groter = lager), timbre-familie uit het primaire
+  // type, en een species-hash die ELKE stemeigenschap deterministisch
+  // vastlegt: toonhoogte-afwijking, duur, contour (op-neer / dalend /
+  // golvend), 1 of 2 lettergrepen, golfvorm, filter, vibrato-snelheid én
+  // -diepte, en de dikte van de gegrom-laag. Zelfde soort = altijd zelfde
+  // roep; twee soorten klinken hoorbaar anders.
+  // Exporteert de parameters ook via _cryVoice() voor tests.
+  function _cryVoice(speciesId) {
     const sp = (DG.SPECIES && DG.SPECIES[speciesId]) || null;
     const bst = sp ? Object.values(sp.baseStats || {}).reduce((a,b)=>a+b,0) : 400;
     const type = (sp && sp.types && sp.types[0]) || 'NORMAL';
     let h = 0;
     for (let i = 0; i < speciesId.length; i++) h = (h * 31 + speciesId.charCodeAt(i)) | 0;
     h = Math.abs(h);
-    // 700-BST-reus ≈ 70 Hz, 300-BST-baby ≈ 210 Hz, plus hash-variatie
-    const base = Math.max(60, 320 - bst * 0.36) * (0.9 + (h % 20) / 100);
     const bright = ['ICE','FAIRY','PSYCHIC','FLYING','BUG','ELECTRIC'].includes(type);
-    const t = _ctx.currentTime;
-    const dur = 0.55 + (h % 3) * 0.1;
-    try {
-      const osc = _ctx.createOscillator(); const env = _ctx.createGain();
-      const lp = _ctx.createBiquadFilter();
-      lp.type = 'lowpass'; lp.frequency.value = bright ? 3200 : 1400; lp.Q.value = 4;
-      osc.type = bright ? 'triangle' : 'sawtooth';
-      const f0 = base * (bright ? 2.2 : 1);
-      // Roep-contour: opzwellen, kort omhoog, dan afzakkende brul
-      osc.frequency.setValueAtTime(f0 * 0.8, t);
-      osc.frequency.linearRampToValueAtTime(f0 * 1.35, t + dur * 0.3);
-      osc.frequency.linearRampToValueAtTime(f0 * 0.7, t + dur);
-      // Vibrato
-      const lfo = _ctx.createOscillator(); const lfoG = _ctx.createGain();
-      lfo.frequency.value = 9 + (h % 7); lfoG.gain.value = f0 * 0.05;
-      lfo.connect(lfoG); lfoG.connect(osc.frequency);
-      env.gain.setValueAtTime(0.0001, t);
-      env.gain.linearRampToValueAtTime(0.5, t + 0.05);
-      env.gain.setValueAtTime(0.5, t + dur * 0.6);
-      env.gain.exponentialRampToValueAtTime(0.001, t + dur + 0.1);
-      osc.connect(lp); lp.connect(env); env.connect(_sfxGain);
-      if (_revSendSfx) env.connect(_revSendSfx);
-      lfo.start(t); lfo.stop(t + dur + 0.1);
-      osc.start(t); osc.stop(t + dur + 0.12);
-    } catch(e) {}
-    if (!bright) {
-      try { // grote dino's krijgen een extra adem/gegrom-laag
-        const len = Math.floor(_ctx.sampleRate * dur);
-        const buf = _ctx.createBuffer(1, len, _ctx.sampleRate);
-        const d = buf.getChannelData(0);
-        for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * 0.4 * (1 - i/len);
-        const src = _ctx.createBufferSource(); src.buffer = buf;
-        const bp = _ctx.createBiquadFilter();
-        bp.type = 'bandpass'; bp.frequency.value = base * 3; bp.Q.value = 1.2;
+    return {
+      bright,
+      // 700-BST-reus ≈ 70 Hz, 300-BST-baby ≈ 210 Hz, plus per-soort afwijking
+      f0:       Math.max(60, 320 - bst * 0.36) * (0.9 + (h % 20) / 100) * (bright ? 2.2 : 1),
+      dur:      0.42 + ((h >> 2) % 5) * 0.07,          // 0.42–0.70 s per lettergreep
+      vibRate:  8 + ((h >> 4) % 8),                     // 8–15 Hz
+      vibDepth: 0.03 + ((h >> 6) % 4) * 0.018,          // 3–8,4%
+      syll:     ((h >> 8) % 3 === 0) ? 2 : 1,           // ±1/3 heeft een dubbele roep
+      contour:  (h >> 10) % 3,                          // 0 op-neer · 1 dalend · 2 golvend
+      cutoff:   (bright ? 2600 : 1000) + ((h >> 12) % 5) * 260,
+      detune:   ((h >> 14) % 2) === 1,                  // tweede, verstemde stemband
+      growl:    !bright ? (0.18 + ((h >> 15) % 3) * 0.08) : 0,
+      gap:      0.06 + ((h >> 9) % 3) * 0.03,           // pauze tussen lettergrepen
+    };
+  }
+
+  function playCry(speciesId) {
+    _ensureInit();
+    if (!_ctx || !speciesId) return;
+    const v = _cryVoice(speciesId);
+    const t0 = _ctx.currentTime;
+
+    for (let s = 0; s < v.syll; s++) {
+      // 2e lettergreep: korter en een kwart hoger — het "antwoord" van de roep
+      const t   = t0 + s * (v.dur + v.gap);
+      const dur = s === 0 ? v.dur : v.dur * 0.6;
+      const f0  = v.f0 * (s === 0 ? 1 : 1.25);
+      try {
+        const oscs = [ _ctx.createOscillator() ];
+        if (v.detune) oscs.push(_ctx.createOscillator());
         const env = _ctx.createGain();
-        env.gain.setValueAtTime(0.25, t);
-        env.gain.exponentialRampToValueAtTime(0.001, t + dur);
-        src.connect(bp); bp.connect(env); env.connect(_sfxGain);
-        src.start(t);
+        const lp  = _ctx.createBiquadFilter();
+        lp.type = 'lowpass'; lp.frequency.value = v.cutoff; lp.Q.value = 4;
+        oscs.forEach((osc, i) => {
+          osc.type = v.bright ? (i === 0 ? 'triangle' : 'sine') : 'sawtooth';
+          if (i === 1) osc.detune.value = 18; // licht verstemd → dikkere, rauwere stem
+          // Contour per soort
+          if (v.contour === 0) {          // op-neer (klassieke uithaal)
+            osc.frequency.setValueAtTime(f0 * 0.8, t);
+            osc.frequency.linearRampToValueAtTime(f0 * 1.35, t + dur * 0.3);
+            osc.frequency.linearRampToValueAtTime(f0 * 0.7, t + dur);
+          } else if (v.contour === 1) {   // dalend (zware, aflopende brul)
+            osc.frequency.setValueAtTime(f0 * 1.3, t);
+            osc.frequency.linearRampToValueAtTime(f0 * 0.65, t + dur);
+          } else {                        // golvend (trillende roep)
+            osc.frequency.setValueAtTime(f0 * 0.9, t);
+            osc.frequency.linearRampToValueAtTime(f0 * 1.15, t + dur * 0.25);
+            osc.frequency.linearRampToValueAtTime(f0 * 0.85, t + dur * 0.55);
+            osc.frequency.linearRampToValueAtTime(f0 * 1.05, t + dur * 0.8);
+            osc.frequency.linearRampToValueAtTime(f0 * 0.8, t + dur);
+          }
+          osc.connect(lp);
+        });
+        // Vibrato op de hoofdstem
+        const lfo = _ctx.createOscillator(); const lfoG = _ctx.createGain();
+        lfo.frequency.value = v.vibRate; lfoG.gain.value = f0 * v.vibDepth;
+        lfo.connect(lfoG); lfoG.connect(oscs[0].frequency);
+        env.gain.setValueAtTime(0.0001, t);
+        env.gain.linearRampToValueAtTime(0.5, t + 0.05);
+        env.gain.setValueAtTime(0.5, t + dur * 0.6);
+        env.gain.exponentialRampToValueAtTime(0.001, t + dur + 0.1);
+        lp.connect(env); env.connect(_sfxGain);
+        if (_revSendSfx) env.connect(_revSendSfx);
+        lfo.start(t); lfo.stop(t + dur + 0.1);
+        oscs.forEach(o => { o.start(t); o.stop(t + dur + 0.12); });
       } catch(e) {}
+      if (v.growl > 0) {
+        try { // adem/gegrom-laag voor de zware families, dikte per soort
+          const len = Math.floor(_ctx.sampleRate * dur);
+          const buf = _ctx.createBuffer(1, len, _ctx.sampleRate);
+          const d = buf.getChannelData(0);
+          for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * 0.4 * (1 - i/len);
+          const src = _ctx.createBufferSource(); src.buffer = buf;
+          const bp = _ctx.createBiquadFilter();
+          bp.type = 'bandpass'; bp.frequency.value = (v.f0 / 2.2) * 3; bp.Q.value = 1.2;
+          const genv = _ctx.createGain();
+          genv.gain.setValueAtTime(v.growl, t);
+          genv.gain.exponentialRampToValueAtTime(0.001, t + dur);
+          src.connect(bp); bp.connect(genv); genv.connect(_sfxGain);
+          src.start(t);
+        } catch(e) {}
+      }
     }
   }
 
@@ -2243,5 +2285,6 @@ DG.Audio = (function () {
     // EVO-CINEMATIC: evolutie-score + cries
     playEvoTension, setEvoTensionRate, stopEvoTension,
     playEvoMorphTick, playEvoFlash, playEvoCancel, playCry,
+    _cryVoice, // stem-parameters per soort (deterministisch) — voor tests/tuning
   };
 })();
