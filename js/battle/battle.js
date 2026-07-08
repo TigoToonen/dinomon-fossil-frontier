@@ -144,6 +144,28 @@ DG.Battle = (function () {
       displayedExpPct: -1,
     };
 
+    // ── BATTLE-STRATEGY (AI-items): virtuele item-voorraad ────
+    // Slimme trainers genezen zichzelf — niets leert de speler de waarde
+    // van items/Resins zo goed als een gym-leider die zijn burn wegheelt.
+    // Geen data-wijziging in trainers.js: voorraad schaalt met AI-tier.
+    //   effectieve tier ≥ 3 (gym-leiders/late trainers): 1 heal + 1 Golden Resin
+    //   Elite Four/Champion: 2 heals + 1 Golden Resin  ·  HARD: +1 heal
+    _battle.enemyItems = [];
+    if (battleConfig.type === 'TRAINER' && _td) {
+      const _badges = (gs.player.badges || []).length;
+      let _effTier = _td.aiTier || 1;
+      if (_badges >= 6)      _effTier = Math.max(_effTier, 3);
+      else if (_badges >= 3) _effTier = Math.max(_effTier, 2);
+      const _isBoss = _td.class === 'Elite Four' || _td.class === 'Champion';
+      const _maxLv  = Math.max(...(_td.party || [{ level: 10 }]).map(p => p.level || 10));
+      const _healId = _maxLv < 30 ? 'SUPERPOTION' : _maxLv < 45 ? 'HYPERPOTION' : 'FULLRESTORE';
+      if (_isBoss)            _battle.enemyItems.push(_healId, _healId, 'GOLDEN_RESIN');
+      else if (_effTier >= 3) _battle.enemyItems.push(_healId, 'GOLDEN_RESIN');
+      if (_battle.enemyItems.length && window._CURRENT_DIFFICULTY === 'HARD') {
+        _battle.enemyItems.push(_healId);
+      }
+    }
+
     // Update Dex: mark enemy seen
     DG.SaveLoad.markSeen(gs, _battle.enemyMon.speciesId);
 
@@ -621,8 +643,47 @@ DG.Battle = (function () {
     if (_battle.type === 'WILD') {
       _battle.enemyAction = DG.BattleAI.chooseAction(null, activeMon, playerMon, _aiSt);
     } else {
-      _battle.enemyAction = DG.BattleAI.chooseAction(trainer, activeMon, playerMon, _aiSt);
+      // AI-items: genezen gaat vóór aanvallen als dat het gevecht kan keren
+      const itemAct = _chooseEnemyItem(activeMon);
+      _battle.enemyAction = itemAct || DG.BattleAI.chooseAction(trainer, activeMon, playerMon, _aiSt);
     }
+  }
+
+  // ── BATTLE-STRATEGY (AI-items): item-beslisregel ──────────
+  // Kies een item als dat nu duidelijk beter is dan aanvallen:
+  // • cure zodra een status erin blijft hakken — TOX/SLP/FRZ altijd,
+  //   BRN/PSN/PAR alleen boven 40% HP (daaronder is aanvallen beter);
+  // • heal zodra HP onder 35% zakt.
+  // Voorraad (_battle.enemyItems) is per gevecht en raakt op.
+  function _chooseEnemyItem(activeMon) {
+    const items = _battle.enemyItems;
+    if (!items || !items.length || !activeMon || activeMon.hp.current <= 0) return null;
+    const hpPct = activeMon.hp.current / activeMon.hp.max;
+
+    const st = activeMon.statusEffect;
+    if (st) {
+      const urgent = st === DG.STATUS.BADPOISON || st === DG.STATUS.SLEEP ||
+                     st === DG.STATUS.FREEZE || hpPct > 0.4;
+      if (urgent) {
+        const curesIt = (id) => {
+          const def = DG.ITEMS[id];
+          return def && (def.cures === 'ALL' || (Array.isArray(def.cures) && def.cures.includes(st)));
+        };
+        // Pure cure (Resin) vóór een kostbare Full Restore
+        let idx = items.findIndex(id => curesIt(id) && !(DG.ITEMS[id] || {}).heal);
+        if (idx < 0) idx = items.findIndex(curesIt);
+        if (idx >= 0) return { type: 'ENEMY_ITEM', itemId: items.splice(idx, 1)[0] };
+      }
+    }
+
+    if (hpPct < 0.35) {
+      const idx = items.findIndex(id => {
+        const def = DG.ITEMS[id];
+        return def && (def.heal || def.healPct);
+      });
+      if (idx >= 0) return { type: 'ENEMY_ITEM', itemId: items.splice(idx, 1)[0] };
+    }
+    return null;
   }
 
   // ── DOUBLE: choose all AI actions ────────────────────────
@@ -687,6 +748,13 @@ DG.Battle = (function () {
     }
     if (eAct.type === 'ENEMY_SWITCH') {
       // Enemy switch happens before player move
+      queue.push({ actor: 'ENEMY',  action: eAct });
+      queue.push({ actor: 'PLAYER', action: pAct });
+      _battle.turnQueue = queue;
+      return;
+    }
+    if (eAct.type === 'ENEMY_ITEM') {
+      // AI-items: net als speler-items gaat een trainer-item vóór alle moves
       queue.push({ actor: 'ENEMY',  action: eAct });
       queue.push({ actor: 'PLAYER', action: pAct });
       _battle.turnQueue = queue;
@@ -844,6 +912,11 @@ DG.Battle = (function () {
 
     if (act.type === 'ENEMY_SWITCH' && !isPlayer) {
       _doEnemySwitch(act);
+      return;
+    }
+
+    if (act.type === 'ENEMY_ITEM' && !isPlayer) {
+      _doEnemyItem(act);
       return;
     }
 
@@ -2831,6 +2904,22 @@ DG.Battle = (function () {
       _pushMessage(`You used ${_iNm} on ${_monName(target)}!`);
     } else {
       _pushMessage(`It had no effect!`);
+    }
+    _continueExecution();
+  }
+
+  // ── BATTLE-STRATEGY (AI-items): trainer gebruikt een item ──
+  // Verbruik is al gebeurd bij de keuze (_chooseEnemyItem splice't de
+  // voorraad); hier alleen toepassen + melden. Raakt de spelerstas nooit.
+  function _doEnemyItem(act) {
+    const mon   = _battle.enemyMon;
+    const tName = (_battle.trainerData && _battle.trainerData.name) || 'The trainer';
+    const iNm   = (DG.ITEMS[act.itemId] && DG.ITEMS[act.itemId].name) || act.itemId;
+    const used  = mon && mon.hp.current > 0 && _useHealItem(_battle.gameState, mon, act.itemId);
+    if (used) {
+      _pushMessage(`${tName} used a ${iNm} on ${_monName(mon)}!`);
+    } else {
+      _pushMessage(`${tName} reached for an item... but hesitated!`);
     }
     _continueExecution();
   }
