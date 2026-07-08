@@ -1588,36 +1588,433 @@ DG.Audio = (function () {
     });
   }
 
-  // ── Procedurele cry — een échte eigen stem per soort ───────
-  // Toonhoogte uit de BST (groter = lager), timbre-familie uit het primaire
-  // type, en een species-hash die ELKE stemeigenschap deterministisch
-  // vastlegt: toonhoogte-afwijking, duur, contour (op-neer / dalend /
-  // golvend), 1 of 2 lettergrepen, golfvorm, filter, vibrato-snelheid én
-  // -diepte, en de dikte van de gegrom-laag. Zelfde soort = altijd zelfde
-  // roep; twee soorten klinken hoorbaar anders.
-  // Exporteert de parameters ook via _cryVoice() voor tests.
+  // ── FASE 16: type-gestuurde cries — elke familie een eigen stem ──
+  // Het PRIMAIRE type kiest het synthese-recept (fluit, brul, blub, klok, zap…);
+  // de deterministische species-hash varieert bínnen de familie (toonhoogte,
+  // contour, lettergrepen, vibrato, tint) zodat individuen verschillen; de BST
+  // bepaalt de grootte (hoog = lager/langer). Legendarisch & mega krijgen een
+  // epische XL-brullaag; het secundaire type geeft een kort accent.
+
+  const _CRY_FAMILY = {
+    FLYING:'flute', WATER:'bubble', FIRE:'fire', GRASS:'reed', ELECTRIC:'zap',
+    ICE:'chime', DARK:'growl', GROUND:'stomp', ROCK:'grind', FAIRY:'twinkle',
+    NORMAL:'call', DRAGON:'roar', PSYCHIC:'ether', STEEL:'clang',
+    FIGHTING:'shout', GHOST:'wail', POISON:'sludge', BUG:'chirr',
+  };
+
+  // Exporteert de parameters ook via _cryVoice() voor tests/tuning.
   function _cryVoice(speciesId) {
     const sp = (DG.SPECIES && DG.SPECIES[speciesId]) || null;
     const bst = sp ? Object.values(sp.baseStats || {}).reduce((a,b)=>a+b,0) : 400;
-    const type = (sp && sp.types && sp.types[0]) || 'NORMAL';
+    const type  = (sp && sp.types && sp.types[0]) || 'NORMAL';
+    const type2 = (sp && sp.types && sp.types[1]) || null;
     let h = 0;
     for (let i = 0; i < speciesId.length; i++) h = (h * 31 + speciesId.charCodeAt(i)) | 0;
     h = Math.abs(h);
-    const bright = ['ICE','FAIRY','PSYCHIC','FLYING','BUG','ELECTRIC'].includes(type);
+    // grootte 0 (klein/hoog) … 1 (groot/laag) uit BST-bereik 275..710
+    const size = Math.max(0, Math.min(1, (bst - 275) / (710 - 275)));
+    const f0base = 300 - size * 230;                    // 300 Hz baby → 70 Hz reus
     return {
-      bright,
-      // 700-BST-reus ≈ 70 Hz, 300-BST-baby ≈ 210 Hz, plus per-soort afwijking
-      f0:       Math.max(60, 320 - bst * 0.36) * (0.9 + (h % 20) / 100) * (bright ? 2.2 : 1),
-      dur:      0.42 + ((h >> 2) % 5) * 0.07,          // 0.42–0.70 s per lettergreep
-      vibRate:  8 + ((h >> 4) % 8),                     // 8–15 Hz
-      vibDepth: 0.03 + ((h >> 6) % 4) * 0.018,          // 3–8,4%
-      syll:     ((h >> 8) % 3 === 0) ? 2 : 1,           // ±1/3 heeft een dubbele roep
-      contour:  (h >> 10) % 3,                          // 0 op-neer · 1 dalend · 2 golvend
-      cutoff:   (bright ? 2600 : 1000) + ((h >> 12) % 5) * 260,
-      detune:   ((h >> 14) % 2) === 1,                  // tweede, verstemde stemband
-      growl:    !bright ? (0.18 + ((h >> 15) % 3) * 0.08) : 0,
-      gap:      0.06 + ((h >> 9) % 3) * 0.03,           // pauze tussen lettergrepen
+      family:  _CRY_FAMILY[type] || 'call',
+      epic:    !!(sp && (sp.isLegendary || sp.isMega)),
+      type, type2, bst, size, hash: h,
+      f0:      f0base * (0.9 + (h % 20) / 100),          // per-soort afwijking
+      dur:     0.34 + ((h >> 2) % 5) * 0.06 + size * 0.12,
+      vibRate: 5 + ((h >> 4) % 9),                       // 5–13 Hz
+      vibDepth:0.02 + ((h >> 6) % 5) * 0.012,
+      syll:    ((h >> 8) % 3 === 0) ? 2 : 1,
+      contour: (h >> 10) % 3,                            // 0 op-neer · 1 dalend · 2 golvend
+      tint:    (h >> 12) % 4,                            // familie-specifieke variant-seed
     };
+  }
+
+  // ── Cry low-level bouwstenen ─────────────────────────────────
+  function _cryEnv(peak, t, dur, atk) {
+    const g = _ctx.createGain();
+    atk = atk == null ? 0.03 : atk;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(peak, t + atk);
+    g.gain.setValueAtTime(peak, t + Math.max(atk + 0.01, dur * 0.55));
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur + 0.08);
+    return g;
+  }
+  function _cryOut(node, rev) {
+    node.connect(_sfxGain);
+    if (rev && _revSendSfx) node.connect(_revSendSfx);
+  }
+  function _cryContour(osc, v, t, dur, f0, forced) {
+    const c = forced != null ? forced : v.contour;
+    const f = osc.frequency;
+    if (c === 0) {                       // op-neer (klassieke uithaal)
+      f.setValueAtTime(f0 * 0.82, t);
+      f.linearRampToValueAtTime(f0 * 1.3, t + dur * 0.3);
+      f.linearRampToValueAtTime(f0 * 0.72, t + dur);
+    } else if (c === 1) {                // dalend (zware, aflopende brul)
+      f.setValueAtTime(f0 * 1.28, t);
+      f.linearRampToValueAtTime(f0 * 0.66, t + dur);
+    } else {                             // golvend (trillende roep)
+      f.setValueAtTime(f0 * 0.9, t);
+      f.linearRampToValueAtTime(f0 * 1.14, t + dur * 0.25);
+      f.linearRampToValueAtTime(f0 * 0.86, t + dur * 0.55);
+      f.linearRampToValueAtTime(f0 * 1.06, t + dur * 0.8);
+      f.linearRampToValueAtTime(f0 * 0.82, t + dur);
+    }
+  }
+  // Eén toon met contour, optionele vibrato en filter.
+  function _cryTone(v, t, dur, f0, o) {
+    o = o || {};
+    try {
+      const osc = _ctx.createOscillator();
+      osc.type = o.wave || 'sine';
+      _cryContour(osc, v, t, dur, f0, o.contour);
+      const lp = _ctx.createBiquadFilter();
+      lp.type = o.filter || 'lowpass';
+      lp.frequency.value = o.cutoff || 3000; lp.Q.value = o.Q || 1;
+      const env = _cryEnv(o.peak != null ? o.peak : 0.5, t, dur, o.atk);
+      if (o.vib) {
+        const lfo = _ctx.createOscillator(), lg = _ctx.createGain();
+        lfo.frequency.value = v.vibRate; lg.gain.value = f0 * v.vibDepth;
+        lfo.connect(lg); lg.connect(osc.frequency);
+        lfo.start(t); lfo.stop(t + dur + 0.1);
+      }
+      osc.connect(lp); lp.connect(env); _cryOut(env, o.rev);
+      osc.start(t); osc.stop(t + dur + 0.12);
+      return osc;
+    } catch(e) {}
+  }
+  // Gefilterde ruis-burst; geeft {src,bp,env} terug voor verdere modulatie.
+  function _cryNoise(t, dur, peak, filter, freq, Q, rev) {
+    try {
+      const src = _ctx.createBufferSource(); src.buffer = _noise(dur);
+      const bp = _ctx.createBiquadFilter();
+      bp.type = filter || 'bandpass'; bp.frequency.value = freq || 1000; bp.Q.value = Q || 1;
+      const env = _ctx.createGain();
+      env.gain.setValueAtTime(Math.max(0.0001, peak), t);
+      env.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      src.connect(bp); bp.connect(env); _cryOut(env, rev);
+      src.start(t); src.stop(t + dur + 0.02);
+      return { src, bp, env };
+    } catch(e) { return { bp: { frequency: {} }, env: { gain: {} } }; }
+  }
+  function _blip(t, f, dur, peak, cutoff, rev) { // korte "bloop" omlaag
+    try {
+      const osc = _ctx.createOscillator(); osc.type = 'sine';
+      osc.frequency.setValueAtTime(f * 1.6, t);
+      osc.frequency.exponentialRampToValueAtTime(f * 0.7, t + dur);
+      const lp = _ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = cutoff || 900;
+      const env = _cryEnv(peak, t, dur, 0.008);
+      osc.connect(lp); lp.connect(env); _cryOut(env, rev);
+      osc.start(t); osc.stop(t + dur + 0.04);
+    } catch(e) {}
+  }
+
+  // ── Familie-bouwers ──────────────────────────────────────────
+  function _cryFlute(v, t) {                 // FLYING — fluit/krijs
+    const f0 = v.f0 * 2.2;
+    for (let s = 0; s < v.syll; s++) {
+      const st = t + s * (v.dur * 0.55 + 0.05);
+      const dur = v.dur * (s ? 0.5 : 0.7);
+      _cryTone(v, st, dur, f0 * (s ? 1.33 : 1),
+        { wave:'triangle', cutoff:6500, peak:0.44, vib:true, contour:0, rev:true, atk:0.02 });
+      _cryNoise(st, dur, 0.05, 'highpass', 4200, 0.5, true); // adem
+    }
+  }
+  function _cryBubble(v, t) {                 // WATER — blub/gorgel
+    const n = 3 + (v.tint % 3);
+    for (let i = 0; i < n; i++) {
+      const bt = t + i * (v.dur / n) * 0.9;
+      const bf = v.f0 * 1.1 * (0.8 + ((v.hash >> (i + 1)) % 40) / 44);
+      _blip(bt, bf, 0.09 + ((v.hash >> i) % 3) * 0.02, 0.42, 950, true);
+    }
+    const bed = _cryNoise(t, v.dur, 0.05, 'bandpass', 380, 1.4, true); // gorgel-bed
+    try {
+      const lfo = _ctx.createOscillator(), lg = _ctx.createGain();
+      lfo.frequency.value = 16; lg.gain.value = 0.03;
+      lfo.connect(lg); lg.connect(bed.env.gain); lfo.start(t); lfo.stop(t + v.dur);
+    } catch(e) {}
+  }
+  function _cryFire(v, t) {                   // FIRE — knetter-brul
+    _cryTone(v, t, v.dur, v.f0, { wave:'sawtooth', cutoff:1700, peak:0.4, contour:0, rev:true });
+    const pops = 6 + v.tint * 2;
+    for (let i = 0; i < pops; i++) {
+      const pt = t + (i / pops) * v.dur + ((v.hash >> i) % 5) * 0.006;
+      _cryNoise(pt, 0.03, 0.11, 'bandpass', 1800 + ((v.hash >> i) % 6) * 300, 3, false);
+    }
+  }
+  function _cryReed(v, t) {                   // GRASS — rietblaas/warble
+    _cryTone(v, t, v.dur, v.f0 * 1.15, { wave:'triangle', cutoff:2200, peak:0.4, vib:true, contour:2, rev:true });
+    _cryTone(v, t, v.dur, v.f0 * 1.15, { wave:'square', cutoff:1400, peak:0.1, contour:2 });
+    _cryNoise(t, v.dur * 0.8, 0.04, 'highpass', 3500, 0.6, true); // blad-ruis
+  }
+  function _cryZap(v, t) {                    // ELECTRIC — zap/buzz
+    const f0 = v.f0 * 1.8;
+    try {
+      const z = _ctx.createOscillator(); z.type = 'sawtooth';
+      z.frequency.setValueAtTime(f0 * 3, t); z.frequency.exponentialRampToValueAtTime(f0, t + 0.08);
+      const ze = _cryEnv(0.3, t, 0.1, 0.002); z.connect(ze); _cryOut(ze, false);
+      z.start(t); z.stop(t + 0.12);
+      const osc = _ctx.createOscillator(); osc.type = 'square';
+      _cryContour(osc, v, t, v.dur, f0, 1);
+      const gate = _ctx.createGain();
+      const steps = Math.max(1, Math.floor(v.dur / 0.03));
+      for (let i = 0; i < steps; i++) gate.gain.setValueAtTime(i % 2 ? 0.05 : 0.32, t + i * 0.03);
+      gate.gain.setValueAtTime(0.0001, t + v.dur + 0.02);
+      const lp = _ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3800;
+      osc.connect(lp); lp.connect(gate); _cryOut(gate, true);
+      osc.start(t); osc.stop(t + v.dur + 0.05);
+    } catch(e) {}
+  }
+  function _cryChime(v, t) {                  // ICE — kristal/chime
+    const f0 = v.f0 * 2.0;
+    [1, 2.01, 3.02].forEach((m, i) => {
+      try {
+        const osc = _ctx.createOscillator(); osc.type = 'sine';
+        osc.frequency.setValueAtTime(f0 * m * (v.contour === 1 ? 1.05 : 0.98), t);
+        osc.frequency.linearRampToValueAtTime(f0 * m * (v.contour === 1 ? 0.9 : 1.04), t + v.dur);
+        const env = _ctx.createGain();
+        env.gain.setValueAtTime(0.0001, t);
+        env.gain.linearRampToValueAtTime(0.34 / (i + 1), t + 0.01);
+        env.gain.exponentialRampToValueAtTime(0.001, t + v.dur * 1.3);
+        osc.connect(env); _cryOut(env, true);
+        osc.start(t); osc.stop(t + v.dur * 1.4);
+      } catch(e) {}
+    });
+    _cryNoise(t, 0.15, 0.03, 'highpass', 6000, 0.5, true); // sparkle
+  }
+  function _cryGrowl(v, t) {                  // DARK — grauw/sis
+    _cryTone(v, t, v.dur, v.f0 * 0.85, { wave:'sawtooth', cutoff:900, peak:0.4, contour:1, rev:true });
+    _cryTone(v, t, v.dur, v.f0 * 0.85 * 1.01, { wave:'sawtooth', cutoff:900, peak:0.24, contour:1 });
+    _cryNoise(t, v.dur, 0.06, 'bandpass', v.f0 * 3, 1.2, false);
+  }
+  function _cryStomp(v, t) {                  // GROUND — stamp-brul
+    try {
+      const sub = _ctx.createOscillator(); sub.type = 'sine';
+      sub.frequency.setValueAtTime(70, t); sub.frequency.exponentialRampToValueAtTime(38, t + 0.18);
+      const se = _cryEnv(0.5, t, 0.22, 0.004); sub.connect(se); _cryOut(se, false);
+      sub.start(t); sub.stop(t + 0.3);
+    } catch(e) {}
+    _cryTone(v, t, v.dur, v.f0 * 0.9, { wave:'sawtooth', cutoff:1100, peak:0.26, contour:1, rev:true });
+    _cryNoise(t, v.dur, 0.06, 'lowpass', 500, 0.8, false); // stof
+  }
+  function _cryGrind(v, t) {                  // ROCK — grind/rommel
+    const dur = v.dur * 0.8;
+    _cryTone(v, t, dur, v.f0 * 0.8, { wave:'sawtooth', cutoff:700, peak:0.3, contour:1, rev:true });
+    const bed = _cryNoise(t, dur, 0.09, 'bandpass', 500, 2.5, false);
+    try {
+      const lfo = _ctx.createOscillator(), lg = _ctx.createGain();
+      lfo.type = 'sawtooth'; lfo.frequency.value = 22; lg.gain.value = 300;
+      lfo.connect(lg); lg.connect(bed.bp.frequency); lfo.start(t); lfo.stop(t + dur);
+    } catch(e) {}
+  }
+  function _cryTwinkle(v, t) {                // FAIRY — twinkel/belletje
+    const f0 = v.f0 * 2.2;
+    const arp = [0, 4, 7, 12];
+    const n = 3 + (v.tint % 2);
+    for (let i = 0; i < n; i++) {
+      const nt = t + i * 0.07;
+      const f = f0 * Math.pow(2, arp[i % arp.length] / 12);
+      try {
+        const osc = _ctx.createOscillator(); osc.type = 'triangle'; osc.frequency.value = f;
+        const o2  = _ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = f * 2;
+        const env = _ctx.createGain();
+        env.gain.setValueAtTime(0.0001, nt);
+        env.gain.linearRampToValueAtTime(0.32, nt + 0.005);
+        env.gain.exponentialRampToValueAtTime(0.001, nt + 0.22);
+        osc.connect(env); o2.connect(env); _cryOut(env, true);
+        osc.start(nt); osc.stop(nt + 0.25); o2.start(nt); o2.stop(nt + 0.25);
+      } catch(e) {}
+    }
+    _cryNoise(t, 0.12, 0.02, 'highpass', 7000, 0.5, true);
+  }
+  function _cryCall(v, t) {                   // NORMAL — neutrale roep
+    for (let s = 0; s < v.syll; s++) {
+      const st = t + s * (v.dur * 0.6 + 0.06); const dur = s ? v.dur * 0.6 : v.dur;
+      _cryTone(v, st, dur, v.f0 * (s ? 1.25 : 1), { wave:'triangle', cutoff:2400, peak:0.4, vib:true, rev:true });
+      _cryTone(v, st, dur, v.f0 * (s ? 1.25 : 1), { wave:'sawtooth', cutoff:1600, peak:0.12 });
+    }
+  }
+  function _cryRoar(v, t) {                   // DRAGON — mini-brul
+    const dur = v.dur * 1.2;
+    _cryTone(v, t, dur, v.f0 * 0.8, { wave:'sawtooth', cutoff:1400, peak:0.36, contour:1, rev:true });
+    _cryTone(v, t, dur, v.f0 * 0.8 * 1.012, { wave:'sawtooth', cutoff:1200, peak:0.26, contour:1 });
+    try {
+      const sub = _ctx.createOscillator(); sub.type = 'sine';
+      sub.frequency.setValueAtTime(v.f0 * 0.5, t); sub.frequency.linearRampToValueAtTime(v.f0 * 0.35, t + dur);
+      const se = _cryEnv(0.4, t, dur, 0.02); sub.connect(se); _cryOut(se, false);
+      sub.start(t); sub.stop(t + dur + 0.1);
+    } catch(e) {}
+    _cryNoise(t, dur, 0.07, 'bandpass', v.f0 * 2.5, 1, true); // gegrom
+  }
+  function _cryEther(v, t) {                  // PSYCHIC — etherische wobble
+    const dur = v.dur * 1.2; const base = v.f0 * 1.4;
+    [1, 1.006, 1.5].forEach((m, i) => {
+      try {
+        const osc = _ctx.createOscillator(); osc.type = 'sine';
+        osc.frequency.setValueAtTime(base * m * 0.8, t);
+        osc.frequency.linearRampToValueAtTime(base * m * 1.2, t + dur * 0.5);
+        osc.frequency.linearRampToValueAtTime(base * m * 0.85, t + dur);
+        const lfo = _ctx.createOscillator(), lg = _ctx.createGain();
+        lfo.frequency.value = 5; lg.gain.value = base * 0.05;
+        lfo.connect(lg); lg.connect(osc.frequency); lfo.start(t); lfo.stop(t + dur);
+        const env = _cryEnv(0.26 / (i + 1), t, dur, 0.06);
+        osc.connect(env); _cryOut(env, true);
+        osc.start(t); osc.stop(t + dur + 0.1);
+      } catch(e) {}
+    });
+  }
+  function _cryClang(v, t) {                  // STEEL — klang/metaal
+    const f0 = v.f0 * 1.4;
+    [1, 1.41, 1.93, 2.71].forEach((m, i) => {   // inharmonisch = metaal
+      try {
+        const osc = _ctx.createOscillator(); osc.type = 'square'; osc.frequency.value = f0 * m;
+        const bp = _ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f0 * m; bp.Q.value = 8;
+        const env = _ctx.createGain();
+        env.gain.setValueAtTime(0.0001, t);
+        env.gain.linearRampToValueAtTime(0.26 / (i + 1), t + 0.004);
+        env.gain.exponentialRampToValueAtTime(0.001, t + v.dur * 1.1);
+        osc.connect(bp); bp.connect(env); _cryOut(env, true);
+        osc.start(t); osc.stop(t + v.dur * 1.2);
+      } catch(e) {}
+    });
+    _cryNoise(t, 0.04, 0.1, 'bandpass', f0 * 2, 4, false); // aanslag-tik
+  }
+  function _cryShout(v, t) {                  // FIGHTING — grom-schreeuw
+    const dur = Math.min(v.dur, 0.35);
+    try {
+      const osc = _ctx.createOscillator(); osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(v.f0 * 1.3, t);
+      osc.frequency.linearRampToValueAtTime(v.f0 * 0.9, t + dur);
+      const lp = _ctx.createBiquadFilter(); lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(2600, t); lp.frequency.linearRampToValueAtTime(900, t + dur); // "aa→h"
+      const env = _ctx.createGain();
+      env.gain.setValueAtTime(0.0001, t);
+      env.gain.linearRampToValueAtTime(0.5, t + 0.008);
+      env.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      osc.connect(lp); lp.connect(env); _cryOut(env, true);
+      osc.start(t); osc.stop(t + dur + 0.05);
+    } catch(e) {}
+    _cryNoise(t + dur * 0.6, 0.08, 0.08, 'bandpass', 1200, 0.8, false); // uithaal-adem
+  }
+  function _cryWail(v, t) {                   // GHOST — weeklacht/kreun
+    const dur = v.dur * 1.4; const f0 = v.f0 * 1.1;
+    [1, 1.005].forEach((m, i) => {
+      try {
+        const osc = _ctx.createOscillator(); osc.type = 'sine';
+        osc.frequency.setValueAtTime(f0 * m * 1.2, t);
+        osc.frequency.linearRampToValueAtTime(f0 * m * 0.75, t + dur);
+        const lfo = _ctx.createOscillator(), lg = _ctx.createGain();
+        lfo.frequency.value = 5.5; lg.gain.value = f0 * 0.06;
+        lfo.connect(lg); lg.connect(osc.frequency); lfo.start(t); lfo.stop(t + dur);
+        const env = _cryEnv(0.3 / (i + 1), t, dur, 0.1);
+        osc.connect(env); _cryOut(env, true);
+        osc.start(t); osc.stop(t + dur + 0.1);
+      } catch(e) {}
+    });
+    _cryNoise(t, dur, 0.05, 'bandpass', f0 * 2, 0.6, true); // holle adem
+  }
+  function _crySludge(v, t) {                 // POISON — sludge/sis-bubbel
+    const n = 3 + (v.tint % 2);
+    for (let i = 0; i < n; i++) {
+      const bt = t + i * (v.dur / n);
+      const bf = v.f0 * (0.7 + ((v.hash >> i) % 30) / 40);
+      _blip(bt, bf, 0.11, 0.34, 700, true);
+    }
+    _cryNoise(t, v.dur, 0.08, 'bandpass', 900, 0.7, false); // natte sis
+  }
+  function _cryChirr(v, t) {                  // BUG — getsjirp/stridulatie
+    const f0 = v.f0 * 1.9;
+    try {
+      const osc = _ctx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = f0;
+      const gate = _ctx.createGain();
+      const rate = 0.018; const steps = Math.max(1, Math.floor(v.dur / rate));
+      for (let i = 0; i < steps; i++) gate.gain.setValueAtTime(i % 2 ? 0.04 : 0.3, t + i * rate);
+      gate.gain.setValueAtTime(0.0001, t + v.dur);
+      const bp = _ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f0 * 1.5; bp.Q.value = 3;
+      osc.connect(bp); bp.connect(gate); _cryOut(gate, true);
+      osc.start(t); osc.stop(t + v.dur + 0.03);
+    } catch(e) {}
+  }
+
+  const _CRY_BUILDERS = {
+    flute:_cryFlute, bubble:_cryBubble, fire:_cryFire, reed:_cryReed,
+    zap:_cryZap, chime:_cryChime, growl:_cryGrowl, stomp:_cryStomp,
+    grind:_cryGrind, twinkle:_cryTwinkle, call:_cryCall, roar:_cryRoar,
+    ether:_cryEther, clang:_cryClang, shout:_cryShout, wail:_cryWail,
+    sludge:_crySludge, chirr:_cryChirr,
+  };
+
+  // Kort accent van het secundaire type (zacht, bovenop het primaire recept).
+  const _CRY_ACCENT = {
+    fire:   (v,t) => { for (let i=0;i<4;i++) _cryNoise(t+v.dur*0.5+i*0.03, 0.025, 0.06, 'bandpass', 2200, 3, false); },
+    bubble: (v,t) => { for (let i=0;i<2;i++) _blip(t+v.dur*0.6+i*0.06, v.f0*1.4, 0.08, 0.16, 900, true); },
+    sludge: (v,t) => _blip(t+v.dur*0.6, v.f0*0.9, 0.1, 0.16, 700, true),
+    chime:  (v,t) => _cryTone(v, t, v.dur, v.f0*3, { wave:'sine', peak:0.1, contour:2, rev:true }),
+    zap:    (v,t) => { try { const o=_ctx.createOscillator(); o.type='sawtooth'; o.frequency.setValueAtTime(v.f0*4,t); o.frequency.exponentialRampToValueAtTime(v.f0*1.5,t+0.06); const e=_cryEnv(0.16,t,0.08,0.002); o.connect(e); _cryOut(e,false); o.start(t); o.stop(t+0.1); } catch(e){} },
+    grind:  (v,t) => _cryNoise(t, v.dur*0.6, 0.05, 'bandpass', 450, 2, false),
+    growl:  (v,t) => _cryNoise(t, v.dur, 0.05, 'bandpass', v.f0*2, 1, false),
+    flute:  (v,t) => _cryTone(v, t, v.dur*0.5, v.f0*2.4, { wave:'triangle', peak:0.12, contour:0, cutoff:6000, rev:true }),
+    twinkle:(v,t) => { [0,7].forEach((s,i)=>_cryTone(v, t+i*0.06, 0.18, v.f0*2.2*Math.pow(2,s/12), { wave:'triangle', peak:0.14, contour:2, rev:true })); },
+    ether:  (v,t) => _cryTone(v, t, v.dur, v.f0*1.5, { wave:'sine', peak:0.1, contour:2, rev:true }),
+  };
+
+  // ── Epische XL-brul voor legendarisch & mega ──────────────────
+  function _cryEpic(v, t) {
+    const dur = 1.4 + v.size * 0.5;
+    const f0  = Math.max(55, v.f0 * 0.6);
+    try { // impact-boem — laat de brul "landen"
+      const k = _ctx.createOscillator(); k.type = 'sine';
+      k.frequency.setValueAtTime(150, t); k.frequency.exponentialRampToValueAtTime(45, t + 0.2);
+      const ke = _cryEnv(0.7, t, 0.25, 0.004); k.connect(ke); _cryOut(ke, true);
+      k.start(t); k.stop(t + 0.3);
+    } catch(e) {}
+    try { // sub-drop — het gewicht
+      const sub = _ctx.createOscillator(); sub.type = 'sine';
+      sub.frequency.setValueAtTime(90, t); sub.frequency.exponentialRampToValueAtTime(35, t + dur * 0.7);
+      const se = _cryEnv(0.5, t, dur, 0.05); sub.connect(se); _cryOut(se, false);
+      sub.start(t); sub.stop(t + dur + 0.2);
+    } catch(e) {}
+    // 4 verstemde saw-oscillatoren = dikke kern; contour omhoog dan crash
+    [-14, -6, 6, 14].forEach((d) => {
+      try {
+        const osc = _ctx.createOscillator(); osc.type = 'sawtooth'; osc.detune.value = d;
+        osc.frequency.setValueAtTime(f0 * 0.9, t);
+        osc.frequency.linearRampToValueAtTime(f0 * 1.25, t + dur * 0.22); // inademen
+        osc.frequency.linearRampToValueAtTime(f0 * 0.6, t + dur);         // crash
+        const lp = _ctx.createBiquadFilter(); lp.type = 'lowpass';
+        lp.frequency.setValueAtTime(2400, t); lp.frequency.linearRampToValueAtTime(700, t + dur);
+        const env = _cryEnv(0.3, t, dur, 0.04);
+        osc.connect(lp); lp.connect(env); _cryOut(env, true);
+        osc.start(t); osc.stop(t + dur + 0.15);
+      } catch(e) {}
+    });
+    const bed = _cryNoise(t, dur, 0.12, 'lowpass', 1400, 0.8, true); // ademend brul-bed
+    try {
+      const lfo = _ctx.createOscillator(), lg = _ctx.createGain();
+      lfo.frequency.value = 7; lg.gain.value = 0.05;
+      lfo.connect(lg); lg.connect(bed.env.gain); lfo.start(t); lfo.stop(t + dur);
+    } catch(e) {}
+    _cryEpicTint(v, t, dur); // type-kleur bovenop de brul
+  }
+  function _cryEpicTint(v, t, dur) {
+    const add = (fam) => {
+      if (fam === 'fire') {
+        for (let i = 0; i < 10; i++) _cryNoise(t + (i / 10) * dur, 0.03, 0.08, 'bandpass', 2000 + i * 120, 3, false);
+      } else if (fam === 'grind' || fam === 'stomp') {
+        const b = _cryNoise(t, dur, 0.06, 'bandpass', 500, 2.5, false);
+        try {
+          const l = _ctx.createOscillator(), g = _ctx.createGain();
+          l.type = 'sawtooth'; l.frequency.value = 20; g.gain.value = 300;
+          l.connect(g); g.connect(b.bp.frequency); l.start(t); l.stop(t + dur);
+        } catch(e) {}
+      } else if (fam === 'chime' || fam === 'ether' || fam === 'twinkle') {
+        [2, 3.01].forEach((m, i) => _cryTone(v, t, dur, v.f0 * 2 * m, { wave:'sine', peak:0.06 / (i + 1), contour:2, rev:true, atk:0.2 }));
+      } else if (fam === 'bubble' || fam === 'sludge') {
+        for (let i = 0; i < 4; i++) _blip(t + dur * 0.5 + i * 0.08, v.f0 * 1.4, 0.08, 0.12, 900, true);
+      }
+    };
+    add(_CRY_FAMILY[v.type]);
+    const f2 = _CRY_FAMILY[v.type2];
+    if (f2 && f2 !== _CRY_FAMILY[v.type]) add(f2);
   }
 
   function playCry(speciesId) {
@@ -1625,67 +2022,15 @@ DG.Audio = (function () {
     if (!_ctx || !speciesId) return;
     const v = _cryVoice(speciesId);
     const t0 = _ctx.currentTime;
+    _duck(0.5, 0.3); // maak ruimte voor de roep
 
-    for (let s = 0; s < v.syll; s++) {
-      // 2e lettergreep: korter en een kwart hoger — het "antwoord" van de roep
-      const t   = t0 + s * (v.dur + v.gap);
-      const dur = s === 0 ? v.dur : v.dur * 0.6;
-      const f0  = v.f0 * (s === 0 ? 1 : 1.25);
-      try {
-        const oscs = [ _ctx.createOscillator() ];
-        if (v.detune) oscs.push(_ctx.createOscillator());
-        const env = _ctx.createGain();
-        const lp  = _ctx.createBiquadFilter();
-        lp.type = 'lowpass'; lp.frequency.value = v.cutoff; lp.Q.value = 4;
-        oscs.forEach((osc, i) => {
-          osc.type = v.bright ? (i === 0 ? 'triangle' : 'sine') : 'sawtooth';
-          if (i === 1) osc.detune.value = 18; // licht verstemd → dikkere, rauwere stem
-          // Contour per soort
-          if (v.contour === 0) {          // op-neer (klassieke uithaal)
-            osc.frequency.setValueAtTime(f0 * 0.8, t);
-            osc.frequency.linearRampToValueAtTime(f0 * 1.35, t + dur * 0.3);
-            osc.frequency.linearRampToValueAtTime(f0 * 0.7, t + dur);
-          } else if (v.contour === 1) {   // dalend (zware, aflopende brul)
-            osc.frequency.setValueAtTime(f0 * 1.3, t);
-            osc.frequency.linearRampToValueAtTime(f0 * 0.65, t + dur);
-          } else {                        // golvend (trillende roep)
-            osc.frequency.setValueAtTime(f0 * 0.9, t);
-            osc.frequency.linearRampToValueAtTime(f0 * 1.15, t + dur * 0.25);
-            osc.frequency.linearRampToValueAtTime(f0 * 0.85, t + dur * 0.55);
-            osc.frequency.linearRampToValueAtTime(f0 * 1.05, t + dur * 0.8);
-            osc.frequency.linearRampToValueAtTime(f0 * 0.8, t + dur);
-          }
-          osc.connect(lp);
-        });
-        // Vibrato op de hoofdstem
-        const lfo = _ctx.createOscillator(); const lfoG = _ctx.createGain();
-        lfo.frequency.value = v.vibRate; lfoG.gain.value = f0 * v.vibDepth;
-        lfo.connect(lfoG); lfoG.connect(oscs[0].frequency);
-        env.gain.setValueAtTime(0.0001, t);
-        env.gain.linearRampToValueAtTime(0.5, t + 0.05);
-        env.gain.setValueAtTime(0.5, t + dur * 0.6);
-        env.gain.exponentialRampToValueAtTime(0.001, t + dur + 0.1);
-        lp.connect(env); env.connect(_sfxGain);
-        if (_revSendSfx) env.connect(_revSendSfx);
-        lfo.start(t); lfo.stop(t + dur + 0.1);
-        oscs.forEach(o => { o.start(t); o.stop(t + dur + 0.12); });
-      } catch(e) {}
-      if (v.growl > 0) {
-        try { // adem/gegrom-laag voor de zware families, dikte per soort
-          const len = Math.floor(_ctx.sampleRate * dur);
-          const buf = _ctx.createBuffer(1, len, _ctx.sampleRate);
-          const d = buf.getChannelData(0);
-          for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * 0.4 * (1 - i/len);
-          const src = _ctx.createBufferSource(); src.buffer = buf;
-          const bp = _ctx.createBiquadFilter();
-          bp.type = 'bandpass'; bp.frequency.value = (v.f0 / 2.2) * 3; bp.Q.value = 1.2;
-          const genv = _ctx.createGain();
-          genv.gain.setValueAtTime(v.growl, t);
-          genv.gain.exponentialRampToValueAtTime(0.001, t + dur);
-          src.connect(bp); bp.connect(genv); genv.connect(_sfxGain);
-          src.start(t);
-        } catch(e) {}
-      }
+    if (v.epic) { _cryEpic(v, t0); return; }
+
+    (_CRY_BUILDERS[v.family] || _CRY_BUILDERS.call)(v, t0);
+    if (v.type2) {
+      const af = _CRY_FAMILY[v.type2];
+      const accent = _CRY_ACCENT[af];
+      if (accent && af !== v.family) accent(v, t0);
     }
   }
 

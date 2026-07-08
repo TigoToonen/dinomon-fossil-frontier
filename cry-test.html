@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DinoMon — Cry Test</title>
+<style>
+  :root { --bg:#12121c; --card:#1c1c2e; --line:#33334d; --txt:#eee; --mut:#9a9ab0; --acc:#e94560; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,sans-serif; background:var(--bg); color:var(--txt); }
+  header { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line);
+           padding:14px 18px; z-index:10; }
+  h1 { margin:0 0 4px; font-size:18px; }
+  .sub { color:var(--mut); font-size:13px; }
+  .bar { margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  button { cursor:pointer; border:1px solid var(--line); background:var(--card); color:var(--txt);
+           border-radius:8px; padding:7px 11px; font-size:13px; }
+  button:hover { border-color:var(--acc); }
+  button:active { transform:translateY(1px); }
+  .big { background:var(--acc); border-color:var(--acc); font-weight:600; }
+  main { padding:18px; }
+  section { margin-bottom:22px; }
+  .grp-title { font-size:13px; color:var(--mut); text-transform:uppercase; letter-spacing:.06em;
+               margin:0 0 8px; display:flex; align-items:center; gap:8px; }
+  .dot { width:11px; height:11px; border-radius:50%; display:inline-block; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; }
+  .mon { display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left;
+         padding:8px 10px; line-height:1.25; }
+  .mon .n { font-weight:600; font-size:13px; }
+  .mon .m { font-size:11px; color:var(--mut); }
+  .epic { border-color:#f5c542 !important; }
+  .epic .n::after { content:" ★"; color:#f5c542; }
+  #hint { color:var(--mut); font-size:13px; margin:6px 0 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>DinoMon — Cry Test 🔊</h1>
+  <div class="sub">Klik een DinoMon om z'n roep te horen. Elk type heeft z'n eigen stem; ★ = epische brul.</div>
+  <div class="bar">
+    <button class="big" id="playAll">▶ Speel één per type</button>
+    <button id="playEpics">★ Speel de 5 epics</button>
+    <span id="hint">Tip: eerste klik zet de audio aan.</span>
+  </div>
+</header>
+<main id="main"></main>
+
+<script src="js/data/dinomons.js"></script>
+<script src="js/engine/audio.js"></script>
+<script>
+(function () {
+  const A = window.DG.Audio, S = window.DG.SPECIES, C = window.DG.TYPE_COLOR || {};
+  A.init();
+
+  const FAMILY = {
+    FLYING:'fluit', WATER:'blub', FIRE:'knetter-brul', GRASS:'riet', ELECTRIC:'zap',
+    ICE:'kristal', DARK:'grauw', GROUND:'stamp', ROCK:'grind', FAIRY:'twinkel',
+    NORMAL:'roep', DRAGON:'brul', PSYCHIC:'ether', STEEL:'klang',
+    FIGHTING:'schreeuw', GHOST:'kreun', POISON:'sludge', BUG:'tsjirp',
+  };
+
+  // Groepeer op primair type
+  const byType = {};
+  Object.values(S).forEach(s => {
+    const t = (s.types || ['NORMAL'])[0];
+    (byType[t] = byType[t] || []).push(s);
+  });
+
+  function cry(id) { try { A.playCry(id); } catch (e) { console.error(e); } }
+
+  function monBtn(s) {
+    const b = document.createElement('button');
+    b.className = 'mon' + ((s.isLegendary || s.isMega) ? ' epic' : '');
+    const types = (s.types || []).join(' / ');
+    b.innerHTML = '<span class="n">' + s.name + '</span>' +
+                  '<span class="m">' + types + '</span>';
+    b.onclick = () => cry(s.id);
+    return b;
+  }
+
+  const main = document.getElementById('main');
+  const order = Object.keys(FAMILY).filter(t => byType[t]);
+  order.forEach(t => {
+    const sec = document.createElement('section');
+    const h = document.createElement('div');
+    h.className = 'grp-title';
+    h.innerHTML = '<span class="dot" style="background:' + (C[t] || '#888') + '"></span>' +
+                  t + ' — ' + FAMILY[t] + ' (' + byType[t].length + ')';
+    sec.appendChild(h);
+    const g = document.createElement('div'); g.className = 'grid';
+    byType[t].sort((a, b) => a.name.localeCompare(b.name)).forEach(s => g.appendChild(monBtn(s)));
+    sec.appendChild(g);
+    main.appendChild(sec);
+  });
+
+  // Sequencers
+  function seq(ids, gap) {
+    let i = 0;
+    (function next() {
+      if (i >= ids.length) return;
+      cry(ids[i++]);
+      setTimeout(next, gap);
+    })();
+  }
+  document.getElementById('playAll').onclick = () =>
+    seq(order.map(t => byType[t][0].id), 1300);
+  document.getElementById('playEpics').onclick = () =>
+    seq(Object.values(S).filter(s => s.isLegendary || s.isMega).map(s => s.id), 2400);
+})();
+</script>
+</body>
+</html>
